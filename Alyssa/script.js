@@ -17,7 +17,7 @@ if (toggle && links) {
 }
 
 // Countdown: Feb 24, 2026 @ 4:00 PM
-const EVENT_DATE_LOCAL = "2026-02-24T16:00:00";
+const EVENT_DATE_LOCAL = "2026-02-22T16:00:00";
 const note = document.getElementById("countdown-note");
 
 function pad(n) { return String(n).padStart(2, "0"); }
