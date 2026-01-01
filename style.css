@@ -9,6 +9,11 @@
   --light-gray: #f4f4f4;
 }
 
+/* Prevent tiny page "jump" when UI changes (stable scrollbar space) */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* ===============================
    Base Styles
 ================================ */
@@ -124,26 +129,38 @@ nav {
 
 /* ===============================
    Social Icon Rail (Left)
-   (Matches your screenshot)
+   Hidden until mouse near left edge
 ================================ */
 .social-rail {
   position: fixed;
-  left: 18px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 9999;
 
+  /* Hidden off-screen by default */
+  left: -70px;
+  opacity: 0;
+  pointer-events: none;
+
+  z-index: 9999;
   background: #fff;
   border: 1px solid rgba(0,0,0,0.12);
   border-radius: 8px;
   overflow: hidden;
-
   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+
+  transition: left 0.25s ease, opacity 0.25s ease;
+}
+
+/* When shown */
+.social-rail.show {
+  left: 18px;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .social-rail a {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
 
   display: flex;
   align-items: center;
@@ -164,14 +181,9 @@ nav {
 }
 
 .social-rail svg {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   fill: #333;
-}
-
-/* Give content a little space so rail doesn't sit on top of text */
-.container {
-  padding-left: 90px;
 }
 
 /* ===============================
@@ -180,9 +192,8 @@ nav {
 @media (max-width: 768px) {
   .grid-2 { grid-template-columns: 1fr; }
 
-  /* Optional: hide social rail on mobile */
+  /* Hide rail on mobile */
   .social-rail { display: none; }
 
-  /* remove left padding on mobile since rail is hidden */
   .container { padding-left: 20px; }
 }
