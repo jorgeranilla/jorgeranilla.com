@@ -1,181 +1,110 @@
-/* ===============================
-   Global Variables
-================================ */
-:root {
-    --primary-color: #2c3e50;
-    --accent-color: #e67e22; /* A warm color for buttons/links */
-    --bg-color: #ffffff;
-    --text-color: #333333;
-    --light-gray: #f4f4f4;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About & Family | MyName</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-/* ===============================
-   Base Styles
-================================ */
-body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    line-height: 1.6;
-    color: var(--text-color);
-    background: var(--bg-color);
-}
+  <nav>
+    <a href="index.html" class="logo">MyName</a>
+    <div class="nav-links">
+      <a href="about.html">About & Family</a>
+      <a href="resume.html">Resume</a>
+      <a href="blog.html">Blog</a>
+    </div>
+  </nav>
 
-/* ===============================
-   Navigation
-================================ */
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 5%;
-    background: var(--bg-color);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
+  <main class="container">
+    <h1>About Me</h1>
 
-.logo {
-    font-weight: bold;
-    font-size: 1.5rem;
-    text-decoration: none;
-    color: var(--primary-color);
-}
+    <div class="grid-2">
+      <img src="images/me.jpg" alt="Photo of me"
+        style="width:100%; max-width:400px; border-radius:10px;">
 
-.nav-links a {
-    text-decoration: none;
-    color: var(--text-color);
-    margin-left: 20px;
-    font-weight: 500;
-}
+      <div>
+        <p><strong>Hello, I’m Jorge.</strong></p>
 
-.nav-links a:hover {
-    color: var(--accent-color);
-}
+        <p>
+          I was born and raised in Peru and moved to the United States at a young age in search
+          of new opportunities and growth. Over time, this country became home, and I am proud
+          to be American by choice.
+        </p>
 
-/* ===============================
-   Hero Section (Home Page)
-================================ */
-.hero {
-    background: var(--light-gray);
-    padding: 100px 20px;
-    text-align: center;
-}
+        <p>
+          Professionally, I work in the banking and operations field, where I value structure,
+          accountability, and continuous improvement. I enjoy solving problems, improving
+          processes, and taking pride in doing things the right way. Learning has always been
+          important to me, whether through formal education, hands-on experience, or simply
+          figuring things out along the way.
+        </p>
 
-.hero h1 {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
+        <p>
+          Outside of work, family comes first. I am a husband and a dad, and I deeply value the
+          time spent with the people I love. This website reflects that. It is a place to
+          preserve memories, share updates, and document our journey together as a growing
+          family.
+        </p>
 
-.btn {
-    display: inline-block;
-    background: var(--primary-color);
-    color: white;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    margin-top: 20px;
-}
+        <p>
+          I also enjoy traveling and exploring new cultures. These experiences have shaped how
+          I see the world and helped me appreciate different perspectives.
+        </p>
 
-.btn:hover {
-    background: var(--accent-color);
-}
+        <p>
+          This site is meant to be simple and personal. It serves as a digital home for both my
+          professional path and my family’s story.
+        </p>
+      </div>
+    </div>
 
-/* ===============================
-   Layout / Sections
-================================ */
-.container {
-    max-width: 1100px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
+    <hr style="margin: 50px 0; border: 0; border-top: 1px solid #ddd;">
 
-.grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-}
+    <h1>My Family</h1>
+    <p>The reason I do what I do. Here are some snapshots of our life.</p>
 
-/* ===============================
-   Resume Styling
-================================ */
-.resume-item {
-    border-left: 3px solid var(--accent-color);
-    padding-left: 20px;
-    margin-bottom: 30px;
-}
+    <div class="blog-grid">
+      <div class="blog-card">
+        <h3>Family Travels</h3>
+        <p>Photos and memories from our trips together.</p>
+      </div>
 
-/* ===============================
-   Blog Grid
-================================ */
-.blog-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
+      <div class="blog-card">
+        <h3>Everyday Moments</h3>
+        <p>Life at home, milestones, and the moments that matter most.</p>
+      </div>
+    </div>
+  </main>
 
-.blog-card {
-    border: 1px solid #ddd;
-    padding: 20px;
-    border-radius: 8px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+  <!-- Floating Social Bar (FORCE VISIBLE FOR TESTING) -->
+  <div id="social-bar" class="social-bar show">
+    <a href="https://instagram.com/YOURNAME" target="_blank" rel="noopener">IG</a>
+    <a href="https://facebook.com/YOURNAME" target="_blank" rel="noopener">FB</a>
+    <a href="https://youtube.com/@YOURNAME" target="_blank" rel="noopener">YT</a>
+    <a href="https://github.com/YOURNAME" target="_blank" rel="noopener">GH</a>
+  </div>
 
-.blog-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
-}
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const socialBar = document.getElementById("social-bar");
+      if (!socialBar) return;
 
-/* ===============================
-   Floating Social Bar (GLOBAL)
-================================ */
-.social-bar {
-    position: fixed;
-    top: 35%;
-    left: -56px; /* hidden by default */
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    z-index: 9999;
-    transition: left 0.25s ease;
-}
+      // If you want it to hide until mouse touches left edge, remove "show" class above.
+      document.addEventListener("mousemove", (e) => {
+        if (e.clientX <= 30) {
+          socialBar.classList.add("show");
+        } else if (!socialBar.matches(":hover")) {
+          socialBar.classList.remove("show");
+        }
+      });
 
-.social-bar.show {
-    left: 14px;
-}
+      socialBar.addEventListener("mouseleave", () => {
+        socialBar.classList.remove("show");
+      });
+    });
+  </script>
 
-.social-bar a {
-    width: 44px;
-    height: 44px;
-    display: grid;
-    place-items: center;
-
-    background: var(--bg-color);
-    color: var(--primary-color);
-
-    border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.12);
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 600;
-
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    transition: transform 0.15s ease, background 0.15s ease;
-}
-
-.social-bar a:hover {
-    background: var(--light-gray);
-    transform: translateX(3px);
-}
-
-/* ===============================
-   Mobile Responsiveness
-================================ */
-@media (max-width: 768px) {
-    .grid-2 {
-        grid-template-columns: 1fr;
-    }
-
-    /* Optional: hide social bar on mobile */
-    .social-bar {
-        display: none;
-    }
-}
+</body>
+</html>
