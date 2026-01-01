@@ -1,94 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About & Family | MyName</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About & Family | MyName</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav>
-        <a href="index.html" class="logo">MyName</a>
-        <div class="nav-links">
-            <a href="about.html">About & Family</a>
-            <a href="resume.html">Resume</a>
-            <a href="blog.html">Blog</a>
-        </div>
-    </nav>
+  <nav>
+    <a href="index.html" class="logo">MyName</a>
+    <div class="nav-links">
+      <a href="about.html">About & Family</a>
+      <a href="resume.html">Resume</a>
+      <a href="blog.html">Blog</a>
+    </div>
+  </nav>
 
-    <main class="container">
-        <h1>About Me</h1>
+  <main class="container">
+    <h1>About Me</h1>
 
-        <div class="grid-2">
-            <img src="images/me.jpg" alt="Photo of me"
-     style="width:100%; max-width:400px; border-radius:10px;">
+    <div class="grid-2">
+      <img src="images/me.jpg" alt="Photo of me"
+        style="width:100%; max-width:400px; border-radius:10px;">
 
-            <div>
-                <p><strong>Hello, I’m Jorge.</strong></p>
+      <div>
+        <p><strong>Hello, I’m Jorge.</strong></p>
 
-                <p>
-                    I was born and raised in Peru and moved to the United States at a young age in search
-                    of new opportunities and growth. Over time, this country became home, and I am proud
-                    to be American by choice.
-                </p>
+        <p>
+          I was born and raised in Peru and moved to the United States at a young age in search
+          of new opportunities and growth. Over time, this country became home, and I am proud
+          to be American by choice.
+        </p>
 
-                <p>
-                    Professionally, I work in the banking and operations field, where I value structure,
-                    accountability, and continuous improvement. I enjoy solving problems, improving
-                    processes, and taking pride in doing things the right way. Learning has always been
-                    important to me, whether through formal education, hands-on experience, or simply
-                    figuring things out along the way.
-                </p>
+        <p>
+          Professionally, I work in the banking and operations field, where I value structure,
+          accountability, and continuous improvement. I enjoy solving problems, improving
+          processes, and taking pride in doing things the right way. Learning has always been
+          important to me, whether through formal education, hands-on experience, or simply
+          figuring things out along the way.
+        </p>
 
-                <p>
-                    Outside of work, family comes first. I am a husband and a dad, and I deeply value the
-                    time spent with the people I love. This website reflects that. It is a place to
-                    preserve memories, share updates, and document our journey together as a growing
-                    family.
-                </p>
+        <p>
+          Outside of work, family comes first. I am a husband and a dad, and I deeply value the
+          time spent with the people I love. This website reflects that. It is a place to
+          preserve memories, share updates, and document our journey together as a growing
+          family.
+        </p>
 
-                <p>
-                    I also enjoy traveling and exploring new cultures. These experiences have shaped how
-                    I see the world and helped me appreciate different perspectives.
-                </p>
+        <p>
+          I also enjoy traveling and exploring new cultures. These experiences have shaped how
+          I see the world and helped me appreciate different perspectives.
+        </p>
 
-                <p>
-                    This site is meant to be simple and personal. It serves as a digital home for both my
-                    professional path and my family’s story.
-                </p>
-            </div>
-        </div>
-
-        <hr style="margin: 50px 0; border: 0; border-top: 1px solid #ddd;">
-
-        <h1>My Family</h1>
-        <p>The reason I do what I do. Here are some snapshots of our life.</p>
-
-        <div class="blog-grid">
-            <div class="blog-card">
-                <h3>Family Travels</h3>
-                <p>Photos and memories from our trips together.</p>
-            </div>
-
-            <div class="blog-card">
-                <h3>Everyday Moments</h3>
-                <p>Life at home, milestones, and the moments that matter most.</p>
-            </div>
-        </div>
-    </main>
-
-    <!-- Floating Social Bar -->
-    <div id="social-bar" class="social-bar">
-        <a href="https://instagram.com/YOURNAME" target="_blank" rel="noopener">IG</a>
-        <a href="https://facebook.com/YOURNAME" target="_blank" rel="noopener">FB</a>
-        <a href="https://youtube.com/@YOURNAME" target="_blank" rel="noopener">YT</a>
-        <a href="https://github.com/YOURNAME" target="_blank" rel="noopener">GH</a>
+        <p>
+          This site is meant to be simple and personal. It serves as a digital home for both my
+          professional path and my family’s story.
+        </p>
+      </div>
     </div>
 
-    <script>
-      const socialBar = document.getElementById("social-bar");
+    <hr style="margin: 50px 0; border: 0; border-top: 1px solid #ddd;">
 
+    <h1>My Family</h1>
+    <p>The reason I do what I do. Here are some snapshots of our life.</p>
+
+    <div class="blog-grid">
+      <div class="blog-card">
+        <h3>Family Travels</h3>
+        <p>Photos and memories from our trips together.</p>
+      </div>
+
+      <div class="blog-card">
+        <h3>Everyday Moments</h3>
+        <p>Life at home, milestones, and the moments that matter most.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Social Bar (FORCE VISIBLE FOR TESTING) -->
+  <div id="social-bar" class="social-bar show">
+    <a href="https://instagram.com/YOURNAME" target="_blank" rel="noopener">IG</a>
+    <a href="https://facebook.com/YOURNAME" target="_blank" rel="noopener">FB</a>
+    <a href="https://youtube.com/@YOURNAME" target="_blank" rel="noopener">YT</a>
+    <a href="https://github.com/YOURNAME" target="_blank" rel="noopener">GH</a>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const socialBar = document.getElementById("social-bar");
+      if (!socialBar) return;
+
+      // If you want it to hide until mouse touches left edge, remove "show" class above.
       document.addEventListener("mousemove", (e) => {
         if (e.clientX <= 30) {
           socialBar.classList.add("show");
@@ -100,7 +103,8 @@
       socialBar.addEventListener("mouseleave", () => {
         socialBar.classList.remove("show");
       });
-    </script>
+    });
+  </script>
 
 </body>
 </html>
