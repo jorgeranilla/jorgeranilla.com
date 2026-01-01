@@ -24,7 +24,6 @@
             <img src="images/me.jpg" alt="Photo of me"
      style="width:100%; max-width:400px; border-radius:10px;">
 
-
             <div>
                 <p><strong>Hello, I’m Jorge.</strong></p>
 
@@ -78,6 +77,30 @@
             </div>
         </div>
     </main>
+
+    <!-- Floating Social Bar -->
+    <div id="social-bar" class="social-bar">
+        <a href="https://instagram.com/YOURNAME" target="_blank" rel="noopener">IG</a>
+        <a href="https://facebook.com/YOURNAME" target="_blank" rel="noopener">FB</a>
+        <a href="https://youtube.com/@YOURNAME" target="_blank" rel="noopener">YT</a>
+        <a href="https://github.com/YOURNAME" target="_blank" rel="noopener">GH</a>
+    </div>
+
+    <script>
+      const socialBar = document.getElementById("social-bar");
+
+      document.addEventListener("mousemove", (e) => {
+        if (e.clientX <= 30) {
+          socialBar.classList.add("show");
+        } else if (!socialBar.matches(":hover")) {
+          socialBar.classList.remove("show");
+        }
+      });
+
+      socialBar.addEventListener("mouseleave", () => {
+        socialBar.classList.remove("show");
+      });
+    </script>
 
 </body>
 </html>
