@@ -1,4 +1,6 @@
-/* style.css */
+/* ===============================
+   Global Variables
+================================ */
 :root {
     --primary-color: #2c3e50;
     --accent-color: #e67e22; /* A warm color for buttons/links */
@@ -7,15 +9,21 @@
     --light-gray: #f4f4f4;
 }
 
+/* ===============================
+   Base Styles
+================================ */
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
     line-height: 1.6;
     color: var(--text-color);
+    background: var(--bg-color);
 }
 
-/* Navigation */
+/* ===============================
+   Navigation
+================================ */
 nav {
     display: flex;
     justify-content: space-between;
@@ -43,7 +51,9 @@ nav {
     color: var(--accent-color);
 }
 
-/* Hero Section (Home Page) */
+/* ===============================
+   Hero Section (Home Page)
+================================ */
 .hero {
     background: var(--light-gray);
     padding: 100px 20px;
@@ -65,7 +75,13 @@ nav {
     margin-top: 20px;
 }
 
-/* Sections */
+.btn:hover {
+    background: var(--accent-color);
+}
+
+/* ===============================
+   Layout / Sections
+================================ */
 .container {
     max-width: 1100px;
     margin: 40px auto;
@@ -78,14 +94,18 @@ nav {
     gap: 40px;
 }
 
-/* Resume Styling */
+/* ===============================
+   Resume Styling
+================================ */
 .resume-item {
     border-left: 3px solid var(--accent-color);
     padding-left: 20px;
     margin-bottom: 30px;
 }
 
-/* Blog Grid */
+/* ===============================
+   Blog Grid
+================================ */
 .blog-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -96,14 +116,66 @@ nav {
     border: 1px solid #ddd;
     padding: 20px;
     border-radius: 8px;
-    transition: transform 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .blog-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
 }
 
-/* Mobile Responsiveness */
+/* ===============================
+   Floating Social Bar (GLOBAL)
+================================ */
+.social-bar {
+    position: fixed;
+    top: 35%;
+    left: -56px; /* hidden by default */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 9999;
+    transition: left 0.25s ease;
+}
+
+.social-bar.show {
+    left: 14px;
+}
+
+.social-bar a {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+
+    background: var(--bg-color);
+    color: var(--primary-color);
+
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.12);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.social-bar a:hover {
+    background: var(--light-gray);
+    transform: translateX(3px);
+}
+
+/* ===============================
+   Mobile Responsiveness
+================================ */
 @media (max-width: 768px) {
-    .grid-2 { grid-template-columns: 1fr; }
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    /* Optional: hide social bar on mobile */
+    .social-bar {
+        display: none;
+    }
 }
