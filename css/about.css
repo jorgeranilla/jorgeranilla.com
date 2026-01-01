@@ -1,0 +1,64 @@
+
+/* about.css — styles only for About pages */
+
+.bio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.bio-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.bio-card img {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.bio-card h3 {
+  margin: 10px 0 5px;
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: 500;
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.profile img {
+  width: 160px;
+  height: 160px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.social-links {
+  display: flex;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.social-links a {
+  font-size: 1.25rem;
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .profile {
+    grid-template-columns: 1fr;
+  }
+}
