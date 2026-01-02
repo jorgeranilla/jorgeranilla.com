@@ -1,21 +1,3 @@
-// Mobile menu
-const toggle = document.querySelector(".nav-toggle");
-const links = document.querySelector(".nav-links");
-
-if (toggle && links) {
-  toggle.addEventListener("click", () => {
-    const open = links.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", String(open));
-  });
-
-  links.querySelectorAll("a").forEach(a => {
-    a.addEventListener("click", () => {
-      links.classList.remove("open");
-      toggle.setAttribute("aria-expanded", "false");
-    });
-  });
-}
-
 // Countdown: Feb 22, 2026 @ 4:00 PM (local time)
 const EVENT_DATE_LOCAL = "2026-02-22T16:00:00";
 const note = document.getElementById("countdown-note");
