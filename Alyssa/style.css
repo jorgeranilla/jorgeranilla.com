@@ -329,7 +329,7 @@ a{ color:inherit; text-decoration:none; }
   border:1px solid rgba(43,63,102,.08);
   background:rgba(255,134,181,.10);
 }
-.registry-title{ margin:0 0 10px; font-weight:900; }
+.registry-title{ margin:0 0 10px; font-weight:normal; }
 
 /* Countdown */
 .countdown-card{
@@ -480,7 +480,7 @@ a{ color:inherit; text-decoration:none; }
 }
 
 .rsvp-lines .k{
-  font-weight:900;
+  font-weight:700; /* Made LESS BOLD */
   color:rgba(43,63,102,.9);
 }
 
@@ -490,7 +490,7 @@ a{ color:inherit; text-decoration:none; }
 
 .link{
   color:rgba(255,134,181,.95);
-  font-weight:900;
+  font-weight:normal;
   text-decoration:underline;
   text-underline-offset:3px;
 }
