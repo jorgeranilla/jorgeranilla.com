@@ -82,12 +82,12 @@ const GOOGLE_FORM_ID = "PASTE_YOUR_FORM_ID_HERE";
 /**
  * STEP 2: Paste your Google Forms entry IDs (name="entry.########") for each question.
  * You already gave me one:
- * - attending: entry.877086558
+ *   - attending: entry.877086558
  *
  * You still need to add 3 more entry ids for:
- * - names
- * - contact
- * - comments
+ *   - names
+ *   - contact
+ *   - comments
  */
 const GOOGLE_FORM_ENTRIES = {
   attending: "entry.877086558",    // Can you attend?
