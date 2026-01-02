@@ -52,7 +52,7 @@
       </h1>
 
       <p class="top-sub">
-        Tuesday, February 24, 2026, at <strong>4:00 PM</strong><br/>
+        Sunday, February 22, 2026, at <strong>4:00 PM</strong><br/>
         1008 Umstead Grove Way, Durham, NC 27712
       </p>
 
@@ -78,7 +78,7 @@
       <div class="grid-3">
         <div class="info">
           <h3>Date</h3>
-          <p><strong>Tuesday, February 24, 2026</strong></p>
+          <p><strong>Sunday, February 22, 2026</strong></p>
         </div>
         <div class="info">
           <h3>Time</h3>
@@ -177,8 +177,9 @@
             <h3>Our little journey to Alyssa Jane</h3>
             <p class="muted">
               These months have been full of excitement and a whole lot of love.
-              Every milestone has made us even more grateful for this new chapter.
-              Thank you for being part of our story—we can’t wait to celebrate Alyssa Jane with you.
+              Every kick and every milestone has made us even more grateful for this new chapter.
+              We can't wait to celebrate Alyssa Jane Ranilla with the people who mean the most to us.
+              Thank you for being part of our story.
             </p>
             <p class="memory-sign">— Shane & Jorge</p>
           </div>
@@ -246,9 +247,6 @@
         </div>
         <h2>RSVP</h2>
         <p class="muted">Please RSVP by <strong>February 10</strong> so we can plan accordingly.</p>
-        <p class="muted small" style="margin-top:8px;">
-          Please call or email us through the Contact page, or fill out the RSVP form below.
-        </p>
       </div>
 
       <div class="rsvp-wrap">
@@ -264,7 +262,7 @@
 
             <div class="line">
               <span class="k">Hours</span>
-              <span class="v">Tuesday — February 24<br/>4:00 PM – 6:00 PM</span>
+              <span class="v">Sunday — February 22<br/>4:00 PM – 6:00 PM</span>
             </div>
 
             <div class="line">
@@ -292,42 +290,44 @@
             <div class="mini-hearts left" aria-hidden="true">
               <span></span><span></span><span></span>
             </div>
-            <h3 class="rsvp-title">RSVP Form</h3>
-            <p class="muted">Fill out the form and we’ll receive your RSVP right away.</p>
+            <h3 class="rsvp-title">Questions?</h3>
+            <p class="muted">Please fill out the RSVP form below.</p>
           </div>
 
           <form id="rsvpForm" class="rsvp-form" novalidate>
+            
+            <div class="field-group">
+              <p class="label-text">Can you attend?</p>
+              <div class="radio-row">
+                <label class="radio-label">
+                  <input type="radio" name="attending" value="Yes, I'll be there" required>
+                  Yes, I’ll be there
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="attending" value="Sorry, can't make it">
+                  Sorry, can’t make it
+                </label>
+              </div>
+            </div>
+
             <label class="field">
-              <span class="sr-only">Can you attend?</span>
-              <select name="attending" required>
-                <option value="" selected>Can you attend?</option>
-                <option value="Yes, I’ll be there">Yes, I’ll be there</option>
-                <option value="Sorry, can’t make it">Sorry, can’t make it</option>
-              </select>
+              <span class="label-text">What are the names of people attending?</span>
+              <input type="text" name="names" placeholder="Example: John & Maria" required />
             </label>
 
             <label class="field">
-              <span class="sr-only">What are the names of people attending?</span>
-              <input type="text" name="names" placeholder="What are the names of people attending?" required />
+              <span class="label-text">Best contact phone number or email?</span>
+              <input type="text" name="contact" placeholder="Phone or email" required />
             </label>
 
             <label class="field">
-              <span class="sr-only">Best contact phone number or email</span>
-              <input type="text" name="contact" placeholder="Best contact phone number or email" required />
+              <span class="label-text">Comments and/or questions:</span>
+              <textarea name="comments" rows="4" placeholder="Anything we should know?"></textarea>
             </label>
 
-            <label class="field">
-              <span class="sr-only">Comments and/or questions</span>
-              <textarea name="comments" rows="4" placeholder="Comments and/or questions:"></textarea>
-            </label>
-
-            <button class="btn btn-wide" type="submit">Send</button>
+            <button class="btn btn-wide btn-pink-solid" type="submit">Send RSVP</button>
             <p class="muted small center" id="rsvpStatus" aria-live="polite" style="margin-top:12px;"></p>
           </form>
-
-          <p class="muted small center" style="margin-top:10px;">
-            RSVP deadline: <strong>February 10</strong>
-          </p>
         </div>
       </div>
     </div>

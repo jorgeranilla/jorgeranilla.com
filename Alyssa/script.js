@@ -16,8 +16,8 @@ if (toggle && links) {
   });
 }
 
-// Countdown: Feb 24, 2026 @ 4:00 PM (local time)
-const EVENT_DATE_LOCAL = "2026-02-24T16:00:00";
+// Countdown: Feb 22, 2026 @ 4:00 PM (local time)
+const EVENT_DATE_LOCAL = "2026-02-22T16:00:00";
 const note = document.getElementById("countdown-note");
 
 function pad(n) { return String(n).padStart(2, "0"); }
@@ -80,14 +80,7 @@ const rsvpStatus = document.getElementById("rsvpStatus");
 const GOOGLE_FORM_ID = "PASTE_YOUR_FORM_ID_HERE";
 
 /**
- * STEP 2: Paste your Google Forms entry IDs (name="entry.########") for each question.
- * You already gave me one:
- * - attending: entry.877086558
- *
- * You still need to add 3 more entry ids for:
- * - names
- * - contact
- * - comments
+ * STEP 2: Paste your Google Forms entry IDs (name="entry.########")
  */
 const GOOGLE_FORM_ENTRIES = {
   attending: "entry.877086558",    // Can you attend?

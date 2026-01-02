@@ -2,7 +2,7 @@
   --sky:#7fd0f1;
   --cream:#fbf6ef;
   --pink:#ff86b5;
-  --sun:#f5cf6a; /* warm yellow for the Invite section */
+  --sun:#f5cf6a;
   --navy:#2b3f66;
   --muted:#6a7aa6;
 
@@ -126,7 +126,14 @@ a{ color:inherit; text-decoration:none; }
 .btn:hover{ filter:brightness(.98); }
 .btn-small{ padding:10px 14px; border-radius:14px; font-weight:900; }
 
-.btn-row{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
+.btn-pink-solid{
+  background: #ff86b5;
+  width: 100%;
+  border-radius: 12px;
+  font-size: 1rem;
+  box-shadow: none;
+  cursor: pointer;
+}
 
 /* Sections */
 .section{ padding:64px 0; }
@@ -306,13 +313,13 @@ a{ color:inherit; text-decoration:none; }
 }
 .bump img{
   box-shadow: 0 10px 26px rgba(43,63,102,.10);
-
   border-radius:18px;
   height:240px;
   width:100%;
   object-fit:cover;
   border:1px solid rgba(43,63,102,.08);
 }
+
 /* Fix for photo alignment */
 .bump {
   margin: 0; 
@@ -522,40 +529,62 @@ a{ color:inherit; text-decoration:none; }
   gap:12px;
 }
 
+.field-group, .field {
+  display: block;
+}
+
+.label-text {
+  display: block;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
 .field input,
 .field select,
 .field textarea{
   width:100%;
   border:0;
   outline:none;
-  border-radius:14px;
+  border-radius: 8px; /* Slightly tighter radius to match screenshot */
   background:#e9ecef;
   padding:12px 14px;
   font-size:1rem;
   color:rgba(43,63,102,.92);
-  border:1px solid rgba(43,63,102,.06);
+  border:1px solid transparent;
+}
+
+.field input:focus, .field textarea:focus {
+  border-color: rgba(43,63,102,.2);
 }
 
 .field textarea{ resize:vertical; min-height:110px; }
 
-.field select{
-  appearance:none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, rgba(43,63,102,.7) 50%),
-    linear-gradient(135deg, rgba(43,63,102,.7) 50%, transparent 50%);
-  background-position:
-    calc(100% - 18px) calc(50% - 3px),
-    calc(100% - 12px) calc(50% - 3px);
-  background-size:6px 6px, 6px 6px;
-  background-repeat:no-repeat;
+/* Radio Button Styling */
+.radio-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 6px;
+  margin-bottom: 12px;
 }
 
-.btn-wide{
-  width:100%;
-  justify-content:center;
-  border-radius:16px;
-  padding:13px 18px;
-  font-weight:900;
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--navy);
+  font-size: 0.95rem;
+}
+
+.radio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #0d6efd; /* Blue color like screenshot */
+  margin: 0;
+  cursor: pointer;
 }
 
 .sr-only{
