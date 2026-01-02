@@ -16,8 +16,8 @@ if (toggle && links) {
   });
 }
 
-// Countdown: Feb 24, 2026 @ 4:00 PM
-const EVENT_DATE_LOCAL = "2026-02-24T16:00:00";
+// Countdown: Feb 22, 2026 @ 4:00 PM (local time)
+const EVENT_DATE_LOCAL = "2026-02-22T16:00:00";
 const note = document.getElementById("countdown-note");
 
 function pad(n) { return String(n).padStart(2, "0"); }
@@ -68,42 +68,85 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-// Gallery lightbox
-const lb = document.getElementById("lightbox");
-const lbImg = document.getElementById("lbImg");
-const lbClose = document.getElementById("lbClose");
+// ===== RSVP -> Google Forms (stays on page, no redirect) =====
+const rsvpForm = document.getElementById("rsvpForm");
+const rsvpStatus = document.getElementById("rsvpStatus");
 
-function openLightbox(src) {
-  if (!lb || !lbImg) return;
-  lbImg.src = src;
-  lb.classList.add("open");
-  lb.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
+/**
+ * STEP 1: Paste your Google Form ID below.
+ * Your form URL looks like:
+ * https://docs.google.com/forms/d/e/FORM_ID/viewform
+ */
+const GOOGLE_FORM_ID = "PASTE_YOUR_FORM_ID_HERE";
+
+/**
+ * STEP 2: Paste your Google Forms entry IDs (name="entry.########")
+ */
+const GOOGLE_FORM_ENTRIES = {
+  attending: "entry.877086558",    // Can you attend?
+  names: "entry.REPLACE_ME_1",     // What are the names of people attending?
+  contact: "entry.REPLACE_ME_2",   // Best contact phone number or email?
+  comments: "entry.REPLACE_ME_3"   // Comments and/or questions
+};
+
+function formResponseUrl(formId) {
+  return `https://docs.google.com/forms/d/e/${formId}/formResponse`;
 }
 
-function closeLightbox() {
-  if (!lb) return;
-  lb.classList.remove("open");
-  lb.setAttribute("aria-hidden", "true");
-  if (lbImg) lbImg.src = "";
-  document.body.style.overflow = "";
-}
-
-document.querySelectorAll(".g-item").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const src = btn.getAttribute("data-full");
-    if (src) openLightbox(src);
+async function submitToGoogleForms(url, payload) {
+  // no-cors keeps the visitor on your page (Google blocks reading the response, but it submits)
+  await fetch(url, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(payload).toString()
   });
-});
-
-if (lbClose) lbClose.addEventListener("click", closeLightbox);
-
-if (lb) {
-  lb.addEventListener("click", (e) => {
-    if (e.target === lb) closeLightbox();
-  });
 }
 
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeLightbox();
-});
+if (rsvpForm) {
+  rsvpForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (!GOOGLE_FORM_ID || GOOGLE_FORM_ID.includes("PASTE_YOUR_FORM_ID_HERE")) {
+      rsvpStatus.textContent = "Setup needed: paste your Google Form ID into script.js (GOOGLE_FORM_ID).";
+      return;
+    }
+
+    const missingEntry =
+      Object.values(GOOGLE_FORM_ENTRIES).some(v => !v || v.includes("REPLACE_ME"));
+
+    if (missingEntry) {
+      rsvpStatus.textContent =
+        "Setup needed: paste the remaining Google Form entry IDs (names, contact, comments) into script.js.";
+      return;
+    }
+
+    const fd = new FormData(rsvpForm);
+    const attending = (fd.get("attending") || "").toString().trim();
+    const names = (fd.get("names") || "").toString().trim();
+    const contact = (fd.get("contact") || "").toString().trim();
+    const comments = (fd.get("comments") || "").toString().trim();
+
+    if (!attending || !names || !contact) {
+      rsvpStatus.textContent = "Please complete: Can you attend, Names attending, and Best contact.";
+      return;
+    }
+
+    const payload = {};
+    payload[GOOGLE_FORM_ENTRIES.attending] = attending;
+    payload[GOOGLE_FORM_ENTRIES.names] = names;
+    payload[GOOGLE_FORM_ENTRIES.contact] = contact;
+    payload[GOOGLE_FORM_ENTRIES.comments] = comments;
+
+    try {
+      rsvpStatus.textContent = "Sending…";
+      await submitToGoogleForms(formResponseUrl(GOOGLE_FORM_ID), payload);
+
+      rsvpForm.reset();
+      rsvpStatus.textContent = "Thank you! Your RSVP was sent.";
+    } catch (err) {
+      rsvpStatus.textContent =
+        "Something blocked the submission. Please try again.";
+    }
+  });
+}
