@@ -50,25 +50,19 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-// ===== RSVP -> Google Forms (stays on page, no redirect) =====
+// ===== RSVP -> Google Forms (Seamless Submission) =====
 const rsvpForm = document.getElementById("rsvpForm");
 const rsvpStatus = document.getElementById("rsvpStatus");
 
-/**
- * STEP 1: Paste your Google Form ID below.
- * Your form URL looks like:
- * https://docs.google.com/forms/d/e/FORM_ID/viewform
- */
-const GOOGLE_FORM_ID = "PASTE_YOUR_FORM_ID_HERE";
+// YOUR GOOGLE FORM ID
+const GOOGLE_FORM_ID = "1FAIpQLSdi4C22oLlX6bOUN7bE35m47pnYjnYk0oNPjTfQvVhdwz40tA";
 
-/**
- * STEP 2: Paste your Google Forms entry IDs (name="entry.########")
- */
+// YOUR GOOGLE FORM ENTRY IDs
 const GOOGLE_FORM_ENTRIES = {
-  attending: "entry.877086558",    // Can you attend?
-  names: "entry.REPLACE_ME_1",     // What are the names of people attending?
-  contact: "entry.REPLACE_ME_2",   // Best contact phone number or email?
-  comments: "entry.REPLACE_ME_3"   // Comments and/or questions
+  attending: "entry.877086558",    // Yes/No
+  names: "entry.1498135098",       // Name
+  contact: "entry.2606285",        // Phone/Email
+  comments: "entry.2109756448"     // Comments
 };
 
 function formResponseUrl(formId) {
@@ -76,7 +70,7 @@ function formResponseUrl(formId) {
 }
 
 async function submitToGoogleForms(url, payload) {
-  // no-cors keeps the visitor on your page (Google blocks reading the response, but it submits)
+  // mode: "no-cors" allows submission without redirecting the user
   await fetch(url, {
     method: "POST",
     mode: "no-cors",
@@ -89,31 +83,20 @@ if (rsvpForm) {
   rsvpForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    if (!GOOGLE_FORM_ID || GOOGLE_FORM_ID.includes("PASTE_YOUR_FORM_ID_HERE")) {
-      rsvpStatus.textContent = "Setup needed: paste your Google Form ID into script.js (GOOGLE_FORM_ID).";
-      return;
-    }
-
-    const missingEntry =
-      Object.values(GOOGLE_FORM_ENTRIES).some(v => !v || v.includes("REPLACE_ME"));
-
-    if (missingEntry) {
-      rsvpStatus.textContent =
-        "Setup needed: paste the remaining Google Form entry IDs (names, contact, comments) into script.js.";
-      return;
-    }
-
     const fd = new FormData(rsvpForm);
+    // Google Forms expects the exact strings "Yes, I'll be there" or "Sorry, can't make it"
     const attending = (fd.get("attending") || "").toString().trim();
     const names = (fd.get("names") || "").toString().trim();
     const contact = (fd.get("contact") || "").toString().trim();
     const comments = (fd.get("comments") || "").toString().trim();
 
     if (!attending || !names || !contact) {
-      rsvpStatus.textContent = "Please complete: Can you attend, Names attending, and Best contact.";
+      rsvpStatus.textContent = "Please complete all required fields.";
+      rsvpStatus.style.color = "red";
       return;
     }
 
+    // Map your form inputs to Google's entry IDs
     const payload = {};
     payload[GOOGLE_FORM_ENTRIES.attending] = attending;
     payload[GOOGLE_FORM_ENTRIES.names] = names;
@@ -121,14 +104,18 @@ if (rsvpForm) {
     payload[GOOGLE_FORM_ENTRIES.comments] = comments;
 
     try {
-      rsvpStatus.textContent = "Sending…";
+      rsvpStatus.textContent = "Sending...";
+      rsvpStatus.style.color = "inherit";
+      
       await submitToGoogleForms(formResponseUrl(GOOGLE_FORM_ID), payload);
 
       rsvpForm.reset();
-      rsvpStatus.textContent = "Thank you! Your RSVP was sent.";
+      rsvpStatus.textContent = "Thank you! Your RSVP has been sent. 💌";
+      rsvpStatus.style.color = "green";
+      rsvpStatus.style.fontWeight = "bold";
     } catch (err) {
-      rsvpStatus.textContent =
-        "Something blocked the submission. Please try again.";
+      rsvpStatus.textContent = "Error sending. Please text us instead.";
+      rsvpStatus.style.color = "red";
     }
   });
 }
