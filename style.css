@@ -9,67 +9,178 @@
   --light-gray: #f4f4f4;
 }
 
-/* Prevent tiny page "jump" when UI changes (stable scrollbar space) */
 html {
   scrollbar-gutter: stable;
 }
 
-/* ===============================
-   Base Styles
-================================ */
 body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
   line-height: 1.6;
   color: var(--text-color);
   background: var(--bg-color);
+  font-family: 'Roboto', sans-serif;
 }
 
 /* ===============================
-   Navigation
+   NEW HEADER & NAVIGATION
 ================================ */
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 5%;
-  background: var(--bg-color);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background-color: white;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    z-index: 1000;
 }
 
-.logo {
-  font-weight: bold;
-  font-size: 1.5rem;
-  text-decoration: none;
-  color: var(--primary-color);
+/* Logo Area */
+.brand-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.logo-mark {
+    height: 60px;
+    width: auto;
+}
+.name {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.tagline {
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 4px;
+    margin-top: 5px;
+    display: block;
+    text-align: center;
 }
 
-.nav-links a {
-  text-decoration: none;
-  color: var(--text-color);
-  margin-left: 20px;
-  font-weight: 500;
+/* Main Navigation */
+/* FIX: Added '>' to only target the top-level ul */
+.main-nav > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 30px;
 }
 
-.nav-links a:hover {
-  color: var(--accent-color);
+.main-nav a {
+    text-decoration: none;
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+    padding-bottom: 5px;
+    transition: color 0.2s;
+}
+
+.main-nav a:hover {
+    color: #000;
 }
 
 /* ===============================
-   Hero Section (Home Page)
+   DROPDOWN MENU LOGIC
+================================ */
+/* 1. The Parent Item */
+.dropdown-item {
+    position: relative; 
+    padding-bottom: 20px; /* Invisible bridge */
+    margin-bottom: -20px; /* Pulls layout back up */
+}
+
+/* 2. The Hidden Box */
+.dropdown-menu {
+    display: none; 
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+    padding: 15px 0;
+    border-top: 2px solid #333;
+    flex-direction: column;
+    z-index: 999;
+    
+    /* FIX: Ensure dropdowns don't have bullets or margin */
+    list-style: none;
+    margin: 0;
+}
+
+/* 3. Show Menu ONLY on Hover */
+.dropdown-item:hover .dropdown-menu {
+    display: flex; 
+}
+
+/* Dropdown Links */
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: #666;
+    font-size: 13px;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f9f9f9;
+    color: #000;
+}
+
+/* ===============================
+   BREADCRUMBS BAR
+================================ */
+.breadcrumb-bar {
+    background-color: #fafafa;
+    padding: 15px 5%;
+    border-bottom: 1px solid #eee;
+}
+.breadcrumb-container {
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.breadcrumb-container a {
+    text-decoration: none;
+    color: #888;
+    font-weight: 500;
+}
+.breadcrumb-container a:hover {
+    color: #B22222;
+    text-decoration: underline;
+}
+.separator {
+    margin: 0 8px;
+    color: #ccc;
+}
+.current-page {
+    color: #333;
+    font-weight: 600;
+}
+
+/* ===============================
+   PAGE SECTIONS
 ================================ */
 .hero {
   background: var(--light-gray);
   padding: 100px 20px;
   text-align: center;
 }
-
 .hero h1 {
   font-size: 3rem;
   margin-bottom: 10px;
+  font-family: 'Playfair Display', serif;
 }
-
 .btn {
   display: inline-block;
   background: var(--primary-color);
@@ -79,14 +190,10 @@ nav {
   border-radius: 5px;
   margin-top: 20px;
 }
-
 .btn:hover {
   background: var(--accent-color);
 }
 
-/* ===============================
-   Sections / Layout
-================================ */
 .container {
   max-width: 1100px;
   margin: 40px auto;
@@ -100,58 +207,37 @@ nav {
   align-items: start;
 }
 
-/* Resume Styling */
 .resume-item {
   border-left: 3px solid var(--accent-color);
   padding-left: 20px;
   margin-bottom: 30px;
 }
-
-/* Blog Grid */
-.blog-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
 .blog-card {
   border: 1px solid #ddd;
   padding: 20px;
   border-radius: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   background: #fff;
 }
 
-.blog-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
-}
-
 /* ===============================
-   Social Icon Rail (Left)
-   Hidden until mouse near left edge
+   SOCIAL ICON RAIL
 ================================ */
 .social-rail {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-
-  /* Hidden off-screen by default */
   left: -70px;
   opacity: 0;
   pointer-events: none;
-
   z-index: 9999;
   background: #fff;
   border: 1px solid rgba(0,0,0,0.12);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
-
   transition: left 0.25s ease, opacity 0.25s ease;
 }
 
-/* When shown */
 .social-rail.show {
   left: 18px;
   opacity: 1;
@@ -161,11 +247,9 @@ nav {
 .social-rail a {
   width: 44px;
   height: 44px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   text-decoration: none;
   background: #fff;
   border-bottom: 1px solid rgba(0,0,0,0.10);
@@ -187,13 +271,22 @@ nav {
 }
 
 /* ===============================
-   Mobile Responsiveness
+   MOBILE RESPONSIVENESS
 ================================ */
 @media (max-width: 768px) {
   .grid-2 { grid-template-columns: 1fr; }
-
-  /* Hide rail on mobile */
+  
   .social-rail { display: none; }
-
+  
   .container { padding-left: 20px; }
+
+  .site-header {
+      flex-direction: column;
+      gap: 20px;
+      padding: 20px;
+  }
+  .main-nav ul {
+      flex-wrap: wrap;
+      justify-content: center;
+  }
 }
