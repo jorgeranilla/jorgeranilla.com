@@ -67,7 +67,6 @@ body {
 }
 
 /* Main Navigation */
-/* FIX: Added '>' to only target the top-level ul */
 .main-nav > ul {
     list-style: none;
     margin: 0;
@@ -92,14 +91,12 @@ body {
 /* ===============================
    DROPDOWN MENU LOGIC
 ================================ */
-/* 1. The Parent Item */
 .dropdown-item {
     position: relative; 
-    padding-bottom: 20px; /* Invisible bridge */
-    margin-bottom: -20px; /* Pulls layout back up */
+    padding-bottom: 20px;
+    margin-bottom: -20px;
 }
 
-/* 2. The Hidden Box */
 .dropdown-menu {
     display: none; 
     position: absolute;
@@ -112,18 +109,14 @@ body {
     border-top: 2px solid #333;
     flex-direction: column;
     z-index: 999;
-    
-    /* FIX: Ensure dropdowns don't have bullets or margin */
     list-style: none;
     margin: 0;
 }
 
-/* 3. Show Menu ONLY on Hover */
 .dropdown-item:hover .dropdown-menu {
     display: flex; 
 }
 
-/* Dropdown Links */
 .dropdown-menu a {
     display: block;
     padding: 10px 20px;
@@ -169,55 +162,94 @@ body {
 }
 
 /* ===============================
-   PAGE SECTIONS
+   NEW HERO CAROUSEL
 ================================ */
-.hero {
+.hero-carousel {
+  position: relative;
+  max-width: 100%;
+  height: 400px; /* Reduced height as requested */
   background: var(--light-gray);
-  padding: 100px 20px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+/* Individual Slide */
+.slide {
+  display: none; /* Hidden by default */
+  position: absolute;
+  width: 100%;
+  height: 100%;
   text-align: center;
+  /* Flex to center content vertically */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.6s ease; /* Smooth fade effect */
+  pointer-events: none; /* Prevents clicking links on invisible slides */
 }
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 10px;
+
+/* Active Slide - Overrides default hidden state */
+.slide.active {
+  opacity: 1;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+/* Slide Content Styling */
+.slide-content h1 {
+  font-size: 2.8rem;
+  margin-bottom: 15px;
   font-family: 'Playfair Display', serif;
+  color: #333;
 }
+.slide-content p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+/* Buttons */
 .btn {
   display: inline-block;
   background: var(--primary-color);
   color: #fff;
-  padding: 10px 20px;
+  padding: 12px 28px;
   text-decoration: none;
-  border-radius: 5px;
-  margin-top: 20px;
+  border-radius: 4px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: background 0.3s ease;
 }
 .btn:hover {
   background: var(--accent-color);
 }
 
-.container {
-  max-width: 1100px;
-  margin: 40px auto;
-  padding: 0 20px;
+/* Navigation Dots */
+.carousel-dots {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  z-index: 10;
 }
 
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: start;
+.dot {
+  cursor: pointer;
+  height: 12px;
+  width: 12px;
+  margin: 0 5px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.3s ease;
 }
 
-.resume-item {
-  border-left: 3px solid var(--accent-color);
-  padding-left: 20px;
-  margin-bottom: 30px;
+.active.dot, .dot:hover {
+  background-color: var(--primary-color);
 }
-.blog-card {
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 8px;
-  background: #fff;
-}
+
 
 /* ===============================
    SOCIAL ICON RAIL
@@ -274,12 +306,11 @@ body {
    MOBILE RESPONSIVENESS
 ================================ */
 @media (max-width: 768px) {
-  .grid-2 { grid-template-columns: 1fr; }
+  .hero-carousel { height: 350px; } /* Slightly smaller on mobile */
+  .slide-content h1 { font-size: 2rem; padding: 0 10px; }
   
   .social-rail { display: none; }
   
-  .container { padding-left: 20px; }
-
   .site-header {
       flex-direction: column;
       gap: 20px;
