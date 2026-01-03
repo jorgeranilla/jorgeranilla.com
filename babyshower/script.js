@@ -50,72 +50,36 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-// ===== RSVP -> Google Forms (Seamless Submission) =====
+
+// ===== SIMPLE RSVP UI HANDLER =====
+// Since we are using a hidden iframe in the HTML for the actual submission,
+// this JS just updates the UI to say "Thank you" when the user clicks submit.
+
 const rsvpForm = document.getElementById("rsvpForm");
 const rsvpStatus = document.getElementById("rsvpStatus");
 
-// YOUR SPECIFIC GOOGLE FORM ID
-const GOOGLE_FORM_ID = "1FAIpQLSdi4C22oLlX6bOUN7bE35m47pnYjnYk0oNPjTfQvVhdwz40tA";
-
-// YOUR SPECIFIC GOOGLE FORM ENTRY IDs
-const GOOGLE_FORM_ENTRIES = {
-  attending: "entry.877086558",    // Yes/No
-  names: "entry.1498135098",       // Name
-  contact: "entry.2606285",        // Phone/Email
-  comments: "entry.2109756448"     // Comments
-};
-
-function formResponseUrl(formId) {
-  return `https://docs.google.com/forms/d/e/${formId}/formResponse`;
-}
-
-async function submitToGoogleForms(url, payload) {
-  // mode: "no-cors" allows submission without redirecting the user
-  await fetch(url, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams(payload).toString()
-  });
-}
-
 if (rsvpForm) {
-  rsvpForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const fd = new FormData(rsvpForm);
-    // Google Forms expects the exact strings "Yes, I'll be there" or "Sorry, can't make it"
-    const attending = (fd.get("attending") || "").toString().trim();
-    const names = (fd.get("names") || "").toString().trim();
-    const contact = (fd.get("contact") || "").toString().trim();
-    const comments = (fd.get("comments") || "").toString().trim();
-
-    if (!attending || !names || !contact) {
-      rsvpStatus.textContent = "Please complete all required fields.";
-      rsvpStatus.style.color = "red";
-      return;
+  rsvpForm.addEventListener("submit", function() {
+    // We assume the submission works because it's a standard HTML form
+    // targeting a hidden iframe.
+    
+    // Optionally disable the button to prevent double-clicks
+    const btn = rsvpForm.querySelector("button");
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Sending...";
     }
 
-    // Map your form inputs to Google's entry IDs
-    const payload = {};
-    payload[GOOGLE_FORM_ENTRIES.attending] = attending;
-    payload[GOOGLE_FORM_ENTRIES.names] = names;
-    payload[GOOGLE_FORM_ENTRIES.contact] = contact;
-    payload[GOOGLE_FORM_ENTRIES.comments] = comments;
-
-    try {
-      rsvpStatus.textContent = "Sending...";
-      rsvpStatus.style.color = "inherit";
-      
-      await submitToGoogleForms(formResponseUrl(GOOGLE_FORM_ID), payload);
-
+    // Show success message after a small delay to simulate processing
+    setTimeout(() => {
       rsvpForm.reset();
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Send RSVP";
+      }
       rsvpStatus.textContent = "Thank you! Your RSVP has been sent. 💌";
       rsvpStatus.style.color = "green";
       rsvpStatus.style.fontWeight = "bold";
-    } catch (err) {
-      rsvpStatus.textContent = "Error sending. Please text us instead.";
-      rsvpStatus.style.color = "red";
-    }
+    }, 1000);
   });
 }

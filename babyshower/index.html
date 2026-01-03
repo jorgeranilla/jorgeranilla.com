@@ -199,18 +199,40 @@
               <span style="font-weight:700; color:var(--navy);">Not on Facebook?</span> Please fill out the RSVP form below.
             </p>
           </div>
+          
+          <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
-          <form id="rsvpForm" class="rsvp-form" novalidate style="margin-top:10px;">
+          <form 
+            id="rsvpForm" 
+            class="rsvp-form" 
+            action="https://docs.google.com/forms/d/e/1FAIpQLSdi4C22oLlX6bOUN7bE35m47pnYjnYk0oNPjTfQvVhdwz40tA/formResponse" 
+            method="post" 
+            target="hidden_iframe"
+            style="margin-top:10px;">
+            
             <div class="field-group">
               <p class="label-text">Can you attend?</p>
               <div class="radio-row">
-                <label class="radio-label"><input type="radio" name="attending" value="Yes, I'll be there" required> Yes, I’ll be there</label>
-                <label class="radio-label"><input type="radio" name="attending" value="Sorry, can't make it"> Sorry, can’t make it</label>
+                <label class="radio-label"><input type="radio" name="entry.877086558" value="Yes, I'll be there" required> Yes, I’ll be there</label>
+                <label class="radio-label"><input type="radio" name="entry.877086558" value="Sorry, can't make it"> Sorry, can’t make it</label>
               </div>
             </div>
-            <label class="field"><span class="label-text">What are the names of people attending?</span><input type="text" name="names" placeholder="Example: John & Maria" required /></label>
-            <label class="field"><span class="label-text">Best contact phone number or email?</span><input type="text" name="contact" placeholder="Phone or email" required /></label>
-            <label class="field"><span class="label-text">Comments and/or questions:</span><textarea name="comments" rows="3" placeholder="Anything we should know?"></textarea></label>
+            
+            <label class="field">
+              <span class="label-text">What are the names of people attending?</span>
+              <input type="text" name="entry.1498135098" placeholder="Example: John & Maria" required />
+            </label>
+            
+            <label class="field">
+              <span class="label-text">Best contact phone number or email?</span>
+              <input type="text" name="entry.2606285" placeholder="Phone or email" required />
+            </label>
+            
+            <label class="field">
+              <span class="label-text">Comments and/or questions:</span>
+              <textarea name="entry.2109756448" rows="3" placeholder="Anything we should know?"></textarea>
+            </label>
+            
             <button class="btn btn-wide btn-pink-solid" type="submit">Send RSVP</button>
             <p class="muted small center" id="rsvpStatus" aria-live="polite" style="margin-top:12px;"></p>
           </form>

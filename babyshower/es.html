@@ -200,17 +200,39 @@
             </p>
           </div>
 
-          <form id="rsvpForm" class="rsvp-form" novalidate style="margin-top:10px;">
+          <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+          <form 
+            id="rsvpForm" 
+            class="rsvp-form" 
+            action="https://docs.google.com/forms/d/e/1FAIpQLSdi4C22oLlX6bOUN7bE35m47pnYjnYk0oNPjTfQvVhdwz40tA/formResponse" 
+            method="post" 
+            target="hidden_iframe"
+            style="margin-top:10px;">
+
             <div class="field-group">
               <p class="label-text">¿Asistirás?</p>
               <div class="radio-row">
-                <label class="radio-label"><input type="radio" name="attending" value="Yes, I'll be there" required> Sí, allí estaré</label>
-                <label class="radio-label"><input type="radio" name="attending" value="Sorry, can't make it"> Lo siento, no podré ir</label>
+                <label class="radio-label"><input type="radio" name="entry.877086558" value="Yes, I'll be there" required> Sí, allí estaré</label>
+                <label class="radio-label"><input type="radio" name="entry.877086558" value="Sorry, can't make it"> Lo siento, no podré ir</label>
               </div>
             </div>
-            <label class="field"><span class="label-text">¿Quiénes vienen?</span><input type="text" name="names" placeholder="Nombres (ej. Juan y María)" required /></label>
-            <label class="field"><span class="label-text">¿Cómo te contactamos?</span><input type="text" name="contact" placeholder="Teléfono o email" required /></label>
-            <label class="field"><span class="label-text">¿Alguna pregunta?</span><textarea name="comments" rows="3" placeholder="¿Dudas? ¿Solo para saludar?"></textarea></label>
+            
+            <label class="field">
+              <span class="label-text">¿Quiénes vienen?</span>
+              <input type="text" name="entry.1498135098" placeholder="Nombres (ej. Juan y María)" required />
+            </label>
+            
+            <label class="field">
+              <span class="label-text">¿Cómo te contactamos?</span>
+              <input type="text" name="entry.2606285" placeholder="Teléfono o email" required />
+            </label>
+            
+            <label class="field">
+              <span class="label-text">¿Alguna pregunta?</span>
+              <textarea name="entry.2109756448" rows="3" placeholder="¿Dudas? ¿Solo para saludar?"></textarea>
+            </label>
+            
             <button class="btn btn-wide btn-pink-solid" type="submit">Enviar Confirmación</button>
             <p class="muted small center" id="rsvpStatus" aria-live="polite" style="margin-top:12px;"></p>
           </form>
