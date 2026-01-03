@@ -54,10 +54,10 @@ setInterval(updateCountdown, 1000);
 const rsvpForm = document.getElementById("rsvpForm");
 const rsvpStatus = document.getElementById("rsvpStatus");
 
-// YOUR GOOGLE FORM ID
+// YOUR SPECIFIC GOOGLE FORM ID
 const GOOGLE_FORM_ID = "1FAIpQLSdi4C22oLlX6bOUN7bE35m47pnYjnYk0oNPjTfQvVhdwz40tA";
 
-// YOUR GOOGLE FORM ENTRY IDs
+// YOUR SPECIFIC GOOGLE FORM ENTRY IDs
 const GOOGLE_FORM_ENTRIES = {
   attending: "entry.877086558",    // Yes/No
   names: "entry.1498135098",       // Name
