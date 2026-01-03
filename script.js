@@ -34,32 +34,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const slides = document.querySelectorAll('.slide');
   const dots = document.querySelectorAll('.dot');
   
-  // Make the function accessible globally so the HTML onclick works
-  window.currentSlide = function(n) {
-      showSlides(slideIndex = n);
-  };
+  // Only run if carousel exists on this page
+  if (slides.length > 0) {
+      window.currentSlide = function(n) {
+          showSlides(slideIndex = n);
+      };
 
-  let slideIndex = 1;
-  showSlides(slideIndex);
+      let slideIndex = 1;
+      showSlides(slideIndex);
 
-  function showSlides(n) {
-      let i;
-      if (n > slides.length) {slideIndex = 1}    
-      if (n < 1) {slideIndex = slides.length}
-      
-      // Hide all slides
-      for (i = 0; i < slides.length; i++) {
-          slides[i].classList.remove("active");
+      function showSlides(n) {
+          let i;
+          if (n > slides.length) {slideIndex = 1}    
+          if (n < 1) {slideIndex = slides.length}
+          
+          for (i = 0; i < slides.length; i++) {
+              slides[i].classList.remove("active");
+          }
+          
+          for (i = 0; i < dots.length; i++) {
+              dots[i].classList.remove("active");
+          }
+          
+          slides[slideIndex-1].classList.add("active");
+          dots[slideIndex-1].classList.add("active");
       }
-      
-      // Deactivate all dots
-      for (i = 0; i < dots.length; i++) {
-          dots[i].classList.remove("active");
-      }
-      
-      // Show the current slide and activate the dot
-      // (Arrays are 0-indexed, so we subtract 1)
-      slides[slideIndex-1].classList.add("active");
-      dots[slideIndex-1].classList.add("active");
   }
 });

@@ -250,6 +250,33 @@ body {
   background-color: var(--primary-color);
 }
 
+/* ===============================
+   GENERIC PAGE STYLES
+================================ */
+.container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.resume-item {
+  border-left: 3px solid var(--accent-color);
+  padding-left: 20px;
+  margin-bottom: 30px;
+}
+.blog-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background: #fff;
+}
 
 /* ===============================
    SOCIAL ICON RAIL
@@ -306,11 +333,14 @@ body {
    MOBILE RESPONSIVENESS
 ================================ */
 @media (max-width: 768px) {
-  .hero-carousel { height: 350px; } /* Slightly smaller on mobile */
+  .hero-carousel { height: 350px; }
   .slide-content h1 { font-size: 2rem; padding: 0 10px; }
+  .grid-2 { grid-template-columns: 1fr; }
   
   .social-rail { display: none; }
   
+  .container { padding-left: 20px; }
+
   .site-header {
       flex-direction: column;
       gap: 20px;
