@@ -332,3 +332,76 @@ body {
   height: 18px;
   fill: currentColor;
 }
+
+
+
+/* About styles missing */
+
+
+/* ===============================
+   Page Layout (Reusable)
+================================ */
+.page-content{
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.page-title{
+  font-size: 42px;
+  font-weight: 700;
+  margin: 10px 0 22px;
+}
+
+/* ===============================
+   My Story / About Layout (matches reference)
+================================ */
+.about-grid{
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.about-photo-card{
+  max-width: 400px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.about-photo{
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.about-text{
+  max-width: 520px;
+  line-height: 1.6;
+}
+
+.about-text p{
+  margin: 0 0 16px;
+}
+
+@media (max-width: 768px){
+  .about-grid{ grid-template-columns: 1fr; }
+  .about-text{ max-width: 100%; }
+}
+
+
+
+/* Slightly smaller page title (used for My Story for consistency) */
+
+
+
+/* Smaller page title for My Story */
+.page-title--sm{ font-size: 24px !important; margin: 6px 0 14px !important; }
+
+/* Dropdown parent labels (not clickable) */
+.dropdown-toggle{
+  cursor: default;
+  font-size: 14px;
+  color: #222;
+  user-select: none;
+}

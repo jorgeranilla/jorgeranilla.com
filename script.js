@@ -1,5 +1,61 @@
 document.addEventListener("DOMContentLoaded", () => {
   /* ===========================
+     Dynamic Breadcrumbs (no JS edits per page)
+     - Reads <body data-section="Family" data-title="My Story">
+  =========================== */
+  (function buildBreadcrumbs() {
+    const el = document.getElementById("breadcrumbs");
+    if (!el) return;
+
+    const body = document.body;
+    const dataTitle = (body.dataset.title || "").trim();
+    const dataSection = (body.dataset.section || "").trim();
+
+    const path = window.location.pathname.split("/").pop() || "index.html";
+    const file = decodeURIComponent(path).toLowerCase();
+
+    const sectionHref = {
+      "Family": "family.html",
+      "Gallery": "gallery.html",
+      "Professional": "professional.html",
+      "Blog": "blog.html"
+    };
+
+    const homeLink = `<a href="index.html">Home</a>`;
+    const sep = `<span class="separator">/</span>`;
+
+    // Decide current title
+    let currentTitle = dataTitle || "Home";
+    if (file !== "index.html" && !dataTitle) {
+      // fallback: turn filename into words
+      const base = file.replace(".html", "").replace(/[-_]+/g, " ");
+      currentTitle = base.replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    // Home page: show only HOME
+    if (file === "index.html" || file === "") {
+      el.innerHTML = `<span class="current-page">Home</span>`;
+      return;
+    }
+
+    // Section landing page (family.html etc): Home / SECTION
+    if (dataSection && file === (sectionHref[dataSection] || "").toLowerCase()) {
+      el.innerHTML = `${homeLink} ${sep} <span class="current-page">${dataSection}</span>`;
+      return;
+    }
+
+    // Subpage with section: Home / SECTION / TITLE
+    if (dataSection && sectionHref[dataSection]) {
+      el.innerHTML = `${homeLink} ${sep} <a href="${sectionHref[dataSection]}">${dataSection}</a> ${sep} <span class="current-page">${currentTitle}</span>`;
+      return;
+    }
+
+    // Fallback: Home / TITLE
+    el.innerHTML = `${homeLink} ${sep} <span class="current-page">${currentTitle}</span>`;
+  })();
+
+
+/* ===========================
      Social Rail (desktop hover edge)
   =========================== */
   const rail = document.querySelector(".social-rail");
