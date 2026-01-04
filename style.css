@@ -186,7 +186,6 @@ body {
 
 /* Individual Slide */
 .slide {
-  display: none; /* Hidden by default */
   position: absolute;
   width: 100%;
   height: 100%;

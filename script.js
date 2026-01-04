@@ -13,15 +13,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const path = window.location.pathname.split("/").pop() || "index.html";
     const file = decodeURIComponent(path).toLowerCase();
-
+    const pathParts = window.location.pathname.split("/").filter(p => p);
+    const depth = pathParts.length - 1; // 0 for root, 1 for subfolders
+    const homePrefix = depth > 0 ? "../" : "";
+    
     const sectionHref = {
-      "Family": "family.html",
-      "Gallery": "gallery.html",
-      "Professional": "professional.html",
-      "Blog": "blog.html"
+      "Family": `${homePrefix}family/my-story.html`,
+      "Gallery": `${homePrefix}gallery/family.html`,
+      "Professional": `${homePrefix}professional/at-a-glance.html`,
+      "Blog": `${homePrefix}blog/latest-posts.html`
     };
 
-    const homeLink = `<a href="index.html">Home</a>`;
+    const homeLink = `<a href="${homePrefix}index.html">Home</a>`;
     const sep = `<span class="separator">/</span>`;
 
     // Decide current title
