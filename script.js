@@ -1,27 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
   /* ===========================
-     1. Social Rail Logic
+     Social Rail (desktop hover edge)
   =========================== */
   const rail = document.querySelector(".social-rail");
   if (rail) {
-    const EDGE = 18; 
-    let visible = false;
+    const EDGE = 18;   // px from left edge to trigger show
+    const HIDE_X = 120; // if mouse goes past this and not hovering rail, hide
 
     function show() {
-      if (visible) return;
       rail.classList.add("show");
-      visible = true;
     }
-
     function hide() {
-      if (!visible) return;
       rail.classList.remove("show");
-      visible = false;
     }
 
     document.addEventListener("mousemove", (e) => {
-      if (e.clientX <= EDGE) show();
-      else if (!rail.matches(":hover")) hide();
+      if (e.clientX <= EDGE) {
+        show();
+      } else if (e.clientX > HIDE_X && !rail.matches(":hover")) {
+        hide();
+      }
     });
 
     rail.addEventListener("mouseenter", show);
@@ -29,35 +27,31 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===========================
-     2. Hero Carousel Logic
+     Hero Carousel Logic
   =========================== */
-  const slides = document.querySelectorAll('.slide');
-  const dots = document.querySelectorAll('.dot');
-  
-  // Only run if carousel exists on this page
-  if (slides.length > 0) {
-      window.currentSlide = function(n) {
-          showSlides(slideIndex = n);
-      };
+  const slides = document.querySelectorAll(".slide");
+  const dots = document.querySelectorAll(".dot");
 
-      let slideIndex = 1;
-      showSlides(slideIndex);
+  if (slides.length && dots.length) {
+    let slideIndex = 1;
 
-      function showSlides(n) {
-          let i;
-          if (n > slides.length) {slideIndex = 1}    
-          if (n < 1) {slideIndex = slides.length}
-          
-          for (i = 0; i < slides.length; i++) {
-              slides[i].classList.remove("active");
-          }
-          
-          for (i = 0; i < dots.length; i++) {
-              dots[i].classList.remove("active");
-          }
-          
-          slides[slideIndex-1].classList.add("active");
-          dots[slideIndex-1].classList.add("active");
-      }
+    window.currentSlide = function (n) {
+      showSlides(slideIndex = n);
+    };
+
+    function showSlides(n) {
+      if (n > slides.length) slideIndex = 1;
+      if (n < 1) slideIndex = slides.length;
+
+      slides.forEach(s => s.classList.remove("active"));
+      dots.forEach(d => d.classList.remove("active"));
+
+      const s = slides[slideIndex - 1];
+      const d = dots[slideIndex - 1];
+      if (s) s.classList.add("active");
+      if (d) d.classList.add("active");
+    }
+
+    showSlides(slideIndex);
   }
 });

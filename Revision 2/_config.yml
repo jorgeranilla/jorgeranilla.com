@@ -1,0 +1,10 @@
+title: Jorge Ranilla
+description: Dad, Professional, and Creator
+
+# Use the local gem instead of remote_theme for better Windows compatibility
+theme: "minimal-mistakes-jekyll"
+
+plugins:
+  - jekyll-include-cache
+
+minimal_mistakes_skin: "default"
