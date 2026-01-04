@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, user-scalable=yes">
+    <title>Jorge Ranilla | Home</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-title="Home">
+
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+    <div class="breadcrumb-bar">
+        <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+    </div>
+
+    <section class="hero-carousel">
+        <div class="slide active">
+            <div class="slide-content">
+                <h1>Baby Shower Event</h1>
+                <p>If you are looking for the baby shower event, click here to join us in celebrating this special
+                    occasion.</p>
+                <a href="babyshower/index.html" class="btn">View Baby Shower</a>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h1>Welcome to my corner of the web.</h1>
+                <p>Dad, Professional, and Creator.</p>
+                <a href="professional/portfolio.html" class="btn">View Portfolio</a>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h1>Capturing Moments</h1>
+                <p>Explore my latest photography and travel logs.</p>
+                <a href="gallery/travel.html" class="btn">See Photos</a>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h1>Tech & Thoughts</h1>
+                <p>Deep dives into coding, architecture, and design.</p>
+                <a href="blog/latest-posts.html" class="btn">Read The Blog</a>
+            </div>
+        </div>
+
+        <div class="carousel-dots">
+            <span class="dot active" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+            <span class="dot" onclick="currentSlide(4)"></span>
+        </div>
+    </section>
+    <script src="script.js"></script>
+</body>
+
+</html>
