@@ -13,8 +13,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const path = window.location.pathname.split("/").pop() || "index.html";
     const file = decodeURIComponent(path).toLowerCase();
-    const pathParts = window.location.pathname.split("/").filter(p => p);
-    const depth = pathParts.length - 1; // 0 for root, 1 for subfolders
+    
+    // Calculate depth: count how many directory levels we're nested
+    // Normalize pathname by removing leading slash
+    let pathname = window.location.pathname;
+    if (pathname.startsWith('/')) {
+      pathname = pathname.substring(1);
+    }
+    const pathParts = pathname.split("/").filter(p => p);
+    
+    // Depth = number of directories (total parts minus 1 for the filename)
+    // For root index.html: pathParts = ["index.html"], depth = 0
+    // For family/my-story.html: pathParts = ["family", "my-story.html"], depth = 1
+    const depth = pathParts.length > 1 ? pathParts.length - 1 : 0;
     const homePrefix = depth > 0 ? "../" : "";
     
     const sectionHref = {
@@ -24,7 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
       "Blog": `${homePrefix}blog/latest-posts.html`
     };
 
-    const homeLink = `<a href="${homePrefix}index.html">Home</a>`;
+    // Build home link - ensure it points to root index.html
+    const homeHref = depth > 0 ? "../index.html" : "index.html";
+    const homeLink = `<a href="${homeHref}">Home</a>`;
     const sep = `<span class="separator">/</span>`;
 
     // Decide current title
