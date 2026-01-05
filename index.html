@@ -31,9 +31,9 @@
 
         <div class="slide">
             <div class="slide-content">
-                <h1>Welcome to my corner of the web.</h1>
-                <p>Dad, Professional, and Creator.</p>
-                <a href="professional/portfolio.html" class="btn">View Portfolio</a>
+                <h1>Meet the Family</h1>
+                <p>Discover the stories, heritage, and connections that make us who we are.</p>
+                <a href="family/heritage-roots.html" class="btn">Explore Our Roots</a>
             </div>
         </div>
 
@@ -47,8 +47,8 @@
 
         <div class="slide">
             <div class="slide-content">
-                <h1>Tech & Thoughts</h1>
-                <p>Deep dives into coding, architecture, and design.</p>
+                <h1>Memoria Efímera</h1>
+                <p>Stories about family, health journeys, travels, and life's unexpected moments.</p>
                 <a href="blog/latest-posts.html" class="btn">Read The Blog</a>
             </div>
         </div>
@@ -60,6 +60,84 @@
             <span class="dot" onclick="currentSlide(4)"></span>
         </div>
     </section>
+
+    <section class="recent-updates">
+        <div class="page-content">
+            <h2 class="section-title">Recent Updates</h2>
+            <div class="updates-grid">
+                <div class="update-column">
+                    <h3 class="column-title">
+                        <svg viewBox="0 0 24 24" width="20" height="20"
+                            style="display: inline-block; vertical-align: middle; margin-right: 8px; fill: #1DA1F2;">
+                            <path
+                                d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                        </svg>
+                        Latest Posts
+                    </h3>
+                    <div class="twitter-feed">
+                        <a class="twitter-timeline" data-height="500" data-theme="light"
+                            data-chrome="noheader nofooter noborders"
+                            href="https://twitter.com/jorgeranilla?ref_src=twsrc%5Etfw">
+                            Loading posts from @jorgeranilla...
+                        </a>
+                    </div>
+                </div>
+
+                <div class="update-column">
+                    <h3 class="column-title">Coming Soon</h3>
+                    <p style="color: #666; text-align: center; padding: 2rem;">More content coming soon...</p>
+                </div>
+
+                <div class="update-column">
+                    <h3 class="column-title">Coming Soon</h3>
+                    <p style="color: #666; text-align: center; padding: 2rem;">More content coming soon...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .recent-updates {
+            background: #f8f9fa;
+            padding: 2rem 0 4rem;
+            margin-top: 0;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .updates-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .update-column {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .column-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 1rem;
+            text-align: center;
+        }
+    </style>
+
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script src="script.js"></script>
 </body>
 

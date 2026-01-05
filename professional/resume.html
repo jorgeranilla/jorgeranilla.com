@@ -20,12 +20,206 @@
   </div>
 
 
+
   <main class="page-content">
     <h2 class="page-title page-title--sm">Resume</h2>
-    <p style="max-width: 720px; line-height: 1.7; color:#333;">
-      This page is coming soon. I'll be adding content here over time.
-    </p>
+
+    <div class="resume-intro">
+      <p>Download my full resume or connect with me on LinkedIn for more details about my professional experience.</p>
+    </div>
+
+    <div class="resume-actions">
+      <a href="Resume.pdf" download="Jorge_Ranilla_Resume.pdf" class="resume-btn resume-btn--primary">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+        </svg>
+        Download PDF
+      </a>
+      <a href="https://www.linkedin.com/in/jorgeranilla" target="_blank" rel="noopener"
+        class="resume-btn resume-btn--secondary">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path
+            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </svg>
+        View LinkedIn Profile
+      </a>
+    </div>
+
+    <!-- Desktop PDF Viewer -->
+    <div class="resume-viewer-desktop">
+      <div class="pdf-container">
+        <iframe src="Resume.pdf" type="application/pdf" title="Jorge Ranilla Resume"></iframe>
+      </div>
+      <p class="pdf-fallback-text">
+        If the PDF doesn't display above, <a href="Resume.pdf" target="_blank">click here to open it in a new tab</a>.
+      </p>
+    </div>
+
+    <!-- Mobile Fallback -->
+    <div class="resume-viewer-mobile">
+      <div class="resume-card">
+        <div class="resume-icon">
+          <svg viewBox="0 0 24 24" width="64" height="64" fill="currentColor">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z" />
+            <path d="M8 12h8v2H8zm0 4h8v2H8zm0-8h5v2H8z" />
+          </svg>
+        </div>
+        <h3>Jorge Ranilla Resume</h3>
+        <p>View or download my professional resume as a PDF document.</p>
+        <a href="Resume.pdf" target="_blank" class="resume-btn resume-btn--primary">
+          View Resume PDF
+        </a>
+      </div>
+    </div>
   </main>
+
+  <style>
+    .resume-intro {
+      max-width: 720px;
+      margin: 0 auto 2rem;
+      text-align: center;
+    }
+
+    .resume-intro p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: #555;
+    }
+
+    .resume-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .resume-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .resume-btn--primary {
+      background: #2c3e50;
+      color: white;
+    }
+
+    .resume-btn--primary:hover {
+      background: #e67e22;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(230, 126, 34, 0.4);
+    }
+
+    .resume-btn--secondary {
+      background: #0077b5;
+      color: white;
+    }
+
+    .resume-btn--secondary:hover {
+      background: #006399;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 119, 181, 0.4);
+    }
+
+    /* Desktop PDF Viewer */
+    .resume-viewer-desktop {
+      display: block;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .pdf-container {
+      width: 100%;
+      height: 1000px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      background: #f5f5f5;
+    }
+
+    .pdf-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .pdf-fallback-text {
+      text-align: center;
+      margin-top: 1rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .pdf-fallback-text a {
+      color: #667eea;
+      text-decoration: underline;
+    }
+
+    /* Mobile Fallback */
+    .resume-viewer-mobile {
+      display: none;
+    }
+
+    .resume-card {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .resume-icon {
+      margin-bottom: 1.5rem;
+      color: #667eea;
+    }
+
+    .resume-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .resume-card p {
+      color: #666;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    /* Responsive: Show mobile view on smaller screens */
+    @media (max-width: 768px) {
+      .resume-viewer-desktop {
+        display: none;
+      }
+
+      .resume-viewer-mobile {
+        display: block;
+      }
+
+      .resume-actions {
+        flex-direction: column;
+        align-items: stretch;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .resume-btn {
+        justify-content: center;
+      }
+    }
+  </style>
+
 
 
   <script src="../script.js"></script>
