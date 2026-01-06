@@ -29,7 +29,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 5%;
+    padding: 20px 5% 20px 5%;
+    /* Added extra right padding to give Blog submenu space */
+    padding-right: calc(5% + 120px);
     background-color: white;
     border-bottom: 1px solid #f0f0f0;
     position: relative;

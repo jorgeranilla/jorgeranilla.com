@@ -244,8 +244,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Subpage with section: Home / SECTION / TITLE
-    if (dataSection && sectionHref[dataSection]) {
-      el.innerHTML = `${homeLink} ${sep} <a href="${sectionHref[dataSection]}">${dataSection}</a> ${sep} <span class="current-page">${currentTitle}</span>`;
+    // Don't make section clickable since menu categories don't have landing pages
+    if (dataSection) {
+      el.innerHTML = `${homeLink} ${sep} <span style="color: #888;">${dataSection}</span> ${sep} <span class="current-page">${currentTitle}</span>`;
       return;
     }
 

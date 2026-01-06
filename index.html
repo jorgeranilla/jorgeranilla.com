@@ -84,13 +84,64 @@
                 </div>
 
                 <div class="update-column">
-                    <h3 class="column-title">Coming Soon</h3>
-                    <p style="color: #666; text-align: center; padding: 2rem;">More content coming soon...</p>
+                    <h3 class="column-title">
+                        <svg viewBox="0 0 24 24" width="20" height="20"
+                            style="display: inline-block; vertical-align: middle; margin-right: 8px; fill: #e74c3c;">
+                            <path
+                                d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z" />
+                        </svg>
+                        Upcoming Events
+                    </h3>
+                    <div id="calendar-events" style="min-height: 200px;">
+                        <p style="color: #999; text-align: center; padding: 2rem; font-size: 0.9rem;">
+                            <span class="loading-spinner"
+                                style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #e74c3c; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px;"></span>
+                            Loading events...
+                        </p>
+                    </div>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <a href="webcal://p28-caldav.icloud.com/published/2/NDM1OTUwNDUwNDM1OTUwNAW-NnFvg5CAGZxvglEnES3szhc89SfGdXkoVSB37l4P"
+                            class="subscribe-btn"
+                            style="display: inline-block; padding: 0.5rem 1rem; background: #e74c3c; color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem; transition: background 0.3s;">
+                            📅 Subscribe to Calendar
+                        </a>
+                    </div>
                 </div>
 
                 <div class="update-column">
-                    <h3 class="column-title">Coming Soon</h3>
-                    <p style="color: #666; text-align: center; padding: 2rem;">More content coming soon...</p>
+                    <h3 class="column-title">
+                        <svg viewBox="0 0 24 24" width="20" height="20"
+                            style="display: inline-block; vertical-align: middle; margin-right: 8px; fill: #ff69b4;">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                        </svg>
+                        Baby Alyssa Countdown
+                    </h3>
+                    <div style="text-align: center; padding: 1rem;">
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Due Date: April 5, 2026</p>
+                        <div id="countdown"
+                            style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
+                            <div class="countdown-item">
+                                <div class="countdown-number" id="days">--</div>
+                                <div class="countdown-label">Days</div>
+                            </div>
+                            <div class="countdown-item">
+                                <div class="countdown-number" id="hours">--</div>
+                                <div class="countdown-label">Hours</div>
+                            </div>
+                            <div class="countdown-item">
+                                <div class="countdown-number" id="minutes">--</div>
+                                <div class="countdown-label">Minutes</div>
+                            </div>
+                            <div class="countdown-item">
+                                <div class="countdown-number" id="seconds">--</div>
+                                <div class="countdown-label">Seconds</div>
+                            </div>
+                        </div>
+                        <p style="color: #ff69b4; font-size: 1.1rem; font-weight: 500; margin-top: 1rem;">
+                            💕 We can't wait to meet you! 💕
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -135,10 +186,295 @@
             margin: 0 0 1rem;
             text-align: center;
         }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .calendar-event {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid #e74c3c;
+            background: #f8f9fa;
+            border-radius: 4px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .calendar-event:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.15);
+        }
+
+        /* Jorge's calendar - Red */
+        .calendar-event.calendar-jorge {
+            border-left-color: #e74c3c;
+        }
+
+        .calendar-event.calendar-jorge:hover {
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.15);
+        }
+
+        .calendar-event.calendar-jorge .event-date {
+            color: #e74c3c;
+        }
+
+        /* Wife's calendar - Purple */
+        .calendar-event.calendar-wife {
+            border-left-color: #9b59b6;
+        }
+
+        .calendar-event.calendar-wife:hover {
+            box-shadow: 0 2px 8px rgba(155, 89, 182, 0.15);
+        }
+
+        .calendar-event.calendar-wife .event-date {
+            color: #9b59b6;
+        }
+
+        .event-date {
+            font-weight: 600;
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .event-title {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .event-time {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .subscribe-btn:hover {
+            background: #c0392b !important;
+        }
+
+        .no-events {
+            color: #95a5a6;
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Countdown Timer Styles */
+        .countdown-item {
+            text-align: center;
+        }
+
+        .countdown-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #ff69b4;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .countdown-label {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
     </style>
 
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script src="script.js"></script>
+    <script>
+        // Calendar ICS Parser
+        async function loadCalendarEvents() {
+            // Multiple calendar URLs to fetch and merge
+            const calendarUrls = [
+                'https://p28-caldav.icloud.com/published/2/NDM1OTUwNDUwNDM1OTUwNAW-NnFvg5CAGZxvglEnES3szhc89SfGdXkoVSB37l4P', // Jorge's calendar
+                'https://p105-caldav.icloud.com/published/2/MTkzNTI5NDgzODE5MzUyOduLi15nh99WBjttuS3QYV2FNBl5aVH4MPAZpbWPbOIuHa5UU2dehT8Ms96p3k14zsfBJkaeeS5Jx3IHncV6EhQ'  // Wife's calendar
+            ];
+            const container = document.getElementById('calendar-events');
+
+            try {
+                // Use CORS proxy to fetch the ICS files (bypasses CORS restrictions)
+                const proxyUrl = 'https://corsproxy.io/?';
+
+                // Fetch all calendars in parallel
+                const fetchPromises = calendarUrls.map(url =>
+                    fetch(proxyUrl + encodeURIComponent(url)).then(r => r.text())
+                );
+                const icsDataArray = await Promise.all(fetchPromises);
+
+                // Parse events from all calendars and merge them
+                let events = [];
+                icsDataArray.forEach((icsData, index) => {
+                    const calendarEvents = parseICS(icsData);
+                    // Tag each event with its calendar source
+                    calendarEvents.forEach(event => {
+                        event.calendarSource = index; // 0 = Jorge's, 1 = Wife's
+                    });
+                    events = events.concat(calendarEvents);
+                });
+
+                // Filter and sort upcoming events
+                const now = new Date();
+                const upcomingEvents = events
+                    .filter(event => event.start >= now)
+                    .sort((a, b) => a.start - b.start)
+                    .slice(0, 5); // Show next 5 events
+
+                // Display events
+                if (upcomingEvents.length === 0) {
+                    container.innerHTML = '<p class="no-events">No upcoming events scheduled</p>';
+                } else {
+                    container.innerHTML = upcomingEvents.map(event => {
+                        const sourceClass = event.calendarSource === 0 ? 'calendar-jorge' : 'calendar-wife';
+                        return `
+                        <div class="calendar-event ${sourceClass}">
+                            <div class="event-date">${formatDate(event.start)}</div>
+                            <div class="event-title">${escapeHtml(event.title)}</div>
+                            ${event.time ? `<div class="event-time">${event.time}</div>` : ''}
+                        </div>
+                    `;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Error loading calendar:', error);
+                container.innerHTML = '<p class="no-events">Unable to load calendar events</p>';
+            }
+        }
+
+        function parseICS(icsData) {
+            const events = [];
+            const lines = icsData.split(/\r?\n/);
+            let currentEvent = null;
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+
+                // Handle line folding (lines starting with space are continuations)
+                while (i + 1 < lines.length && lines[i + 1].match(/^[ \t]/)) {
+                    line += lines[++i].trim();
+                }
+
+                if (line === 'BEGIN:VEVENT') {
+                    currentEvent = {};
+                } else if (line === 'END:VEVENT' && currentEvent) {
+                    if (currentEvent.start && currentEvent.title) {
+                        events.push(currentEvent);
+                    }
+                    currentEvent = null;
+                } else if (currentEvent) {
+                    if (line.startsWith('DTSTART')) {
+                        currentEvent.start = parseICSDate(line);
+                        currentEvent.isAllDay = !line.includes('T');
+                        // Format time for display if not all-day
+                        if (!currentEvent.isAllDay && currentEvent.start) {
+                            currentEvent.time = formatTime(currentEvent.start);
+                        }
+                    } else if (line.startsWith('DTEND')) {
+                        currentEvent.end = parseICSDate(line);
+                    } else if (line.startsWith('SUMMARY:')) {
+                        currentEvent.title = line.substring(8).replace(/\\n/g, ' ').replace(/\\,/g, ',');
+                    }
+                }
+            }
+
+            return events;
+        }
+
+        function parseICSDate(line) {
+            // Check if this has a TZID (timezone identifier)
+            const hasTZID = line.includes('TZID=');
+            const match = line.match(/[:;](\d{8})(T(\d{6})Z?)?/);
+            if (!match) return null;
+
+            const dateStr = match[1];
+            const timeStr = match[3];
+
+            const year = parseInt(dateStr.substring(0, 4));
+            const month = parseInt(dateStr.substring(4, 6)) - 1;
+            const day = parseInt(dateStr.substring(6, 8));
+
+            if (timeStr) {
+                const hour = parseInt(timeStr.substring(0, 2));
+                const minute = parseInt(timeStr.substring(2, 4));
+
+                // If TZID is present, treat as local time (not UTC)
+                if (hasTZID) {
+                    return new Date(year, month, day, hour, minute);
+                } else {
+                    // Otherwise treat as UTC
+                    return new Date(Date.UTC(year, month, day, hour, minute));
+                }
+            } else {
+                return new Date(year, month, day);
+            }
+        }
+
+        function formatDate(date) {
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function formatTime(date) {
+            // Convert UTC time to local timezone
+            const options = {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+            return date.toLocaleTimeString('en-US', options);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load events when page loads
+        document.addEventListener('DOMContentLoaded', loadCalendarEvents);
+
+        // Baby Alyssa Countdown Timer
+        function updateCountdown() {
+            const dueDate = new Date('2026-04-05T00:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = dueDate - now;
+
+            if (distance < 0) {
+                // Baby has arrived!
+                document.getElementById('days').textContent = '0';
+                document.getElementById('hours').textContent = '0';
+                document.getElementById('minutes').textContent = '0';
+                document.getElementById('seconds').textContent = '0';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+
+        // Update countdown immediately and then every second
+        document.addEventListener('DOMContentLoaded', function () {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        });
+    </script>
 </body>
 
 </html>
