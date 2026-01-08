@@ -22,10 +22,247 @@
 
   <main class="page-content">
     <h2 class="page-title page-title--sm">The Kids</h2>
-    <p style="max-width: 720px; line-height: 1.7; color:#333;">
-      This page is coming soon. I'll be adding content here over time.
-    </p>
+
+    <div class="kids-content">
+      <div class="kids-intro">
+        <h3 class="kids-subtitle">Wait... Kids? Plural? 🤔</h3>
+        <p class="kids-text">
+          You thought I have kids? Haha! Let me set the record straight: I have <strong>one child</strong>.
+          One. Singular. And that's exactly how I wanted it.
+        </p>
+        <p class="kids-text">
+          I always knew I wanted a baby girl, and God blessed me with exactly what I asked for.
+          I'm incredibly grateful for this gift, and I couldn't be more excited.
+        </p>
+      </div>
+
+      <div class="alyssa-card">
+        <div class="alyssa-header">
+          <h3>Meet Alyssa Jane Ranilla 💕</h3>
+          <p class="alyssa-subtitle">Coming April 5, 2026</p>
+        </div>
+
+        <div class="alyssa-content">
+          <p>
+            My little girl hasn't even arrived yet, and she's already changed my life in ways I never imagined.
+            Every day, I find myself thinking about what kind of father I want to be, what values I want to teach her,
+            and how I can give her the best life possible.
+          </p>
+          <p>
+            I can't wait to meet her, hold her tiny hands, and watch her grow into the amazing person I know she'll
+            become.
+            She's already so loved by so many people, and she doesn't even know it yet.
+          </p>
+          <p>
+            Alyssa, if you're reading this someday: you were wanted, you were prayed for, and you are the answer to
+            everything I ever hoped for. Your mom and I are counting down the days until we get to hold you.
+          </p>
+        </div>
+
+        <div class="countdown-section">
+          <h4>Time Until We Meet Alyssa</h4>
+          <div id="kids-countdown" class="countdown-display">
+            <div class="countdown-item">
+              <div class="countdown-number" id="kids-days">--</div>
+              <div class="countdown-label">Days</div>
+            </div>
+            <div class="countdown-item">
+              <div class="countdown-number" id="kids-hours">--</div>
+              <div class="countdown-label">Hours</div>
+            </div>
+            <div class="countdown-item">
+              <div class="countdown-number" id="kids-minutes">--</div>
+              <div class="countdown-label">Minutes</div>
+            </div>
+            <div class="countdown-item">
+              <div class="countdown-number" id="kids-seconds">--</div>
+              <div class="countdown-label">Seconds</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alyssa-footer">
+          <p class="alyssa-note">
+            So yes, "The Kids" page is really just "The Kid" page. But who's counting?
+            (Well, actually, the countdown timer above is... 😄)
+          </p>
+        </div>
+      </div>
+    </div>
   </main>
+
+  <style>
+    .kids-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .kids-intro {
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .kids-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+    }
+
+    .kids-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 1rem;
+    }
+
+    .alyssa-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border-top: 4px solid #ff69b4;
+    }
+
+    .alyssa-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .alyssa-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: #2c3e50;
+      margin: 0 0 0.5rem;
+    }
+
+    .alyssa-subtitle {
+      font-size: 1.1rem;
+      color: #ff69b4;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .alyssa-content {
+      margin-bottom: 2.5rem;
+    }
+
+    .alyssa-content p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+
+    .countdown-section {
+      background: linear-gradient(135deg, #ffeef8 0%, #fff5f9 100%);
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .countdown-section h4 {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: #2c3e50;
+      margin: 0 0 1.5rem;
+    }
+
+    .countdown-display {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .countdown-item {
+      text-align: center;
+    }
+
+    .countdown-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #ff69b4;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .countdown-label {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .alyssa-footer {
+      text-align: center;
+      padding-top: 1.5rem;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    .alyssa-note {
+      font-size: 1rem;
+      color: #777;
+      font-style: italic;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .countdown-display {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+
+      .alyssa-card {
+        padding: 1.5rem;
+      }
+
+      .kids-subtitle {
+        font-size: 1.5rem;
+      }
+
+      .alyssa-header h3 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+
+  <script>
+    // Countdown Timer for Alyssa
+    function updateKidsCountdown() {
+      const dueDate = new Date('2026-04-05T00:00:00').getTime();
+      const now = new Date().getTime();
+      const distance = dueDate - now;
+
+      if (distance < 0) {
+        // Baby has arrived!
+        document.getElementById('kids-days').textContent = '0';
+        document.getElementById('kids-hours').textContent = '0';
+        document.getElementById('kids-minutes').textContent = '0';
+        document.getElementById('kids-seconds').textContent = '0';
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById('kids-days').textContent = days;
+      document.getElementById('kids-hours').textContent = hours;
+      document.getElementById('kids-minutes').textContent = minutes;
+      document.getElementById('kids-seconds').textContent = seconds;
+    }
+
+    // Update countdown immediately and then every second
+    document.addEventListener('DOMContentLoaded', function () {
+      updateKidsCountdown();
+      setInterval(updateKidsCountdown, 1000);
+    });
+  </script>
 
 
   <script src="../script.js?v=1"></script>

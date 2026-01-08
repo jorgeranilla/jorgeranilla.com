@@ -740,3 +740,70 @@ body {
     border-radius: 3px;
     font-weight: 600;
 }
+
+/* ===============================
+   WHATSAPP FLOATING BUTTON
+================================ */
+.whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    z-index: 9998;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    animation: pulse 2s infinite;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+    animation: none;
+}
+
+.whatsapp-float svg {
+    width: 26px;
+    height: 26px;
+    fill: white;
+}
+
+/* Subtle pulse animation to draw attention */
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 4px 20px rgba(37, 211, 102, 0.6);
+    }
+}
+
+/* Tooltip on hover */
+.whatsapp-float::before {
+    content: 'Chat with me';
+    position: absolute;
+    right: 70px;
+    background: #2c3e50;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    font-family: 'Roboto', sans-serif;
+}
+
+.whatsapp-float:hover::before {
+    opacity: 1;
+}
