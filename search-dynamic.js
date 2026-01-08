@@ -64,14 +64,31 @@ async function fetchPageContent(url) {
 
     try {
         // Calculate the correct path based on current page depth
-        const pathname = window.location.pathname.replace(/\\/g, '/');
-        const pathParts = pathname.split('/').filter(p => p && !p.match(/^[A-Z]:$/));
-        let rootIndex = pathParts.indexOf('Cursor');
-        if (rootIndex === -1) rootIndex = pathParts.indexOf('jorgeranilla.com');
-        const relativePathParts = rootIndex !== -1 ? pathParts.slice(rootIndex + 1) : pathParts;
-        const dirParts = relativePathParts.slice(0, -1);
-        const depth = dirParts.length;
-        const prefix = depth > 0 ? '../' : '';
+        // We determine depth by matching the current URL against our known pages list
+        let prefix = '';
+        const pathname = window.location.pathname;
+        const normalizedPath = pathname.endsWith('/') ? pathname + 'index.html' : pathname;
+
+        // Find which page we are currently on
+        const currentPage = searchPages.find(page => {
+            return normalizedPath.replace(/\\/g, '/').toLowerCase().endsWith(page.url.toLowerCase());
+        });
+
+        if (currentPage) {
+            // Count directory depth based on the known relative URL
+            // e.g. "family/my-story.html" has 1 slash -> depth 1 -> "../"
+            const depth = currentPage.url.split('/').length - 1;
+            prefix = depth > 0 ? '../'.repeat(depth) : '';
+        } else {
+            // Fallback for pages not in the search list (e.g. 404, or new pages)
+            // Try to guess depth from path segments, assuming typical structure
+            // If path contains 'family', 'gallery', 'professional', 'blog', we assume depth 1
+            const pathLower = normalizedPath.toLowerCase();
+            if (pathLower.includes('/family/') || pathLower.includes('/gallery/') ||
+                pathLower.includes('/professional/') || pathLower.includes('/blog/')) {
+                prefix = '../';
+            }
+        }
 
         const fullUrl = prefix + url;
         const response = await fetch(fullUrl);
@@ -168,14 +185,24 @@ async function performSearch(query) {
     }
 
     // Calculate current depth for relative URLs
-    const pathname = window.location.pathname.replace(/\\/g, '/');
-    const pathParts = pathname.split('/').filter(p => p && !p.match(/^[A-Z]:$/));
-    let rootIndex = pathParts.indexOf('Cursor');
-    if (rootIndex === -1) rootIndex = pathParts.indexOf('jorgeranilla.com');
-    const relativePathParts = rootIndex !== -1 ? pathParts.slice(rootIndex + 1) : pathParts;
-    const dirParts = relativePathParts.slice(0, -1);
-    const depth = dirParts.length;
-    const prefix = depth > 0 ? '../' : '';
+    let prefix = '';
+    const pathname = window.location.pathname;
+    const normalizedPath = pathname.endsWith('/') ? pathname + 'index.html' : pathname;
+
+    const currentPage = searchPages.find(page => {
+        return normalizedPath.replace(/\\/g, '/').toLowerCase().endsWith(page.url.toLowerCase());
+    });
+
+    if (currentPage) {
+        const depth = currentPage.url.split('/').length - 1;
+        prefix = depth > 0 ? '../'.repeat(depth) : '';
+    } else {
+        const pathLower = normalizedPath.toLowerCase();
+        if (pathLower.includes('/family/') || pathLower.includes('/gallery/') ||
+            pathLower.includes('/professional/') || pathLower.includes('/blog/')) {
+            prefix = '../';
+        }
+    }
 
     // Display results
     const resultsHTML = results.map(result => {
