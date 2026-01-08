@@ -86,29 +86,9 @@
                         </svg>
                         Latest Posts
                     </h3>
-                    <div class="twitter-feed" style="min-height: 500px;">
-                        <a class="twitter-timeline" data-height="500" data-theme="light"
-                            href="https://twitter.com/jorgeranilla">
-                            Tweets by @jorgeranilla
-                        </a>
-                        <script>
-                            window.twttr = (function (d, s, id) {
-                                var js, fjs = d.getElementsByTagName(s)[0],
-                                    t = window.twttr || {};
-                                if (d.getElementById(id)) return t;
-                                js = d.createElement(s);
-                                js.id = id;
-                                js.src = "https://platform.twitter.com/widgets.js";
-                                fjs.parentNode.insertBefore(js, fjs);
-
-                                t._e = [];
-                                t.ready = function (f) {
-                                    t._e.push(f);
-                                };
-
-                                return t;
-                            }(document, "script", "twitter-wjs"));
-                        </script>
+                    <div class="twitter-feed">
+                        <script src="https://elfsightcdn.com/platform.js" async></script>
+                        <div class="elfsight-app-2af1a4a4-625f-451d-ac78-bbb621401b9f" data-elfsight-app-lazy></div>
                     </div>
                 </div>
 
