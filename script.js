@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Inject WhatsApp floating button (if not dismissed in this session)
     const whatsappDismissed = sessionStorage.getItem('whatsappDismissed') === 'true';
 
-    if (!whatsappDismissed) {
+    if (!whatsappDismissed && !document.getElementById('whatsappContainer')) {
       // Saved position logic
       let savedPos = { x: 0, y: 0 };
       try {
@@ -365,14 +365,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Inject footer
-    const footerHTML = `
-    <footer class="site-footer">
-      <div class="footer-content">
-        <p class="copyright">© 2026 Website created by Jorge Ranilla. All rights reserved.</p>
-      </div>
-    </footer>`;
-
-    document.body.insertAdjacentHTML('beforeend', footerHTML);
+    if (!document.querySelector('footer.site-footer')) {
+      const footerHTML = `
+      <footer class="site-footer">
+        <div class="footer-content">
+          <p class="copyright">© 2026 Website created by Jorge Ranilla. All rights reserved.</p>
+        </div>
+      </footer>`;
+      document.body.insertAdjacentHTML('beforeend', footerHTML);
+    }
 
     // Inject back-to-top button
     const backToTopHTML = `
@@ -550,6 +551,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (carousel) {
       // Touch events
       carousel.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.carousel-dots')) return;
         touchStartX = e.changedTouches[0].screenX;
       }, { passive: true });
 
@@ -560,6 +562,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Mouse events for desktop swipe
       carousel.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.carousel-dots')) return;
         isDragging = true;
         mouseStartX = e.clientX;
         carousel.style.cursor = 'grabbing';

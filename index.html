@@ -96,61 +96,245 @@
                     <h3 class="column-title">
                         <svg viewBox="0 0 24 24" width="20" height="20"
                             style="display: inline-block; vertical-align: middle; margin-right: 8px; fill: #e74c3c;">
-                            <path
-                                d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z" />
-                        </svg>
-                        Upcoming Events
-                    </h3>
-                    <div id="calendar-events" style="min-height: 200px;">
-                        <p style="color: #999; text-align: center; padding: 2rem; font-size: 0.9rem;">
-                            <span class="loading-spinner"
-                                style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #e74c3c; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px;"></span>
-                            Loading events...
-                        </p>
-                    </div>
-                    <div style="text-align: center; margin-top: 1rem;">
-                        <a href="webcal://p28-caldav.icloud.com/published/2/NDM1OTUwNDUwNDM1OTUwNAW-NnFvg5CAGZxvglEnES3szhc89SfGdXkoVSB37l4P"
-                            class="subscribe-btn"
-                            style="display: inline-block; padding: 0.5rem 1rem; background: #e74c3c; color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem; transition: background 0.3s;">
-                            📅 Subscribe to Calendar
-                        </a>
-                    </div>
+                            <path <!-- Compact Countdown -->
+                                <!-- Original Style Countdown -->
+                                <!-- Original Style Countdown (Compact) -->
+                                <div
+                                    style="text-align: center; padding-bottom: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid #eee; margin-top: -3.5rem;">
+                                    <h3
+                                        style="font-family: 'Playfair Display', serif; color: #333; margin-bottom: 0.25rem; font-size: 1.25rem; font-weight: 600;">
+                                        <span
+                                            style="color: #ff69b4; font-size: 1.1rem; vertical-align: middle; margin-right: 5px;">🕑</span>
+                                        Baby Alyssa Countdown
+                                    </h3>
+                                    <p style="color: #666; font-size: 0.85rem; margin-bottom: 1rem; font-weight: 300;">
+                                        Due Date: April 5,
+                                        2026</p>
+
+                                    <div id="countdown"
+                                        style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <div class="countdown-item" style="text-align: center;">
+                                            <div class="countdown-number" id="days"
+                                                style="font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 600; color: #ff69b4; line-height: 1;">
+                                                --</div>
+                                            <div class="countdown-label"
+                                                style="font-size: 0.65rem; color: #999; letter-spacing: 1px; margin-top: 3px;">
+                                                DAYS</div>
+                                        </div>
+                                        <div class="countdown-item" style="text-align: center;">
+                                            <div class="countdown-number" id="hours"
+                                                style="font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 600; color: #ff69b4; line-height: 1;">
+                                                --</div>
+                                            <div class="countdown-label"
+                                                style="font-size: 0.65rem; color: #999; letter-spacing: 1px; margin-top: 3px;">
+                                                HOURS</div>
+                                        </div>
+                                        <div class="countdown-item" style="text-align: center;">
+                                            <div class="countdown-number" id="minutes"
+                                                style="font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 600; color: #ff69b4; line-height: 1;">
+                                                --</div>
+                                            <div class="countdown-label"
+                                                style="font-size: 0.65rem; color: #999; letter-spacing: 1px; margin-top: 3px;">
+                                                MINUTES
+                                            </div>
+                                        </div>
+                                        <div class="countdown-item" style="text-align: center;">
+                                            <div class="countdown-number" id="seconds"
+                                                style="font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 600; color: #ff69b4; line-height: 1;">
+                                                --</div>
+                                            <div class="countdown-label"
+                                                style="font-size: 0.65rem; color: #999; letter-spacing: 1px; margin-top: 3px;">
+                                                SECONDS
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p style="color: #ff69b4; font-size: 0.9rem; font-weight: 500; margin-bottom: 0;">
+                                        💕 We can't wait to meet you! 💕
+                                    </p>
+                                </div>
+
+                                <h3 class="column-title">
+                                    <svg viewBox="0 0 24 24" width="20" height="20"
+                                        style="display: inline-block; vertical-align: middle; margin-right: 8px; fill: #e74c3c;">
+                                        <path
+                                            d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z" />
+                                    </svg>
+                                    Upcoming Events
+                                </h3>
+                                <div id="calendar-events" style="min-height: 200px;">
+                                    <p style="color: #999; text-align: center; padding: 2rem; font-size: 0.9rem;">
+                                        <span class="loading-spinner"
+                                            style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #e74c3c; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px;"></span>
+                                        Loading events...
+                                    </p>
+                                </div>
+                                <div style="text-align: center; margin-top: 1rem;">
+                                    <a href="webcal://p28-caldav.icloud.com/published/2/NDM1OTUwNDUwNDM1OTUwNAW-NnFvg5CAGZxvglEnES3szhc89SfGdXkoVSB37l4P"
+                                        class="subscribe-btn"
+                                        style="display: inline-block; padding: 0.5rem 1rem; background: #e74c3c; color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem; transition: background 0.3s;">
+                                        📅 Subscribe to Calendar
+                                    </a>
+                                </div>
                 </div>
 
                 <div class="update-column">
-                    <h3 class="column-title">
-                        <svg viewBox="0 0 24 24" width="20" height="20"
-                            style="display: inline-block; vertical-align: middle; margin-right: 8px; fill: #ff69b4;">
-                            <path
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-                        </svg>
-                        Baby Alyssa Countdown
-                    </h3>
-                    <div style="text-align: center; padding: 1rem;">
-                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Due Date: April 5, 2026</p>
-                        <div id="countdown"
-                            style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
-                            <div class="countdown-item">
-                                <div class="countdown-number" id="days">--</div>
-                                <div class="countdown-label">Days</div>
+                    <div class="insta-mockup">
+                        <div class="insta-profile-header">
+                            <a href="https://instagram.com/jorgeranilla" target="_blank"
+                                style="text-decoration: none; display: block; width: fit-content; margin: 0 auto;">
+                                <div class="insta-avatar-container">
+                                    <img src="images/jorge.jpg" alt="Jorge Ranilla" class="insta-avatar">
+                                </div>
+                            </a>
+                            <a href="https://instagram.com/jorgeranilla" target="_blank"
+                                style="text-decoration: none; color: inherit;">
+                                <h3 class="insta-name">Jorge Ranilla</h3>
+                                <div class="insta-handle">@jorgeranilla</div>
+                            </a>
+
+                            <div class="insta-stats">
+                                <div class="stat"><span class="count">1,196</span><span class="label">Posts</span></div>
+                                <div class="stat"><span class="count">1,342</span><span class="label">Followers</span>
+                                </div>
+                                <div class="stat"><span class="count">382</span><span class="label">Following</span>
+                                </div>
                             </div>
-                            <div class="countdown-item">
-                                <div class="countdown-number" id="hours">--</div>
-                                <div class="countdown-label">Hours</div>
-                            </div>
-                            <div class="countdown-item">
-                                <div class="countdown-number" id="minutes">--</div>
-                                <div class="countdown-label">Minutes</div>
-                            </div>
-                            <div class="countdown-item">
-                                <div class="countdown-number" id="seconds">--</div>
-                                <div class="countdown-label">Seconds</div>
-                            </div>
+
+                            <a href="https://instagram.com/jorgeranilla" target="_blank" class="insta-follow-btn">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"
+                                    style="margin-right:6px">
+                                    <path
+                                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                                </svg> Follow
+                            </a>
                         </div>
-                        <p style="color: #ff69b4; font-size: 1.1rem; font-weight: 500; margin-top: 1rem;">
-                            💕 We can't wait to meet you! 💕
-                        </p>
+
+                        <!-- Grid -->
+                        <div class="insta-grid">
+                            <a href="https://instagram.com/jorgeranilla" target="_blank" class="insta-item"
+                                style="background-image: url('images/insta-post-1.png');" title="Farm Day"></a>
+                            <a href="https://instagram.com/jorgeranilla" target="_blank" class="insta-item"
+                                style="background-image: url('images/insta-post-2.png');" title="Golf Outing"></a>
+                            <a href="https://instagram.com/jorgeranilla" target="_blank" class="insta-item"
+                                style="background-image: url('images/insta-post-3.png');" title="Pool Time"></a>
+                            <a href="https://instagram.com/jorgeranilla" target="_blank" class="insta-item"
+                                style="background-image: url('images/insta-post-4.png');" title="Beach Vibes"></a>
+                            <a href="https://instagram.com/jorgeranilla" target="_blank" class="insta-item"
+                                style="background-image: url('images/insta-post-5.png');" title="Dinner"></a>
+                            <a href="https://instagram.com/jorgeranilla" target="_blank" class="insta-item"
+                                style="background-image: url('images/insta-post-6.png');" title="Hotpot"></a>
+                        </div>
                     </div>
+
+                    <style>
+                        /* CSS for the Instagram Mockup */
+                        .insta-mockup {
+                            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                            padding: 0;
+                        }
+
+                        .insta-profile-header {
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+
+                        .insta-avatar-container {
+                            width: 77px;
+                            height: 77px;
+                            margin: 0 auto 10px;
+                            border-radius: 50%;
+                            padding: 3px;
+                            border: 2px solid #e1306c;
+                            cursor: pointer;
+                            box-sizing: border-box;
+                            background-clip: content-box;
+                            /* Helps with clean internal rendering */
+                        }
+
+                        .insta-avatar {
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 50%;
+                            object-fit: cover;
+                            object-position: center;
+                            display: block;
+                        }
+
+                        .insta-name {
+                            font-weight: 600;
+                            font-size: 16px;
+                            margin: 0;
+                            color: #262626;
+                            line-height: 1.2;
+                        }
+
+                        .insta-handle {
+                            color: #8e8e8e;
+                            font-size: 14px;
+                            margin-bottom: 15px;
+                        }
+
+                        .insta-stats {
+                            display: flex;
+                            justify-content: center;
+                            gap: 20px;
+                            font-size: 14px;
+                            margin-bottom: 20px;
+                        }
+
+                        .insta-stats .count {
+                            font-weight: 600;
+                            display: block;
+                            color: #262626;
+                        }
+
+                        .insta-stats .label {
+                            color: #8e8e8e;
+                            font-size: 12px;
+                        }
+
+                        .insta-follow-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: #0095f6;
+                            color: white;
+                            text-decoration: none;
+                            padding: 7px 20px;
+                            border-radius: 4px;
+                            font-weight: 600;
+                            font-size: 14px;
+                            width: 80%;
+                            transition: background 0.2s;
+                        }
+
+                        .insta-follow-btn:hover {
+                            background: #0085d6;
+                        }
+
+                        .insta-grid {
+                            display: grid;
+                            grid-template-columns: repeat(3, 1fr);
+                            gap: 3px;
+                        }
+
+                        .insta-item {
+                            aspect-ratio: 1/1;
+                            background-color: #eee;
+                            position: relative;
+                            cursor: pointer;
+                            transition: opacity 0.2s;
+                            /* Zoom and center to crop out UI elements */
+                            background-size: 115%;
+                            background-position: center;
+                            background-repeat: no-repeat;
+                        }
+
+                        .insta-item:hover {
+                            opacity: 0.9;
+                        }
+                    </style>
                 </div>
             </div>
         </div>
@@ -159,7 +343,7 @@
     <style>
         .recent-updates {
             background: #f8f9fa;
-            padding: 2rem 0 4rem;
+            padding: 2rem 0 3rem;
             margin-top: 0;
         }
 
@@ -167,6 +351,8 @@
             min-height: 500px;
             background: #fff;
             border-radius: 8px;
+            overflow: hidden;
+            max-width: 100%;
         }
 
         .updates-section {
@@ -197,6 +383,22 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             max-height: 400px;
             overflow-y: auto;
+            /* For Firefox */
+            scrollbar-width: thin;
+        }
+
+        /* Customize scrollbar to be cleaner */
+        .update-column::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .update-column::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+
+        .update-column::-webkit-scrollbar-track {
+            background: transparent;
         }
 
         .column-title {
@@ -496,8 +698,10 @@
             updateCountdown();
             setInterval(updateCountdown, 1000);
         });
+
+
     </script>
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
     <script src="script.js?v=1"></script>
     <script src="search-dynamic.js"></script>
 </body>
