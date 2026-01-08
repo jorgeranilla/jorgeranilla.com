@@ -532,6 +532,13 @@ body {
     object-fit: cover;
     border-radius: 12px;
     margin-bottom: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.heritage-card img:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .heritage-card h3 {
@@ -806,4 +813,68 @@ body {
 
 .whatsapp-float:hover::before {
     opacity: 1;
+}
+
+/* ===============================
+   FOOTER
+================================ */
+.site-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    padding: 1.5rem 5%;
+    text-align: center;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.copyright {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* ===============================
+   BACK TO TOP BUTTON
+================================ */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 50px;
+    height: 50px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 9998;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    opacity: 0;
+    visibility: hidden;
+    cursor: pointer;
+    border: none;
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: #e0e0e0;
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.back-to-top svg {
+    width: 24px;
+    height: 24px;
+    fill: #555;
 }

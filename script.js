@@ -223,6 +223,48 @@ document.addEventListener("DOMContentLoaded", () => {
     </a>`;
 
     document.body.insertAdjacentHTML('beforeend', whatsappButtonHTML);
+
+    // Inject footer
+    const footerHTML = `
+    <footer class="site-footer">
+      <div class="footer-content">
+        <p class="copyright">© 2026 Website created by Jorge Ranilla. All rights reserved.</p>
+      </div>
+    </footer>`;
+
+    document.body.insertAdjacentHTML('beforeend', footerHTML);
+
+    // Inject back-to-top button
+    const backToTopHTML = `
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+      </svg>
+    </button>`;
+
+    document.body.insertAdjacentHTML('beforeend', backToTopHTML);
+
+    // Back to top button functionality
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+      // Show/hide button based on scroll position
+      // Only show if page has significant content (600px threshold)
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 600) {
+          backToTopBtn.classList.add('show');
+        } else {
+          backToTopBtn.classList.remove('show');
+        }
+      });
+
+      // Scroll to top when clicked
+      backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    }
   })();
 
   /* ===========================
