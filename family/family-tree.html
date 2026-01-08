@@ -104,7 +104,7 @@
         }
 
         .person-card.expandable:hover {
-            border-color: var(--accent-color);
+            border-color: #3498db;
         }
 
         .person-card.expandable::after {
@@ -114,7 +114,7 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 0.7rem;
-            color: var(--accent-color);
+            color: #3498db;
             white-space: nowrap;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -125,8 +125,8 @@
         }
 
         .person-card.expandable.expanded {
-            border-color: var(--accent-color);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: #3498db;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.15);
         }
 
         .person-card.expandable.expanded::after {
@@ -337,7 +337,7 @@
                         <img src="../images/jorge.jpg" alt="Jorge" class="person-photo">
                         <div class="person-name">Jorge Luis Ranilla</div>
                         <div class="person-dates">1987 - Living</div>
-                        <div class="person-relation">You</div>
+                        <div class="person-relation">Me</div>
                     </a>
 
                     <a href="victor.html" class="person-card clickable">
@@ -360,14 +360,16 @@
                 <div class="generation">
                     <div class="generation-label">Parents</div>
 
-                    <a href="jorge-luis.html" class="person-card clickable">
+                    <a href="jorge-luis.html" class="person-card clickable"
+                        style="border: 2px solid var(--accent-color);">
                         <img src="../images/bios/jorge-luis.jpg" alt="Jorge Luis" class="person-photo">
                         <div class="person-name">Jorge Luis Ranilla Cateriano</div>
                         <div class="person-dates">1961 - Living</div>
                         <div class="person-relation">Father</div>
                     </a>
 
-                    <a href="sylvia-ines.html" class="person-card clickable">
+                    <a href="sylvia-ines.html" class="person-card clickable"
+                        style="border: 2px solid var(--accent-color);">
                         <img src="../images/bios/sylvia-ines.jpg" alt="Sylvia Ines" class="person-photo">
                         <div class="person-name">Sylvia Ines Astocondor Salazar Lopez</div>
                         <div class="person-dates">1967 - Living</div>
@@ -466,7 +468,7 @@
                 <div class="great-grandparents-section" id="alcira-parents">
                     <div class="person-card deceased">
                         <div class="person-photo placeholder"></div>
-                        <div class="person-name">Jose Dalicio Lopez Lope</div>
+                        <div class="person-name">Jose Dalicio Lopez Lopez</div>
                         <div class="person-dates">1908 - 1990</div>
                         <div class="person-relation">Great-Grandfather</div>
                     </div>

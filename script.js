@@ -119,13 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Header HTML with dynamic paths
     const headerHTML = `
     <header class="site-header">
-        <div class="brand-container">
+        <a href="${homeHref}" class="brand-container" aria-label="Go to homepage">
             <img src="${imagesPrefix}jr-logo.png" alt="JR Logo" class="logo-mark"> 
             <div class="logo-text">
                 <h1 class="name">JORGE RANILLA</h1>
                 <span class="tagline">H O M E &nbsp; P A G E</span>
             </div>
-        </div>
+        </a>
 
         <nav class="main-nav" aria-label="Primary">
           <ul class="nav-links">
@@ -168,6 +168,13 @@ document.addEventListener("DOMContentLoaded", () => {
               </ul>
             </li>
           </ul>
+          
+          <!-- Search Icon -->
+          <button class="search-icon-btn" aria-label="Search site" onclick="openSearchModal()">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+          </button>
         </nav>
     </header>`;
 
@@ -182,6 +189,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (headerPlaceholder) {
       headerPlaceholder.outerHTML = headerHTML;
     }
+
+    // Inject search modal
+    const searchModalHTML = `
+    <div id="searchModal" class="search-modal">
+      <div class="search-modal-content">
+        <div class="search-header">
+          <input type="text" id="searchInput" class="search-input" placeholder="Search the site..." autocomplete="off">
+          <button class="search-close-btn" onclick="closeSearchModal()" aria-label="Close search">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </button>
+        </div>
+        <div id="searchResults" class="search-results">
+          <p class="search-hint">Start typing to search across all pages...</p>
+        </div>
+      </div>
+    </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', searchModalHTML);
   })();
 
   /* ===========================
@@ -285,16 +312,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===========================
-     Hero Carousel Logic
+     Hero Carousel Logic with Swipe Support
   =========================== */
   const slides = document.querySelectorAll(".slide");
   const dots = document.querySelectorAll(".dot");
 
   if (slides.length && dots.length) {
     let slideIndex = 1;
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let mouseStartX = 0;
+    let mouseEndX = 0;
+    let isDragging = false;
 
+    // Function to show specific slide
     window.currentSlide = function (n) {
       showSlides(slideIndex = n);
+    };
+
+    // Function to change slide by offset (for arrows)
+    window.changeSlide = function (n) {
+      showSlides(slideIndex += n);
     };
 
     function showSlides(n) {
@@ -310,6 +348,91 @@ document.addEventListener("DOMContentLoaded", () => {
       if (d) d.classList.add("active");
     }
 
+    // Touch event handlers for mobile swipe
+    const carousel = document.querySelector(".hero-carousel");
+
+    if (carousel) {
+      // Touch events
+      carousel.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      carousel.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      }, { passive: true });
+
+      // Mouse events for desktop swipe
+      carousel.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        mouseStartX = e.clientX;
+        carousel.style.cursor = 'grabbing';
+      });
+
+      carousel.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+      });
+
+      carousel.addEventListener('mouseup', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        mouseEndX = e.clientX;
+        carousel.style.cursor = 'grab';
+        handleMouseSwipe();
+      });
+
+      carousel.addEventListener('mouseleave', () => {
+        if (isDragging) {
+          isDragging = false;
+          carousel.style.cursor = 'grab';
+        }
+      });
+
+      // Set initial cursor
+      carousel.style.cursor = 'grab';
+    }
+
+    function handleSwipe() {
+      const swipeThreshold = 50; // minimum distance for swipe
+      const diff = touchStartX - touchEndX;
+
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Swiped left - go to next slide
+          changeSlide(1);
+        } else {
+          // Swiped right - go to previous slide
+          changeSlide(-1);
+        }
+      }
+    }
+
+    function handleMouseSwipe() {
+      const swipeThreshold = 50; // minimum distance for swipe
+      const diff = mouseStartX - mouseEndX;
+
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          // Dragged left - go to next slide
+          changeSlide(1);
+        } else {
+          // Dragged right - go to previous slide
+          changeSlide(-1);
+        }
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        changeSlide(-1);
+      } else if (e.key === 'ArrowRight') {
+        changeSlide(1);
+      }
+    });
+
     showSlides(slideIndex);
   }
 });
+

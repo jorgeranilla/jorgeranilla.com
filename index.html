@@ -53,6 +53,18 @@
             </div>
         </div>
 
+        <!-- Navigation Arrows -->
+        <button class="carousel-arrow carousel-arrow-left" onclick="changeSlide(-1)" aria-label="Previous slide">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+            </svg>
+        </button>
+        <button class="carousel-arrow carousel-arrow-right" onclick="changeSlide(1)" aria-label="Next slide">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+            </svg>
+        </button>
+
         <div class="carousel-dots">
             <span class="dot active" onclick="currentSlide(1)"></span>
             <span class="dot" onclick="currentSlide(2)"></span>
@@ -296,6 +308,7 @@
     </style>
 
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script src="search-dynamic.js"></script>
     <script src="script.js?v=1"></script>
     <script>
         // Calendar ICS Parser
