@@ -1,45 +1,42 @@
+// Capture script source immediately before it becomes null in callbacks
+const appScriptSource = document.currentScript ? document.currentScript.src : null;
+
 document.addEventListener("DOMContentLoaded", () => {
   /* ===========================
      Shared Header & Social Rail Injection
      - Calculates relative paths based on current page depth
   =========================== */
   (function injectSharedHeader() {
-    // Calculate depth for relative paths based on the current page location
-    // Get the current page's pathname
-    const pathname = (window.location.pathname || '').split('?')[0].split('#')[0];
-
-    // Normalize the path and split into parts
-    let normalizedPath = pathname.replace(/\\/g, '/');
-    if (normalizedPath.startsWith('/')) {
-      normalizedPath = normalizedPath.substring(1);
+    // Calculate depth relative to the script location (which is at project root)
+    // Fallback search if currentScript was null (e.g. if loaded initially as module or some other edge case)
+    let scriptUrl = appScriptSource;
+    if (!scriptUrl) {
+      // Fallback: try to find script by filename if capture failed
+      const scripts = document.querySelectorAll('script[src*="script.js"]');
+      if (scripts.length > 0) {
+        scriptUrl = scripts[0].src;
+      }
     }
 
-    // Split path and filter out drive letters and empty parts
-    const pathParts = normalizedPath.split('/').filter(p => p && !p.match(/^[A-Z]:$/));
+    if (scriptUrl) scriptUrl = scriptUrl.split('?')[0];
+    const scriptDir = scriptUrl ? scriptUrl.substring(0, scriptUrl.lastIndexOf('/')) : '';
 
-    // Find the project root folder (either "Cursor" for local dev or "jorgeranilla.com" for GitHub)
-    let rootIndex = pathParts.indexOf('Cursor');
-    if (rootIndex === -1) {
-      rootIndex = pathParts.indexOf('jorgeranilla.com');
+    const pageUrl = window.location.href.split('?')[0].split('#')[0];
+    const pageDir = pageUrl.substring(0, pageUrl.lastIndexOf('/'));
+
+    let depth = 0;
+    if (pageDir.startsWith(scriptDir)) {
+      const relativePath = pageDir.substring(scriptDir.length);
+      depth = relativePath.split('/').filter(p => p).length;
     }
-
-    // Get parts after project root folder
-    const relativePathParts = rootIndex !== -1 ? pathParts.slice(rootIndex + 1) : pathParts;
-
-    // Remove the filename (last part) to get just the directory structure
-    const dirParts = relativePathParts.slice(0, -1);
-
-    // Depth = number of directories we're nested in relative to project root
-    // Root (Cursor/index.html or jorgeranilla.com/index.html): dirParts = [] → depth = 0
-    // Subdirectory (Cursor/family/my-story.html): dirParts = ["family"] → depth = 1
-    const depth = dirParts.length;
 
     // Current section is the immediate parent directory (if any)
-    const currentSection = depth > 0 ? dirParts[dirParts.length - 1] : null;
+    // We assume the strict structure: root -> section -> file
+    const currentSection = depth > 0 ? pageDir.split('/').pop() : null;
 
-    const prefix = depth > 0 ? "../" : "";
-    const homeHref = depth > 0 ? "../index.html" : "index.html";
-    const imagesPrefix = depth > 0 ? "../images/" : "images/";
+    const prefix = depth > 0 ? "../".repeat(depth) : "";
+    const homeHref = depth > 0 ? prefix + "index.html" : "index.html";
+    const imagesPrefix = depth > 0 ? prefix + "images/" : "images/";
 
     // Helper function to build section links
     function buildSectionLink(section, file) {
@@ -116,6 +113,12 @@ document.addEventListener("DOMContentLoaded", () => {
       </a>
     </div>`;
 
+    // Mobile Menu Toggle Function
+    window.toggleMobileMenu = function () {
+      const nav = document.getElementById('mainNav');
+      nav.classList.toggle('mobile-open');
+    };
+
     // Header HTML with dynamic paths
     const headerHTML = `
     <header class="site-header">
@@ -127,7 +130,14 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         </a>
 
-        <nav class="main-nav" aria-label="Primary">
+        <!-- Mobile Menu Toggle -->
+        <button class="menu-toggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
+        </button>
+
+        <nav class="main-nav" id="mainNav" aria-label="Primary">
           <ul class="nav-links">
             <li><a href="${homeHref}">Home</a></li>
 
@@ -169,21 +179,23 @@ document.addEventListener("DOMContentLoaded", () => {
             </li>
           </ul>
           
-          <!-- Search Icon -->
-          <button class="search-icon-btn" aria-label="Search site" onclick="openSearchModal()">
-            <svg viewBox="0 0 24 24" width="20" height="20">
-              <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
-          </button>
+          <div class="nav-extras">
+              <!-- Search Icon -->
+              <button class="search-icon-btn" aria-label="Search site" onclick="openSearchModal()">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+              </button>
 
-          <!-- Language Toggle -->
-          <div class="language-toggle">
-            <a href="${homeHref}" class="lang-link active" aria-label="English" title="English">
-              <img src="https://flagcdn.com/us.svg" alt="USA Flag" class="flag-icon">
-            </a>
-            <a href="${prefix}es.html" class="lang-link" aria-label="Español" title="Español">
-              <img src="https://flagcdn.com/pe.svg" alt="Peru Flag" class="flag-icon">
-            </a>
+              <!-- Language Toggle -->
+              <div class="language-toggle">
+                <a href="${homeHref}" class="lang-link active" aria-label="English" title="English">
+                  <img src="https://flagcdn.com/us.svg" alt="USA Flag" class="flag-icon">
+                </a>
+                <a href="${prefix}es.html" class="lang-link" aria-label="Español" title="Español">
+                  <img src="https://flagcdn.com/pe.svg" alt="Peru Flag" class="flag-icon">
+                </a>
+              </div>
           </div>
         </nav>
     </header>`;
@@ -423,18 +435,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const path = window.location.pathname.split("/").pop() || "index.html";
     const file = decodeURIComponent(path).toLowerCase();
 
-    // Calculate depth: count how many directory levels we're nested
-    // Normalize pathname by removing leading slash
-    let pathname = window.location.pathname;
-    if (pathname.startsWith('/')) {
-      pathname = pathname.substring(1);
+    // Calculate depth robustly using script location (works for local files and subfolders)
+    let scriptUrl = appScriptSource;
+    if (!scriptUrl) {
+      const scripts = document.querySelectorAll('script[src*="script.js"]');
+      if (scripts.length > 0) scriptUrl = scripts[0].src;
     }
-    const pathParts = pathname.split("/").filter(p => p);
 
-    // Depth = number of directories (total parts minus 1 for the filename)
-    // For root index.html: pathParts = ["index.html"], depth = 0
-    // For family/my-story.html: pathParts = ["family", "my-story.html"], depth = 1
-    const depth = pathParts.length > 1 ? pathParts.length - 1 : 0;
+    if (scriptUrl) scriptUrl = scriptUrl.split('?')[0];
+    const scriptDir = scriptUrl ? scriptUrl.substring(0, scriptUrl.lastIndexOf('/')) : '';
+
+    const pageUrl = window.location.href.split('?')[0].split('#')[0];
+    const pageDir = pageUrl.substring(0, pageUrl.lastIndexOf('/'));
+
+    let depth = 0;
+    // Only calculate depth if we can pinpoint the script location (project root)
+    if (scriptDir && pageDir.startsWith(scriptDir)) {
+      const relativePath = pageDir.substring(scriptDir.length);
+      depth = relativePath.split('/').filter(p => p).length;
+    }
     const homePrefix = depth > 0 ? "../" : "";
 
     const sectionHref = {
@@ -445,7 +464,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Build home link - ensure it points to root index.html
-    const homeHref = depth > 0 ? "../index.html" : "index.html";
+    // If we are at root (depth 0), link is just "index.html"
+    // If we are deeper (depth > 0), link is "../index.html" or "../../index.html" etc.
+    const homeHref = depth > 0 ? "../".repeat(depth) + "index.html" : "index.html";
     const homeLink = `<a href="${homeHref}">Home</a>`;
     const sep = `<span class="separator">/</span>`;
 
@@ -457,9 +478,21 @@ document.addEventListener("DOMContentLoaded", () => {
       currentTitle = base.replace(/\b\w/g, c => c.toUpperCase());
     }
 
-    // Home page: show only HOME
-    if (file === "index.html" || file === "") {
-      el.innerHTML = `<span class="current-page">Home</span>`;
+    // Home page or forced Home title: show only HOME text
+    if (file === "index.html" || file === "" || currentTitle === "Home") {
+      // If it's literally the index file, just show text "Home"
+      if (file === "index.html" || file === "") {
+        el.innerHTML = `<span class="current-page">Home</span>`;
+      } else {
+        // If it's another page named "Home" (like a sub-index), link back to main home
+        el.innerHTML = `${homeLink} ${sep} <span class="current-page">Construction</span>`;
+      }
+      return;
+    }
+
+    // Special fix for "es.html" construction page which might be detecting as "Home"
+    if (file === "es.html") {
+      el.innerHTML = `${homeLink} ${sep} <span class="current-page">Construcción</span>`;
       return;
     }
 

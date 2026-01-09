@@ -953,3 +953,221 @@ body {
     height: 20px;
     fill: #555;
 }
+
+/* ===============================
+   MOBILE RESPONSIVENESS
+================================ */
+
+/* Default state: Hide menu toggle on desktop */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Ensure nav extras (search/lang) align nicely on desktop */
+.nav-extras {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+@media (max-width: 900px) {
+
+    /* Header & Nav */
+    .site-header {
+        padding: 15px 20px;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .menu-toggle {
+        display: block;
+        padding: 5px;
+    }
+
+    .main-nav {
+        flex-basis: 100%;
+        display: none;
+        /* Hidden by default on mobile */
+        flex-direction: column;
+        width: 100%;
+        padding-top: 20px;
+        gap: 0;
+    }
+
+    .main-nav.mobile-open {
+        display: flex;
+    }
+
+    /* Move nav-extras (Search/Lang) to the TOP of the menu */
+    .nav-extras {
+        order: -1;
+        margin-top: -10px;
+        /* Move search/lang bar higher */
+        margin-bottom: 5px;
+        /* Bring the separator line closer */
+        justify-content: space-between;
+        width: 100%;
+        padding-bottom: 5px;
+        /* Tight gap above the line */
+        border-bottom: 1px solid #eee;
+        gap: 15px;
+    }
+
+    .main-nav>ul {
+        flex-direction: column;
+        gap: 0;
+        width: 100%;
+        order: 1;
+    }
+
+    .main-nav a {
+        padding: 12px 0;
+        display: block;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 16px;
+    }
+
+    /* Hide Home link in mobile menu as requested */
+    .main-nav>ul>li:first-child {
+        display: none;
+    }
+
+    /* Dropdowns in mobile: Always visible for simplicity */
+    .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        border-top: none;
+        padding: 0 0 10px 20px;
+        /* Indent */
+        display: none;
+        min-width: unset;
+        width: 100%;
+    }
+
+    .dropdown-menu::before {
+        display: none;
+    }
+
+    /* Show dropdowns by default on mobile */
+    li.dropdown-item .dropdown-menu {
+        display: block;
+        background: #fafafa;
+    }
+
+    .dropdown-toggle {
+        font-weight: 700;
+        display: block;
+        padding: 12px 0;
+        color: #2c3e50;
+    }
+
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 60vh;
+        /* Taller on mobile relative to width */
+        min-height: 400px;
+    }
+
+    .slide-content h1 {
+        font-size: 2rem;
+    }
+
+    .slide-content p {
+        font-size: 1rem;
+        padding: 0 20px;
+    }
+
+    /* Move arrows down on mobile to avoid blocking text */
+    .carousel-arrow {
+        top: 60%;
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Grids */
+    .about-grid,
+    .heritage-grid,
+    .insta-grid {
+        display: grid;
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Swipeable Updates Logic */
+    .updates-grid {
+        display: flex !important;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 15px;
+        /* Slightly tighter gap */
+        padding-bottom: 20px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-left: 20px;
+        /* Force start from left logic */
+        padding-right: 20px;
+    }
+
+    .updates-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Swipe hint for Updates */
+    .recent-updates .section-title::after {
+        content: "← Swipe to explore →";
+        display: block;
+        margin-top: 5px;
+        font-size: 0.8rem;
+        color: #888;
+        font-weight: 400;
+        font-style: italic;
+        text-transform: none;
+        letter-spacing: normal;
+        animation: pulse 2s infinite;
+    }
+
+    .update-column {
+        width: 85vw !important;
+        /* Shows a peek of the next card */
+        flex: 0 0 85vw;
+        scroll-snap-align: start;
+        /* Align left so right side peeks */
+
+    }
+
+    /* Typography */
+    .page-title {
+        font-size: 32px;
+    }
+
+    /* Features */
+    .about-photo-card {
+        max-width: 100%;
+    }
+
+    /* Hide Side Social Rail */
+    .social-rail {
+        display: none !important;
+    }
+
+    /* Adjust Insta Mockup */
+    .insta-stats {
+        gap: 10px;
+    }
+
+    /* Mobile Logo */
+    .logo-mark {
+        height: 45px;
+    }
+
+    .name {
+        font-size: 20px;
+    }
+
+    .tagline {
+        font-size: 9px;
+    }
+}
