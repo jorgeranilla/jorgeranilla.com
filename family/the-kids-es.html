@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jorge Ranilla | Los Niños</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/png" href="../images/jr-logo.png">
+</head>
+
+<body data-title="The Kids" data-section="Family" data-lang="es">
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <div class="breadcrumb-bar">
+        <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Navegación"></nav>
+    </div>
+
+
+    <main class="page-content">
+        <h2 class="page-title page-title--sm">Los Niños</h2>
+
+        <div class="page-lang-toggle">
+            <a href="the-kids.html" class="lang-link">EN</a>
+            <span class="lang-separator">|</span>
+            <a href="the-kids-es.html" class="lang-link active">ES</a>
+        </div>
+
+        <div class="kids-content">
+            <div class="kids-intro">
+                <h3 class="kids-subtitle">Espera... "¿Niños"? ¿En plural?</h3>
+                <p class="kids-text">
+                    ¡Puede que veas el título y te preguntes! Pero para que quede claro: tengo un hijo en camino. Solo
+                    uno. Y honestamente, eso es exactamente lo que quería.
+                </p>
+                <p class="kids-text">
+                    Siempre recé por una niña. Las niñas comparten un vínculo tan especial y cercano con sus padres, y
+                    me encanta eso. Ella será mi único y precioso enfoque.
+                </p>
+                <p class="kids-text">
+                    Entonces, ¿por qué llamar a esto "Los Niños"? ¡Porque esta sección celebra a toda la nueva
+                    generación de nuestra familia! No es solo para Alyssa, sino para sus primos, el futuro de nuestro
+                    legado, quienes también aparecerán aquí.
+                </p>
+                <p class="kids-text">
+                    Así como fui criado rodeado del amor de mis primos, tíos y abuelos, Alyssa también lo estará.
+                    Incluso con la familia dispersa por todo el mundo, ese vínculo se mantendrá fuerte, uniéndonos a
+                    todos a través de la distancia.
+                </p>
+            </div>
+
+            <div class="alyssa-card">
+                <div class="alyssa-header">
+                    <h3>Conoce a Alyssa Jane Ranilla 💕</h3>
+                    <p class="alyssa-subtitle">Llega el 5 de Abril de 2026</p>
+                </div>
+
+                <div class="alyssa-content">
+                    <p>
+                        Alyssa, ya eres tan amada. Tus primos están esperando ansiosamente para darte la bienvenida a
+                        esta gran y hermosa familia. Aunque las millas nos separen, gracias a la tecnología, esa
+                        distancia apenas se siente.
+                        Nuestro vínculo siempre permanecerá fuerte, uniéndonos a todos a través de las millas.
+                    </p>
+                    <p>
+                        Crecer cerca de mis primos me dio algunos de mis recuerdos más preciados, y sé que tú tendrás
+                        ese mismo vínculo especial.
+                        Ya sea cerca o lejos, siempre tendrás un sistema de apoyo, mejores amigos de por vida y una
+                        familia que te adora.
+                    </p>
+                    <p>
+                        No podemos esperar para conocerte, abrazarte y verte tomar tu lugar en esta maravillosa historia
+                        que estamos escribiendo juntos.
+                    </p>
+                </div>
+
+                <div class="countdown-section">
+                    <h4>Tiempo hasta que conozcamos a Alyssa</h4>
+                    <div id="kids-countdown" class="countdown-display">
+                        <div class="countdown-item">
+                            <div class="countdown-number" id="kids-days">--</div>
+                            <div class="countdown-label">Días</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-number" id="kids-hours">--</div>
+                            <div class="countdown-label">Horas</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-number" id="kids-minutes">--</div>
+                            <div class="countdown-label">Minutos</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-number" id="kids-seconds">--</div>
+                            <div class="countdown-label">Segundos</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .kids-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .kids-intro {
+            margin-bottom: 3rem;
+            text-align: left;
+        }
+
+        .kids-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .kids-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .alyssa-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid #ff69b4;
+        }
+
+        .alyssa-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .alyssa-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #2c3e50;
+            margin: 0 0 0.5rem;
+        }
+
+        .alyssa-subtitle {
+            font-size: 1.1rem;
+            color: #ff69b4;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .alyssa-content {
+            margin-bottom: 2.5rem;
+        }
+
+        .alyssa-content p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+
+        .countdown-section {
+            background: linear-gradient(135deg, #ffeef8 0%, #fff5f9 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .countdown-section h4 {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin: 0 0 1.5rem;
+        }
+
+        .countdown-display {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .countdown-item {
+            text-align: center;
+        }
+
+        .countdown-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #ff69b4;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .countdown-label {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .alyssa-footer {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .alyssa-note {
+            font-size: 1rem;
+            color: #777;
+            font-style: italic;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .countdown-display {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            .alyssa-card {
+                padding: 1.5rem;
+            }
+
+            .kids-subtitle {
+                font-size: 1.5rem;
+            }
+
+            .alyssa-header h3 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+
+    <script>
+        // Countdown Timer for Alyssa
+        function updateKidsCountdown() {
+            const dueDate = new Date('2026-04-05T00:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = dueDate - now;
+
+            if (distance < 0) {
+                // Baby has arrived!
+                document.getElementById('kids-days').textContent = '0';
+                document.getElementById('kids-hours').textContent = '0';
+                document.getElementById('kids-minutes').textContent = '0';
+                document.getElementById('kids-seconds').textContent = '0';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('kids-days').textContent = days;
+            document.getElementById('kids-hours').textContent = hours;
+            document.getElementById('kids-minutes').textContent = minutes;
+            document.getElementById('kids-seconds').textContent = seconds;
+        }
+
+        // Update countdown immediately and then every second
+        document.addEventListener('DOMContentLoaded', function () {
+            updateKidsCountdown();
+            setInterval(updateKidsCountdown, 1000);
+        });
+    </script>
+
+
+    <script src="../script.js?v=2"></script>
+    <script src="../search-dynamic.js"></script>
+</body>
+
+</html>

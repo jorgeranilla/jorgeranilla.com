@@ -132,16 +132,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <!-- Mobile Menu Toggle -->
         <button class="menu-toggle" aria-label="Toggle navigation" onclick="toggleMobileMenu()">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-                <path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            <svg viewBox="0 0 44 24" width="44" height="24" style="display: block; margin: 0 auto;">
+                <!-- Hamburger Lines on the Left (shortened to make room for loop) -->
+                <path fill="currentColor" d="M2 5h16v-2H2v2zm0 7h16v-2H2v2zm0 7h11v-2H2v2z"/>
+                
+                <!-- Search Loop (Magnifying Glass) on the Right, overlapping slightly -->
+                <path fill="currentColor" transform="translate(14, 0) scale(1.1)" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px; margin-top: 2px;">MENU</span>
         </button>
 
         <nav class="main-nav" id="mainNav" aria-label="Primary">
           <ul class="nav-links">
             <li><a href="${homeHref}">Home</a></li>
 
-            <li class="dropdown-item">
+            <li class="dropdown-item active">
               <span class="dropdown-toggle">Family ▾</span>
               <ul class="dropdown-menu">
                 <li><a href="${familyLinks.myStory}">My Story</a></li>
@@ -221,6 +226,18 @@ document.addEventListener("DOMContentLoaded", () => {
           esLink.classList.add('active');
         }
       }
+
+      // Mobile Dropdown Accordion Logic
+      const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+      dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function (e) {
+          if (window.innerWidth <= 900) {
+            // Toggle the submenu
+            const parent = this.closest('.dropdown-item');
+            parent.classList.toggle('active');
+          }
+        });
+      });
     }
 
     // Inject search modal
@@ -490,9 +507,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Special fix for "es.html" construction page which might be detecting as "Home"
+    // Special handling for es.html - use data-title
     if (file === "es.html") {
-      el.innerHTML = `${homeLink} ${sep} <span class="current-page">Construcción</span>`;
+      el.innerHTML = `${homeLink} ${sep} <span class="current-page">${currentTitle}</span>`;
       return;
     }
 
