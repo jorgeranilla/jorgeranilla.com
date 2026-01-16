@@ -20,11 +20,6 @@
     <!-- Dynamic Greeting Section -->
     <section class="greeting-section">
         <div class="greeting-content">
-            <div class="currency-info">
-                <span id="usd-pen">USD/PEN: Loading...</span>
-                <span class="currency-separator">|</span>
-                <span id="usd-eur">USD/EUR: Loading...</span>
-            </div>
             <div class="date-info">
                 <div id="greeting-text">Good Evening</div>
                 <div id="current-date">Thursday, January 15, 2026</div>
@@ -583,38 +578,30 @@
 
         .greeting-content {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             font-family: 'Roboto', sans-serif;
             font-size: 0.75rem;
             font-weight: 300;
         }
 
-        .currency-info {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .currency-separator {
-            opacity: 0.6;
-        }
-
         .date-info {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
+            align-items: flex-start;
             gap: 0.1rem;
         }
 
         #greeting-text {
             font-weight: 500;
             font-size: 0.85rem;
+            text-align: left;
         }
 
         #current-date {
             font-size: 0.7rem;
             opacity: 0.9;
+            text-align: left;
         }
     </style>
 
