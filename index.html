@@ -17,9 +17,23 @@
     <div id="social-rail-placeholder"></div>
     <div id="header-placeholder"></div>
 
+    <!-- Dynamic Greeting Section -->
+    <section class="greeting-section">
+        <div class="greeting-content">
+            <div class="currency-info">
+                <span id="usd-pen">USD/PEN: Loading...</span>
+                <span class="currency-separator">|</span>
+                <span id="usd-eur">USD/EUR: Loading...</span>
+            </div>
+            <div class="date-info">
+                <div id="greeting-text">Good Evening</div>
+                <div id="current-date">Thursday, January 15, 2026</div>
+            </div>
+        </div>
+    </section>
 
     <section class="hero-carousel">
-        <div class="slide active">
+        <div class="slide active slide-baby-shower">
             <div class="slide-content">
                 <h1>Baby Shower Event</h1>
                 <p>If you are looking for the baby shower event, click here to join us in celebrating this special
@@ -28,7 +42,7 @@
             </div>
         </div>
 
-        <div class="slide">
+        <div class="slide slide-heritage">
             <div class="slide-content">
                 <h1>Meet the Family</h1>
                 <p>Discover the stories, heritage, and connections that make us who we are.</p>
@@ -36,7 +50,7 @@
             </div>
         </div>
 
-        <div class="slide">
+        <div class="slide slide-family-tree">
             <div class="slide-content">
                 <h1>Family Tree</h1>
                 <p>Explore generations of the Ranilla family heritage and discover our rich ancestry</p>
@@ -44,7 +58,7 @@
             </div>
         </div>
 
-        <div class="slide">
+        <div class="slide slide-blog">
             <div class="slide-content">
                 <h1>Memoria Efímera</h1>
                 <p>Stories about family, health journeys, travels, and life's unexpected moments.</p>
@@ -512,6 +526,95 @@
             color: #7f8c8d;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        /* Carousel Slide Backgrounds with 50% Overlay */
+        .slide-baby-shower {
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+                url('images/baby-shower-slide.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide-heritage {
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+                url('images/heritage-slide.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide-family-tree {
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+                url('images/family-tree-banner.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide-blog {
+            background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+                url('images/blog-slide.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Special styling for quote slide */
+        .quote-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .quote-author {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            color: #2c3e50;
+        }
+
+        /* Greeting Section Styles */
+        .greeting-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0.4rem 2rem;
+            color: white;
+        }
+
+        .greeting-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 300;
+        }
+
+        .currency-info {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .currency-separator {
+            opacity: 0.6;
+        }
+
+        .date-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.1rem;
+        }
+
+        #greeting-text {
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        #current-date {
+            font-size: 0.7rem;
+            opacity: 0.9;
         }
     </style>
 

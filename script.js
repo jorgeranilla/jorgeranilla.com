@@ -3,6 +3,75 @@ const appScriptSource = document.currentScript ? document.currentScript.src : nu
 
 document.addEventListener("DOMContentLoaded", () => {
   /* ===========================
+     Dynamic Greeting Update
+  =========================== */
+  (function updateGreeting() {
+    const greetingText = document.getElementById('greeting-text');
+    const currentDate = document.getElementById('current-date');
+    const usdPenEl = document.getElementById('usd-pen');
+    const usdEurEl = document.getElementById('usd-eur');
+
+    if (greetingText && currentDate) {
+      const now = new Date();
+      const hour = now.getHours();
+
+      // Detect browser language
+      const userLang = navigator.language || navigator.userLanguage;
+      const isSpanish = userLang.toLowerCase().startsWith('es');
+
+      // Determine greeting based on time and language
+      let greeting;
+      if (isSpanish) {
+        // Spanish greetings
+        if (hour < 12) {
+          greeting = 'Buenos Días';
+        } else if (hour < 20) {  // In Spanish, "Buenas Tardes" goes until 8pm
+          greeting = 'Buenas Tardes';
+        } else {
+          greeting = 'Buenas Noches';
+        }
+      } else {
+        // English greetings
+        if (hour < 12) {
+          greeting = 'Good Morning';
+        } else if (hour < 18) {
+          greeting = 'Good Afternoon';
+        } else {
+          greeting = 'Good Evening';
+        }
+      }
+
+      // Format date based on language
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const locale = isSpanish ? 'es-PE' : 'en-US';  // Use Peruvian Spanish if Spanish
+      const dateString = now.toLocaleDateString(locale, options);
+
+      // Update elements
+      greetingText.textContent = greeting;
+      currentDate.textContent = dateString;
+    }
+
+    // Fetch currency exchange rates
+    if (usdPenEl && usdEurEl) {
+      // Using exchangerate-api.com free tier (no API key needed for basic usage)
+      fetch('https://api.exchangerate-api.com/v4/latest/USD')
+        .then(response => response.json())
+        .then(data => {
+          const penRate = data.rates.PEN;
+          const eurRate = data.rates.EUR;
+
+          usdPenEl.textContent = `USD/PEN: ${penRate.toFixed(2)}`;
+          usdEurEl.textContent = `USD/EUR: ${eurRate.toFixed(2)}`;
+        })
+        .catch(error => {
+          console.error('Error fetching currency rates:', error);
+          usdPenEl.textContent = 'USD/PEN: N/A';
+          usdEurEl.textContent = 'USD/EUR: N/A';
+        });
+    }
+  })();
+
+  /* ===========================
      Shared Header & Social Rail Injection
      - Calculates relative paths based on current page depth
   =========================== */
