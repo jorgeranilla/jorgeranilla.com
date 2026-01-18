@@ -126,6 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
       theKids: buildSectionLink('family', 'the-kids.html'),
       heritageRoots: buildSectionLink('family', 'heritage-roots.html'),
       familyTree: buildSectionLink('family', 'family-tree.html'),
+      inLovingMemory: buildSectionLink('family', 'in-loving-memory.html'),
       ancestry: buildSectionLink('family', 'ancestry.html')
     };
     const galleryLinks = {
@@ -222,6 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <li><a href="${familyLinks.theKids}">The Kids</a></li>
                 <li><a href="${familyLinks.heritageRoots}">Heritage & Roots</a></li>
                 <li><a href="${familyLinks.familyTree}">Family Tree</a></li>
+                <li><a href="${familyLinks.inLovingMemory}">In Loving Memory</a></li>
                 <li><a href="${familyLinks.ancestry}">Ancestry</a></li>
               </ul>
             </li>
