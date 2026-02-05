@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jorge Ranilla | En Memoria Eterna</title>
+    <meta name="description"
+        content="Honrando las vidas y legados de nuestros seres queridos que permanecen por siempre en nuestros corazones.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/png" href="../images/jr-logo.png">
+    <style>
+        /* Memorial Page Specific Styles */
+        .memorial-intro {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.05), rgba(186, 85, 211, 0.05));
+            border-radius: 12px;
+            border: 1px solid rgba(147, 112, 219, 0.1);
+        }
+
+        .memorial-intro p {
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .memorial-quote {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-left: 4px solid #9370db;
+            border-radius: 4px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Memorial Grid - Similar to Heritage & Roots */
+        .memorial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .memorial-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 2px solid #e8e8e8;
+            position: relative;
+        }
+
+        .memorial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(147, 112, 219, 0.15);
+            border-color: #9370db;
+        }
+
+        .memorial-card::before {
+            content: '✝';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1.5rem;
+            color: #9370db;
+            opacity: 0.6;
+            z-index: 10;
+        }
+
+        .memorial-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            opacity: 0.85;
+            transition: all 0.3s ease;
+        }
+
+        .memorial-card:hover img {
+            opacity: 1;
+        }
+
+        .memorial-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin: 1rem 1.5rem 0.5rem;
+            font-weight: 600;
+        }
+
+        .memorial-card .aka {
+            font-size: 0.9rem;
+            color: #9370db;
+            font-style: italic;
+            margin: 0 1.5rem 0.5rem;
+            font-weight: 500;
+        }
+
+        .memorial-card .dates {
+            font-size: 0.95rem;
+            color: #888;
+            margin: 0 1.5rem 0.5rem;
+            font-weight: 500;
+        }
+
+        .memorial-card .relation {
+            font-size: 0.85rem;
+            color: #999;
+            margin: 0 1.5rem 1rem;
+            font-style: italic;
+        }
+
+        .memorial-card .tribute {
+            padding: 1.5rem;
+            background: #fafafa;
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        /* Candle Animation */
+        .candle-section {
+            text-align: center;
+            margin: 4rem auto;
+            padding: 3rem 2rem;
+            background: linear-gradient(to bottom, #fafafa, white);
+            border-radius: 12px;
+            max-width: 600px;
+        }
+
+        .candle-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .candle-section p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .candle-icon {
+            font-size: 4rem;
+            margin: 1rem 0;
+            filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.5));
+            animation: flicker 2s infinite;
+        }
+
+        @keyframes flicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .memorial-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1rem;
+            }
+
+            .memorial-intro {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body data-title="En Memoria Eterna" data-section="Familia" data-lang="es">
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <div class="breadcrumb-bar">
+        <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+    </div>
+
+    <main class="page-content">
+        <div class="page-lang-toggle">
+            <a href="in-loving-memory.html" class="lang-link">EN</a>
+            <span class="lang-separator">|</span>
+            <a href="en-memoria-eterna.html" class="lang-link active">ES</a>
+        </div>
+
+        <h2 class="page-title page-title--sm">En Memoria Eterna</h2>
+
+        <div class="memorial-intro">
+            <p>
+                Aunque ya no están con nosotros, su amor, sabiduría y espíritu continúan guiando a nuestra familia.
+                Honramos su memoria y celebramos las hermosas vidas que vivieron.
+            </p>
+            <p>
+                Su presencia perdura en nuestros corazones, en las historias que compartimos y en los valores que nos
+                inculcaron.
+                Nunca serán olvidados.
+            </p>
+            <div class="memorial-quote">
+                "Los que amamos no se van, caminan a nuestro lado cada día. Invisibles, inaudibles, pero siempre cerca,
+                aún amados, aún extrañados y muy queridos."
+            </div>
+        </div>
+
+        <section class="memorial-grid">
+
+            <!-- Eugenio Astocondor Salazar (Papaqueno) -->
+            <article class="memorial-card">
+                <img src="../images/family-tree/papaqueno_memorial.png" alt="Eugenio Astocondor Salazar"
+                    style="filter: grayscale(100%);">
+                <h3>Eugenio Astocondor Salazar</h3>
+                <div class="aka">"Papaqueno"</div>
+                <div class="dates">1918 - 2000</div>
+                <div class="relation">Abuelo</div>
+                <div class="tribute">
+                    Un pilar de fortaleza y sabiduría en nuestra familia. Su espíritu gentil y amor inquebrantable
+                    formaron generaciones.
+                    El legado de Papaqueno vive en los valores que nos enseñó y los recuerdos que atesoramos.
+                </div>
+            </article>
+
+            <!-- Eugenio Augusto Astocondor Salazar Lopez (Tio Llocsi) -->
+            <article class="memorial-card">
+                <img src="../images/family-tree/eugenio_memorial.png" alt="Eugenio Augusto Astocondor Salazar Lopez">
+                <h3>Eugenio Augusto Astocondor Salazar Lopez</h3>
+                <div class="aka">"Tio Llocsi"</div>
+                <div class="relation">Tío</div>
+                <div class="tribute">
+                    Un tío querido cuya calidez y bondad tocaron a todos los que conoció. Tio Llocsi traía alegría y
+                    risas
+                    a nuestras reuniones familiares. Su memoria sigue siendo una bendición para todos los que lo
+                    conocieron.
+                </div>
+            </article>
+
+            <!-- Maria Alcira del Carmen Astocondor Salazar Lopez (Tia Titi) -->
+            <article class="memorial-card">
+                <img src="../images/family-tree/tia_titi_memorial.png"
+                    alt="Maria Alcira del Carmen Astocondor Salazar Lopez" style="filter: grayscale(100%);">
+                <h3>Maria Alcira del Carmen Astocondor Salazar Lopez</h3>
+                <div class="aka">"Tia Titi"</div>
+                <div class="relation">Tía</div>
+                <div class="tribute">
+                    Una tía amorosa cuya naturaleza cariñosa y corazón generoso la hicieron querida por todos. La
+                    presencia de Tia Titi
+                    traía consuelo y alegría a nuestra familia. Será recordada por siempre con amor y gratitud.
+                </div>
+            </article>
+
+            <!-- Maria Carlota Ruiz Guevara (Mama Carlota) -->
+            <article class="memorial-card">
+                <img src="../images/family-tree/mama_carlota_memorial.png" alt="Maria Carlota Ruiz Guevara"
+                    style="filter: grayscale(100%);">
+                <h3>Maria Carlota Ruiz Guevara</h3>
+                <div class="aka">"Mama Carlota"</div>
+                <div class="dates">1911 - 2008</div>
+                <div class="relation">Bisabuela</div>
+                <div class="tribute">
+                    Una matriarca cuya fortaleza y gracia guiaron a nuestra familia a través de generaciones. La
+                    sabiduría
+                    y amor incondicional de Mama Carlota crearon una base que continúa sosteniéndonos. Su espíritu vive
+                    en todos nosotros.
+                </div>
+            </article>
+
+            <!-- Maria Jesus Cateriano Dongo -->
+            <article class="memorial-card">
+                <img src="../images/family-tree/maria_jesus_memorial.png" alt="Maria Jesus Cateriano Dongo">
+                <h3>Maria Jesus Cateriano Dongo</h3>
+                <div class="dates">1936 - 2023</div>
+                <div class="relation">Abuela</div>
+                <div class="tribute">
+                    Una abuela devota cuyo amor no conocía límites. Su bondad, fe y dedicación a la familia
+                    fueron una inspiración para todos. Deja un legado de amor que nunca se desvanecerá.
+                </div>
+            </article>
+
+            <!-- Sergio Raul Ranilla Rondon -->
+            <article class="memorial-card">
+                <img src="../images/family-tree/raul_ranilla_memorial.png" alt="Sergio Raul Ranilla Rondon">
+                <h3>Sergio Raul Ranilla Rondon</h3>
+                <div class="dates">1928 - 2016</div>
+                <div class="relation">Abuelo</div>
+                <div class="tribute">
+                    Un hombre de honor e integridad cuya presencia imponía respeto y admiración. Su dedicación a
+                    la familia y sus fuertes valores continúan guiándonos. Llevamos su memoria con orgullo y amor.
+                </div>
+            </article>
+
+        </section>
+
+        <div class="candle-section">
+            <h3>Enciende una Vela</h3>
+            <p>En memoria de nuestros seres queridos</p>
+            <div class="candle-icon">🕯️</div>
+            <p style="font-size: 0.9rem; color: #888; margin-top: 1rem;">
+                Su luz continúa brillando en nuestros corazones
+            </p>
+        </div>
+
+    </main>
+
+    <script src="../script.js?v=1"></script>
+    <script src="../search-dynamic.js"></script>
+</body>
+
+</html>
