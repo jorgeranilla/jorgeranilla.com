@@ -148,6 +148,17 @@
             transition: color 0.3s ease;
         }
 
+        .person-name a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .person-name a:hover {
+            color: #9370db;
+            text-decoration: underline;
+        }
+
         .person-dates {
             font-size: 0.8rem;
             color: #888;
@@ -413,26 +424,30 @@
                 <div class="generation">
                     <div class="generation-label">Abuelos (Haz clic para ver a sus padres)</div>
                     <div class="person-card deceased expandable" data-grandparent="sergio">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Sergio Raul Ranilla Rondon</div>
+                        <img src="../images/family-tree/raul_ranilla_profile.png" alt="Sergio Raul Ranilla Rondon"
+                            class="person-photo">
+                        <div class="person-name"><a href="raul-ranilla-es.html">Sergio Raul<br>Ranilla Rondon</a></div>
                         <div class="person-dates">1928 - 2016</div>
                         <div class="person-relation">Abuelo</div>
                     </div>
                     <div class="person-card deceased expandable" data-grandparent="maria-jesus">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Maria Jesus Cateriano Dongo</div>
+                        <img src="../images/family-tree/maria_jesus_profile.png" alt="Maria Jesus Cateriano Dongo"
+                            class="person-photo">
+                        <div class="person-name"><a href="maria-jesus-es.html">Maria Jesus<br>Cateriano Dongo</a></div>
                         <div class="person-dates">1936 - 2023</div>
                         <div class="person-relation">Abuela</div>
                     </div>
                     <div class="person-card deceased expandable" data-grandparent="eugenio">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Eugenio Astocondor Salazar</div>
+                        <img src="../images/family-tree/eugenio_profile.png" alt="Eugenio Astocondor Salazar"
+                            class="person-photo">
+                        <div class="person-name"><a href="eugenio-es.html">Eugenio<br>Astocondor Salazar</a></div>
                         <div class="person-dates">1918 - 2000</div>
                         <div class="person-relation">Abuelo</div>
                     </div>
                     <div class="person-card expandable" data-grandparent="alcira">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Alcira Victoria Lopez Ruiz</div>
+                        <img src="../images/family-tree/alcira_profile.png" alt="Alcira Victoria Lopez Ruiz"
+                            class="person-photo">
+                        <div class="person-name"><a href="alcira-es.html">Alcira Victoria<br>Lopez Ruiz</a></div>
                         <div class="person-dates">1934 - Vivo</div>
                         <div class="person-relation">Abuela</div>
                     </div>
@@ -487,8 +502,9 @@
                         <div class="person-relation">Bisabuelo</div>
                     </div>
                     <div class="person-card deceased">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Maria Carlota Ruiz Guevara</div>
+                        <img src="../images/family-tree/maria_carlota_profile.png" alt="Maria Carlota Ruiz Guevara"
+                            class="person-photo">
+                        <div class="person-name"><a href="maria-carlota-es.html">Maria Carlota<br>Ruiz Guevara</a></div>
                         <div class="person-dates">1911 - 2008</div>
                         <div class="person-relation">Bisabuela</div>
                     </div>
@@ -541,24 +557,51 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const expandableCards = document.querySelectorAll('.person-card.expandable');
+
             expandableCards.forEach(card => {
                 card.addEventListener('click', function (e) {
+                    // Check if the click was on a link (bio page link)
+                    if (e.target.tagName === 'A' || e.target.closest('a')) {
+                        // Let the link work normally, don't expand the card
+                        return;
+                    }
+
                     e.preventDefault();
+
                     const grandparent = this.getAttribute('data-grandparent');
                     const parentsSection = document.getElementById(grandparent + '-parents');
+
+                    // Close all other sections
                     document.querySelectorAll('.great-grandparents-section').forEach(section => {
-                        if (section !== parentsSection) section.classList.remove('expanded');
+                        if (section !== parentsSection) {
+                            section.classList.remove('expanded');
+                        }
                     });
+
+                    // Remove expanded class from all other cards
                     expandableCards.forEach(c => {
-                        if (c !== this) c.classList.remove('expanded');
+                        if (c !== this) {
+                            c.classList.remove('expanded');
+                        }
                     });
+
+                    // Toggle this section
                     parentsSection.classList.toggle('expanded');
                     this.classList.toggle('expanded');
+
+                    // Smooth scroll to the expanded section
                     if (parentsSection.classList.contains('expanded')) {
                         setTimeout(() => {
                             parentsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                         }, 100);
                     }
+                });
+            });
+
+            // Prevent card expansion when clicking on bio page links
+            document.querySelectorAll('.person-name a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.stopPropagation();
                 });
             });
         });

@@ -35,7 +35,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2rem;
+            gap: 1rem;
             max-width: 900px;
             margin: 0 auto;
             padding: 2rem;
@@ -63,7 +63,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 3px;
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.5rem;
             width: 100%;
         }
 
@@ -165,6 +165,18 @@
             font-style: italic;
         }
 
+        /* Clickable name links */
+        .person-name a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .person-name a:hover {
+            color: #9370db;
+            text-decoration: underline;
+        }
+
         /* Placeholder for missing photos */
         .person-photo.placeholder {
             background: #e8e8e8 url('../images/placeholder-avatar.jpg') center/cover no-repeat;
@@ -215,6 +227,7 @@
             padding-top: 2rem;
             border-top: 2px solid #e0e0e0;
         }
+
 
         /* Connection lines */
         .generation::before {
@@ -459,29 +472,33 @@
                     <div class="generation-label">Grandparents (Click to see their parents)</div>
 
                     <div class="person-card deceased expandable" data-grandparent="sergio">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Sergio Raul Ranilla Rondon</div>
+                        <img src="../images/family-tree/raul_ranilla_profile.png" alt="Sergio Raul Ranilla Rondon"
+                            class="person-photo">
+                        <div class="person-name"><a href="raul-ranilla.html">Sergio Raul<br>Ranilla Rondon</a></div>
                         <div class="person-dates">1928 - 2016</div>
                         <div class="person-relation">Grandfather</div>
                     </div>
 
                     <div class="person-card deceased expandable" data-grandparent="maria-jesus">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Maria Jesus Cateriano Dongo</div>
+                        <img src="../images/family-tree/maria_jesus_profile.png" alt="Maria Jesus Cateriano Dongo"
+                            class="person-photo">
+                        <div class="person-name"><a href="maria-jesus.html">Maria Jesus<br>Cateriano Dongo</a></div>
                         <div class="person-dates">1936 - 2023</div>
                         <div class="person-relation">Grandmother</div>
                     </div>
 
                     <div class="person-card deceased expandable" data-grandparent="eugenio">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Eugenio Astocondor Salazar</div>
+                        <img src="../images/family-tree/eugenio_profile.png" alt="Eugenio Astocondor Salazar"
+                            class="person-photo">
+                        <div class="person-name"><a href="eugenio.html">Eugenio<br>Astocondor Salazar</a></div>
                         <div class="person-dates">1918 - 2000</div>
                         <div class="person-relation">Grandfather</div>
                     </div>
 
                     <div class="person-card expandable" data-grandparent="alcira">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Alcira Victoria Lopez Ruiz</div>
+                        <img src="../images/family-tree/alcira_profile.png" alt="Alcira Victoria Lopez Ruiz"
+                            class="person-photo">
+                        <div class="person-name"><a href="alcira.html">Alcira Victoria<br>Lopez Ruiz</a></div>
                         <div class="person-dates">1934 - Living</div>
                         <div class="person-relation">Grandmother</div>
                     </div>
@@ -493,18 +510,19 @@
                 <div class="great-grandparents-section" id="sergio-parents">
                     <div class="person-card deceased">
                         <div class="person-photo placeholder"></div>
-                        <div class="person-name">Sergio Ranilla Ranilla</div>
+                        <div class="person-name">Sergio<br>Ranilla Ranilla</div>
                         <div class="person-dates">1901 - Deceased</div>
                         <div class="person-relation">Great-Grandfather</div>
                     </div>
 
                     <div class="person-card deceased">
                         <div class="person-photo placeholder"></div>
-                        <div class="person-name">Aurora Rondon Perea</div>
+                        <div class="person-name">Aurora<br>Rondon Perea</div>
                         <div class="person-dates">Deceased</div>
                         <div class="person-relation">Great-Grandmother</div>
                     </div>
                 </div>
+
 
                 <!-- Maria Jesus's Parents -->
                 <div class="great-grandparents-section" id="maria-jesus-parents">
@@ -550,8 +568,9 @@
                     </div>
 
                     <div class="person-card deceased">
-                        <div class="person-photo placeholder"></div>
-                        <div class="person-name">Maria Carlota Ruiz Guevara</div>
+                        <img src="../images/family-tree/maria_carlota_profile.png" alt="Maria Carlota Ruiz Guevara"
+                            class="person-photo">
+                        <div class="person-name"><a href="maria-carlota.html">Maria Carlota Ruiz Guevara</a></div>
                         <div class="person-dates">1911 - 2008</div>
                         <div class="person-relation">Great-Grandmother</div>
                     </div>
@@ -619,6 +638,12 @@
 
             expandableCards.forEach(card => {
                 card.addEventListener('click', function (e) {
+                    // Check if the click was on a link (bio page link)
+                    if (e.target.tagName === 'A' || e.target.closest('a')) {
+                        // Let the link work normally, don't expand the card
+                        return;
+                    }
+
                     e.preventDefault();
 
                     const grandparent = this.getAttribute('data-grandparent');
@@ -646,8 +671,15 @@
                     if (parentsSection.classList.contains('expanded')) {
                         setTimeout(() => {
                             parentsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }, 100);
+                        }, 300);
                     }
+                });
+            });
+
+            // Prevent card expansion when clicking on bio page links
+            document.querySelectorAll('.person-name a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent the card click event from firing
                 });
             });
         });

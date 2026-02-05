@@ -120,6 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Detect if current page is Spanish
+    const isSpanishPage = document.documentElement.lang === 'es' || document.body.getAttribute('data-lang') === 'es';
+
     // Pre-compute all navigation links to ensure they're evaluated correctly
     const familyLinks = {
       myStory: buildSectionLink('family', 'my-story.html'),
@@ -129,6 +132,17 @@ document.addEventListener("DOMContentLoaded", () => {
       inLovingMemory: buildSectionLink('family', 'in-loving-memory.html'),
       ancestry: buildSectionLink('family', 'ancestry.html')
     };
+
+    // Labels based on language - User requested English labels ALWAYS
+    const navLabels = {
+      family: 'Family',
+      myStory: 'My Story',
+      theKids: 'The Kids',
+      heritageRoots: 'Heritage & Roots',
+      familyTree: 'Family Tree',
+      ancestry: 'Ancestry'
+    };
+
     const galleryLinks = {
       family: buildSectionLink('gallery', 'family.html'),
       portraits: buildSectionLink('gallery', 'portraits.html'),
@@ -217,14 +231,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <li><a href="${homeHref}">Home</a></li>
 
             <li class="dropdown-item active">
-              <span class="dropdown-toggle">Family ▾</span>
+              <span class="dropdown-toggle">${navLabels.family} ▾</span>
               <ul class="dropdown-menu">
-                <li><a href="${familyLinks.myStory}">My Story</a></li>
-                <li><a href="${familyLinks.theKids}">The Kids</a></li>
-                <li><a href="${familyLinks.heritageRoots}">Heritage & Roots</a></li>
-                <li><a href="${familyLinks.familyTree}">Family Tree</a></li>
-                <li><a href="${familyLinks.inLovingMemory}">In Loving Memory</a></li>
-                <li><a href="${familyLinks.ancestry}">Ancestry</a></li>
+                <li><a href="${familyLinks.myStory}">${navLabels.myStory}</a></li>
+                <li><a href="${familyLinks.theKids}">${navLabels.theKids}</a></li>
+                <li><a href="${familyLinks.heritageRoots}">${navLabels.heritageRoots}</a></li>
+                <li><a href="${familyLinks.familyTree}">${navLabels.familyTree}</a></li>
+                <li><a href="${familyLinks.ancestry}">${navLabels.ancestry}</a></li>
               </ul>
             </li>
 
