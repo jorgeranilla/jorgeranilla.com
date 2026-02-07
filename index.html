@@ -627,7 +627,7 @@
         .ticker-content {
             display: inline-block;
             white-space: nowrap;
-            animation: scroll-left 30s linear infinite;
+            animation: scroll-left 18s linear infinite;
             font-size: 0.9rem;
             font-weight: 500;
             color: #2c3e50;
@@ -636,7 +636,7 @@
 
         @keyframes scroll-left {
             0% {
-                transform: translateX(100%);
+                transform: translateX(50%);
             }
 
             100% {
@@ -649,19 +649,41 @@
         }
 
         @media (max-width: 768px) {
+            .greeting-section {
+                padding: 0.25rem 2rem;
+            }
+
             .greeting-content {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.75rem;
+                gap: 0.4rem;
+                padding: 0 2%;
+            }
+
+            .date-info {
+                padding-left: 0;
             }
 
             .ticker-wrapper {
+                position: relative;
+                left: 0;
+                right: 0;
                 width: 100%;
             }
 
             .ticker-content {
                 font-size: 0.8rem;
-                animation: scroll-left 25s linear infinite;
+                animation: scroll-left-mobile 15s linear infinite;
+            }
+
+            @keyframes scroll-left-mobile {
+                0% {
+                    transform: translateX(50%);
+                }
+
+                100% {
+                    transform: translateX(-100%);
+                }
             }
         }
     </style>
