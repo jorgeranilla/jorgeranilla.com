@@ -27,7 +27,7 @@
             <!-- Scrolling Announcement Ticker -->
             <div class="ticker-wrapper">
                 <div class="ticker-content" id="ticker-content">
-                    🎉 Baby Shower Event - February 22nd, 2026 | 📢 Welcome to our family website! | 🎊 Alyssa is coming
+                    🎉 Baby Shower Event - February 22nd, 2026 | 📢 Welcome to my website! | 🎊 Alyssa is coming
                     soon!
                 </div>
             </div>
@@ -88,24 +88,44 @@
         </div>
     </section>
 
+    <!-- Introduction Section -->
+    <section class="introduction-section">
+        <div class="page-content">
+            <div class="intro-container">
+                <div class="intro-text">
+                    <h2 class="intro-title">Welcome</h2>
+                    <p class="intro-description">
+                        This is a space where I share my story, celebrate my family's heritage,
+                        and preserve the memories that connect us across generations. This site is a living archive
+                        of our journey together. Explore the family tree, discover our roots, and get to know the
+                        people and places that shaped who I am.
+                    </p>
+                </div>
+                <div class="intro-subscribe">
+                    <h3 class="subscribe-title">Stay Connected</h3>
+                    <p class="subscribe-description">
+                        Get updates on family events, new posts, and announcements.
+                    </p>
+                    <form action="https://buttondown.email/api/emails/embed-subscribe/jorgeranilla" method="post"
+                        target="popupwindow"
+                        onsubmit="window.open('https://buttondown.email/jorgeranilla', 'popupwindow')"
+                        class="embeddable-buttondown-form">
+                        <input type="email" name="email" id="bd-email" placeholder="Enter your email" required />
+                        <input type="hidden" value="1" name="embed" />
+                        <button type="submit" class="subscribe-button">Subscribe</button>
+                    </form>
+                    <p class="subscription-note">
+                        Unsubscribe anytime.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="recent-updates">
         <div class="page-content">
             <h2 class="section-title">Recent Updates</h2>
-            <div class="updates-grid">
-                <div class="update-column">
-                    <h3 class="column-title">
-                        <svg viewBox="0 0 24 24" width="20" height="20"
-                            style="display: inline-block; vertical-align: middle; margin-right: 8px; fill: #1DA1F2;">
-                            <path
-                                d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                        </svg>
-                        Latest Posts
-                    </h3>
-                    <div class="twitter-feed">
-                        <script src="https://elfsightcdn.com/platform.js" async></script>
-                        <div class="elfsight-app-2af1a4a4-625f-451d-ac78-bbb621401b9f" data-elfsight-app-lazy></div>
-                    </div>
-                </div>
+            <div class="updates-grid updates-grid-two-column">
 
                 <div class="update-column">
                     <h3 class="column-title">
@@ -362,16 +382,162 @@
     <style>
         .recent-updates {
             background: #f8f9fa;
-            padding: 2rem 0 3rem;
+            padding: 0.5rem 0 3rem;
             margin-top: 0;
         }
 
-        .twitter-feed {
-            min-height: 500px;
+        /* Introduction Section Styles */
+        .introduction-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 0.5rem 0 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .intro-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .intro-text {
+            flex: 1;
+        }
+
+        .intro-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 0.75rem;
+            line-height: 1.2;
+        }
+
+        .intro-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #555;
+            margin: 0;
+        }
+
+        /* Subscribe box in intro */
+        .intro-subscribe {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .subscribe-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 0.5rem;
+            text-align: center;
+        }
+
+        .subscribe-description {
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+
+        /* Email Subscription Styles */
+        .email-subscription {
             background: #fff;
             border-radius: 8px;
-            overflow: hidden;
-            max-width: 100%;
+            padding: 1.5rem;
+        }
+
+        .subscription-description {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+
+        .embeddable-buttondown-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .embeddable-buttondown-form input[type="email"] {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .embeddable-buttondown-form input[type="email"]:focus {
+            outline: none;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .subscribe-button {
+            padding: 0.75rem 1.5rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: 'Roboto', sans-serif;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            width: 100%;
+        }
+
+        .subscribe-button:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .subscribe-button:active {
+            transform: translateY(0);
+        }
+
+        .subscription-note {
+            color: #999;
+            font-size: 0.75rem;
+            text-align: center;
+            margin: 0;
+            font-style: italic;
+        }
+
+        /* Responsive styles for introduction and subscription */
+        @media (max-width: 768px) {
+            .intro-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .intro-title {
+                font-size: 1.5rem;
+            }
+
+            .intro-description {
+                font-size: 0.95rem;
+            }
+
+            .subscribe-title {
+                font-size: 1.25rem;
+            }
+
+            .updates-grid-two-column {
+                grid-template-columns: 1fr;
+            }
         }
 
         .updates-section {
@@ -395,12 +561,17 @@
             margin: 0 auto;
         }
 
+        .updates-grid-two-column {
+            grid-template-columns: repeat(2, 1fr);
+            max-width: 900px;
+        }
+
         .update-column {
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            max-height: 400px;
+            max-height: 550px;
             overflow-y: auto;
             /* For Firefox */
             scrollbar-width: thin;
@@ -688,7 +859,7 @@
         }
     </style>
 
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
     <script src="script.js?v=1"></script>
     <script src="search-dynamic.js"></script>
     <script>
@@ -702,8 +873,8 @@
             const container = document.getElementById('calendar-events');
 
             try {
-                // Use CORS proxy to fetch the ICS files (bypasses CORS restrictions)
-                const proxyUrl = 'https://corsproxy.io/?';
+                // Use AllOrigins CORS proxy (more reliable than corsproxy.io)
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
 
                 // Fetch all calendars in parallel
                 const fetchPromises = calendarUrls.map(url =>

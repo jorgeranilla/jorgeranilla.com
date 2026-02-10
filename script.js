@@ -200,6 +200,14 @@ document.addEventListener("DOMContentLoaded", () => {
     window.toggleMobileMenu = function () {
       const nav = document.getElementById('mainNav');
       nav.classList.toggle('mobile-open');
+      
+      // Initialize all dropdowns as expanded when opening menu on mobile
+      if (nav.classList.contains('mobile-open') && window.innerWidth <= 900) {
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        dropdownItems.forEach(item => {
+          item.classList.add('active');
+        });
+      }
     };
 
     // Header HTML with dynamic paths

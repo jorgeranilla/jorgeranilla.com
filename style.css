@@ -477,7 +477,7 @@ body {
 ================================ */
 .page-content {
     max-width: 1100px;
-    margin: 40px auto;
+    margin: 0 auto;
     padding: 0 20px;
     position: relative;
 }
@@ -1039,6 +1039,7 @@ body {
 
     /* Header & Nav */
     .site-header {
+        position: relative;
         padding: 15px 20px;
         justify-content: space-between;
         flex-wrap: wrap;
@@ -1051,13 +1052,21 @@ body {
     }
 
     .main-nav {
-        flex-basis: 100%;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
         display: none;
         /* Hidden by default on mobile */
         flex-direction: column;
         width: 100%;
-        padding-top: 20px;
+        padding: 20px 20px;
         gap: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 999;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
     }
 
     .main-nav.mobile-open {
