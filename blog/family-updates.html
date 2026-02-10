@@ -39,54 +39,59 @@
         }
 
         .updates-feed {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 2rem;
             margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        /* Vertical Card Layout - matching latest-posts */
+        /* Vertical Card Layout - 1 per row */
         .update-card {
             background: white;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .update-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
-        /* Image Section - reduced to half height */
+        /* Image Section - compact, on top */
         .update-image {
             width: 100%;
-            height: 100px;
+            height: 50px;
             object-fit: cover;
             background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
+            font-size: 2rem;
         }
 
-        /* Content Section */
+        /* Content Section - full text display */
         .update-content {
-            padding: 1.5rem;
+            padding: 1.5rem 2rem 2rem;
         }
 
         .update-date {
             font-size: 0.85rem;
             color: #888;
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .update-title {
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             font-weight: 600;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             color: #333;
             line-height: 1.4;
         }
@@ -95,14 +100,14 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         .update-tag {
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            padding: 0.35rem 0.75rem;
+            padding: 0.4rem 0.85rem;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
@@ -112,12 +117,8 @@
             font-size: 0.95rem;
             color: #666;
             line-height: 1.6;
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            line-clamp: 4;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            margin-bottom: 0;
+            white-space: pre-wrap;
         }
 
         /* Color Themes */
@@ -139,6 +140,21 @@
         .update-card[data-theme="default"] .update-tag {
             background: #f0f0f0;
             color: #555;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .update-content {
+                padding: 1.25rem 1.5rem 1.75rem;
+            }
+
+            .update-title {
+                font-size: 1.2rem;
+            }
+
+            .update-text {
+                font-size: 0.95rem;
+            }
         }
     </style>
 
@@ -209,9 +225,8 @@
                         card.className = 'update-card';
                         card.setAttribute('data-theme', theme);
 
-                        let imageHTML = imageUrl ?
-                            `<img src="${imageUrl}" alt="${title}" class="update-image">` :
-                            `<div class="update-image" style="display:flex; align-items:center; justify-content:center; font-size:4rem;">📰</div>`;
+                        // Always use newspaper emoji icon for consistency across platforms
+                        let imageHTML = `<div class="update-image" style="display:flex; align-items:center; justify-content:center; font-size:2rem;">📰</div>`;
 
                         let tagsHTML = tags.length > 0 ?
                             '<div class="update-tags">' + tags.map(tag => `<span class="update-tag">${tag}</span>`).join('') + '</div>' :

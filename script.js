@@ -199,13 +199,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Mobile Menu Toggle Function
     window.toggleMobileMenu = function () {
       const nav = document.getElementById('mainNav');
+      const isOpening = !nav.classList.contains('mobile-open');
       nav.classList.toggle('mobile-open');
-      
-      // Initialize all dropdowns as expanded when opening menu on mobile
-      if (nav.classList.contains('mobile-open') && window.innerWidth <= 900) {
+
+      // Expand all dropdowns when opening, collapse when closing
+      if (window.innerWidth <= 900) {
         const dropdownItems = document.querySelectorAll('.dropdown-item');
         dropdownItems.forEach(item => {
-          item.classList.add('active');
+          if (isOpening) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
         });
       }
     };
@@ -237,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <ul class="nav-links">
             <li><a href="${homeHref}">Home</a></li>
 
-            <li class="dropdown-item active">
+            <li class="dropdown-item">
               <span class="dropdown-toggle">${navLabels.family} ▾</span>
               <ul class="dropdown-menu">
                 <li><a href="${familyLinks.myStory}">${navLabels.myStory}</a></li>

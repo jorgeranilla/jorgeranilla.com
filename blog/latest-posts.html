@@ -323,7 +323,13 @@
 
           loading.style.display = 'none';
 
+          let postsDisplayed = 0;
+          const maxPosts = 12;
+
           posts.forEach(post => {
+            // Stop if we've already displayed 12 posts
+            if (postsDisplayed >= maxPosts) return;
+
             // Skip posts with "Family Updates" category
             const categories = post.category || [];
             const isFamilyUpdate = categories.some(cat => cat.term === 'Family Updates');
@@ -378,6 +384,7 @@
             `;
 
             postsGrid.appendChild(card);
+            postsDisplayed++;
           });
 
           // Clean up
@@ -391,7 +398,7 @@
 
       // Create script tag for JSONP request
       const script = document.createElement('script');
-      script.src = `https://memoria-efimera.blogspot.com/feeds/posts/default?alt=json-in-script&max-results=15&callback=${callbackName}`;
+      script.src = `https://memoria-efimera.blogspot.com/feeds/posts/default?alt=json-in-script&max-results=25&callback=${callbackName}`;
       script.onerror = function () {
         document.getElementById('loading').textContent = 'Error loading posts. Please visit the blog directly.';
         console.error('Error loading blog feed script');
