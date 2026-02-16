@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shane's Progress Gallery | Baby Updates</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/png" href="../images/jr-logo.png">
+    <style>
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        @media (max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* Gallery Items */
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            cursor: pointer;
+            aspect-ratio: 1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+        }
+
+        .lightbox.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 10001;
+            transition: color 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            color: #bbb;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            font-size: 30px;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+            z-index: 10001;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lightbox-prev {
+            left: 20px;
+        }
+
+        .lightbox-next {
+            right: 20px;
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            z-index: 10001;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+
+<body data-title="Shane's Gallery">
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <div class="breadcrumb-bar">
+        <div class="breadcrumb-container">
+            <a href="../index.html">Home</a>
+            <span class="separator">›</span>
+            <a href="index.html">Baby Updates</a>
+            <span class="separator">›</span>
+            <span class="current-page">Shane's Gallery</span>
+        </div>
+    </div>
+
+    <section style="padding: 3rem 0;">
+        <div class="page-content">
+            <a href="index.html" class="back-link">← Back to Updates</a>
+
+            <h1 class="page-title page-title--sm">Shane's Progress Gallery</h1>
+
+            <p style="max-width: 700px; margin: 0 auto 3rem; text-align: center; color: #666; line-height: 1.7;">
+                Photos documenting Shane's journey and progress during hospitalization. Click on any image to enlarge
+                and view the full-size picture.
+            </p>
+
+            <div class="gallery-grid">
+                <!-- Photo 9 (newest) -->
+                <div class="gallery-item" data-index="0">
+                    <img src="shane-progress/9.jpeg" alt="Shane progress update" loading="lazy">
+                </div>
+                <!-- Photo 8 -->
+                <div class="gallery-item" data-index="1">
+                    <img src="shane-progress/8.jpeg" alt="Shane progress update" loading="lazy">
+                </div>
+                <!-- Photo 7 -->
+                <div class="gallery-item" data-index="2">
+                    <img src="shane-progress/7.jpeg" alt="Shane progress update" loading="lazy">
+                </div>
+                <!-- Photo 6 -->
+                <div class="gallery-item" data-index="3">
+                    <img src="shane-progress/6.jpeg" alt="Shane progress update" loading="lazy">
+                </div>
+                <!-- Photo 5 -->
+                <div class="gallery-item" data-index="4">
+                    <img src="shane-progress/5.jpeg" alt="Shane progress update" loading="lazy">
+                </div>
+                <!-- Photo 4 -->
+                <div class="gallery-item" data-index="5">
+                    <img src="shane-progress/4.jpeg" alt="Shane progress update" loading="lazy">
+                </div>
+                <!-- Photo 3 -->
+                <div class="gallery-item" data-index="6">
+                    <img src="shane-progress/3.jpeg" alt="Shane progress update" loading="lazy">
+                </div>
+                <!-- Photo 2 -->
+                <div class="gallery-item" data-index="7">
+                    <img src="shane-progress/2.jpeg" alt="Shane progress update" loading="lazy">
+                </div>
+                <!-- Photo 1 (oldest) -->
+                <div class="gallery-item" data-index="8">
+                    <img src="shane-progress/1.jpeg" alt="Shane progress update" loading="lazy">
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#10094;</button>
+        <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#10095;</button>
+        <div class="lightbox-counter" id="lightboxCounter">1 / 9</div>
+        <div class="lightbox-content">
+            <img src="" alt="Shane progress" id="lightboxImg">
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script>
+        // Lightbox functionality
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxClose = document.getElementById('lightboxClose');
+        const lightboxPrev = document.getElementById('lightboxPrev');
+        const lightboxNext = document.getElementById('lightboxNext');
+        const lightboxCounter = document.getElementById('lightboxCounter');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        let currentIndex = 0;
+        const totalImages = galleryItems.length;
+
+        // Open lightbox when clicking gallery item
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                currentIndex = index;
+                openLightbox();
+            });
+        });
+
+        function openLightbox() {
+            const img = galleryItems[currentIndex].querySelector('img');
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+            updateCounter();
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function updateCounter() {
+            lightboxCounter.textContent = `${currentIndex + 1} / ${totalImages}`;
+        }
+
+        function showNext() {
+            currentIndex = (currentIndex + 1) % totalImages;
+            openLightbox();
+        }
+
+        function showPrev() {
+            currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+            openLightbox();
+        }
+
+        // Event listeners
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxNext.addEventListener('click', showNext);
+        lightboxPrev.addEventListener('click', showPrev);
+
+        // Close on background click
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') showNext();
+            if (e.key === 'ArrowLeft') showPrev();
+        });
+    </script>
+</body>
+
+</html>

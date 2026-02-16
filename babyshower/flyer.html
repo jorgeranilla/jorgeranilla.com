@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Shower Invitation - Bulletin Board Flyer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            size: letter;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffa8c5 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .flyer-container {
+            width: 5.5in;
+            height: 11in;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Decorative background elements */
+        .bg-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .bg-decoration::before,
+        .bg-decoration::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b9d, #ffa8c5);
+        }
+
+        .bg-decoration::before {
+            width: 400px;
+            height: 400px;
+            top: -200px;
+            right: -200px;
+        }
+
+        .bg-decoration::after {
+            width: 300px;
+            height: 300px;
+            bottom: -150px;
+            left: -150px;
+        }
+
+        /* Content wrapper */
+        .content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 60px;
+        }
+
+        /* Header section */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .emoji-decoration {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .title {
+            font-family: 'Pacifico', cursive;
+            font-size: 64px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c2185b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        /* Print-friendly title */
+        @media print {
+            .title {
+                background: none;
+                -webkit-text-fill-color: #ff6b9d;
+                color: #ff6b9d;
+            }
+        }
+
+        .subtitle {
+            font-size: 28px;
+            color: #555;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 20px;
+            color: #888;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .message-box {
+            background: #fff0f7;
+            border-radius: 20px;
+            padding: 35px 45px;
+            border: 2px solid #ffd6e8;
+            text-align: center;
+            max-width: 600px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .message-box h2 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .message-box p {
+            font-size: 20px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        /* QR Code section */
+        .qr-section {
+            text-align: center;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: inline-block;
+            border: 3px solid #ff6b9d;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            display: block;
+        }
+
+        .scan-text {
+            font-size: 24px;
+            color: #ff6b9d;
+            font-weight: 600;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .scan-icon {
+            font-size: 28px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: auto;
+            padding-top: 30px;
+        }
+
+        .website-url {
+            font-size: 22px;
+            color: #c2185b;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .footer-note {
+            font-size: 16px;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .flyer-container {
+                box-shadow: none;
+                width: 100%;
+                height: 100%;
+            }
+
+            @page {
+                margin: 0;
+            }
+        }
+
+        /* Print button (hidden when printing) */
+        .print-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c2185b 100%);
+            color: white;
+            border: none;
+            padding: 18px 36px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .print-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.5);
+        }
+
+        @media print {
+            .print-button {
+                display: none;
+            }
+        }
+
+        /* Decorative Ribbons */
+        .ribbon-top-left,
+        .ribbon-top-right,
+        .ribbon-bottom-left,
+        .ribbon-bottom-right {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            z-index: 2;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .ribbon-top-left {
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffa8c5 50%, transparent 50%);
+        }
+
+        .ribbon-top-right {
+            top: 0;
+            right: 0;
+            background: linear-gradient(225deg, #ff6b9d 0%, #ffa8c5 50%, transparent 50%);
+        }
+
+        .ribbon-bottom-left {
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(45deg, #ff6b9d 0%, #ffa8c5 50%, transparent 50%);
+        }
+
+        .ribbon-bottom-right {
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(315deg, #ff6b9d 0%, #ffa8c5 50%, transparent 50%);
+        }
+
+        /* Corner Decorations */
+        .corner-decoration {
+            position: absolute;
+            font-size: 40px;
+            z-index: 3;
+            opacity: 0.9;
+        }
+
+        .corner-decoration.top-left {
+            top: 15px;
+            left: 15px;
+        }
+
+        .corner-decoration.top-right {
+            top: 15px;
+            right: 15px;
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: 15px;
+            left: 15px;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 15px;
+            right: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flyer-container">
+        <div class="bg-decoration"></div>
+
+        <!-- Decorative Ribbons -->
+        <div class="ribbon-top-left"></div>
+        <div class="ribbon-top-right"></div>
+        <div class="ribbon-bottom-left"></div>
+        <div class="ribbon-bottom-right"></div>
+
+        <!-- Decorative corner flowers -->
+        <div class="corner-decoration top-left">🌸</div>
+        <div class="corner-decoration top-right">🌸</div>
+        <div class="corner-decoration bottom-left">🌸</div>
+        <div class="corner-decoration bottom-right">🌸</div>
+
+        <div class="content">
+            <!-- Header -->
+            <div class="header">
+                <div class="emoji-decoration">👶 🍼 🎉</div>
+                <h1 class="title">Baby Shower!</h1>
+                <p class="subtitle"><strong>You're Invited Too!</strong></p>
+                <p class="tagline">Join us in welcoming our little one</p>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="message-box">
+                    <p>We're celebrating the upcoming arrival of our baby Alyssa and we'd love to have you join us!</p>
+                    <p>Scan the QR code below for all the details, RSVP, and more information.</p>
+                </div>
+
+                <!-- QR Code -->
+                <div class="qr-section">
+                    <div class="qr-container">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://jorgeranilla.com/babyshower"
+                            alt="QR Code to Baby Shower Website" class="qr-code">
+                    </div>
+                    <p class="scan-text">
+                        <span class="scan-icon">📱</span>
+                        Scan to Visit & RSVP
+                    </p>
+                    <p style="font-size: 18px; color: #c2185b; margin-top: 15px; font-weight: 500;">
+                        Or visit: jorgeranilla.com/babyshower
+                    </p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p class="footer-note">We hope to see you there! ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <button class="print-button" onclick="window.print()">🖨️ Print Flyer</button>
+</body>
+
+</html>
