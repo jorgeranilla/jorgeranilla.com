@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyChart Medical Notes | Baby Updates</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/png" href="../images/jr-logo.png">
+    <style>
+        .notes-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .note-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .note-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .note-date {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #CD5C5C;
+            margin-bottom: 0.5rem;
+        }
+
+        .note-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .note-link:hover {
+            color: #CD5C5C;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+
+<body data-title="Medical Notes">
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <div class="breadcrumb-bar">
+        <div class="breadcrumb-container">
+            <a href="../index.html">Home</a>
+            <span class="separator">›</span>
+            <a href="index.html">Baby Updates</a>
+            <span class="separator">›</span>
+            <span class="current-page">Medical Notes</span>
+        </div>
+    </div>
+
+    <section style="padding: 3rem 0;">
+        <div class="page-content">
+            <a href="index.html" class="back-link">← Back to Updates</a>
+
+            <h1 class="page-title">MyChart Medical Notes</h1>
+
+            <p style="max-width: 700px; margin: 0 auto 3rem; text-align: center; color: #666; line-height: 1.7;">
+                These are the actual doctor and nurse notes from MyChart. They contain detailed medical information
+                about Shane and baby Alyssa's care.
+            </p>
+
+            <div class="notes-list">
+                <div class="note-item">
+                    <div class="note-date">February 15, 2026 - 6:42 PM</div>
+                    <a href="2026.02.15%201842.pdf" class="note-link" target="_blank">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        View Note (PDF)
+                    </a>
+                </div>
+
+                <div class="note-item">
+                    <div class="note-date">February 15, 2026 - 11:39 AM</div>
+                    <a href="2026.02.15%201139.pdf" class="note-link" target="_blank">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        View Note (PDF)
+                    </a>
+                </div>
+
+                <div class="note-item">
+                    <div class="note-date">February 15, 2026 - 10:03 AM</div>
+                    <a href="2026.02.15%201003.pdf" class="note-link" target="_blank">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        View Note (PDF)
+                    </a>
+                </div>
+
+                <div class="note-item">
+                    <div class="note-date">February 15, 2026 - 1:49 AM</div>
+                    <a href="2026.02.15%200149.pdf" class="note-link" target="_blank">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        View Note (PDF)
+                    </a>
+                </div>
+
+                <div class="note-item">
+                    <div class="note-date">February 15, 2026 - 1:39 AM</div>
+                    <a href="2026.02.15%200139.pdf" class="note-link" target="_blank">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        View Note (PDF)
+                    </a>
+                </div>
+
+                <div class="note-item">
+                    <div class="note-date">February 15, 2026 - 12:53 AM</div>
+                    <a href="2026.02.15%200053.pdf" class="note-link" target="_blank">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        View Note (PDF)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../script.js"></script>
+</body>
+
+</html>
