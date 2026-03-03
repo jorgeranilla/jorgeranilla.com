@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jorge Ranilla | Contenido en Español</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="images/jr-logo.png">
+    <style>
+        .construction-container {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .construction-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .construction-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .construction-subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .construction-message {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 40px;
+            line-height: 1.8;
+            max-width: 600px;
+        }
+
+        .back-to-english {
+            display: inline-block;
+            background: #2c3e50;
+            color: white;
+            padding: 15px 35px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .back-to-english:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+        }
+
+        .fun-note {
+            margin-top: 40px;
+            padding: 20px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 6px;
+            font-style: italic;
+            color: #856404;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            max-width: 500px;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 30px auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e67e22, #f39c12);
+            width: 15%;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+
+<body data-title="Español" data-section="Home" data-lang="es">
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <div class="breadcrumb-bar">
+        <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Navegación"></nav>
+    </div>
+
+    <main class="page-content">
+        <section class="about-section" style="max-width: 800px; margin: 0 auto;">
+            <h2 class="page-title page-title--sm">Contenido en Español</h2>
+
+            <div class="about-text">
+                <p style="font-size: 1.1rem; color: #555; margin-bottom: 2rem;">
+                    Este sitio ofrece traducción parcial al español. No todas las páginas están disponibles en ambos
+                    idiomas.
+                </p>
+
+                <h3 style="font-size: 1.3rem; color: #2c3e50; margin-top: 2rem; margin-bottom: 1rem;">
+                    ¿Cómo funciona?
+                </h3>
+
+                <p style="line-height: 1.8;">
+                    Cuando una página tenga traducción disponible, verás un interruptor <strong
+                        style="color: #2c3e50;">EN | ES</strong>
+                    en la esquina superior derecha. Haz clic en <strong>ES</strong> para ver la versión en español,
+                    o <strong>EN</strong> para volver al inglés.
+                </p>
+
+                <div
+                    style="background: #f8f9fa; border-left: 4px solid #3498db; padding: 1.5rem; margin: 2rem 0; border-radius: 4px;">
+                    <p style="margin: 0; line-height: 1.7; color: #555;">
+                        <strong style="color: #2c3e50;">Nota:</strong> Las traducciones fueron realizadas
+                        automáticamente
+                        y pueden no reflejar completamente las variaciones del español peruano o de otros países
+                        latinoamericanos.
+                        Algunas palabras y expresiones pueden variar según la región.
+                    </p>
+                </div>
+
+                <p style="text-align: center; margin-top: 3rem;">
+                    <a href="index.html"
+                        style="display: inline-block; padding: 12px 32px; background: #2c3e50; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; transition: background 0.3s ease;">
+                        Ir a la página principal
+                    </a>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js?v=1"></script>
+    <script src="search-dynamic.js"></script>
+</body>
+
+</html>
