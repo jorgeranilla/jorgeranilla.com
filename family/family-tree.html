@@ -1,0 +1,710 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jorge Ranilla | Family Tree</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/png" href="../images/jr-logo.png">
+    <style>
+        /* Family Tree Specific Styles */
+        .tree-container {
+            padding: 3rem 2rem;
+            background: linear-gradient(to bottom, #fafafa 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
+
+        .tree-intro {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .tree-intro p {
+            color: #666;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* Tree Structure - Inverted (You at top) */
+        .family-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .generation {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            width: 100%;
+            position: relative;
+        }
+
+        .generation-label {
+            display: none;
+            /* Hidden since we have centered section titles */
+        }
+
+        /* Section title above each generation */
+        .section-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        /* Person Card */
+        .person-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            min-width: 160px;
+            max-width: 180px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 1;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .person-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .person-card.clickable {
+            cursor: pointer;
+        }
+
+        .person-card.clickable:hover .person-name {
+            color: var(--accent-color);
+        }
+
+        /* Expandable grandparents */
+        .person-card.expandable {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .person-card.expandable:hover {
+            border-color: #3498db;
+        }
+
+        .person-card.expandable::after {
+            content: '▼ Click to see parents';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #3498db;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .person-card.expandable:hover::after {
+            opacity: 1;
+        }
+
+        .person-card.expandable.expanded {
+            border-color: #3498db;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.15);
+        }
+
+        .person-card.expandable.expanded::after {
+            content: '▲ Hide parents';
+            opacity: 1;
+        }
+
+        .person-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 0.75rem;
+            border: 3px solid #f0f0f0;
+        }
+
+        .person-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+            transition: color 0.3s ease;
+        }
+
+        .person-dates {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+
+        .person-relation {
+            font-size: 0.75rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Clickable name links */
+        .person-name a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .person-name a:hover {
+            color: #9370db;
+            text-decoration: underline;
+        }
+
+        /* Placeholder for missing photos */
+        .person-photo.placeholder {
+            background: #e8e8e8 url('../images/placeholder-avatar.jpg') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .person-photo.placeholder-female {
+            background: #e8e8e8 url('../images/placeholder-avatar-female.jpg') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Coming soon badge */
+        .coming-soon {
+            display: inline-block;
+            background: #ff69b4;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Deceased indicator */
+        .deceased {
+            opacity: 0.85;
+        }
+
+        .deceased .person-photo {
+            filter: grayscale(30%);
+        }
+
+        /* Great-grandparents expandable section */
+        .great-grandparents-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.4s ease, margin 0.4s ease;
+            opacity: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .great-grandparents-section.expanded {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+
+        /* Connection lines */
+        .generation::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 30px;
+            background: linear-gradient(to bottom, #e0e0e0, transparent);
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .generation:first-child::before {
+            display: none;
+        }
+
+        /* Highlight current user */
+        .current-user .person-card {
+            border: 2px solid var(--accent-color);
+            background: linear-gradient(to bottom, #ffffff, #fafafa);
+        }
+
+        /* Deceased styling */
+        .person-card.deceased {
+            background: #f5f5f5;
+            border: 2px solid #d0d0d0;
+            position: relative;
+        }
+
+        .person-card.deceased .person-photo {
+            filter: grayscale(100%);
+            opacity: 0.6;
+        }
+
+        .person-card.deceased .person-name,
+        .person-card.deceased .person-dates,
+        .person-card.deceased .person-relation {
+            color: #888;
+        }
+
+        .person-card.deceased::before {
+            content: '✝';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 1.2rem;
+            color: #999;
+            z-index: 10;
+        }
+
+        /* Legend */
+        .tree-legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .legend-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-icon.clickable {
+            background: var(--accent-color);
+        }
+
+        .legend-icon.coming {
+            background: #ff69b4;
+        }
+
+        .legend-icon.expandable {
+            background: #3498db;
+        }
+    </style>
+    <style>
+        /* Responsive Family Tree Logic */
+        @media (max-width: 900px) {
+            .tree-container {
+                padding: 1rem;
+                overflow: hidden;
+                /* Prevent body scroll */
+            }
+
+            .family-tree {
+                /* Enable horizontal scroll container */
+                width: 100%;
+                overflow-x: auto;
+                align-items: flex-start;
+                /* Align left to scroll naturally */
+                padding: 1rem 0;
+
+                /* Hide scrollbar for cleaner look */
+                -ms-overflow-style: none;
+                /* IE and Edge */
+                scrollbar-width: none;
+                /* Firefox */
+            }
+
+            .family-tree::-webkit-scrollbar {
+                display: none;
+            }
+
+            .generation {
+                /* Ensure generation stays in one line */
+                flex-wrap: nowrap;
+                min-width: min-content;
+                /* Ensure width fits content */
+                margin: 0 auto;
+                /* Center if smaller than screen */
+                padding: 0 20px;
+                zoom: 0.75;
+            }
+
+            /* Add a visual cue for scrolling */
+            .tree-intro::after {
+                content: "← Swipe to explore tree →";
+                display: block;
+                margin-top: 10px;
+                font-size: 0.8rem;
+                color: #888;
+                font-style: italic;
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% {
+                    opacity: 0.5;
+                }
+
+                50% {
+                    opacity: 1;
+                }
+
+                100% {
+                    opacity: 0.5;
+                }
+            }
+
+            /* Center the tree content if it fits within the screen, otherwise let it overflow */
+            .family-tree>* {
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+
+<body data-title="Family Tree" data-section="Family">
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <div class="breadcrumb-bar">
+        <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+    </div>
+
+    <main class="page-content">
+        <div class="page-lang-toggle">
+            <a href="family-tree.html" class="lang-link active">EN</a>
+            <span class="lang-separator">|</span>
+            <a href="family-tree-es.html" class="lang-link">ES</a>
+            <span class="lang-separator">|</span>
+            <button id="feedbackBtn" class="feedback-icon-btn" aria-label="Report an issue" title="Report an issue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="tree-intro">
+            <h2 class="page-title page-title--sm">Ranilla Family Tree</h2>
+            <p>
+                Explore our family heritage from the present to the past. Click on grandparents to see their parents.
+            </p>
+        </div>
+
+        <div class="tree-container">
+            <div class="family-tree">
+
+                <!-- Siblings -->
+                <div class="section-title">Siblings</div>
+                <div class="generation current-user">
+                    <div class="generation-label">Siblings</div>
+
+                    <a href="jorge-ranilla.html" class="person-card clickable">
+                        <img src="../images/jorge.jpg" alt="Jorge" class="person-photo">
+                        <div class="person-name">Jorge Luis Ranilla</div>
+                        <div class="person-dates">1987 - Living</div>
+                    </a>
+
+                    <a href="victor-andres-ranilla.html" class="person-card clickable">
+                        <img src="../images/bios/victor.jpg" alt="Victor" class="person-photo">
+                        <div class="person-name">Victor Andres Ranilla</div>
+                        <div class="person-dates">1987 - Living</div>
+                        <div class="person-relation">Brother</div>
+                    </a>
+
+                    <a href="maria-eugenia-ranilla.html" class="person-card clickable">
+                        <img src="../images/bios/maria.jpg" alt="Maria" class="person-photo">
+                        <div class="person-name">Maria Eugenia Ranilla</div>
+                        <div class="person-dates">1991 - Living</div>
+                        <div class="person-relation">Sister</div>
+                    </a>
+                </div>
+
+                <!-- Parents -->
+                <div class="section-title">Parents</div>
+                <div class="generation">
+                    <div class="generation-label">Parents</div>
+
+                    <a href="jorge-luis-ranilla.html" class="person-card clickable"
+                        style="border: 2px solid var(--accent-color);">
+                        <img src="../images/bios/jorge-luis.jpg" alt="Jorge Luis" class="person-photo">
+                        <div class="person-name">Jorge Luis Ranilla Cateriano</div>
+                        <div class="person-dates">1961 - Living</div>
+                        <div class="person-relation">Father</div>
+                    </a>
+
+                    <a href="sylvia-ines-astocondor.html" class="person-card clickable"
+                        style="border: 2px solid var(--accent-color);">
+                        <img src="../images/bios/sylvia-ines.jpg" alt="Sylvia Ines" class="person-photo">
+                        <div class="person-name">Sylvia Ines Astocondor Salazar Lopez</div>
+                        <div class="person-dates">1967 - Living</div>
+                        <div class="person-relation">Mother</div>
+                    </a>
+                </div>
+
+                <!-- Grandparents (Clickable to show great-grandparents) -->
+                <div class="section-title">Grandparents</div>
+                <div class="generation">
+                    <div class="generation-label">Grandparents (Click to see their parents)</div>
+
+                    <div class="person-card deceased expandable" data-grandparent="sergio">
+                        <img src="../images/family-tree/sergio-raul-ranilla.png" alt="Sergio Raul Ranilla Rondon"
+                            class="person-photo">
+                        <div class="person-name"><a href="sergio-raul-ranilla.html">Sergio Raul<br>Ranilla Rondon</a>
+                        </div>
+                        <div class="person-dates">1928 - 2016</div>
+                        <div class="person-relation">Grandfather</div>
+                    </div>
+
+                    <div class="person-card deceased expandable" data-grandparent="maria-jesus">
+                        <img src="../images/family-tree/maria-jesus-cateriano.png" alt="Maria Jesus Cateriano Dongo"
+                            class="person-photo">
+                        <div class="person-name"><a href="maria-jesus-cateriano.html">Maria Jesus<br>Cateriano Dongo</a>
+                        </div>
+                        <div class="person-dates">1936 - 2023</div>
+                        <div class="person-relation">Grandmother</div>
+                    </div>
+
+                    <div class="person-card deceased expandable" data-grandparent="eugenio">
+                        <img src="../images/family-tree/eugenio-astocondor.png" alt="Eugenio Astocondor Salazar"
+                            class="person-photo">
+                        <div class="person-name"><a href="eugenio-astocondor.html">Eugenio<br>Astocondor Salazar</a>
+                        </div>
+                        <div class="person-dates">1918 - 2000</div>
+                        <div class="person-relation">Grandfather</div>
+                    </div>
+
+                    <div class="person-card expandable" data-grandparent="alcira">
+                        <img src="../images/family-tree/alcira-victoria-lopez.png" alt="Alcira Victoria Lopez Ruiz"
+                            class="person-photo">
+                        <div class="person-name"><a href="alcira-victoria-lopez.html">Alcira Victoria<br>Lopez Ruiz</a>
+                        </div>
+                        <div class="person-dates">1934 - Living</div>
+                        <div class="person-relation">Grandmother</div>
+                    </div>
+                </div>
+
+                <!-- Great-Grandparents (Hidden by default, shown when grandparent clicked) -->
+
+                <!-- Sergio's Parents -->
+                <div class="great-grandparents-section" id="sergio-parents">
+                    <div class="person-card deceased">
+                        <div class="person-photo placeholder"></div>
+                        <div class="person-name">Sergio<br>Ranilla Ranilla</div>
+                        <div class="person-dates">1901 - Deceased</div>
+                        <div class="person-relation">Great-Grandfather</div>
+                    </div>
+
+                    <div class="person-card deceased">
+                        <div class="person-photo placeholder-female"></div>
+                        <div class="person-name">Aurora<br>Rondon Perea</div>
+                        <div class="person-dates">Deceased</div>
+                        <div class="person-relation">Great-Grandmother</div>
+                    </div>
+                </div>
+
+
+                <!-- Maria Jesus's Parents -->
+                <div class="great-grandparents-section" id="maria-jesus-parents">
+                    <div class="person-card deceased">
+                        <div class="person-photo placeholder"></div>
+                        <div class="person-name"><a href="victoriano-cateriano.html">Victoriano Cateriano</a></div>
+                        <div class="person-dates">Deceased</div>
+                        <div class="person-relation">Great-Grandfather</div>
+                    </div>
+
+                    <div class="person-card deceased">
+                        <div class="person-photo placeholder-female"></div>
+                        <div class="person-name"><a href="lucila-dongo-salcedo.html">Lucila Dongo Salcedo</a></div>
+                        <div class="person-dates">Deceased</div>
+                        <div class="person-relation">Great-Grandmother</div>
+                    </div>
+                </div>
+
+                <!-- Eugenio's Parents -->
+                <div class="great-grandparents-section" id="eugenio-parents">
+                    <div class="person-card deceased">
+                        <div class="person-photo placeholder"></div>
+                        <div class="person-name">Eugenio Astocondor Fuertes</div>
+                        <div class="person-dates">1895 - Deceased</div>
+                        <div class="person-relation">Great-Grandfather</div>
+                    </div>
+
+                    <div class="person-card deceased">
+                        <div class="person-photo placeholder-female"></div>
+                        <div class="person-name">Carlota Salazar Mateo</div>
+                        <div class="person-dates">1897 - Deceased</div>
+                        <div class="person-relation">Great-Grandmother</div>
+                    </div>
+                </div>
+
+                <!-- Alcira's Parents -->
+                <div class="great-grandparents-section" id="alcira-parents">
+                    <div class="person-card deceased">
+                        <div class="person-photo placeholder"></div>
+                        <div class="person-name">Jose Dalicio Lopez Lopez</div>
+                        <div class="person-dates">1908 - 1990</div>
+                        <div class="person-relation">Great-Grandfather</div>
+                    </div>
+
+                    <div class="person-card deceased">
+                        <img src="../images/family-tree/maria-carlota-ruiz.png" alt="Maria Carlota Ruiz Guevara"
+                            class="person-photo">
+                        <div class="person-name"><a href="maria-carlota-ruiz.html">Maria Carlota Ruiz Guevara</a></div>
+                        <div class="person-dates">1911 - 2008</div>
+                        <div class="person-relation">Great-Grandmother</div>
+                    </div>
+                </div>
+
+                <!-- My Family -->
+                <div class="section-title">My Family</div>
+                <div class="generation">
+                    <div class="generation-label">My Family</div>
+
+                    <a href="jorge-ranilla.html" class="person-card clickable">
+                        <img src="../images/jorge.jpg" alt="Jorge" class="person-photo">
+                        <div class="person-name">Jorge Luis Ranilla</div>
+                        <div class="person-dates">1987 - Living</div>
+                    </a>
+
+                    <a href="shane-ranilla.html" class="person-card clickable">
+                        <img src="../images/bios/shane.jpg" alt="Shane" class="person-photo">
+                        <div class="person-name">Shane Ranilla</div>
+                        <div class="person-dates">Living</div>
+                        <div class="person-relation">Wife</div>
+                    </a>
+                </div>
+
+                <!-- Next Generation -->
+                <div class="section-title">Next Generation</div>
+                <div class="generation">
+                    <div class="generation-label">Next Generation</div>
+
+                    <a href="alyssa-ranilla.html" class="person-card clickable">
+                        <img src="../images/bios/alyssa.jpg" alt="Alyssa" class="person-photo">
+                        <div class="person-name">Alyssa Ranilla</div>
+                        <div class="person-dates">Due April 5, 2026</div>
+                        <div class="person-relation">Daughter</div>
+                        <span class="coming-soon">Coming Soon! 💕</span>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Legend -->
+            <div class="tree-legend">
+                <div class="legend-item">
+                    <div class="legend-icon clickable"></div>
+                    <span>Click to view profile</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon expandable"></div>
+                    <span>Click to see parents</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon coming"></div>
+                    <span>Coming soon</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../script.js?v=1"></script>
+    <script src="../search-dynamic.js"></script>
+    <script>
+        // Interactive grandparent expansion
+        document.addEventListener('DOMContentLoaded', function () {
+            const expandableCards = document.querySelectorAll('.person-card.expandable');
+
+            expandableCards.forEach(card => {
+                card.addEventListener('click', function (e) {
+                    // Check if the click was on a link (bio page link)
+                    if (e.target.tagName === 'A' || e.target.closest('a')) {
+                        // Let the link work normally, don't expand the card
+                        return;
+                    }
+
+                    e.preventDefault();
+
+                    const grandparent = this.getAttribute('data-grandparent');
+                    const parentsSection = document.getElementById(grandparent + '-parents');
+
+                    // Close all other sections
+                    document.querySelectorAll('.great-grandparents-section').forEach(section => {
+                        if (section !== parentsSection) {
+                            section.classList.remove('expanded');
+                        }
+                    });
+
+                    // Remove expanded class from all other cards
+                    expandableCards.forEach(c => {
+                        if (c !== this) {
+                            c.classList.remove('expanded');
+                        }
+                    });
+
+                    // Toggle this section
+                    parentsSection.classList.toggle('expanded');
+                    this.classList.toggle('expanded');
+
+                    // Smooth scroll to the expanded section
+                    if (parentsSection.classList.contains('expanded')) {
+                        setTimeout(() => {
+                            parentsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 300);
+                    }
+                });
+            });
+
+            // Prevent card expansion when clicking on bio page links
+            document.querySelectorAll('.person-name a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent the card click event from firing
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
