@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Updates | Jorge Ranilla</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/png" href="../images/jr-logo.png">
+    <style>
+        /* Page-specific styles */
+        .opening-message {
+            background: linear-gradient(135deg, #fff5f7 0%, #ffffff 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2.5rem;
+            border-left: 4px solid #ff69b4;
+        }
+
+        .opening-message p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            margin: 0;
+            text-align: center;
+        }
+
+        .update-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .update-date {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #CD5C5C;
+            margin-bottom: 0.75rem;
+        }
+
+        .update-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .update-content p {
+            margin-bottom: 0.75rem;
+        }
+
+        .update-photo {
+            margin-top: 1.25rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .update-photo img {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-caption {
+            padding: 0.6rem;
+            background: #f8f9fa;
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .medical-notes-section {
+            background: #f8f9fa;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-top: 2.5rem;
+            text-align: center;
+        }
+
+        .medical-notes-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .medical-notes-section p {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-medical {
+            display: inline-block;
+            background: #2c3e50;
+            color: #fff;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .btn-medical:hover {
+            background: #CD5C5C;
+        }
+
+        .section-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .timeline-marker {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff69b4;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .language-toggle {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .language-toggle a {
+            color: #CD5C5C;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .language-toggle a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body data-title="Baby Updates">
+
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar">
+        <div class="breadcrumb-container">
+            <a href="../index.html">Inicio</a>
+            <span class="separator">›</span>
+            <span class="current-page">Baby Updates</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <section style="padding: 3rem 0;">
+        <div class="page-content">
+            <h1 class="page-title page-title--sm">Baby Updates</h1>
+
+            <!-- Language Toggle -->
+            <div
+                style="text-align: center; margin-bottom: 1.5rem; padding: 0.75rem; background: #f8f9fa; border-radius: 8px;">
+                <a href="index.html"
+                    style="color: #CD5C5C; text-decoration: none; font-weight: 500; font-size: 0.9rem;">EN | Read in
+                    English</a>
+            </div>
+
+            <!-- Page Description -->
+            <div style="max-width: 700px; margin: 0 auto 2.5rem; text-align: center;">
+                <p style="color: #666; font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem;">
+                    Este es nuestro centro de comunicación familiar para mantener a todos al tanto durante la
+                    hospitalización de Shane y
+                    el proceso de Baby Alyssa en la NICU.
+                    Para los que quieran estar informados sobre su progreso, esta es la mejor forma de mantenerse al
+                    día.
+                    Pueden ver las últimas noticias abajo o bajar para chequear las <a href="#galleries"
+                        style="color: #CD5C5C; text-decoration: underline;">fotos recientes</a> en nuestra sección de
+                    galería.
+                </p>
+                <p style="color: #999; font-size: 0.85rem; font-style: italic; margin: 0;">
+                    Esta página se irá actualizando conforme tengamos más información.
+                </p>
+            </div>
+
+            <!-- Opening Message -->
+            <div class="opening-message">
+                <p>💗 Estamos súper agradecidos de estar rodeados de un equipo increíble de profesionales médicos que
+                    las están cuidando con tanto cariño y amor. Tanto mamá como Baby Alyssa están bien. 💗</p>
+            </div>
+
+            <!-- Updates Section -->
+            <h2 class="section-header">Últimas Actualizaciones</h2>
+
+            <!-- Lunes, 16 de febrero — 4:30 PM Update -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Lunes, 16 de febrero — 4:30 PM
+                </div>
+                <div class="update-content">
+                    <p>¡Tengo unas noticias bien buenas! Desde temprano en la mañana y durante toda la tarde no ha
+                        habido contracciones. Shane sigue con buen apetito, y el corazoncito de Baby Alyssa sigue
+                        latiendo fuerte y reconfortante. Hoy los doctores reevaluaron a Shane y decidieron que puede
+                        ser dada de alta.</p>
+                    <p>Los doctores explicaron que ella ya recibió el curso completo de betametasona (las inyecciones
+                        de esteroides) para ayudar a madurar los pulmoncitos de Alyssa. Como ese tratamiento ya está
+                        completo, generalmente no se puede dar otra vez. Por esa razón, si ella es readmitida y el
+                        trabajo de parto avanza, probablemente dejarían que el parto continúe.</p>
+                    <p>La mandaron a casa con reposo absoluto en cama hasta el 24. Después de eso, puede poco a poco
+                        volver a sus actividades normales con algunas restricciones.</p>
+                    <p>Entendemos que esto sigue siendo un embarazo de alto riesgo y el parto podría pasar en cualquier
+                        momento, pero también hay una posibilidad real de que podamos ganar más semanas, lo cual sería
+                        bien beneficioso para ella.</p>
+                    <p>Seguimos confiando en Dios y les pedimos por favor que tengan a Shane y a Baby Alyssa en
+                        sus oraciones. Ella es una niñita fuerte y bien valiente.</p>
+                    <p>Los mantendremos al tanto.</p>
+                </div>
+            </div>
+
+            <!-- Monday, February 16 Update -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Lunes, 16 de febrero — 8:00 AM
+                </div>
+                <div class="update-content">
+                    <p>Shane por fin pudo descansar toda la noche y se despertó con mucho mejor ánimo. Los
+                        doctores también le quitaron la dieta restringida de líquidos claros, lo cual fue otro paso
+                        alentador. Ella
+                        está más tranquila y sigue mostrando buenas señales de estabilidad.</p>
+                    <p>Estamos bien agradecidos por las oraciones y el apoyo de todos. Cada hora que pasa es súper
+                        importante,
+                        ya que le da a los pulmoncitos de Baby Alyssa más tiempo para madurar y prepararse para
+                        cuando ella decida llegar.
+                    </p>
+                    <p>Seguimos esperando con paz y fe, agradecidos por el avance que estamos viendo.</p>
+                </div>
+            </div>
+
+            <!-- Monday, February 16 — 1:00 AM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Lunes, 16 de febrero — 1:00 AM
+                </div>
+                <div class="update-content">
+                    <p>Durante la noche el equipo médico empezó a ajustar el cuidado de Shane como parte del plan. Como
+                        su
+                        condición se había estabilizado, pudieron parar la medicación de magnesio y los fluidos
+                        intravenosos mientras
+                        seguían monitoreando su progreso.</p>
+                    <p>También la cambiaron de la cama de labor a una cama anteparto más cómoda, lo cual ella
+                        de inmediato agradeció. Le sacaron el catéter y el monitoreo fetal continuo ya no era
+                        necesario, una señal bien reconfortante de que las cosas se habían calmado.</p>
+                    <p>En general, Shane estaba mostrando un avance bien alentador.</p>
+                    <p>Para mí, esta fue también la primera noche en que por fin pude descansar después de estar
+                        despierto toda
+                        la noche anterior. Se sintió como un pequeño momento de alivio para los dos.</p>
+                </div>
+            </div>
+
+            <!-- Sunday, February 15 — 10:00 PM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 15 de febrero — 10:00 PM
+                </div>
+                <div class="update-content">
+                    <p>Para la noche ya habíamos recibido un montón de mensajes de familiares y amigos preguntando cómo
+                        estaban Shane y Baby Alyssa. Nos sentimos súper agradecidos por el cariño y la preocupación que
+                        todos nos han
+                        mostrado.</p>
+                    <p>Compartimos una actualización con nuestros familiares y les pedimos que tuvieran a Shane y Alyssa
+                        en sus oraciones.
+                        Creemos firmemente en el poder de la oración, y saber que tanta gente está orando por ellas
+                        nos da paz y fuerza durante este momento.</p>
+                    <p>El corazoncito de Baby Alyssa sigue fuerte, y Shane continúa bajo cuidado cercano y
+                        monitoreo. Estamos
+                        confiando en Dios en cada paso del camino y tomando las cosas un momento a la vez.</p>
+                    <p>Les pedimos por favor a todos los que lean esto que también las tengan en sus oraciones.</p>
+                </div>
+            </div>
+
+            <!-- Sunday, February 15 — 6:42 PM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 15 de febrero — 6:42 PM
+                </div>
+                <div class="update-content">
+                    <p>En la noche Shane fue revisada otra vez por el doctor. En ese momento ella estaba descansando
+                        tranquila
+                        y ya no sentía contracciones. Baby Alyssa se estaba moviendo bien y su latido del corazón
+                        seguía
+                        viéndose fuerte y reconfortante en el monitor.</p>
+                    <p>El equipo médico explicó que las medicinas estaban haciendo su trabajo. Shane siguió recibiendo
+                        magnesio durante la noche mientras el tratamiento de esteroides para los pulmoncitos de Alyssa
+                        completaba su curso de 24 horas.
+                        Después de eso, el plan sería parar con cuidado la medicación y seguir observándola
+                        en el hospital.</p>
+                    <p>Esta fue una noticia bien alentadora para nosotros, ya que mostró que el trabajo de parto se
+                        había calmado y tanto mamá
+                        como Baby Alyssa estaban estables. Pudimos descansar un poco más tranquilos sabiendo que las
+                        cosas se
+                        habían calmado.</p>
+                </div>
+            </div>
+
+            <!-- Sunday, February 15 — 4:00 PM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 15 de febrero — 4:00 PM
+                </div>
+                <div class="update-content">
+                    <p>Esa tarde mi hermano Victor nos sorprendió viniendo desde Charlotte. Hizo el
+                        viaje de 2½ horas solo para pasar un rato con nosotros, lo cual significó un montón. Trajo
+                        flores, una
+                        carta escrita a mano, y algo de comida para compartir, y su visita de verdad nos levantó el
+                        ánimo.</p>
+                    <p>Pasamos un momento bien chévere juntos conversando, haciendo preguntas, y simplemente
+                        acompañándonos.
+                        También pudimos conectarnos con María y mis viejos por videollamada para que todos
+                        pudieran ser parte del momento.</p>
+                    <p>Victor pudo ver el área de la NICU donde Alyssa se quedaría después del nacimiento mientras se
+                        pone más fuerte
+                        y se prepara para venir a casa. Verlo ayudó a todos a sentirnos más tranquilos sobre el cuidado
+                        que ella
+                        recibirá.</p>
+                    <p>Aunque le ofrecimos quedarse la noche, él prefirió manejar de regreso a casa para atender otros
+                        compromisos. Estuvimos súper agradecidos de que viniera solo para estar con nosotros durante
+                        este momento inesperado.</p>
+                    <p>Gracias, Victor, por tu cariño y apoyo — significó más para nosotros de lo que podemos expresar.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sunday, February 15 — 3:00 PM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 15 de febrero — 3:00 PM
+                </div>
+                <div class="update-content">
+                    <p>Durante la tarde tuvimos que tomar la difícil decisión de cancelar el baby shower que habíamos
+                        planeado para el 22 de febrero.</p>
+                    <p>Como Shane ahora tiene 4 cm de dilatación, los doctores consideran su embarazo de alto riesgo y
+                        ella
+                        se quedará en el hospital bajo observación hasta el parto. Por esa razón, quedó claro que
+                        no podríamos hacer la celebración como la habíamos planeado.</p>
+                    <p>Por respeto al tiempo y planes de viaje de todos, avisamos a todos los invitados a través de la
+                        página del evento
+                        y mensajes personales para que nadie hiciera arreglos al pedo.</p>
+                    <p>Esta no fue una decisión fácil para nosotros. Estábamos bien emocionados de celebrar la próxima
+                        llegada de Alyssa con todos ustedes. Pero ahorita nuestra prioridad es el descanso y cuidado de
+                        Shane, y
+                        para mí quedarme a su lado.</p>
+                    <p>Estamos súper agradecidos con todos los que confirmaron asistencia, mandaron mensajes, y sobre
+                        todo con los que ya han
+                        mandado regalos. Su amabilidad, comprensión y apoyo significan un montón para nosotros
+                        durante este momento inesperado.</p>
+                    <p>Estamos tomando las cosas un día a la vez, confiando en el plan de Dios, y enfocándonos en
+                        mantener a Shane
+                        y a Baby Alyssa seguras.</p>
+                    <p>Gracias por sus oraciones y cariño.</p>
+                </div>
+            </div>
+
+            <!-- Sunday, February 15 — 11:39 AM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 15 de febrero — 11:39 AM
+                </div>
+                <div class="update-content">
+                    <p>Más tarde esa mañana nos juntamos con el equipo de Neonatología (NICU). Vinieron a prepararnos
+                        por si acaso
+                        Alyssa decide llegar temprano. Esta es una visita de rutina cuando un bebé puede nacer
+                        prematuro,
+                        y fue más que nada una conversación educativa y reconfortante.</p>
+                    <p>Nos explicaron que a los bebés que nacen alrededor de las 33 semanas generalmente les va bien,
+                        pero todavía son un
+                        poco chiquitos y pueden necesitar ayuda temporal mientras terminan de desarrollarse fuera de la
+                        pancita.</p>
+                    <p>Algunas de las cosas que conversamos:</p>
+                    <p>• Soporte respiratorio:<br>
+                        Sus pulmoncitos todavía están madurando, así que puede necesitar un poco de oxígeno o una
+                        mascarilla pequeña de soporte respiratorio
+                        (como un flujo de aire suave por la nariz). Esto es común para bebés de esta edad y normalmente
+                        solo se necesita por un ratito.</p>
+                    <p>• Alimentación:<br>
+                        Aunque ella va a poder tragar, los bebés prematuros todavía no coordinan bien succionar,
+                        tragar y respirar. Por eso, puede que primero reciba leche a través de un tubito de alimentación
+                        que va por la nariz hasta el estómago (un tubo nasogástrico). Esto la ayuda a crecer y
+                        agarrar fuerza hasta que esté lista para lactar o tomar biberón de manera segura.</p>
+                    <p>• Temperatura y crecimiento:<br>
+                        Puede quedarse en una incubadora calientita al principio porque los bebés prematuros tienen
+                        problemas para mantener su
+                        temperatura corporal estable y queman calorías rapidísimo.</p>
+                    <p>• Monitoreo:<br>
+                        El equipo de la NICU va a monitorear todo el tiempo su frecuencia cardíaca, respiración y
+                        niveles de oxígeno mientras ella
+                        se adapta a la vida fuera de la pancita.</p>
+                    <p>También nos explicaron que la mayoría de los bebés en esta etapa se quedan en el hospital
+                        principalmente para crecer, aprender a
+                        alimentarse solitos, y agarrar fuerza. Muchos están listos para ir a casa cerca de las 37 a 38
+                        semanas una vez que
+                        pueden mantener su temperatura, comer normal, y seguir subiendo de peso.</p>
+                    <p>El equipo fue bien amable y paciente con nosotros. Pudimos hacer un montón de preguntas, y la
+                        conversación nos ayudó a entender qué esperar. Aunque esto no es como nos imaginamos estas
+                        semanas,
+                        nos sentimos tranquilos sabiendo que hay un plan claro y un equipo listo para cuidar a Alyssa.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sunday, February 15 — 10:03 AM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 15 de febrero — 10:03 AM
+                </div>
+                <div class="update-content">
+                    <p>Shane fue evaluada por el doctor en la mañana. Como su fuente no se había roto y ella estaba
+                        estable, no necesitaron revisar su cérvix otra vez y mejor siguieron con un monitoreo suave.
+                        Para este momento las contracciones habían bajado bastante, lo cual fue una señal bien
+                        alentadora.
+                        Los tratamientos parecían estar funcionando, y tanto Shane como Baby Alyssa estaban bien.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sunday, February 15 — 12:40 AM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 15 de febrero — 12:40 AM
+                </div>
+                <div class="update-content">
+                    <p>Shane fue oficialmente admitida a las 33 semanas por trabajo de parto prematuro. El objetivo de
+                        los doctores es
+                        calmar las cosas de manera segura y darle a Baby Alyssa todo el tiempo extra posible para
+                        crecer.</p>
+                    <p>Empezaron tratamientos para apoyar el desarrollo de Alyssa, incluyendo magnesio (para ayudar a
+                        proteger su
+                        cerebrito y calmar las contracciones) e inyecciones de esteroides para ayudar a madurar sus
+                        pulmoncitos. Ella recibió
+                        la primera inyección como a la 1:00 AM, y una segunda dosis estaba planeada 24 horas después.
+                    </p>
+                    <p>Shane está estable, cómoda, y recibiendo un cuidado increíble. Nos sentimos bien agradecidos por
+                        los doctores
+                        y enfermeras que han sido tan atentos y reconfortantes.</p>
+                </div>
+            </div>
+
+            <!-- Sunday, February 15 — 12:15 AM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 15 de febrero — 12:15 AM
+                </div>
+                <div class="update-content">
+                    <p>Llegamos al Women's Pavilion de WakeMed y el personal rapidito llevó a Shane para ser
+                        evaluada.
+                        El equipo fue amable, tranquilo, y bien atento. Después de examinarla, el doctor explicó que
+                        ella
+                        ya estaba en trabajo de parto temprano. Avisaron a su médico obstetra y vino al hospital. Shane
+                        fue
+                        admitida al piso de Labor & Delivery para que pudieran monitorear de cerca tanto a ella como a
+                        Baby Alyssa
+                        y mantenerlas seguras.</p>
+                </div>
+            </div>
+
+            <!-- Sunday, February 15 — 12:05 AM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 15 de febrero — 12:05 AM
+                </div>
+                <div class="update-content">
+                    <p>Mientras esperábamos que el doctor nos devolviera la llamada, conversamos sobre a qué hospital
+                        ir. El hospital más cerca
+                        estaba a solo unos 10 minutos, pero el hospital donde Shane había estado yendo para su
+                        control prenatal y donde habíamos planeado el nacimiento de Alyssa era WakeMed en Cary, como a
+                        35 minutos
+                        de la casa. Decidimos que sería mejor que sus doctores tuvieran todo su historial médico, así
+                        que
+                        empezamos a manejar hacia WakeMed. Al ratito, el doctor nos devolvió la llamada y también nos
+                        aconsejó ir
+                        a un hospital para evaluación. Para ese entonces, ya estábamos en camino.</p>
+                </div>
+            </div>
+
+            <!-- Saturday, February 14 — 11:50 PM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Sábado, 14 de febrero — 11:50 PM
+                </div>
+                <div class="update-content">
+                    <p>Shane intentó descansar, tomar agua, y cambiar de posición, esperando que las contracciones se
+                        calmaran,
+                        pero seguían viniendo. En ese momento llamamos al doctor obstetra de guardia para pedir
+                        orientación y
+                        asegurarnos de que estábamos haciendo lo correcto. Queríamos ser precavidos y no ignorar algo
+                        importante.</p>
+                </div>
+            </div>
+
+            <!-- Saturday, February 14 — 10:30 PM -->
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Sábado, 14 de febrero — 10:30 PM
+                </div>
+                <div class="update-content">
+                    <p>Shane empezó a sentirse incómoda con contracciones. Al principio pensamos que podían ser Braxton
+                        Hicks (contracciones de práctica), pero empezaron a venir más seguido y más fuertes. Escuchamos
+                        el latido del corazón de Baby Alyssa con el doppler fetal chiquito que tenemos en casa, y
+                        sonaba fuerte
+                        y reconfortante. También le revisamos la presión arterial a Shane y estaba normal. Incluso con
+                        descanso y
+                        harta agua, las contracciones siguieron durante la noche.</p>
+                </div>
+            </div>
+
+
+
+            <!-- Add more text-only updates here as progress continues -->
+            <!-- Example:
+            <div class="update-card">
+                <div class="update-date">
+                    <span class="timeline-marker"></span>
+                    Domingo, 16 de febrero, 2026
+                </div>
+                <div class="update-content">
+                    <p>Your update text here...</p>
+                </div>
+            </div>
+            -->
+
+            <!-- Photo Galleries Section -->
+            <h2 id="galleries" class="section-header" style="margin-top: 3rem;">Galerías de Fotos</h2>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+                <!-- Shane's Gallery -->
+                <a href="shane-gallery.html" style="text-decoration: none; color: inherit;">
+                    <div class="update-card"
+                        style="cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        <h3
+                            style="font-family: 'Playfair Display', serif; font-size: 1.25rem; color: #2c3e50; margin: 0 0 0.75rem;">
+                            📸 Progreso de Shane
+                        </h3>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
+                            Ver fotos del viaje y progreso de Shane durante la hospitalización.
+                        </p>
+                        <div
+                            style="background: #f8f9fa; padding: 0.75rem; border-radius: 8px; text-align: center; color: #CD5C5C; font-weight: 500; font-size: 0.9rem;">
+                            Ver Galería →
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Baby Alyssa's Gallery -->
+                <a href="baby-gallery.html" style="text-decoration: none; color: inherit;">
+                    <div class="update-card"
+                        style="cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        <h3
+                            style="font-family: 'Playfair Display', serif; font-size: 1.25rem; color: #2c3e50; margin: 0 0 0.75rem;">
+                            💕 Fotos de Baby Alyssa
+                        </h3>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
+                            Ver fotos del viaje de Baby Alyssa en la NICU. Las fotos se agregarán durante su
+                            estadía en la NICU.
+                        </p>
+                        <div
+                            style="background: #f8f9fa; padding: 0.75rem; border-radius: 8px; text-align: center; color: #CD5C5C; font-weight: 500; font-size: 0.9rem;">
+                            Ver Galería →
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <style>
+                .update-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+                }
+            </style>
+
+            <!-- Medical Notes Section -->
+            <div class="medical-notes-section">
+                <h3>📋 Información Médica Detallada</h3>
+                <p>Para los familiares que quieran leer las notas reales del doctor y enfermeras de MyChart, están
+                    disponibles acá abajo.</p>
+                <a href="notes.html" class="btn-medical">Ver Notas de MyChart</a>
+                <p style="margin-top: 0.75rem; font-size: 0.75rem; font-style: italic;">Estos son registros médicos
+                    detallados. Las actualizaciones de arriba dan la información clave en términos más simples.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="../script.js"></script>
+</body>
+
+</html>
