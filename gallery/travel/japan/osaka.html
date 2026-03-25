@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jorge Ranilla | Osaka, Japan</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="icon" type="image/png" href="../../../images/jr-logo.png">
+    <link rel="stylesheet" href="../travel-gallery.css">
+</head>
+
+<body data-title="Osaka" data-section="Gallery">
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+    <div class="breadcrumb-bar">
+        <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+    </div>
+    <main class="page-content">
+        <div class="gallery-container">
+
+            <div class="gallery-intro">
+                <img src="../../../images/flags/japan.svg" alt="Japan Flag" class="city-flag-icon">
+                <h2 class="page-title page-title--sm">Osaka, Japan</h2>
+                <p>Known as Japan's kitchen, Osaka blends culinary excellence with historic castles and modern
+                    entertainment. A city of contrasts and vibrant energy. Click on any image to enlarge and view the
+                    full-size picture.</p>
+            </div>
+            <div class="gallery-grid" id="gallery"></div>
+            <div class="back-link-container">
+                <a href="../../travel.html" class="back-to-map">← Back to Travel Map</a>
+            </div>
+        </div>
+    </main>
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#10094;</button>
+        <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#10095;</button>
+        <div class="lightbox-counter" id="lightboxCounter">1 / 12</div>
+        <div class="lightbox-content"><img src="" alt="Gallery image" id="lightboxImg"></div>
+
+    </div>
+    <script src="../../../script.js?v=1"></script>
+    <script src="../../../search-dynamic.js"></script>
+    <script src="../travel-lightbox.js"></script>
+    <script>
+        const gallery = document.getElementById('gallery');
+        // Local image path
+        const basePath = '../../../images/travel/japan/osaka/';
+        for (let i = 1; i <= 25; i++) {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.setAttribute('data-index', i - 1);
+            item.innerHTML = `<img src="${basePath}Osaka (${i}).png" alt="Osaka, Japan" loading="lazy">`;
+            gallery.appendChild(item);
+        }
+        initializeLightbox();
+    </script>
+</body>
+
+</html>
