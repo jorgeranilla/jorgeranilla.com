@@ -578,6 +578,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Family section - Other pages
       'my-story.html': ['Family', 'My Story'],
       'the-kids.html': ['Family', 'The Kids'],
+      'baptism.html': ['Family', "Alyssa's Baptism"],
+      'baptism-es.html': ['Family', "Alyssa's Baptism"],
 
       // Spanish versions - mirror English hierarchy
       'heritage-roots-es.html': ['Family', 'Heritage & Roots'],
