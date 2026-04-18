@@ -1,4 +1,4 @@
-﻿// Capture script source immediately before it becomes null in callbacks
+// Capture script source immediately before it becomes null in callbacks
 const appScriptSource = document.currentScript ? document.currentScript.src : null;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -578,8 +578,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Family section - Other pages
       'my-story.html': ['Family', 'My Story'],
       'the-kids.html': ['Family', 'The Kids'],
-      'baptism.html': ['Family', "Alyssa's Baptism"],
-      'baptism-es.html': ['Family', "Alyssa's Baptism"],
 
       // Spanish versions - mirror English hierarchy
       'heritage-roots-es.html': ['Family', 'Heritage & Roots'],
@@ -613,6 +611,14 @@ document.addEventListener("DOMContentLoaded", () => {
       'at-a-glance.html': ['Professional', 'At a Glance'],
       'resume.html': ['Professional', 'Resume'],
       'portfolio.html': ['Professional', 'Portfolio'],
+
+      // Baptism pages (English & Spanish, main + godparent subpages)
+      'baptism.html':            ["Alyssa's Baptism"],
+      'baptism-es.html':         ["Alyssa's Baptism"],
+      'baptism-godfather.html':  ["Alyssa's Baptism", "Letter to Godfather"],
+      'baptism-godfather-es.html': ["Alyssa's Baptism", "Letter to Godfather"],
+      'baptism-godmother.html':  ["Alyssa's Baptism", "Letter to Godmother"],
+      'baptism-godmother-es.html': ["Alyssa's Baptism", "Letter to Godmother"],
 
       // Blog section
       'latest-posts.html': ['Blog', 'Latest Posts'],
