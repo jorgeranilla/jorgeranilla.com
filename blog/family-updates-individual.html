@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jorge Ranilla | Family Update</title>
+    <meta name="description" content="A family update from Jorge Ranilla – family stories, memories, and heritage.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/png" href="../images/jr-logo.png">
+    <!-- Open Graph fallback (static) - specific post data set dynamically below -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://jorgeranilla.com/blog/family-updates-individual.html">
+    <meta property="og:title" content="Jorge Ranilla | Family Update">
+    <meta property="og:description" content="A family update from Jorge Ranilla.">
+    <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Jorge Ranilla | Family Update">
+    <meta name="twitter:description" content="A family update from Jorge Ranilla.">
+    <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
+</head>
+
+<body data-title="Family Update" data-section="Blog">
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <div class="breadcrumb-bar">
+        <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+    </div>
+
+    <main class="page-content">
+        <div id="post-container" style="max-width: 780px; margin: 0 auto;">
+            <div id="post-loading" class="post-loading">Loading post...</div>
+            <div id="post-error" class="post-error" style="display:none;">
+                <p>Sorry, we could not load this post.</p>
+                <a href="family-updates.html" class="heritage-read-more">← Back to Family Updates</a>
+            </div>
+            <article id="post-body" style="display:none;"></article>
+        </div>
+    </main>
+
+    <style>
+        .post-loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #888;
+            font-size: 1.05rem;
+            font-style: italic;
+        }
+
+        .post-error {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #888;
+        }
+
+        .post-header {
+            margin-bottom: 2rem;
+        }
+
+        .post-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #CD5C5C;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .post-back:hover {
+            color: #a03838;
+        }
+
+        .post-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .post-date {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #CD5C5C;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .post-tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #f5e5e5;
+            color: #a03838;
+            padding: 0.2rem 0.65rem;
+            border-radius: 20px;
+        }
+
+        .post-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            line-height: 1.3;
+            margin: 0 0 1rem;
+        }
+
+        .post-share-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .post-share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.45rem 1rem;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .post-share-btn:hover {
+            background: #CD5C5C;
+            color: white;
+            border-color: #CD5C5C;
+        }
+
+        .post-share-toast {
+            font-size: 0.8rem;
+            color: #4caf50;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .post-share-toast.visible {
+            opacity: 1;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 420px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .post-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .post-content p {
+            margin-bottom: 1.25rem;
+        }
+
+        .post-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .post-footer {
+            margin-top: 1.25rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .post-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+
+    <script>
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const postId = params.get('id');
+
+            if (!postId) {
+                document.getElementById('post-loading').style.display = 'none';
+                document.getElementById('post-error').style.display = 'block';
+                return;
+            }
+
+            const callbackName = 'postCallback_' + Date.now();
+
+            window[callbackName] = function (data) {
+                try {
+                    document.getElementById('post-loading').style.display = 'none';
+
+                    const entry = data.entry || (data.feed && data.feed.entry && data.feed.entry[0]);
+                    if (!entry) throw new Error('No entry found');
+
+                    const title = entry.title.$t;
+
+                    const date = new Date(entry.published.$t).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'long', day: 'numeric'
+                    });
+
+                    const tags = (entry.category || [])
+                        .map(c => c.term)
+                        .filter(t => t !== 'Family Updates');
+
+                    // Extract image
+                    let imageUrl = '';
+                    if (entry.media$thumbnail && entry.media$thumbnail.url) {
+                        imageUrl = entry.media$thumbnail.url.replace(/\/s\d+(-c)?\//, '/s1600/');
+                    }
+
+                    // Shareable URL for this page
+                    const shareUrl = 'https://jorgeranilla.com/blog/family-updates-individual.html?id=' + postId;
+
+                    const tagsHTML = tags.map(t => `<span class="post-tag">${t}</span>`).join('');
+                    const imageHTML = imageUrl ? `<img src="${imageUrl}" alt="${title}" class="post-image">` : '';
+
+                    // Strip Blogger inline font/color overrides so site CSS applies correctly
+                    function sanitizeContent(html) {
+                        const tmp = document.createElement('div');
+                        tmp.innerHTML = html;
+                        tmp.querySelectorAll('*').forEach(el => {
+                            el.style.removeProperty('font-family');
+                            el.style.removeProperty('font-size');
+                            el.style.removeProperty('color');
+                            el.style.removeProperty('background-color');
+                            el.style.removeProperty('background');
+                        });
+                        return tmp.innerHTML;
+                    }
+
+                    const rawContent = entry.content ? entry.content.$t : (entry.summary ? entry.summary.$t : '');
+                    const cleanContent = sanitizeContent(rawContent);
+
+                    const article = document.getElementById('post-body');
+                    article.innerHTML = `
+                        <div class="post-header">
+                            <div class="post-meta">
+                                <span class="post-date">${date}</span>
+                                ${tagsHTML}
+                            </div>
+                            <h1 class="post-title">${title}</h1>
+                        </div>
+                        ${imageHTML}
+                        <div class="post-content">
+                            ${cleanContent}
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-share-row" style="margin-bottom: 1.25rem;">
+                                <button class="post-share-btn" id="copy-link-btn" onclick="copyPostLink()">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92 0-1.61-1.31-2.92-2.92-2.92z"/>
+                                    </svg>
+                                    Share this post
+                                </button>
+                                <span class="post-share-toast" id="share-toast">Link copied!</span>
+                            </div>
+                            <a href="family-updates.html" class="post-back">← Back to Family Updates</a>
+                        </div>
+                    `;
+
+                    article.style.display = 'block';
+                    document.title = 'Jorge Ranilla | ' + title;
+                    window._postShareUrl = shareUrl;
+
+                } catch (e) {
+                    document.getElementById('post-loading').style.display = 'none';
+                    document.getElementById('post-error').style.display = 'block';
+                }
+
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `https://memoria-efimera.blogspot.com/feeds/posts/default/${postId}?alt=json-in-script&callback=${callbackName}`;
+            script.onerror = function () {
+                document.getElementById('post-loading').style.display = 'none';
+                document.getElementById('post-error').style.display = 'block';
+                delete window[callbackName];
+            };
+            document.head.appendChild(script);
+        })();
+
+        function copyPostLink() {
+            const url = window._postShareUrl || window.location.href;
+            navigator.clipboard.writeText(url).then(function () {
+                const toast = document.getElementById('share-toast');
+                if (toast) {
+                    toast.classList.add('visible');
+                    setTimeout(() => toast.classList.remove('visible'), 2500);
+                }
+            });
+        }
+    </script>
+
+    <script src="../script.js?v=1"></script>
+    <script src="../search-dynamic.js"></script>
+</body>
+
+</html>
