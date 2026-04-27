@@ -15,35 +15,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const now = new Date();
       const hour = now.getHours();
 
-      // Detect browser language
-      const userLang = navigator.language || navigator.userLanguage;
-      const isSpanish = userLang.toLowerCase().startsWith('es');
-
-      // Determine greeting based on time and language
+      // Always English greetings
       let greeting;
-      if (isSpanish) {
-        // Spanish greetings
-        if (hour < 12) {
-          greeting = 'Buenos Días';
-        } else if (hour < 20) {  // In Spanish, "Buenas Tardes" goes until 8pm
-          greeting = 'Buenas Tardes';
-        } else {
-          greeting = 'Buenas Noches';
-        }
+      if (hour < 12) {
+        greeting = 'Good Morning';
+      } else if (hour < 18) {
+        greeting = 'Good Afternoon';
       } else {
-        // English greetings
-        if (hour < 12) {
-          greeting = 'Good Morning';
-        } else if (hour < 18) {
-          greeting = 'Good Afternoon';
-        } else {
-          greeting = 'Good Evening';
-        }
+        greeting = 'Good Evening';
       }
 
-      // Format date based on language
+      // Always English date format
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      const locale = isSpanish ? 'es-PE' : 'en-US';  // Use Peruvian Spanish if Spanish
+      const locale = 'en-US';
       const dateString = now.toLocaleDateString(locale, options);
 
       // Update elements
@@ -129,7 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
       theKids: buildSectionLink('family', 'the-kids.html'),
       heritageRoots: buildSectionLink('family', 'heritage-roots.html'),
       familyTree: buildSectionLink('family', 'family-tree.html'),
-      ancestry: buildSectionLink('family', 'ancestry.html')
+      ancestry: buildSectionLink('family', 'ancestry.html'),
+      familyLogin: buildSectionLink('family', 'family-login.html')
     };
 
     // Labels based on language - User requested English labels ALWAYS
@@ -287,6 +272,13 @@ document.addEventListener("DOMContentLoaded", () => {
                   <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                 </svg>
               </button>
+
+              <!-- Family Members Login (Lock Icon) -->
+              <a href="${familyLinks.familyLogin}" class="search-icon-btn" aria-label="Family Members Login" title="Family Members Login">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                </svg>
+              </a>
 
           </div>
         </nav>
