@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Members Login | Jorge Ranilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" type="image/png" href="../images/jr-logo.png">
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jorgeranilla.com/family/family-login.html">
+  <meta property="og:title" content="Family Members Login | Jorge Ranilla">
+  <meta property="og:description" content="Private access area for family members.">
+  <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Family Members Login | Jorge Ranilla">
+  <meta name="twitter:description" content="Private access area for family members.">
+  <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
+  <!-- Robots: keep this page out of search engines -->
+  <meta name="robots" content="noindex, nofollow">
+</head>
+
+<body data-title="Family Members Login" data-section="Family">
+  <div id="social-rail-placeholder"></div>
+  <div id="header-placeholder"></div>
+
+  <div class="breadcrumb-bar">
+    <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+  </div>
+
+  <main class="fl-main">
+
+    <div class="fl-container">
+
+      <!-- ── LOGIN CARD ── -->
+      <div class="fl-card" id="fl-login-card">
+        <div class="fl-icon" aria-hidden="true">🏠</div>
+        <h1 class="fl-title">Family Members Login</h1>
+        <p class="fl-subtitle">
+          This area is reserved for family members only.<br>
+          Sign in with your Google account to access the Family Hub.
+        </p>
+
+        <div class="fl-divider"></div>
+
+        <!-- Google Identity Services button -->
+        <div id="g_id_onload"
+          data-client_id="893373173071-67h8fs92bnh62fgm6itddu0ub5bb7eru.apps.googleusercontent.com"
+          data-context="signin"
+          data-ux_mode="popup"
+          data-callback="flHandleCredential"
+          data-auto_prompt="false">
+        </div>
+
+        <div class="fl-btn-wrap">
+          <div class="g_id_signin"
+            data-type="standard"
+            data-shape="rectangular"
+            data-theme="outline"
+            data-text="signin_with"
+            data-size="large"
+            data-logo_alignment="left"
+            data-width="280">
+          </div>
+        </div>
+
+        <p class="fl-note">🔒 Sign-in is handled securely by Google. We never store your password.</p>
+      </div>
+
+      <!-- ── SUCCESS CARD ── -->
+      <div class="fl-card fl-card--success" id="fl-success-card" style="display:none;">
+        <div class="fl-icon" aria-hidden="true">✅</div>
+        <h2 class="fl-title">Welcome to the Family Hub!</h2>
+        <p class="fl-status-msg" id="fl-welcome-msg">Redirecting you now…</p>
+        <div class="fl-progress-bar">
+          <div class="fl-progress-fill" id="fl-progress-fill"></div>
+        </div>
+        <p class="fl-redirect-note">Redirecting in <span id="fl-countdown">3</span> seconds…</p>
+      </div>
+
+      <!-- ── DENIED CARD ── -->
+      <div class="fl-card fl-card--denied" id="fl-denied-card" style="display:none;">
+        <div class="fl-icon" aria-hidden="true">🚫</div>
+        <h2 class="fl-title">Access Denied</h2>
+        <p class="fl-status-msg">
+          The account <strong id="fl-denied-email"></strong> is not on the family access list.
+        </p>
+        <p class="fl-denied-help">
+          If you think this is a mistake, please contact Jorge to be added.
+        </p>
+        <button class="fl-retry-btn" id="fl-retry-btn" onclick="flReset()">Try a Different Account</button>
+      </div>
+
+    </div><!-- /.fl-container -->
+  </main>
+
+  <style>
+    /* ── LAYOUT ── */
+    .fl-main {
+      min-height: calc(100vh - 160px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      background: linear-gradient(145deg, #f5f6f8 0%, #eceef2 60%, #e8eaef 100%);
+    }
+
+    .fl-container {
+      width: 100%;
+      max-width: 460px;
+    }
+
+    /* ── CARD BASE ── */
+    .fl-card {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 52px 44px;
+      box-shadow:
+        0 4px 6px rgba(0,0,0,0.04),
+        0 12px 40px rgba(0,0,0,0.09);
+      text-align: center;
+      animation: flFadeUp 0.45s ease both;
+      border-top: 4px solid #2c3e50;
+    }
+
+    .fl-card--success { border-top-color: #27ae60; }
+    .fl-card--denied  { border-top-color: #CD5C5C; }
+
+    @keyframes flFadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    /* ── ICON ── */
+    .fl-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 18px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .fl-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin: 0 0 12px;
+      line-height: 1.25;
+    }
+
+    .fl-subtitle {
+      font-size: 0.95rem;
+      color: #777;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .fl-status-msg {
+      font-size: 0.95rem;
+      color: #555;
+      line-height: 1.6;
+      margin: 0 0 24px;
+    }
+
+    .fl-note {
+      font-size: 0.78rem;
+      color: #bbb;
+      margin: 18px 0 0;
+    }
+
+    .fl-denied-help {
+      font-size: 0.88rem;
+      color: #999;
+      line-height: 1.6;
+      margin: 0 0 28px;
+    }
+
+    .fl-redirect-note {
+      font-size: 0.82rem;
+      color: #aaa;
+      margin: 0;
+    }
+
+    /* ── DIVIDER ── */
+    .fl-divider {
+      height: 1px;
+      background: #f0f0f0;
+      margin: 28px 0;
+    }
+
+    /* ── GOOGLE BUTTON WRAPPER ── */
+    .fl-btn-wrap {
+      display: flex;
+      justify-content: center;
+      min-height: 44px;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .fl-progress-bar {
+      height: 5px;
+      background: #f0f0f0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .fl-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #27ae60, #2ecc71);
+      border-radius: 3px;
+      transition: width 3s linear;
+    }
+
+    /* ── RETRY BUTTON ── */
+    .fl-retry-btn {
+      display: inline-block;
+      background: #2c3e50;
+      color: #fff;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+      letter-spacing: 0.3px;
+    }
+
+    .fl-retry-btn:hover {
+      background: #CD5C5C;
+      transform: translateY(-1px);
+    }
+
+    #fl-denied-email {
+      color: #CD5C5C;
+      word-break: break-all;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 520px) {
+      .fl-card { padding: 36px 24px; }
+      .fl-title { font-size: 1.45rem; }
+    }
+  </style>
+
+  <script>
+    /* ── CONFIG ── */
+    const FL_APPROVED = [
+      "shanenim@gmail.com",
+      "victorranilla@gmail.com",
+      "mariaranilla@gmail.com"
+    ];
+
+    const FL_DRIVE = "https://drive.google.com/drive/folders/1TTd5U1IvGbNctYl-aPBPhBshjqBUjlR2?usp=drive_link";
+
+    /* ── JWT PARSER (no external lib needed) ── */
+    function flParseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(
+        decodeURIComponent(
+          atob(base64).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+          ).join('')
+        )
+      );
+    }
+
+    /* ── GOOGLE CALLBACK ── */
+    function flHandleCredential(response) {
+      const user  = flParseJwt(response.credential);
+      const email = user.email.toLowerCase();
+      const name  = user.given_name || user.name || 'Family Member';
+
+      if (FL_APPROVED.includes(email)) {
+        flShowSuccess(name);
+      } else {
+        flShowDenied(user.email);
+      }
+    }
+
+    /* ── SUCCESS ── */
+    function flShowSuccess(name) {
+      document.getElementById('fl-login-card').style.display = 'none';
+      const card = document.getElementById('fl-success-card');
+      card.style.display = 'block';
+      document.getElementById('fl-welcome-msg').textContent =
+        `Welcome, ${name}! Taking you to the Family Hub…`;
+
+      /* Animate progress bar */
+      setTimeout(() => {
+        document.getElementById('fl-progress-fill').style.width = '100%';
+      }, 60);
+
+      /* Countdown + redirect */
+      let secs = 3;
+      const el = document.getElementById('fl-countdown');
+      const timer = setInterval(() => {
+        secs--;
+        if (el) el.textContent = secs;
+        if (secs <= 0) {
+          clearInterval(timer);
+          window.location.href = FL_DRIVE;
+        }
+      }, 1000);
+    }
+
+    /* ── DENIED ── */
+    function flShowDenied(email) {
+      document.getElementById('fl-login-card').style.display = 'none';
+      document.getElementById('fl-denied-card').style.display = 'block';
+      document.getElementById('fl-denied-email').textContent = email;
+    }
+
+    /* ── RESET ── */
+    function flReset() {
+      document.getElementById('fl-denied-card').style.display = 'none';
+      document.getElementById('fl-login-card').style.display = 'block';
+      if (window.google) google.accounts.id.cancel();
+    }
+  </script>
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="../script.js?v=1"></script>
+  <script src="../search-dynamic.js"></script>
+</body>
+
+</html>
