@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jorge Ranilla | Little Alyssa 🩷</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="icon" type="image/png" href="../../../images/jr-logo.png">
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jorgeranilla.com/gallery/family/alyssa/alyssa-photos.html">
+    <meta property="og:title" content="Little Alyssa 🩷 | Jorge Ranilla">
+    <meta property="og:description" content="Every picture tells a story. This is Alyssa's — from her very first days in this world.">
+    <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Little Alyssa 🩷 | Jorge Ranilla">
+    <meta name="twitter:description" content="Every picture tells a story. This is Alyssa's — from her very first days in this world.">
+    <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
+    <link rel="stylesheet" href="../family-gallery.css">
+</head>
+
+<body data-title="Little Alyssa" data-section="Gallery">
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <div class="breadcrumb-bar">
+        <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+    </div>
+
+    <main class="page-content">
+        <div class="gallery-container">
+
+            <div class="gallery-intro">
+                <span class="album-emoji">🩷</span>
+                <h2 class="page-title page-title--sm">Little Alyssa</h2>
+                <p>
+                    Every picture tells a story. This is Alyssa's — from her very first breath in this world
+                    to every tiny milestone that follows. Click on any photo to enlarge it and take in the details
+                    of the little person who has completely stolen our hearts.
+                </p>
+                <div class="photo-count" id="photo-count" style="display:none;"></div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="gallery-loading" id="gallery-loading">
+                <div class="spinner"></div>
+                <p>Loading Alyssa's photos…</p>
+            </div>
+
+            <!-- Error State (hidden by default) -->
+            <div class="gallery-error" id="gallery-error" style="display:none;">
+                <p>😔 Couldn't load photos right now.<br>
+                   Please try refreshing the page, or <a href="../../../family/alyssa-ranilla.html">go back to Alyssa's profile</a>.</p>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-grid" id="gallery"></div>
+
+            <div class="back-link-container">
+                <a href="../../../family/alyssa-ranilla.html" class="back-to-profile">← Back to Alyssa's Profile</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#10094;</button>
+        <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#10095;</button>
+        <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
+        <div class="lightbox-content">
+            <img src="" alt="Alyssa's photo" id="lightboxImg">
+        </div>
+    </div>
+
+    <script src="../../../script.js?v=1"></script>
+    <script src="../../../search-dynamic.js"></script>
+    <script src="../family-lightbox.js"></script>
+    <script>
+        // ── CONFIG ──────────────────────────────────────────────────────────
+        const DRIVE_API_KEY = 'AIzaSyAVVnCSmCgZ5zaeNexLUJADq36qPP-yBbo';
+        const FOLDER_ID     = '1-wReYBRsvusbPHEm82Ca4XItIWN3lgHe';
+        // ────────────────────────────────────────────────────────────────────
+
+        async function loadPhotos() {
+            const loading = document.getElementById('gallery-loading');
+            const error   = document.getElementById('gallery-error');
+            const gallery = document.getElementById('gallery');
+            const count   = document.getElementById('photo-count');
+
+            try {
+                const q   = encodeURIComponent(`'${FOLDER_ID}' in parents and mimeType contains 'image/' and trashed = false`);
+                const url = `https://www.googleapis.com/drive/v3/files?q=${q}&key=${DRIVE_API_KEY}&fields=files(id,name)&orderBy=name&pageSize=200`;
+
+                const res  = await fetch(url);
+                const data = await res.json();
+
+                if (!res.ok || !data.files) throw new Error(data.error?.message || 'Drive API error');
+
+                const files = data.files;
+
+                if (files.length === 0) {
+                    loading.style.display = 'none';
+                    error.style.display   = 'block';
+                    error.querySelector('p').innerHTML = '📷 No photos yet — check back soon!';
+                    return;
+                }
+
+                files.forEach((file, i) => {
+                    const thumbUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`;
+                    const fullUrl  = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1600`;
+
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.setAttribute('data-index', i);
+                    item.setAttribute('data-full', fullUrl);
+                    item.innerHTML = `<img src="${thumbUrl}" alt="Alyssa – photo ${i + 1}" loading="lazy">`;
+                    gallery.appendChild(item);
+                });
+
+                loading.style.display = 'none';
+                count.textContent     = `${files.length} photo${files.length !== 1 ? 's' : ''}`;
+                count.style.display   = 'inline-block';
+
+                initializeLightbox();
+
+            } catch (err) {
+                console.error('Gallery load error:', err);
+                loading.style.display = 'none';
+                error.style.display   = 'block';
+            }
+        }
+
+        loadPhotos();
+    </script>
+</body>
+
+</html>
