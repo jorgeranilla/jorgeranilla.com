@@ -290,14 +290,18 @@ body {
         background: #e9ecef;
     }
 
-    /* Nav extras (search + language) */
+    /* Nav extras (search + lock) */
     .nav-extras {
         margin-top: 20px;
         padding-top: 20px;
+        padding-right: 20px;
         border-top: 1px solid #f0f0f0;
         display: flex;
-        justify-content: center;
-        gap: 20px;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+        gap: 0;
     }
 }
 

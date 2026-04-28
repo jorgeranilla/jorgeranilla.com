@@ -5,242 +5,110 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jorge Ranilla | Family Gallery</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
   <link rel="icon" type="image/png" href="../images/jr-logo.png">
-    <!-- Open Graph / Social Sharing -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jorgeranilla.com/gallery/family.html">
-    <meta property="og:title" content="Jorge Ranilla | Family Gallery">
-    <meta property="og:description" content="A space to share family stories, celebrate heritage, and preserve memories across generations.">
-    <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Jorge Ranilla | Family Gallery">
-    <meta name="twitter:description" content="A space to share family stories, celebrate heritage, and preserve memories across generations.">
-    <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jorgeranilla.com/gallery/family.html">
+  <meta property="og:title" content="Jorge Ranilla | Family Gallery">
+  <meta property="og:description" content="Capturing the joy of being together — family moments, milestones, and memories.">
+  <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jorge Ranilla | Family Gallery">
+  <meta name="twitter:description" content="Capturing the joy of being together — family moments, milestones, and memories.">
+  <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
+  <link rel="stylesheet" href="family/family-gallery.css">
 
   <style>
-    /* Gallery Container */
-    .gallery-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem 1rem 4rem;
+    /* ── Family gallery overrides ── */
+
+    /* Video play button overlay */
+    .gallery-item--video {
+      background: #1a1a1a;
     }
 
-    .gallery-intro {
-      text-align: center;
-      max-width: 700px;
-      margin: 0 auto 3rem;
+    .gallery-item--video img {
+      opacity: 0.75;
     }
 
-    .gallery-intro p {
-      color: #666;
-      font-size: 1.05rem;
-      line-height: 1.7;
-      margin-bottom: 2rem;
-    }
-
-    /* Uniform Grid Layout */
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 4rem;
-    }
-
-    @media (max-width: 600px) {
-      .gallery-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-    }
-
-    /* Gallery Items */
-    .gallery-item {
-      position: relative;
-      overflow: hidden;
-      border-radius: 12px;
-      cursor: pointer;
-      aspect-ratio: 1;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    .gallery-item:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-    }
-
-    .gallery-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.4s ease;
-    }
-
-    .gallery-item:hover img {
-      transform: scale(1.1);
-    }
-
-    /* Lightbox */
-    .lightbox {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.95);
-    }
-
-    .lightbox.active {
+    .video-play-btn {
+      position: absolute;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      animation: fadeIn 0.3s ease;
+      pointer-events: none;
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
+    .video-play-btn svg {
+      width: 56px;
+      height: 56px;
+      background: rgba(0,0,0,0.55);
+      border-radius: 50%;
+      padding: 12px;
+      transition: transform 0.2s ease;
     }
 
-    .lightbox-content {
-      position: relative;
-      max-width: 90%;
-      max-height: 90%;
-      animation: zoomIn 0.3s ease;
+    .gallery-item--video:hover .video-play-btn svg {
+      transform: scale(1.15);
     }
 
-    @keyframes zoomIn {
-      from {
-        transform: scale(0.8);
-        opacity: 0;
-      }
-
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .lightbox-content img {
-      max-width: 100%;
-      max-height: 90vh;
-      object-fit: contain;
-      border-radius: 4px;
-    }
-
-    .lightbox-close {
-      position: absolute;
-      top: 20px;
-      right: 35px;
-      color: #fff;
-      font-size: 40px;
-      font-weight: bold;
-      cursor: pointer;
-      background: none;
+    /* Lightbox video iframe */
+    #lightboxVideo {
+      display: none;
+      width: 90vw;
+      max-width: 960px;
+      height: 60vh;
       border: none;
-      z-index: 10001;
-      transition: color 0.3s ease;
+      border-radius: 6px;
     }
 
-    .lightbox-close:hover {
-      color: #bbb;
-    }
-
-    .lightbox-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: none;
-      font-size: 30px;
-      padding: 1rem 1.5rem;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.3s ease;
-      z-index: 10001;
-    }
-
-    .lightbox-nav:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .lightbox-prev {
-      left: 20px;
-    }
-
-    .lightbox-next {
-      right: 20px;
-    }
-
-    .lightbox-counter {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 1rem;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      z-index: 10001;
-    }
-
-    /* Google Photos CTA */
-    .google-photos-cta {
-      text-align: center;
-      padding: 2rem 1.5rem;
-      background: #f8f9fa;
-      border-radius: 8px;
-      max-width: 550px;
-      margin: 0 auto;
-    }
-
-    .google-photos-cta h3 {
-      font-family: 'Playfair Display', serif;
-      color: #2c3e50;
-      margin-bottom: 0.5rem;
-      font-size: 1.3rem;
-      font-weight: 600;
-    }
-
-    .google-photos-cta p {
-      color: #666;
-      margin-bottom: 1.25rem;
-      line-height: 1.6;
-      font-size: 0.95rem;
-    }
-
-    .google-photos-btn {
-      display: inline-flex;
+    /* ── Pagination ── */
+    .gallery-pagination {
+      display: none;
       align-items: center;
-      background: #34495e;
-      color: white;
-      padding: 0.7rem 1.75rem;
-      border-radius: 4px;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0 3rem;
+      flex-wrap: wrap;
     }
 
-    .google-photos-btn:hover {
+    .page-btn {
       background: #2c3e50;
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 6px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: #CD5C5C;
       transform: translateY(-2px);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .page-indicator {
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+      color: #666;
+      letter-spacing: 0.3px;
+    }
+
+    /* spinner color override for family gallery */
+    .spinner {
+      border-color: #e0e0e0;
+      border-top-color: #2c3e50;
     }
   </style>
 </head>
@@ -255,163 +123,233 @@
 
   <main class="page-content">
     <div class="gallery-container">
+
       <div class="gallery-intro">
         <h2 class="page-title page-title--sm">Family Gallery</h2>
         <p>
-          Capturing the joy of being together. These moments with the people I love most remind me what truly matters in
-          life. Click on any image to enlarge and view the full-size picture.
+          Capturing the joy of being together. These moments with the people I love most
+          remind me what truly matters in life. Click any photo or video to view it full size.
         </p>
+        <div class="photo-count" id="photo-count" style="display:none;"></div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="gallery-loading" id="gallery-loading">
+        <div class="spinner"></div>
+        <p>Loading family memories…</p>
+      </div>
+
+      <!-- Error State -->
+      <div class="gallery-error" id="gallery-error" style="display:none;">
+        <p>😔 Couldn't load photos right now. Please try refreshing the page.</p>
       </div>
 
       <!-- Gallery Grid -->
-      <div class="gallery-grid">
-        <div class="gallery-item" data-index="0">
-          <img src="../images/gallery-family/family (1).jpg" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="1">
-          <img src="../images/gallery-family/family (2).JPG" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="2">
-          <img src="../images/gallery-family/family (3).JPG" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="3">
-          <img src="../images/gallery-family/family (4).JPG" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="4">
-          <img src="../images/gallery-family/family (5).JPG" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="5">
-          <img src="../images/gallery-family/family (6).JPG" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="6">
-          <img src="../images/gallery-family/family (7).JPG" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="7">
-          <img src="../images/gallery-family/family (8).jpg" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="8">
-          <img src="../images/gallery-family/family (9).jpg" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="9">
-          <img src="../images/gallery-family/family (10).jpg" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="10">
-          <img src="../images/gallery-family/family (11).jpg" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="11">
-          <img src="../images/gallery-family/family (12).jpg" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="12">
-          <img src="../images/gallery-family/family (13).jpg" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="13">
-          <img src="../images/gallery-family/family (14).jpg" alt="Family moment" loading="lazy">
-        </div>
-        <div class="gallery-item" data-index="14">
-          <img src="../images/gallery-family/family (15).jpg" alt="Family moment" loading="lazy">
-        </div>
+      <div class="gallery-grid" id="gallery"></div>
+
+      <!-- Pagination -->
+      <div class="gallery-pagination" id="gallery-pagination">
+        <button class="page-btn" id="page-prev" onclick="changePage(-1)">← Previous</button>
+        <span class="page-indicator" id="page-indicator">Page 1 of 1</span>
+        <button class="page-btn" id="page-next" onclick="changePage(1)">Next →</button>
       </div>
 
-      <!-- Google Photos CTA -->
-      <div class="google-photos-cta">
-        <h3>See More Family Moments</h3>
-        <p>Explore our complete photo collection with hundreds of memories from holidays, celebrations, and everyday
-          adventures.</p>
-        <a href="https://photos.app.goo.gl/JTY9C5nR7QVvEr2e7" target="_blank" rel="noopener noreferrer"
-          class="google-photos-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
-            style="margin-right: 8px; vertical-align: middle;">
-            <path
-              d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-          </svg>
-          View Full Album on Google Photos
-        </a>
-      </div>
     </div>
   </main>
 
-  <!-- Lightbox -->
+  <!-- Lightbox (images + videos) -->
   <div class="lightbox" id="lightbox">
     <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
     <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#10094;</button>
     <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#10095;</button>
-    <div class="lightbox-counter" id="lightboxCounter">1 / 15</div>
+    <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
     <div class="lightbox-content">
-      <img src="" alt="Gallery image" id="lightboxImg">
+      <img src="" alt="Family photo" id="lightboxImg">
+      <iframe id="lightboxVideo" allowfullscreen allow="autoplay"></iframe>
     </div>
   </div>
 
   <script src="../script.js?v=1"></script>
   <script src="../search-dynamic.js"></script>
   <script>
-    // Lightbox functionality
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightboxImg');
-    const lightboxClose = document.getElementById('lightboxClose');
-    const lightboxPrev = document.getElementById('lightboxPrev');
-    const lightboxNext = document.getElementById('lightboxNext');
-    const lightboxCounter = document.getElementById('lightboxCounter');
-    const galleryItems = document.querySelectorAll('.gallery-item');
+    // ── CONFIG ─────────────────────────────────────────────
+    const DRIVE_API_KEY = 'AIzaSyDdZLKThI51bEjRtR_4_ILfltVkg6LbcpA';
+    const FOLDER_ID     = '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ';
+    const PAGE_SIZE     = 25;
+    // ───────────────────────────────────────────────────────
 
-    let currentIndex = 0;
-    const totalImages = galleryItems.length;
+    let allFiles    = [];
+    let currentPage = 0;
+    let lightboxIdx = 0;
 
-    // Open lightbox when clicking gallery item
-    galleryItems.forEach((item, index) => {
-      item.addEventListener('click', () => {
-        currentIndex = index;
-        openLightbox();
+    // ── LOAD ───────────────────────────────────────────────
+    async function loadGallery() {
+      const loading = document.getElementById('gallery-loading');
+      const error   = document.getElementById('gallery-error');
+
+      try {
+        const q   = encodeURIComponent(
+          `'${FOLDER_ID}' in parents and ` +
+          `(mimeType contains 'image/' or mimeType contains 'video/') and ` +
+          `trashed = false`
+        );
+        const url = `https://www.googleapis.com/drive/v3/files` +
+          `?q=${q}` +
+          `&key=${DRIVE_API_KEY}` +
+          `&fields=files(id,name,mimeType)` +
+          `&orderBy=createdTime desc` +
+          `&pageSize=200`;
+
+        const res  = await fetch(url);
+        const data = await res.json();
+
+        if (!res.ok || !data.files) throw new Error(data.error?.message || 'Drive API error');
+
+        allFiles = data.files.map(f => ({
+          id:   f.id,
+          name: f.name,
+          type: f.mimeType.startsWith('video/') ? 'video' : 'image'
+        }));
+
+        loading.style.display = 'none';
+
+        if (allFiles.length === 0) {
+          error.style.display = 'block';
+          error.querySelector('p').textContent = '📷 No photos yet — check back soon!';
+          return;
+        }
+
+        // Count badge
+        const imgs = allFiles.filter(f => f.type === 'image').length;
+        const vids = allFiles.filter(f => f.type === 'video').length;
+        let label  = `${imgs} photo${imgs !== 1 ? 's' : ''}`;
+        if (vids > 0) label += ` · ${vids} video${vids !== 1 ? 's' : ''}`;
+        const badge = document.getElementById('photo-count');
+        badge.textContent   = label;
+        badge.style.display = 'inline-block';
+
+        renderPage(0);
+        initLightbox();
+
+      } catch (err) {
+        console.error('Gallery load error:', err);
+        loading.style.display = 'none';
+        error.style.display   = 'block';
+      }
+    }
+
+    // ── RENDER PAGE ────────────────────────────────────────
+    function renderPage(page) {
+      currentPage = page;
+      const gallery    = document.getElementById('gallery');
+      const pagination = document.getElementById('gallery-pagination');
+      const indicator  = document.getElementById('page-indicator');
+      const prevBtn    = document.getElementById('page-prev');
+      const nextBtn    = document.getElementById('page-next');
+
+      gallery.innerHTML = '';
+
+      const totalPages = Math.ceil(allFiles.length / PAGE_SIZE);
+      const start      = page * PAGE_SIZE;
+      const slice      = allFiles.slice(start, start + PAGE_SIZE);
+
+      slice.forEach((file, localIdx) => {
+        const globalIdx = start + localIdx;
+        const thumb     = `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`;
+
+        const item = document.createElement('div');
+        item.className = 'gallery-item' + (file.type === 'video' ? ' gallery-item--video' : '');
+
+        if (file.type === 'video') {
+          item.innerHTML = `
+            <img src="${thumb}" alt="Family video" loading="lazy">
+            <div class="video-play-btn" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path fill="white" d="M8 5v14l11-7z"/></svg>
+            </div>`;
+        } else {
+          item.innerHTML = `<img src="${thumb}" alt="Family moment" loading="lazy">`;
+        }
+
+        item.addEventListener('click', () => openLightbox(globalIdx));
+        gallery.appendChild(item);
       });
-    });
 
-    function openLightbox() {
-      const img = galleryItems[currentIndex].querySelector('img');
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt;
-      updateCounter();
-      lightbox.classList.add('active');
+      // Pagination controls
+      if (totalPages > 1) {
+        pagination.style.display = 'flex';
+        indicator.textContent    = `Page ${page + 1} of ${totalPages}`;
+        prevBtn.disabled         = page === 0;
+        nextBtn.disabled         = page >= totalPages - 1;
+      } else {
+        pagination.style.display = 'none';
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function changePage(dir) {
+      const totalPages = Math.ceil(allFiles.length / PAGE_SIZE);
+      const next = currentPage + dir;
+      if (next >= 0 && next < totalPages) renderPage(next);
+    }
+
+    // ── LIGHTBOX ───────────────────────────────────────────
+    function initLightbox() {
+      const lb = document.getElementById('lightbox');
+      document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+      document.getElementById('lightboxNext').addEventListener('click', () => shiftLightbox(1));
+      document.getElementById('lightboxPrev').addEventListener('click', () => shiftLightbox(-1));
+      lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+      document.addEventListener('keydown', e => {
+        if (!lb.classList.contains('active')) return;
+        if (e.key === 'Escape')     closeLightbox();
+        if (e.key === 'ArrowRight') shiftLightbox(1);
+        if (e.key === 'ArrowLeft')  shiftLightbox(-1);
+      });
+    }
+
+    function openLightbox(globalIdx) {
+      lightboxIdx = globalIdx;
+      showItem();
+      document.getElementById('lightbox').classList.add('active');
       document.body.style.overflow = 'hidden';
     }
 
+    function showItem() {
+      const file    = allFiles[lightboxIdx];
+      const img     = document.getElementById('lightboxImg');
+      const video   = document.getElementById('lightboxVideo');
+      const counter = document.getElementById('lightboxCounter');
+
+      counter.textContent = `${lightboxIdx + 1} / ${allFiles.length}`;
+
+      if (file.type === 'video') {
+        img.style.display   = 'none';
+        video.style.display = 'block';
+        video.src = `https://drive.google.com/file/d/${file.id}/preview`;
+      } else {
+        video.src           = ''; // stop any playing video
+        video.style.display = 'none';
+        img.style.display   = 'block';
+        img.src = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1600`;
+        img.alt = file.name;
+      }
+    }
+
+    function shiftLightbox(dir) {
+      const next = lightboxIdx + dir;
+      if (next < 0 || next >= allFiles.length) return;
+      lightboxIdx = next;
+      showItem();
+    }
+
     function closeLightbox() {
-      lightbox.classList.remove('active');
+      document.getElementById('lightbox').classList.remove('active');
+      document.getElementById('lightboxVideo').src = ''; // stop video
       document.body.style.overflow = '';
     }
 
-    function updateCounter() {
-      lightboxCounter.textContent = `${currentIndex + 1} / ${totalImages}`;
-    }
-
-    function showNext() {
-      currentIndex = (currentIndex + 1) % totalImages;
-      openLightbox();
-    }
-
-    function showPrev() {
-      currentIndex = (currentIndex - 1 + totalImages) % totalImages;
-      openLightbox();
-    }
-
-    // Event listeners
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightboxNext.addEventListener('click', showNext);
-    lightboxPrev.addEventListener('click', showPrev);
-
-    // Close on background click
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) {
-        closeLightbox();
-      }
-    });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      if (!lightbox.classList.contains('active')) return;
-
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowRight') showNext();
-      if (e.key === 'ArrowLeft') showPrev();
-    });
+    loadGallery();
   </script>
 </body>
 

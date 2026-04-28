@@ -251,12 +251,52 @@
 /* ── Photo count badge ── */
 .photo-count {
   display: inline-block;
-  background: #fce8ef;
-  color: #c0617a;
+  background: #eef0f4;
+  color: #2c3e50;
   font-size: 0.8rem;
   font-weight: 500;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   margin-bottom: 1.5rem;
+  letter-spacing: 0.3px;
+}
+
+/* ── Pagination ── */
+.gallery-pagination {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2rem 0 3rem;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  background: #2c3e50;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #CD5C5C;
+  transform: translateY(-2px);
+}
+
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.page-indicator {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  color: #666;
   letter-spacing: 0.3px;
 }
