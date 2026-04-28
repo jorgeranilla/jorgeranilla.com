@@ -182,6 +182,13 @@
     let currentPage = 0;
     let lightboxIdx = 0;
 
+    function compareFilesByName(a, b) {
+      return b.name.localeCompare(a.name, undefined, {
+        numeric: true,
+        sensitivity: 'base'
+      });
+    }
+
     // ── LOAD ───────────────────────────────────────────────
     async function loadGallery() {
       const loading = document.getElementById('gallery-loading');
@@ -209,7 +216,7 @@
           id:   f.id,
           name: f.name,
           type: f.mimeType.startsWith('video/') ? 'video' : 'image'
-        }));
+        })).sort(compareFilesByName);
 
         loading.style.display = 'none';
 
