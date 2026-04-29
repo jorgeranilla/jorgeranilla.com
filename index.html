@@ -843,6 +843,49 @@
             }
         }
 
+        .calendar-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0px;
+        }
+
+        .calendar-tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #7f8c8d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+        }
+
+        .calendar-tab-btn:hover {
+            color: #CD5C5C;
+        }
+
+        .calendar-tab-btn.active {
+            color: #CD5C5C;
+            border-bottom-color: #CD5C5C;
+        }
+
+        .calendar-tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .calendar-event {
             padding: 0.75rem;
             margin-bottom: 0.75rem;
@@ -1235,8 +1278,13 @@
                 const now = new Date();
                 const timeMin = now.toISOString();
                 
-                // Fetch upcoming events from Google Calendar API
-                const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${encodeURIComponent(timeMin)}&singleEvents=true&orderBy=startTime&maxResults=5`;
+                // Calculate exactly 90 days from now
+                const futureDate = new Date();
+                futureDate.setDate(now.getDate() + 90);
+                const timeMax = futureDate.toISOString();
+                
+                // Fetch upcoming events from Google Calendar API for the next 90 days
+                const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true&orderBy=startTime&maxResults=50`;
                 
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -1247,28 +1295,87 @@
                 const events = data.items || [];
                 
                 if (events.length === 0) {
-                    container.innerHTML = '<p class="no-events">No upcoming events scheduled</p>';
+                    container.innerHTML = '<p class="no-events">No upcoming events in the next 90 days</p>';
                 } else {
-                    container.innerHTML = events.map(event => {
-                        // Google API returns 'date' for all-day events and 'dateTime' for timed events
-                        const start = event.start.dateTime || event.start.date;
-                        const startDate = new Date(start);
-                        const isAllDay = !event.start.dateTime;
+                    let tabsHtml = '<div class="calendar-tabs">';
+                    let contentHtml = '';
+                    
+                    // Group events by month
+                    const groupedEvents = {};
+                    events.forEach(event => {
+                        let startDate;
+                        const isAllDay = !!event.start.date;
+                        if (isAllDay) {
+                            // All-day event: 'YYYY-MM-DD'. Parse locally.
+                            const parts = event.start.date.split('-');
+                            startDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                        } else {
+                            startDate = new Date(event.start.dateTime);
+                        }
                         
-                        return `
-                        <div class="calendar-event calendar-jorge">
-                            <div class="event-date">${formatDate(startDate)}</div>
-                            <div class="event-title">${escapeHtml(event.summary || 'Busy')}</div>
-                            ${!isAllDay ? `<div class="event-time">${formatTime(startDate)}</div>` : ''}
-                        </div>
-                    `;
-                    }).join('');
+                        const monthKey = startDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+                        if (!groupedEvents[monthKey]) {
+                            groupedEvents[monthKey] = [];
+                        }
+                        event.parsedStartDate = startDate;
+                        event.isAllDay = isAllDay;
+                        groupedEvents[monthKey].push(event);
+                    });
+
+                    // Generate tabs for exactly the next 3 months
+                    const monthsToGenerate = [];
+                    for(let i=0; i<3; i++) {
+                        const m = new Date(now.getFullYear(), now.getMonth() + i, 1);
+                        monthsToGenerate.push(m.toLocaleString('en-US', { month: 'long', year: 'numeric' }));
+                    }
+
+                    monthsToGenerate.forEach((monthKey, index) => {
+                        const isActive = index === 0;
+                        const safeId = 'tab-' + monthKey.replace(' ', '-');
+                        // Shorten month name for the tab (e.g., "MAY 2026" -> "MAY")
+                        const shortMonth = monthKey.split(' ')[0].toUpperCase();
+                        
+                        tabsHtml += `<button class="calendar-tab-btn ${isActive ? 'active' : ''}" onclick="window.switchCalendarTab(event, '${safeId}')">${shortMonth}</button>`;
+                        
+                        contentHtml += `<div id="${safeId}" class="calendar-tab-content" style="display: ${isActive ? 'block' : 'none'};">`;
+                        
+                        const monthEvents = groupedEvents[monthKey] || [];
+                        if (monthEvents.length === 0) {
+                            contentHtml += `<p class="no-events">No events scheduled</p>`;
+                        } else {
+                            monthEvents.forEach(ev => {
+                                contentHtml += `
+                                <div class="calendar-event calendar-jorge">
+                                    <div class="event-date">${formatDate(ev.parsedStartDate)}</div>
+                                    <div class="event-title">${escapeHtml(ev.summary || 'Busy')}</div>
+                                    ${!ev.isAllDay ? `<div class="event-time">${formatTime(ev.parsedStartDate)}</div>` : ''}
+                                </div>`;
+                            });
+                        }
+                        contentHtml += `</div>`;
+                    });
+                    
+                    tabsHtml += '</div>';
+                    container.innerHTML = tabsHtml + contentHtml;
                 }
             } catch (error) {
                 console.error('Error loading calendar:', error);
                 container.innerHTML = '<p class="no-events">Unable to load calendar events</p>';
             }
         }
+
+        window.switchCalendarTab = function(evt, monthId) {
+            const contents = document.getElementsByClassName('calendar-tab-content');
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].style.display = 'none';
+            }
+            const btns = document.getElementsByClassName('calendar-tab-btn');
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].className = btns[i].className.replace(' active', '');
+            }
+            document.getElementById(monthId).style.display = 'block';
+            evt.currentTarget.className += ' active';
+        };
 
         function formatDate(date) {
             const options = { month: 'short', day: 'numeric', year: 'numeric' };
