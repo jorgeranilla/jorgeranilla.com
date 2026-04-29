@@ -442,10 +442,10 @@
                                     </p>
                                 </div>
                                 <div style="text-align: center; margin-top: 1rem;">
-                                    <a href="webcal://p28-caldav.icloud.com/published/2/NDM1OTUwNDUwNDM1OTUwNAW-NnFvg5CAGZxvglEnES3szhc89SfGdXkoVSB37l4P"
+                                    <a href="webcal://calendar.google.com/calendar/ical/jorgeranilla%40gmail.com/public/basic.ics"
                                         class="subscribe-btn"
                                         style="display: inline-block; padding: 0.5rem 1rem; background: #CD5C5C; color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem; transition: background 0.3s;">
-                                        📅 Subscribe to My Calendar
+                                        📅 Subscribe to Calendar
                                     </a>
                                 </div>
                 </div>
@@ -1225,129 +1225,48 @@
     <script src="script.js?v=1"></script>
     <script src="search-dynamic.js"></script>
     <script>
-        // Calendar ICS Parser
+        // Google Calendar API Integration
         async function loadCalendarEvents() {
-            // Multiple calendar URLs to fetch and merge
-            const calendarUrls = [
-                'https://p28-caldav.icloud.com/published/2/NDM1OTUwNDUwNDM1OTUwNAW-NnFvg5CAGZxvglEnES3szhc89SfGdXkoVSB37l4P', // Jorge's calendar
-                'https://p105-caldav.icloud.com/published/2/MTkzNTI5NDgzODE5MzUyOduLi15nh99WBjttuS3QYV2FNBl5aVH4MPAZpbWPbOIuHa5UU2dehT8Ms96p3k14zsfBJkaeeS5Jx3IHncV6EhQ'  // Wife's calendar
-            ];
             const container = document.getElementById('calendar-events');
-
+            const apiKey = 'AIzaSyC8TYHxr0wwpuwpKc5RH4K5aD1p4KG4XE0';
+            const calendarId = 'jorgeranilla@gmail.com';
+            
             try {
-                // Use AllOrigins CORS proxy (more reliable than corsproxy.io)
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
-
-                // Fetch all calendars in parallel
-                const fetchPromises = calendarUrls.map(url =>
-                    fetch(proxyUrl + encodeURIComponent(url)).then(r => r.text())
-                );
-                const icsDataArray = await Promise.all(fetchPromises);
-
-                // Parse events from all calendars and merge them
-                let events = [];
-                icsDataArray.forEach((icsData, index) => {
-                    const calendarEvents = parseICS(icsData);
-                    // Tag each event with its calendar source
-                    calendarEvents.forEach(event => {
-                        event.calendarSource = index; // 0 = Jorge's, 1 = Wife's
-                    });
-                    events = events.concat(calendarEvents);
-                });
-
-                // Filter and sort upcoming events
                 const now = new Date();
-                const upcomingEvents = events
-                    .filter(event => event.start >= now)
-                    .sort((a, b) => a.start - b.start)
-                    .slice(0, 5); // Show next 5 events
-
-                // Display events
-                if (upcomingEvents.length === 0) {
+                const timeMin = now.toISOString();
+                
+                // Fetch upcoming events from Google Calendar API
+                const url = \`https://www.googleapis.com/calendar/v3/calendars/\${encodeURIComponent(calendarId)}/events?key=\${apiKey}&timeMin=\${encodeURIComponent(timeMin)}&singleEvents=true&orderBy=startTime&maxResults=5\`;
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                const events = data.items || [];
+                
+                if (events.length === 0) {
                     container.innerHTML = '<p class="no-events">No upcoming events scheduled</p>';
                 } else {
-                    container.innerHTML = upcomingEvents.map(event => {
-                        const sourceClass = event.calendarSource === 0 ? 'calendar-jorge' : 'calendar-wife';
-                        return `
-                        <div class="calendar-event ${sourceClass}">
-                            <div class="event-date">${formatDate(event.start)}</div>
-                            <div class="event-title">${escapeHtml(event.title)}</div>
-                            ${event.time ? `<div class="event-time">${event.time}</div>` : ''}
+                    container.innerHTML = events.map(event => {
+                        // Google API returns 'date' for all-day events and 'dateTime' for timed events
+                        const start = event.start.dateTime || event.start.date;
+                        const startDate = new Date(start);
+                        const isAllDay = !event.start.dateTime;
+                        
+                        return \`
+                        <div class="calendar-event calendar-jorge">
+                            <div class="event-date">\${formatDate(startDate)}</div>
+                            <div class="event-title">\${escapeHtml(event.summary || 'Busy')}</div>
+                            \${!isAllDay ? \`<div class="event-time">\${formatTime(startDate)}</div>\` : ''}
                         </div>
-                    `;
+                    \`;
                     }).join('');
                 }
             } catch (error) {
                 console.error('Error loading calendar:', error);
                 container.innerHTML = '<p class="no-events">Unable to load calendar events</p>';
-            }
-        }
-
-        function parseICS(icsData) {
-            const events = [];
-            const lines = icsData.split(/\r?\n/);
-            let currentEvent = null;
-
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i].trim();
-
-                // Handle line folding (lines starting with space are continuations)
-                while (i + 1 < lines.length && lines[i + 1].match(/^[ \t]/)) {
-                    line += lines[++i].trim();
-                }
-
-                if (line === 'BEGIN:VEVENT') {
-                    currentEvent = {};
-                } else if (line === 'END:VEVENT' && currentEvent) {
-                    if (currentEvent.start && currentEvent.title) {
-                        events.push(currentEvent);
-                    }
-                    currentEvent = null;
-                } else if (currentEvent) {
-                    if (line.startsWith('DTSTART')) {
-                        currentEvent.start = parseICSDate(line);
-                        currentEvent.isAllDay = !line.includes('T');
-                        // Format time for display if not all-day
-                        if (!currentEvent.isAllDay && currentEvent.start) {
-                            currentEvent.time = formatTime(currentEvent.start);
-                        }
-                    } else if (line.startsWith('DTEND')) {
-                        currentEvent.end = parseICSDate(line);
-                    } else if (line.startsWith('SUMMARY:')) {
-                        currentEvent.title = line.substring(8).replace(/\\n/g, ' ').replace(/\\,/g, ',');
-                    }
-                }
-            }
-
-            return events;
-        }
-
-        function parseICSDate(line) {
-            // Check if this has a TZID (timezone identifier)
-            const hasTZID = line.includes('TZID=');
-            const match = line.match(/[:;](\d{8})(T(\d{6})Z?)?/);
-            if (!match) return null;
-
-            const dateStr = match[1];
-            const timeStr = match[3];
-
-            const year = parseInt(dateStr.substring(0, 4));
-            const month = parseInt(dateStr.substring(4, 6)) - 1;
-            const day = parseInt(dateStr.substring(6, 8));
-
-            if (timeStr) {
-                const hour = parseInt(timeStr.substring(0, 2));
-                const minute = parseInt(timeStr.substring(2, 4));
-
-                // If TZID is present, treat as local time (not UTC)
-                if (hasTZID) {
-                    return new Date(year, month, day, hour, minute);
-                } else {
-                    // Otherwise treat as UTC
-                    return new Date(Date.UTC(year, month, day, hour, minute));
-                }
-            } else {
-                return new Date(year, month, day);
             }
         }
 
