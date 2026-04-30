@@ -568,8 +568,8 @@
 
                     <script>
                         document.addEventListener("DOMContentLoaded", function() {
-                            const TOKEN = "THAARXOqFTY2FBYmF1RjV3dHFyYnNIQTB3QWVSM2hDWWxKeWwyeV9NUVNVdmF0ZAXN4YnR4Q1hDR2VvZAmhNQzNHaW9COFRpeXVjdVV3UWRzbDhBNGd4YW9WMml2T2EzQVpia2w3bUZA3SDZAZAYllxckdMSDFQZAmh0UDRlWGZAWT3F3VHhXZA3ZASdUZAuTUN1ZAHJMUjgZD";
-                            const API_URL = `https://graph.threads.net/v1.0/me/threads?fields=id,media_type,media_url,permalink,text,timestamp,username&access_token=${TOKEN}`;
+                            // We are now fetching securely from our Google Apps Script middleman!
+                            const API_URL = "https://script.google.com/macros/s/AKfycbyJlXhmVhvwrVksQQFl_MJcMk6ZRcVMTmfx8yd-co_mfyULfXLnjI9tcQUEp43L4pdoLA/exec";
                             const container = document.getElementById("threads-feed");
 
                             fetch(API_URL)
