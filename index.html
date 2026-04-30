@@ -136,8 +136,19 @@
                         people and places that shaped who I am.
                     </p>
                 </div>
-                <div class="intro-subscribe" style="padding: 1rem; overflow: hidden;">
-                    <iframe src="https://jorgeranilla.substack.com/embed" width="100%" height="320" style="border:1px solid #EEE; background:white; border-radius: 8px;" frameborder="0" scrolling="no"></iframe>
+                <div class="intro-subscribe">
+                    <h3 class="subscribe-title">Stay Connected</h3>
+                    <p class="subscribe-description">
+                        Get updates on family events, new posts, and announcements.
+                    </p>
+                    <form action="https://jorgeranilla.substack.com/subscribe" method="GET" target="_blank"
+                        class="embeddable-buttondown-form">
+                        <input type="email" name="email" id="bd-email" placeholder="Enter your email" required />
+                        <button type="submit" class="subscribe-button">Subscribe</button>
+                    </form>
+                    <p class="subscription-note">
+                        Unsubscribe anytime.
+                    </p>
                 </div>
             </div>
         </div>
@@ -649,7 +660,91 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
+        .subscribe-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 0.5rem;
+            text-align: center;
+        }
 
+        .subscribe-description {
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+
+        /* Email Subscription Styles */
+        .email-subscription {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .subscription-description {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+
+        .embeddable-buttondown-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .embeddable-buttondown-form input[type="email"] {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .embeddable-buttondown-form input[type="email"]:focus {
+            outline: none;
+            border-color: #CD5C5C;
+            box-shadow: 0 0 0 3px rgba(205, 92, 92, 0.1);
+        }
+
+        .subscribe-button {
+            padding: 0.75rem 1.5rem;
+            background: #CD5C5C;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: 'Roboto', sans-serif;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            width: 100%;
+        }
+
+        .subscribe-button:hover {
+            background: #b84c4c;
+            transform: translateY(-1px);
+        }
+
+        .subscribe-button:active {
+            transform: translateY(0);
+        }
+
+        .subscription-note {
+            color: #999;
+            font-size: 0.75rem;
+            text-align: center;
+            margin: 0;
+            font-style: italic;
+        }
 
         /* Responsive styles for introduction and subscription */
         @media (max-width: 768px) {
