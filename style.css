@@ -1212,46 +1212,25 @@ body {
         grid-template-columns: 1fr !important;
     }
 
-    /* Swipeable Updates Logic */
+    /* Stack Updates Vertically instead of swipe logic */
     .updates-grid {
-        display: flex !important;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        gap: 15px;
-        /* Slightly tighter gap */
-        padding-bottom: 20px;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        padding-left: 20px;
-        /* Force start from left logic */
-        padding-right: 20px;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 30px;
     }
 
     .updates-grid::-webkit-scrollbar {
         display: none;
     }
 
-    /* Swipe hint for Updates */
+    /* Swipe hint for Updates no longer needed */
     .recent-updates .section-title::after {
-        content: "← Swipe to explore →";
-        display: block;
-        margin-top: 5px;
-        font-size: 0.8rem;
-        color: #888;
-        font-weight: 400;
-        font-style: italic;
-        text-transform: none;
-        letter-spacing: normal;
-        animation: pulse 2s infinite;
+        display: none;
     }
 
     .update-column {
-        width: 85vw !important;
-        /* Shows a peek of the next card */
-        flex: 0 0 85vw;
-        scroll-snap-align: start;
-        /* Align left so right side peeks */
-
+        width: 100% !important;
+        flex: none;
     }
 
     /* Typography */
