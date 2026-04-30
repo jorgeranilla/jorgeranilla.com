@@ -564,6 +564,11 @@
                             margin-top: 10px;
                             border: 1px solid #eee;
                         }
+                        @media (max-width: 768px) {
+                            .thread-post, .threads-header {
+                                padding: 14px 14px;
+                            }
+                        }
                     </style>
 
                     <script>
@@ -807,6 +812,13 @@
             overflow-y: auto;
             /* For Firefox */
             scrollbar-width: thin;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .update-column {
+                padding: 1rem 0.75rem;
+            }
         }
 
         /* Customize scrollbar to be cleaner */
@@ -845,6 +857,7 @@
         .calendar-tabs {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 15px;
             margin-bottom: 1.5rem;
             border-bottom: 2px solid #eee;
