@@ -1,230 +1,320 @@
 ﻿[
     {
-        "title":  "Baby Alyssa\u0027s Gallery | Baby Updates",
-        "url":  "baby-updates/baby-gallery.html"
-    },
-    {
-        "title":  "Baby Updates | Jorge Ranilla",
-        "url":  "baby-updates/index.html"
-    },
-    {
-        "title":  "MyChart Medical Notes | Baby Updates",
-        "url":  "baby-updates/notes.html"
-    },
-    {
-        "title":  "Shane\u0027s Progress Gallery | Baby Updates",
-        "url":  "baby-updates/shane-gallery.html"
-    },
-    {
         "title":  "Family Updates",
-        "url":  "blog/family-updates.html"
+        "url":  "blog/family-updates.html",
+        "section":  "blog",
+        "content":  "Jorge Ranilla | Family Updates Family Updates \u0026 News Celebrating milestones, welcoming new members, and keeping our family connected. Loading family updates..."
     },
     {
         "title":  "Family Update",
-        "url":  "blog/family-updates-individual.html"
+        "url":  "blog/family-updates-individual.html",
+        "section":  "blog",
+        "content":  "Jorge Ranilla | Family Update Loading post... Sorry, we could not load this post. ← Back to Family Updates"
     },
     {
         "title":  "Latest Posts",
-        "url":  "blog/latest-posts.html"
+        "url":  "blog/latest-posts.html",
+        "section":  "blog",
+        "content":  "Jorge Ranilla | Latest Posts Latest Posts Memoria Efímera \"Un espacio personal donde los recuerdos, las emociones y los giros inesperados de la vida se entrelazan.\" A personal space where memories, emotions, and life\u0027s unexpected turns intertwine. Here I share stories about family, health journeys, travels, reflections, and the moments that shape our lives. Posts are written in Spanish. Loading latest posts... Visit Full Blog"
     },
     {
         "title":  "Latest Post",
-        "url":  "blog/latest-posts-individual.html"
+        "url":  "blog/latest-posts-individual.html",
+        "section":  "blog",
+        "content":  "Jorge Ranilla | Latest Post Loading post... Sorry, we could not load this post. ← Back to Latest Posts"
     },
     {
         "title":  "Alcira Victoria Lopez Ruiz",
-        "url":  "family/alcira-victoria-lopez.html"
+        "url":  "family/alcira-victoria-lopez.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Alcira Victoria Lopez Ruiz Alcira Victoria Lopez Ruiz \"Mama Giya\" 1934 - Living | Grandmother A true matriarch of our family, Mama Giya has been like a mother to me. As her first grandson, I\u0027ve been blessed with her constant love and attention throughout my life. She has always been very attentive to all of us, even to this day, and loves each of her grandchildren deeply. She is an excellent grandmother who continues to be a pillar of strength and love for our family. Currently living in Lima, Peru, she remains an active and cherished presence in all our lives. ← Back to Extended Family"
     },
     {
         "title":  "Alyssa",
-        "url":  "family/alyssa-ranilla.html"
+        "url":  "family/alyssa-ranilla.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Alyssa Alyssa Born March 25, 2026. Our little miracle is here, and she has already filled our hearts with endless love. Alyssa arrived on March 25, 2026 at 12:27 PM at WakeMed in Cary, North Carolina. She weighed 7 lb 14 oz (3,560 g) and was everything we had hoped for and more. The moment Mom and Dad held her in their arms for the first time, every dream they had ever dreamed suddenly had a face. She is extraordinary. Beautiful, with a presence that lights up every room the moment she enters it. We already see in her a curious spirit that will ask a thousand questions and find wonder in everything around her. A kind soul, with a heart that will touch everyone she meets. She will grow up surrounded by love, supported by a family that believes in her limitless potential. We can already see her future: confident, accomplished, and full of grace. A woman who will make her own path in this world, who will dream big and achieve even bigger. Alyssa, you are so deeply loved. Your arrival has completed our family in ways we could only begin to imagine. We are ready for your laughter, your first steps, your first words, and every precious milestone that follows. You are already amazing, little one. Welcome to the world, sweet Alyssa. Your story is just beginning, and we cannot wait to watch you shine. 🩷 📷 View Photo Album ← Back to Heritage \u0026 Roots"
     },
     {
         "title":  "Ancestry",
-        "url":  "family/ancestry.html"
+        "url":  "family/ancestry.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Ancestry Ancestry A story that begins in the mountains and coasts of Peru, continues through the streets of Lima, and extends across the world. Migration, perseverance, and the pride of carrying our roots wherever life takes us. Where It All Started On my father\u0027s side, Abuela María Jesús came from the agricultural valley of Majes, Arequipa, and Abuelo Sergio Raúl from the coastal town of Camaná. On my mother\u0027s side, Mamá Giya (Alcira Victoria López Ruiz) came from the mountains of Rodríguez de Mendoza, Amazonas, and Papaqueno (Eugenio Astocondor Salazar) from the highlands of Canta. All four made the same journey to Lima, driven by the same hope: to give their children something better. Because of their sacrifice, my entire generation was born and raised in Lima. Limeños at heart but carrying the heritage of Arequipa, Amazonas, and Canta in everything we are. Coming to America That same spirit lived on in us. When the opportunity came to start a new life in the United States, our family took it. We came looking for a better future and this country gave us exactly that. I am proud to be an American. Not in a way that erases where I come from but in a way that adds to it. Being Peruvian and American at the same time means carrying two worlds inside you and knowing how to honor both. A Family That Found Spain What started with one person making the move to Spain eventually became something much bigger. More family followed and most of them never came back. Today more of my generation lives in Spain than in Peru. They are citizens now with careers, friendships and lives built from the ground up in a country they chose. The pull toward something new is not a new feeling in this family. Our grandparents felt it too. Three Countries, One Family Our roots are in Peru. Part of us grew in the United States. And a big part of us blossomed in Spain. Family is everything to me and most of my family is now there. Who knows, maybe one day I will retire somewhere in Europe and close that circle. Life has surprised me before. Explore My Family Tree Discover the connections between generations and see how my family has grown over time. View Interactive Family Tree →"
     },
     {
         "title":  "Aurora Rondon Perea",
-        "url":  "family/aurora-rondon-perea.html"
+        "url":  "family/aurora-rondon-perea.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Aurora Rondon Perea Aurora Rondon Perea Deceased | Great-Grandmother Aurora Rondon Perea was a woman of strength and warmth whose love for her family defined everything she was. From Arequipa, she built a home and a life alongside Sergio Ranilla Ranilla, together becoming the foundation of the Ranilla family. She raised her children with devotion and passed on the values of hard work, loyalty, and family unity that continue to shape us today. Her spirit lives on in all who carry her memory. Though little was written about her life, her love was felt across generations. We honor her as the great-grandmother whose quiet strength made everything that came after possible. ← Back to Extended Family"
     },
     {
         "title":  "Alyssa\u0027s Baptism",
-        "url":  "family/baptism.html"
+        "url":  "family/baptism.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Alyssa\u0027s Baptism Español ✝ A Sacrament of Faith ✝ Alyssa\u0027s Baptism September 13, 2026 · 2:00 PM September 13, 2026 · 2:00 PM · St. Francis of Assisi · Raleigh, NC A Word from the Holy Father \"We are called to live our baptism every day, as new creatures, clothed in Christ.\" — Pope Francis ✦ ✝ ✦ 📅 Date \u0026 Time Sunday, September 13th 2:00 PM 📍 Location St. Francis of Assisi Catholic Community Raleigh, North Carolina Our Parish The Catholic Community of St. Francis of Assisi Raleigh, North Carolina The sacrament of Baptism will be celebrated at the beautiful parish of St. Francis of Assisi in Raleigh — a community of faith, warmth, and welcome. It is here that Alyssa will receive her first sacrament and be welcomed formally into the Catholic Church. Visit Parish Website → ✝ Our Faith, Our Gift to Alyssa Why This Moment Means Everything to Us Our Catholic faith is not just a tradition we inherited. It is the very foundation of how we see the world, how we love each other, and how we raise our family. It is the thread that binds generations, the light we return to in both joy and hardship, and the source of the deepest peace we have ever known. When Alyssa entered our lives on March 25th, our hearts were filled with a love we had no words for. And almost immediately, we knew: we want to give her the greatest gift we have. Not a gift we can buy or build, but the gift of faith. The gift of belonging to something much larger than ourselves. Baptism is where that journey begins. It is the moment water becomes grace, and a little soul is welcomed into the family of God. For us as parents, it is a sacred promise to raise Alyssa in the light of the Gospel, to teach her to love with courage, and to show her, day by day, what it looks like to live a life of faith. This is our prayer for you, sweet Alyssa. That you grow up knowing you are loved by us, and even more so, loved by God. Our Family is Blessed The Godparents Have Said Yes 🕊️ And we couldn\u0027t be more grateful. Godfather 🙏 Uncle Victor Godmother 🕊️ Auntie Cristelle When we first reached out to Uncle Victor and Auntie Cristelle, we weren\u0027t sure what to expect. What we received was something we will never forget — a wholehearted, beautiful \"yes.\" They have accepted not just a title, but a calling. And for that, we are deeply, deeply blessed. Godfather\u0027s Invitation Godmother\u0027s Invitation ✦ ✝ ✦ The Celebration A Sacred and Joyful Day Alyssa\u0027s baptism will be a celebration rooted in faith and surrounded by love. We are keeping this day close to what matters most — the sacrament itself, the prayers, and the people who will gather together to welcome her into the Church. To everyone who will be there with us, thank you. Your presence means more than we can say. To Our Family Near and Far You Are Not Missing From This Moment We know that not everyone will be able to make it, and we understand completely. Life does not always make it easy to cross the miles, and we would never want anyone to feel their love is measured by whether they can be in the room. If you are far away, please know this: you are carried in our hearts every step of the way. We will be thinking of you when Alyssa receives the water and the light. We will hold her close and we will know, in our hearts, that your love is there too. One day, when she is old enough to understand, we will tell her that her family loved her from every corner of the world, from the very beginning. That is a beautiful thing to be able to say. 🕊️ ✦ ✝ ✦ More to Come As we prepare for this beautiful day, more details and announcements will be shared here. Stay close, and thank you for being part of Alyssa\u0027s story. Preparations in progress"
     },
     {
         "title":  "El Bautizo de Alyssa",
-        "url":  "family/baptism-es.html"
+        "url":  "family/baptism-es.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | El Bautizo de Alyssa English ✝ Un Sacramento de Fe ✝ El Bautizo de Alyssa 13 de Septiembre, 2026 · 2:00 PM 13 de Septiembre, 2026 · 2:00 PM · St. Francis of Assisi · Raleigh, NC Palabras del Santo Padre \"Estamos llamados a vivir nuestro bautismo cada día, como criaturas nuevas, vestidas de Cristo.\" — Papa Francisco ✦ ✝ ✦ 📅 Fecha y Hora Domingo, 13 de Septiembre 2:00 PM 📍 Lugar St. Francis of Assisi Comunidad Católica Raleigh, Carolina del Norte Nuestra Parroquia La Comunidad Católica de St. Francis of Assisi Raleigh, Carolina del Norte El sacramento del Bautismo se celebrará en la hermosa parroquia de St. Francis of Assisi en Raleigh, una comunidad llena de fe, calidez y acogida. Es aquí donde Alyssa recibirá su primer sacramento y será recibida formalmente en la Iglesia Católica. Visitar la Página de la Parroquia → ✝ Nuestra Fe, Nuestro Regalo para Alyssa Por Qué Este Momento lo Es Todo Para Nosotros Nuestra fe católica no es solo una tradición que heredamos. Es el fundamento mismo de cómo vemos el mundo, de cómo nos amamos y de cómo criamos a nuestra familia. Es el hilo que une generaciones, la luz a la que volvemos tanto en la alegría como en los momentos difíciles, y la fuente de la paz más profunda que hayamos conocido. Cuando Alyssa llegó a nuestras vidas el 25 de marzo, nuestros corazones se llenaron de un amor que no teníamos palabras para describir. Y casi de inmediato lo supimos: queremos darle el regalo más grande que tenemos. No uno que se compre o se construya, sino el regalo de la fe. El regalo de pertenecer a algo mucho más grande que nosotros mismos. El Bautismo es donde ese camino comienza. Es el momento en que el agua se convierte en gracia y una pequeña alma es recibida en la familia de Dios. Para nosotros como padres, es una promesa sagrada de criar a Alyssa a la luz del Evangelio, de enseñarle a amar con valentía y de mostrarle, día a día, lo que significa vivir una vida de fe. Esta es nuestra oración por ti, dulce Alyssa. Que crezcas sabiendo que te amamos nosotros, y aún más, que te ama Dios. Qué Bendición para Nuestra Familia Los Padrinos Dijeron que Sí 🕊️ Y no podríamos estar más agradecidos. Padrino 🙏 Tío Victor Madrina 🕊️ Tía Cristelle Cuando nos acercamos al tío Victor y a la tía Cristelle, no sabíamos bien qué esperar. Lo que recibimos fue algo que nunca olvidaremos: un \"sí\" de todo corazón, hermoso y sincero. No aceptaron solo un título, sino un llamado. Y por eso, estamos profunda y genuinamente bendecidos. Invitación del Padrino Invitación de la Madrina ✦ ✝ ✦ La Celebración Un Día Sagrado y Lleno de Alegría El bautizo de Alyssa será una celebración arraigada en la fe y rodeada de amor. Queremos que este día gire en torno a lo que más importa: el sacramento, las oraciones y las personas que se reunirán para darle la bienvenida a la Iglesia. A todos los que estarán con nosotros, gracias. Su presencia significa más de lo que podemos expresar. Para Nuestra Familia Cerca y Lejos Ustedes No Faltan en Este Momento Sabemos que no todos podrán estar presentes, y lo entendemos por completo. La vida no siempre hace fácil cruzar la distancia, y nunca quisiéramos que nadie sienta que su amor se mide por si puede estar en la sala o no. Si están lejos, sepan esto: los llevamos en el corazón en cada paso. Vamos a estar pensando en ustedes cuando Alyssa reciba el agua y la luz. La vamos a abrazar y vamos a saber, en nuestro corazón, que su amor también está presente. Un día, cuando ella tenga la edad para entenderlo, le contaremos que su familia la amó desde todos los rincones del mundo, desde el principio. Eso es algo hermoso que poder decir. 🕊️ ✦ ✝ ✦ Próximas Novedades A medida que nos preparamos para este hermoso día, iremos compartiendo más detalles y anuncios aquí. Gracias por ser parte de la historia de Alyssa. Preparativos en curso"
     },
     {
         "title":  "Alyssa\u0027s Baptism — Godfather Invitation",
-        "url":  "family/baptism-godfather.html"
+        "url":  "family/baptism-godfather.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Alyssa\u0027s Baptism — Godfather Invitation A Message of Gratitude He Said Yes 🎉 Uncle Victor is Alyssa\u0027s Godfather 🕊️ Ranilla · 2026 ✉ Tap to open ✕ ✦ ✝ ✦ April 2026 Dear Uncle Victor, Hi Uncle Victor! It\u0027s me, Alyssa. I know I\u0027m still very little and just finding my way in this world, but I already know one very important thing: I am so lucky to have you. When Mommy and Daddy asked you to be my Godfather, they held their breath a little. And then you said yes. And I think that is one of the most beautiful things that has happened since I arrived. You are not just a Godfather in name. You said yes to walking beside me through life, to praying for me, to being someone I can look up to as I grow. That means more to our family than words can hold. Mommy and Daddy are so grateful for you. And one day, when I am old enough to understand, I will be grateful too. Until then, I will just be over here growing and getting ready to meet you at the font. 🕊️ With all my tiny heart, Baby Alyssa 🩷 ✦ September 13, 2026 · St. Francis of Assisi · Raleigh, NC View the Baptism Page 🎉 Thank you! We are so happy! Close"
     },
     {
         "title":  "Invitación del Padrino – El Bautizo de Alyssa",
-        "url":  "family/baptism-godfather-es.html"
+        "url":  "family/baptism-godfather-es.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Invitación del Padrino – El Bautizo de Alyssa Un Mensaje de Gratitud Él Dijo que Sí 🎉 El Tío Victor es el Padrino de Alyssa 🕊️ Ranilla · 2026 ✉ Toca para abrir ✕ ✦ ✝ ✦ Abril 2026 Querido Tío Victor, ¡Hola, Tío Victor! Soy yo, Alyssa. Sé que todavía soy muy pequeña y apenas estoy encontrando mi camino en este mundo, pero ya sé algo muy importante: qué suerte tengo de tenerte. Cuando mamá y papá te preguntaron si querías ser mi padrino, se les fue el aliento por un momento. Y entonces dijiste que sí. Y creo que eso es una de las cosas más hermosas que han pasado desde que llegué. No eres solo un padrino de nombre. Dijiste que sí a caminar a mi lado en la vida, a rezar por mí, a ser alguien a quien pueda mirar con admiración mientras crezco. Eso significa más para nuestra familia de lo que las palabras pueden expresar. Mamá y papá están muy agradecidos contigo. Y algún día, cuando sea lo suficientemente grande para entenderlo, yo también lo estaré. Hasta entonces, aquí estaré creciendo y preparándome para encontrarte en la pila bautismal. 🕊️ Con todo mi pequeño corazón, Baby Alyssa 🩷 ✦ 13 de Septiembre, 2026 · St. Francis of Assisi · Raleigh, NC Ver la Página del Bautizo"
     },
     {
         "title":  "Alyssa\u0027s Baptism — Godmother Invitation",
-        "url":  "family/baptism-godmother.html"
+        "url":  "family/baptism-godmother.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Alyssa\u0027s Baptism — Godmother Invitation A Message of Gratitude She Said Yes 🎉 Auntie Cristelle is Alyssa\u0027s Godmother 🕊️ Ranilla · 2026 ✉ Tap to open ✕ ✦ ✝ ✦ April 2026 Dear Auntie Cristelle, Hi Auntie Cristelle! It\u0027s me, Alyssa. I know I\u0027m still very little and just finding my way in this world, but I already know one very important thing: I am so lucky to have you. When Mommy and Daddy asked you to be my Godmother, they held their breath a little. And then you said yes. And I think that is one of the most beautiful things that has happened since I arrived. You are not just a Godmother in name. You said yes to walking beside me through life, to praying for me, to being someone I can look up to as I grow. That means more to our family than words can hold. Mommy and Daddy are so grateful for you. And one day, when I am old enough to understand, I will be grateful too. Until then, I will just be over here growing and getting ready to meet you at the font. 🕊️ With all my tiny heart, Baby Alyssa 🩷 ✦ September 13, 2026 · St. Francis of Assisi · Raleigh, NC View the Baptism Page 🎉 Thank you! We are so happy! Close"
     },
     {
         "title":  "Invitación de la Madrina – El Bautizo de Alyssa",
-        "url":  "family/baptism-godmother-es.html"
+        "url":  "family/baptism-godmother-es.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Invitación de la Madrina – El Bautizo de Alyssa Un Mensaje de Gratitud Ella Dijo que Sí 🎉 La Tía Cristelle es la Madrina de Alyssa 🕊️ Ranilla · 2026 ✉ Toca para abrir ✕ ✦ ✝ ✦ Abril 2026 Querida Tía Cristelle, ¡Hola, Tía Cristelle! Soy yo, Alyssa. Sé que todavía soy muy pequeña y apenas estoy encontrando mi camino en este mundo, pero ya sé algo muy importante: qué suerte tengo de tenerte. Cuando mamá y papá te preguntaron si querías ser mi madrina, se les fue el aliento por un momento. Y entonces dijiste que sí. Y creo que eso es una de las cosas más hermosas que han pasado desde que llegué. No eres solo una madrina de nombre. Dijiste que sí a caminar a mi lado en la vida, a rezar por mí, a ser alguien a quien pueda mirar con admiración mientras crezco. Eso significa más para nuestra familia de lo que las palabras pueden expresar. Mamá y papá están muy agradecidos contigo. Y algún día, cuando sea lo suficientemente grande para entenderlo, yo también lo estaré. Hasta entonces, aquí estaré creciendo y preparándome para encontrarte en la pila bautismal. 🕊️ Con todo mi pequeño corazón, Baby Alyssa 🩷 ✦ 13 de Septiembre, 2026 · St. Francis of Assisi · Raleigh, NC Ver la Página del Bautizo"
     },
     {
         "title":  "Carlota Salazar Mateo",
-        "url":  "family/carlota-salazar-mateo.html"
+        "url":  "family/carlota-salazar-mateo.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Carlota Salazar Mateo Carlota Salazar Mateo 1897 - 1993 | Great-Grandmother Carlota Salazar Mateo was born in 1897 in the highlands of Canta, where life was carved out of stone and necessity. In the thin air of the sierra, women like Carlota were the backbone of their families, raising children, tending the land, and holding everything together through hardship. Her face carried the marks of a life lived without ease, sun-worn, strong, and full of quiet endurance. She knew poverty and altitude and hard seasons, yet she persevered through all of it with the dignity of a woman who understood that her strength was her family\u0027s foundation. Through her son Eugenio, her resilience traveled down from the mountains and into the lives of every generation that followed. We carry her spirit with us, and we honor the hard life she lived so that others could live better ones. ← Back to Extended Family"
     },
     {
         "title":  "Eugenio Astocondor Salazar",
-        "url":  "family/eugenio-astocondor.html"
+        "url":  "family/eugenio-astocondor.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Eugenio Astocondor Salazar Eugenio Astocondor Salazar \"Papaqueno\" 1918 - 2000 | Grandfather A pillar of strength and wisdom in our family. His gentle spirit and unwavering love shaped generations. Papaqueno\u0027s legacy lives on in the values he taught us and the memories we cherish. Though he is no longer with us, his love, wisdom, and spirit continue to guide our family. We honor his memory and celebrate the beautiful life he lived. His presence endures in our hearts, in the stories we share, and in the values he instilled in us. He will never be forgotten. ← Back to Extended Family"
     },
     {
         "title":  "Eugenio Astocondor Fuertes",
-        "url":  "family/eugenio-astocondor-fuertes.html"
+        "url":  "family/eugenio-astocondor-fuertes.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Eugenio Astocondor Fuertes Eugenio Astocondor Fuertes 1895 - Deceased | Great-Grandfather Eugenio Astocondor Fuertes was born in 1895 in the highlands of Canta, a rugged mountain province north of Lima. Life at altitude was demanding, the land was harsh, the climate unforgiving, and survival required resilience and grit from an early age. He was a man shaped entirely by the mountains, weathered by the highland sun, hardened by years of physical labor, and grounded in the indigenous traditions of the Andean sierra. His hands knew work long before they knew rest. From his roots in Canta came a line that would eventually reach Lima and beyond. His son Eugenio grew up carrying those highland values, the same strength and quiet endurance, and passed them on to generations that followed. We honor his memory and the difficult life he lived with dignity. ← Back to Extended Family"
     },
     {
         "title":  "Eugenio Augusto Astocondor Salazar Lopez",
-        "url":  "family/eugenio-augusto-astocondor.html"
+        "url":  "family/eugenio-augusto-astocondor.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Eugenio Augusto Astocondor Salazar Lopez Eugenio Augusto Astocondor Salazar Lopez \"Tio Llocsi\" Uncle A cherished uncle whose warmth and kindness touched everyone he met. Tio Llocsi brought joy and laughter to our family gatherings. His memory remains a blessing to all who knew him. Though he is no longer with us, his love, humor, and generous spirit continue to guide our family. We honor his memory and celebrate the beautiful life he lived. His presence endures in our hearts, in the stories we share, and in the values he instilled in us. He will never be forgotten. ← Back to Extended Family"
     },
     {
         "title":  "Extended Family",
-        "url":  "family/extended-family.html"
+        "url":  "family/extended-family.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Extended Family Extended Family From the roots that ground us to the leaves that reach outward, our family story spans generations. Great-Grandparents Grandparents Uncles \u0026 Aunts Cousins The Roots Sergio Ranilla Ranilla 1901 - Deceased Great-grandfather from the coastal port of Camaná, Arequipa. A man of quiet resilience whose name carries forward through generations. Read more → Aurora Rondon Perea Deceased Great-grandmother from Arequipa whose love and devotion shaped the foundation of the Ranilla family. Read more → Victoriano Cateriano Deceased A farmer from Majes, Arequipa, who married young and built a family rooted in hard work and devotion to the land. Read more → Lucila Dongo Salcedo Deceased Born in Ocoña and raised in Majes after losing her parents young, she became the devoted heart of her family. Read more → Eugenio Astocondor Fuertes 1895 - Deceased A man of the highlands of Canta, shaped by altitude and hard labor. His resilience became the foundation of the Astocondor line. Read more → Carlota Salazar Mateo 1897 - 1993 A highland woman of quiet endurance from Canta, whose strength carried the family through hardship and shaped generations to come. Read more → Jose Dalicio Lopez Lopez 1908 - 1990 A man of quiet dignity and strength from Rodriguez de Mendoza, Amazonas. The great-grandfather whose journey and sacrifice made the family\u0027s future possible. Read more → Maria Carlota Ruiz Guevara 1911 - 2008 A matriarch whose strength and grace guided our family through generations. Mama Carlota\u0027s wisdom and unconditional love created a foundation that continues to support us. Read more → The Pillars Sergio Raul Ranilla 1928 - 2016 A man of honor and integrity whose presence commanded respect and admiration. His dedication to family and his strong values continue to guide us. Read more → Maria Jesus Cateriano 1936 - 2023 A devoted grandmother whose love knew no bounds. Her kindness, faith, and dedication to family were an inspiration to all. Read more → Eugenio Astocondor 1918 - 2000 A pillar of strength and wisdom in our family. His gentle spirit and unwavering love shaped generations. Read more → Alcira Victoria Lopez 1934 - Living A true matriarch of our family, Mama Giya has been like a mother to me. As her first grandson, I\u0027ve been blessed with her constant love and attention throughout my life. Read more → The Boughs Eugenio Augusto A cherished uncle whose warmth and kindness touched everyone he met. His memory remains a blessing to all who knew him. Read more → Maria Alcira del Carmen A loving aunt whose caring nature and generous heart made her beloved by all. She will forever be remembered with love and gratitude. Read more → The Leaves Luis Fernando Cousin and cherished member of my extended family. Fernando Javier Cousin and cherished member of my extended family. Lorenzo David Cousin and cherished member of my extended family. Eugenio Jesus Cousin and cherished member of my extended family. Ernesto Cousin and cherished member of my extended family. Luisa Cristina Cousin and cherished member of my extended family. Monica del Carmen Cousin and cherished member of my extended family. Paola Andrea Cousin and cherished member of my extended family. Milagros Cousin and cherished member of my extended family. Adriana Cousin and cherished member of my extended family. Alessandra Cousin and cherished member of my extended family. Paola Josefina Cousin and cherished member of my extended family. ← Back to Heritage \u0026 Roots"
     },
     {
         "title":  "Family Members Login | Jorge Ranilla",
-        "url":  "family/family-login.html"
+        "url":  "family/family-login.html",
+        "section":  "family",
+        "content":  "Family Members Login | Jorge Ranilla PRIVATE ACCESS Family Members Login Portal This area is reserved exclusively for family members. Sign in with your Google account to enter the Family Hub. continue with Secured by Google · We never store your password ACCESS GRANTED Welcome to the Family Hub! Preparing your access… Redirecting in 3 seconds…"
     },
     {
         "title":  "Family Tree",
-        "url":  "family/family-tree.html"
+        "url":  "family/family-tree.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Family Tree Ranilla Family Tree Explore my family heritage from the present to the past. Click on grandparents to see their parents, or click on their picture to read their bio page. Siblings Siblings Jorge Luis Ranilla 1987 - Living Victor Andres Ranilla 1987 - Living Brother Maria Eugenia Ranilla 1991 - Living Sister Parents Parents Jorge Luis Ranilla Cateriano 1961 - Living Father Sylvia Ines Astocondor Salazar Lopez 1967 - Living Mother Grandparents Grandparents (Click to see their parents) Sergio Raul Ranilla Rondon 1928 - 2016 Grandfather Maria Jesus Cateriano Dongo 1936 - 2023 Grandmother Eugenio Astocondor Salazar 1918 - 2000 Grandfather Alcira Victoria Lopez Ruiz 1934 - Living Grandmother Sergio Ranilla Ranilla 1901 - Deceased Great-Grandfather Aurora Rondon Perea Deceased Great-Grandmother Victoriano Cateriano Deceased Great-Grandfather Lucila Dongo Salcedo Deceased Great-Grandmother Eugenio Astocondor Fuertes 1895 - Deceased Great-Grandfather Carlota Salazar Mateo 1897 - 1993 Great-Grandmother Jose Dalicio Lopez Lopez 1908 - 1990 Great-Grandfather Maria Carlota Ruiz Guevara 1911 - 2008 Great-Grandmother My Family My Family Jorge Luis Ranilla 1987 - Living Shane Ranilla Living Wife Next Generation Next Generation Alyssa Ranilla Born Mar 25, 2026 Daughter She\u0027s Here! 🩷 Next Generation My Family Siblings Parents Grandparents — click to expand"
     },
     {
         "title":  "Heritage \u0026 Roots",
-        "url":  "family/heritage-roots.html"
+        "url":  "family/heritage-roots.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Heritage \u0026 Roots Heritage \u0026 Roots The inner circle — the parents who raised me, the siblings who walked beside me, and the family I am growing. My Family Siblings Parents The Seed Jorge Life, travel, and projects. Collecting moments and building things that last. Read more → Shane Warm heart, strong spirit. Bringing balance, care, and fun to our family. Read more → Alyssa Curious, bright, and always exploring. Our little sunshine. Read more → The Branches Victor Andres Thoughtful, sharp, and always learning. The calm problem-solver. Read more → Maria Eugenia Creative, caring, and full of energy. The one who keeps everyone connected. Read more → The Heartwood Jorge Luis Steady, hardworking, and wise. Our foundation and biggest supporter. Read more → Sylvia Ines Kind, resilient, and full of love. The heart of our family. Read more → More Family Members Discover the uncles, aunts, and cousins who are part of my story. Meet More Family →"
     },
     {
         "title":  "Jorge Luis",
-        "url":  "family/jorge-luis-ranilla.html"
+        "url":  "family/jorge-luis-ranilla.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Jorge Luis Jorge Luis Steady, hardworking, and wise. Our foundation and biggest supporter. My father, Dr. Jorge Luis Ranilla Cateriano, is a surgeon specializing in Orthopedics and Traumatology in Lima, Peru. He\u0027s spent his entire career helping people recover from injuries and regain their mobility. This work requires not just medical skill, but deep compassion and patience. Early in his career, he worked during one of Peru\u0027s most difficult periods, treating patients in rural areas and at the National Police Hospital during the country\u0027s conflict with terrorist groups. He also spent time at the San José Geriatric Hospital, where he developed a special interest in degenerative conditions and learned to work closely with geriatric specialists to provide comprehensive care for older patients. Throughout his career, he\u0027s become an expert in diagnosing and treating musculoskeletal conditions, from traumatic injuries like fractures and joint damage to degenerative diseases. He performs complex procedures including osteosynthesis, arthroplasty, and arthroscopy, always focused on helping his patients regain function and improve their quality of life. He\u0027s also trained in biological therapies, ozone therapy, and musculoskeletal ultrasound, constantly updating his skills to offer the best care possible. What sets him apart is his ethical, patient-centered approach. He truly cares about each person\u0027s recovery and well-being. Recognizing that some patients can\u0027t easily travel to a clinic, he also provides home medical care for those with mobility limitations or post-operative needs. Through his company, OSTEORAY SAC, he also supplies medical equipment like C-arms and flat panels to support other healthcare providers. To me, he\u0027s more than a skilled surgeon. He\u0027s the steady, dependable presence who taught me the value of hard work, integrity, and always putting others first. I\u0027m incredibly proud to be his son. ← Back to Heritage \u0026 Roots"
     },
     {
         "title":  "Jorge",
-        "url":  "family/jorge-ranilla.html"
+        "url":  "family/jorge-ranilla.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Jorge Jorge Life, travel, and projects. Collecting moments and building things that last. I was born and raised in Peru and moved to the United States at a young age in search of new opportunities and growth. Over time, this country became home, and I am proud to be American by choice. Professionally, I work in the banking and operations field, where I value structure, accountability, and continuous improvement. I enjoy solving problems, improving processes, and taking pride in doing things the right way. Outside of work, family comes first. I am a husband and a dad, and I deeply value the time spent with the people I love. This website reflects that. It is a place to preserve memories, share updates, and document our journey together as a growing family. ← Back to Heritage \u0026 Roots"
     },
     {
         "title":  "Jose Dalicio Lopez Lopez",
-        "url":  "family/jose-dalicio-lopez.html"
+        "url":  "family/jose-dalicio-lopez.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Jose Dalicio Lopez Lopez Jose Dalicio Lopez Lopez \"Papa Dalicio\" 1908 - 1990 | Great-Grandfather A man of quiet dignity and enduring strength, Jose Dalicio Lopez Lopez was the patriarch of a family rooted in the mountains of Rodriguez de Mendoza, Amazonas. His life was one of hard work, sacrifice, and deep love for his family. Though he is no longer with us, his legacy lives on through the generations he helped shape. His determination and character set the foundation for the family that followed. We honor the memory of this man whose journey made ours possible. His presence endures in our hearts, in the stories we share, and in the values he instilled in those he loved. He will never be forgotten. ← Back to Extended Family"
     },
     {
         "title":  "Lucila Dongo Salcedo",
-        "url":  "family/lucila-dongo-salcedo.html"
+        "url":  "family/lucila-dongo-salcedo.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Lucila Dongo Salcedo Lucila Dongo Salcedo Deceased | Great-Grandmother Lucila Dongo Salcedo was born in the district of Ocoña, belonging to the Province of Camaná in Arequipa, Peru. She lost her parents when she was very young and together with her brothers and sisters they were raised in Majes, far from where she was born. Despite the hardships of her early years, Lucila grew into a devoted and resilient woman. She dedicated herself entirely to her home and her family, and became the heart of everything she built around her. At just 17 years old she married Victoriano Cateriano, who was 22. Together in the valleys of Arequipa they raised a family whose love and strength echo through every generation that came after them. ← Back to Extended Family"
     },
     {
         "title":  "Maria Alcira del Carmen Astocondor Salazar Lopez",
-        "url":  "family/maria-alcira-del-carmen-astocondor.html"
+        "url":  "family/maria-alcira-del-carmen-astocondor.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Maria Alcira del Carmen Astocondor Salazar Lopez Maria Alcira del Carmen Astocondor Salazar Lopez \"Tia Titi\" Aunt A loving aunt whose caring nature and generous heart made her beloved by all. Tia Titi\u0027s presence brought comfort and joy to our family. She will forever be remembered with love and gratitude. Though she is no longer with us, her love, compassion, and gentle spirit continue to guide our family. We honor her memory and celebrate the beautiful life she lived. Her presence endures in our hearts, in the stories we share, and in the values she instilled in us. She will never be forgotten. ← Back to Extended Family"
     },
     {
         "title":  "Maria Carlota Ruiz Guevara",
-        "url":  "family/maria-carlota-ruiz.html"
+        "url":  "family/maria-carlota-ruiz.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Maria Carlota Ruiz Guevara Maria Carlota Ruiz Guevara \"Mama Carlota\" 1911 - 2008 | Great-Grandmother A matriarch whose strength and grace guided our family through generations. Mama Carlota\u0027s wisdom and unconditional love created a foundation that continues to support us. Her spirit lives on in all of us. Though she is no longer with us, her love, wisdom, and spirit continue to guide our family. We honor her memory and celebrate the beautiful life she lived. Her presence endures in our hearts, in the stories we share, and in the values she instilled in us. She will never be forgotten. ← Back to Extended Family"
     },
     {
         "title":  "Maria",
-        "url":  "family/maria-eugenia-ranilla.html"
+        "url":  "family/maria-eugenia-ranilla.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Maria Maria Creative, caring, and full of energy. The one who keeps everyone connected. Maria is my sister, and she\u0027s always been the one who brings people together. She works as a Global CRM Manager in the fintech industry, where she designs customer lifecycle strategies for the Spanish and Mexican markets. Her work focuses on understanding what customers need and creating experiences that make their lives easier, from the moment they sign up to building long-term relationships. She\u0027s great at turning data into action, working with product, tech, analytics, and marketing teams to align business goals with real user needs. Throughout her career, she\u0027s worked on cross-functional projects in regulated environments, helping develop and optimize digital financial products. What drives her is finding practical ways to improve customer journeys and build processes that actually work and last. Maria lives in Barcelona, Spain, where she balances her career with being a mom. Motherhood has made her even more adaptable, empathetic, and decisive. These qualities show up in everything she does, both personally and professionally. When she\u0027s not working, she loves spending time with her family and their dog, exploring nature through trekking and outdoor adventures. They often take road trips together, seeking out experiences that keep them active and connected. She values a healthy lifestyle and meaningful moments that support both personal well-being and professional balance. She\u0027s structured, thoughtful, and people-centered. Always thinking about how to make things better for everyone around her. I\u0027m lucky to have her as my sister. ← Back to Heritage \u0026 Roots"
     },
     {
         "title":  "Maria Jesus Cateriano Dongo",
-        "url":  "family/maria-jesus-cateriano.html"
+        "url":  "family/maria-jesus-cateriano.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Maria Jesus Cateriano Dongo Maria Jesus Cateriano Dongo 1936 - 2023 | Grandmother A devoted grandmother whose love knew no bounds. Her kindness, faith, and dedication to family were an inspiration to all. She leaves behind a legacy of love that will never fade. Though she is no longer with us, her love, wisdom, and spirit continue to guide our family. We honor her memory and celebrate the beautiful life she lived. Her presence endures in our hearts, in the stories we share, and in the values she instilled in us. She will never be forgotten. ← Back to Extended Family"
     },
     {
         "title":  "My Story",
-        "url":  "family/my-story.html"
+        "url":  "family/my-story.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | My Story My Story Hello, I\u0027m Jorge. I was born and raised in Peru and moved to the United States at a young age in search of new opportunities and growth. Over time, this country became home, and I am proud to be American by choice. Professionally, I work in the banking and operations field, where I value structure, accountability, and continuous improvement. I enjoy solving problems, improving processes, and taking pride in doing things the right way. Learning has always been important to me, whether through formal education, hands-on experience, or simply figuring things out along the way. Outside of work, family comes first. I am a husband and a dad, and I deeply value the time spent with the people I love. This website reflects that. It is a place to preserve memories, share updates, and document our journey together as a growing family. I also enjoy traveling and exploring new cultures. These experiences have shaped how I see the world and helped me appreciate different perspectives. This site is meant to be simple and personal. It serves as a digital home for both my professional path and my family\u0027s story."
     },
     {
         "title":  "Sergio Ranilla Ranilla",
-        "url":  "family/sergio-ranilla-ranilla.html"
+        "url":  "family/sergio-ranilla-ranilla.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Sergio Ranilla Ranilla Sergio Ranilla Ranilla 1901 - Deceased | Great-Grandfather Sergio Ranilla Ranilla was born in 1901 in the port region of Camaná, Arequipa, on the southern coast of Peru. A man shaped by the sea and the sun, he carried the resilience and hardworking spirit that defined the coastal communities of his time. His life was one of quiet dedication to his work, to his family, and to the values he passed down through the generations. He is the great-grandfather from whom the Ranilla name in our family descends. Though history recorded little about him, his legacy is carried forward in every generation that followed. We honor the memory of the man whose roots became ours. ← Back to Extended Family"
     },
     {
         "title":  "Sergio Raul Ranilla Rondon",
-        "url":  "family/sergio-raul-ranilla.html"
+        "url":  "family/sergio-raul-ranilla.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Sergio Raul Ranilla Rondon Sergio Raul Ranilla Rondon 1928 - 2016 | Grandfather A man of honor and integrity whose presence commanded respect and admiration. His dedication to family and his strong values continue to guide us. We carry his memory with pride and love. Though he is no longer with us, his love, wisdom, and spirit continue to guide our family. We honor his memory and celebrate the beautiful life he lived. His presence endures in our hearts, in the stories we share, and in the values he instilled in us. He will never be forgotten. ← Back to Extended Family"
     },
     {
         "title":  "Shane",
-        "url":  "family/shane-ranilla.html"
+        "url":  "family/shane-ranilla.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Shane Shane Warm heart, strong spirit. Bringing balance, care, and fun to our family. Shane is an amazing mother, full of love, patience, and warmth. From the very beginning, she has embraced this journey with grace and excitement. Her caring heart, strength, and gentle spirit make our family feel safe, loved, and endlessly supported every day. ← Back to Heritage \u0026 Roots"
     },
     {
         "title":  "Sylvia Ines",
-        "url":  "family/sylvia-ines-astocondor.html"
+        "url":  "family/sylvia-ines-astocondor.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Sylvia Ines Sylvia Ines Kind, resilient, and full of love. The heart of our family. Sylvia Ines is the heart of our family. Her kindness, resilience, and boundless love have shaped who we are today. ← Back to Heritage \u0026 Roots"
     },
     {
         "title":  "The Kids",
-        "url":  "family/the-kids.html"
+        "url":  "family/the-kids.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | The Kids The Kids Wait... \"Kids\"? Plural? You might see the title and wonder! But just to be clear: Alyssa is here — born March 25, 2026. Just one. And honestly, she is exactly everything I prayed for. I always prayed for a baby girl. Girls share such a special, close bond with their dads, and I love that. She is my unique and precious focus. So why call this \"The Kids\"? Because this section celebrates the entire new generation of our family! It\u0027s not just for Alyssa, but for her cousins, the future of our legacy, who will also be featured here. Just as I was raised surrounded by the love of my cousins, uncles, and grandparents, Alyssa will be too. Even with family scattered across the globe, that bond will remain strong, uniting us all across the miles. Welcome, Alyssa Ranilla 🩷 Born March 25, 2026 Alyssa, you are so loved. Your cousins are eagerly waiting to welcome you into this big, beautiful family. Though miles may separate us, thanks to technology, that distance is barely felt. Our bond will always remain strong, uniting us all across the miles. Growing up close to my cousins gave me some of my most cherished memories, and I know you will have that same special bond. Whether near or far, you will always have a support system, best friends for life, and a family that cherishes you. She arrived on March 25, 2026, and our world changed forever. We held her, and she took her rightful place in this wonderful story we are writing together. Welcome home, Alyssa. 🩷 🩷 Alyssa is Here 1 day old Born March 25, 2026 · Our hearts are so full 💕"
     },
     {
         "title":  "Victor",
-        "url":  "family/victor-andres-ranilla.html"
+        "url":  "family/victor-andres-ranilla.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Victor Victor Thoughtful, sharp, and always learning. The calm problem-solver. Victor is my younger brother, and he\u0027s someone I\u0027ve always admired for his ability to stay calm under pressure and think things through. He works at Vanguard on the Trading Desk, where he helps people navigate everything from Treasury bonds to stock trades and complex investment decisions. What makes him great at his job is the same thing that makes him a great brother: he knows how to break down complicated things and make them easy to understand. Before getting into finance, Victor spent over a decade in the wellness world as a fitness entrepreneur, wellness director, and certified sports nutritionist. That background taught him how to coach people, motivate them, and help them reach their goals. These are skills he still uses every day when guiding clients through financial decisions. He\u0027s bilingual in English and Spanish, which helps him connect with a wide range of people. He holds his Series 7, 63, 65, and SIE licenses, along with certifications in sports nutrition and fitness training. But beyond all the credentials, what stands out most is how much he genuinely cares about helping people feel confident in their choices. Victor lives in Charlotte, North Carolina, with his wife Alessandra and their two dogs, Jasper and Petunia. When he\u0027s not working, you\u0027ll find them hiking, stand-up paddleboarding, trying new restaurants, or traveling to visit friends and family. He\u0027s the kind of person who values experiences over things and stays grounded in what really matters. He\u0027s methodical, strategic, and warm. Always ready to help solve a problem or lend a listening ear. I\u0027m proud to call him my brother. ← Back to Heritage \u0026 Roots"
     },
     {
         "title":  "Victoriano Cateriano",
-        "url":  "family/victoriano-cateriano.html"
+        "url":  "family/victoriano-cateriano.html",
+        "section":  "family",
+        "content":  "Jorge Ranilla | Victoriano Cateriano Victoriano Cateriano Deceased | Great-Grandfather Victoriano Cateriano was born in the district of Majes, part of the Province of Caylloma in Arequipa, Peru. He spent his life dedicated to agriculture, working the land that defined his region and provided for his family. At the age of 22 he married Lucila Dongo Salcedo, who was 17 at the time. They were both young when they started their life together, but their union became the foundation of a family whose roots run deep across generations. Together, Victoriano and Lucila built a life grounded in hard work and devotion. His legacy lives on through every generation that followed. ← Back to Extended Family"
     },
     {
         "title":  "Family Gallery",
-        "url":  "gallery/family.html"
+        "url":  "gallery/family.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Family Gallery Family Gallery Capturing the joy of being together. These moments with the people I love most remind me what truly matters in life. Click any photo or video to view it full size. Loading family memories… 😔 Couldn\u0027t load photos right now. Please try refreshing the page. ← Previous Page 1 of 1 Next → × ❮ ❯ 1 / 1"
     },
     {
         "title":  "Little Alyssa 🩷",
-        "url":  "gallery/family/alyssa/alyssa-photos.html"
+        "url":  "gallery/family/alyssa/alyssa-photos.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Little Alyssa 🩷 🩷 Little Alyssa Every picture tells a story. This is Alyssa\u0027s — from her very first breath in this world to every tiny milestone that follows. Click on any photo to enlarge it and take in the details of the little person who has completely stolen our hearts. Loading Alyssa\u0027s photos… 😔 Couldn\u0027t load photos right now. Please try refreshing the page, or go back to Alyssa\u0027s profile . ← Previous Page 1 of 1 Next → ← Back to Alyssa\u0027s Profile × ❮ ❯ 1 / 1"
     },
     {
         "title":  "Portraits",
-        "url":  "gallery/portraits.html"
+        "url":  "gallery/portraits.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Portraits Portraits This page is coming soon. I\u0027ll be adding content here over time."
     },
     {
         "title":  "Travel Gallery",
-        "url":  "gallery/travel.html"
+        "url":  "gallery/travel.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Travel Gallery Travel Gallery Exploring the world through the lens. During our travels abroad, Shane is often the one behind the camera, capturing the beauty, atmosphere, and character of each place with a thoughtful and creative eye. From landscapes and architecture to the small details that others might easily overlook, her photographs preserve the moments that make each destination unforgettable. This gallery is a space to showcase her talent, her perspective, and the way she sees the world. 3 Countries Visited 7 Cities Featured 175 Travel Photos Visited Places Click on a country to explore some of the cities we have visited. Shane\u0027s travel photography archive Peru Japan Mexico Click on a marker to explore cities × Select a City Choose a city to enter the gallery."
     },
     {
         "title":  "Nagoya, Japan",
-        "url":  "gallery/travel/japan/nagoya.html"
+        "url":  "gallery/travel/japan/nagoya.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Nagoya, Japan Nagoya, Japan A blend of industrial prowess and cultural heritage, featuring the magnificent Nagoya Castle and modern urban landscapes. Click on any image to enlarge and view the full-size picture. ← Back to Travel Map × ❮ ❯ 1 / 12"
     },
     {
         "title":  "Osaka, Japan",
-        "url":  "gallery/travel/japan/osaka.html"
+        "url":  "gallery/travel/japan/osaka.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Osaka, Japan Osaka, Japan Known as Japan\u0027s kitchen, Osaka blends culinary excellence with historic castles and modern entertainment. A city of contrasts and vibrant energy. Click on any image to enlarge and view the full-size picture. ← Back to Travel Map × ❮ ❯ 1 / 12"
     },
     {
         "title":  "Tokyo, Japan",
-        "url":  "gallery/travel/japan/tokyo.html"
+        "url":  "gallery/travel/japan/tokyo.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Tokyo, Japan Tokyo, Japan The vibrant capital where ancient traditions meet cutting-edge modernity. From serene temples to neon-lit streets, Tokyo offers endless photographic inspiration. Click on any image to enlarge and view the full-size picture. ← Back to Travel Map × ❮ ❯ 1 / 12"
     },
     {
         "title":  "Cancun, Mexico",
-        "url":  "gallery/travel/mexico/cancun.html"
+        "url":  "gallery/travel/mexico/cancun.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Cancun, Mexico Cancun, Mexico Paradise on the Caribbean coast, where turquoise waters meet white sandy beaches. From ancient Mayan ruins to vibrant nightlife, Cancun is a photographer\u0027s dream. Click on any image to enlarge and view the full-size picture. ← Back to Travel Map × ❮ ❯ 1 / 12"
     },
     {
         "title":  "Cozumel, Mexico",
-        "url":  "gallery/travel/mexico/cozumel.html"
+        "url":  "gallery/travel/mexico/cozumel.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Cozumel, Mexico Cozumel, Mexico A tropical island paradise known for world-class diving, pristine beaches, and laid-back Caribbean charm. Crystal-clear waters and vibrant coral reefs create stunning photographic opportunities. Click on any image to enlarge and view the full-size picture. ← Back to Travel Map × ❮ ❯ 1 / 12"
     },
     {
         "title":  "Cusco, Peru",
-        "url":  "gallery/travel/peru/cusco.html"
+        "url":  "gallery/travel/peru/cusco.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Cusco, Peru Cusco, Peru The ancient capital of the Inca Empire, nestled high in the Andes. Cusco\u0027s cobblestone streets, stunning architecture, and rich history make it a photographer\u0027s paradise. Click on any image to enlarge and view the full-size picture. ← Back to Travel Map × ❮ ❯ 1 / 12"
     },
     {
         "title":  "Lima, Peru",
-        "url":  "gallery/travel/peru/lima.html"
+        "url":  "gallery/travel/peru/lima.html",
+        "section":  "gallery",
+        "content":  "Jorge Ranilla | Lima, Peru Lima, Peru The vibrant capital of Peru, where colonial architecture meets modern culture. From the historic center to the coastal cliffs of Miraflores, Lima offers endless photographic opportunities. Click on any image to enlarge and view the full-size picture. ← Back to Travel Map × ❮ ❯ 1 / 12"
     },
     {
         "title":  "Home",
-        "url":  "index.html"
+        "url":  "index.html",
+        "section":  "Home",
+        "content":  "Jorge Ranilla | Home 🎀 Welcome to the world, Baby Alyssa! Born March 25, 2026 🩷 | 📢 She\u0027s finally here — our hearts are full! | 💕 A new chapter begins for our family Welcome This is a space where I share my story, celebrate my family\u0027s heritage, and preserve the memories that connect us across generations. This site is a living archive of our journey together. Explore the family tree, discover our roots, and get to know the people and places that shaped who I am. Stay Connected Get updates on family events, new posts, and announcements. Subscribe Unsubscribe anytime. Latest Family Update View all updates → Loading latest update… 🩷 She\u0027s Here! Alyssa Born March 25, 2026 1 day old 💕 Our hearts are so full 💕 What\u0027s Marked on the Calendar What\u0027s coming up for us Loading events... 📅 Subscribe to Calendar Jorge Ranilla @jorgeranilla Fetching Latest Thoughts..."
     },
     {
         "title":  "At a Glance",
-        "url":  "professional/at-a-glance.html"
+        "url":  "professional/at-a-glance.html",
+        "section":  "professional",
+        "content":  "Jorge Ranilla | At a Glance At a Glance I work in banking and operations, with a focus on structure, accountability, and continuous improvement. My professional approach is grounded in solving problems carefully, improving processes thoughtfully, and building systems that are reliable, clear, and efficient. Professional Summary Steady, practical work that helps teams run better. I value work that makes things run better for both teams and customers. Over time, I have developed a strong appreciation for operational discipline, practical problem-solving, and the kind of steady improvements that create lasting results. Core Strengths My strengths include process improvement, cross-functional coordination, documentation, workflow organization, and day-to-day operational support. I enjoy bringing order to complexity, identifying gaps, and helping teams move forward with greater consistency and confidence. Work Style I approach work with patience, follow-through, and a strong sense of ownership. I care about doing things well, communicating clearly, and earning trust through consistency. What I Value I am drawn to environments where reliability matters, details are respected, and improvement is seen as an ongoing discipline. The work I find most meaningful is the kind that quietly strengthens the foundation of a team or operation. Professional Focus Supporting operations with consistency, structure, and attention to detail. Improving workflows so processes are easier to follow and maintain. Strengthening documentation and day-to-day organization across teams. Helping create dependable systems that support both colleagues and customers. How I Contribute I look for ways to reduce friction without overcomplicating solutions. I value clarity, strong follow-through, and thoughtful communication. I work best where trust is built through consistency and care. I believe the best improvements are the ones that hold up over time. If you would like a deeper look at my background, you can download my resume or connect with me on LinkedIn. View Resume Explore Portfolio"
     },
     {
         "title":  "Portfolio",
-        "url":  "professional/portfolio.html"
+        "url":  "professional/portfolio.html",
+        "section":  "professional",
+        "content":  "Jorge Ranilla | Portfolio Portfolio This page highlights the kind of work I value most: improving processes, supporting operations, and contributing to systems that help teams perform at their best. While much of my experience has been in practical, day-to-day operations, the common thread has always been the same: solve problems clearly, improve what can be improved, and leave things better organized than I found them. Professional Focus Thoughtful, dependable work with a practical impact. This portfolio is intentionally practical. It reflects the kind of work I do best: thoughtful, dependable contributions that help organizations run more smoothly. Process Improvement Examples of workflow changes, documentation updates, or operational improvements that increased clarity, efficiency, or consistency. Operations Support Work centered on keeping daily processes running smoothly, supporting teammates, and maintaining strong standards of follow-through and accuracy. Documentation and Organization Projects involving procedure writing, cleanup of existing processes, and creating clearer systems for everyday use. Professional Growth A section that reflects what I have learned through experience, what kinds of challenges motivate me, and how I continue to grow in my work. How I Think About Good Work I believe strong operations are built through discipline, clarity, and consistency. The best systems do not just function in the moment. They make it easier for people to do good work repeatedly, with less confusion and more confidence. What This Portfolio Represents Rather than focusing only on big headline projects, this page reflects the kind of contributions that often make the greatest long-term difference: better organization, stronger support, clearer workflows, and steady improvement over time. Representative Areas of Contribution Reviewing and strengthening day-to-day workflows to improve reliability. Supporting teams through better organization, clearer communication, and dependable execution. Creating or refining documentation so processes are easier to understand and maintain. Bringing patience and structure to work that depends on accuracy and follow-through. For a broader overview of my background and working style, visit the At a Glance page or review my resume. View At a Glance Open Resume"
     },
     {
         "title":  "Resume",
-        "url":  "professional/resume.html"
+        "url":  "professional/resume.html",
+        "section":  "professional",
+        "content":  "Jorge Ranilla | Resume Resume Download my full resume or connect with me on LinkedIn for more details about my professional experience. Download PDF View LinkedIn Profile If the PDF doesn\u0027t display above, click here to open it in a new tab . Jorge Ranilla Resume View or download my professional resume as a PDF document. View Resume PDF"
     }
 ]
