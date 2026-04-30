@@ -1277,13 +1277,13 @@
                 const now = new Date();
                 const timeMin = now.toISOString();
                 
-                // Calculate exactly 90 days from now
+                // Calculate exactly 150 days from now (5 months)
                 const futureDate = new Date();
-                futureDate.setDate(now.getDate() + 90);
+                futureDate.setDate(now.getDate() + 150);
                 const timeMax = futureDate.toISOString();
                 
-                // Fetch upcoming events from Google Calendar API for the next 90 days
-                const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true&orderBy=startTime&maxResults=50`;
+                // Fetch upcoming events from Google Calendar API for the next 5 months
+                const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true&orderBy=startTime&maxResults=100`;
                 
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -1294,7 +1294,7 @@
                 const events = data.items || [];
                 
                 if (events.length === 0) {
-                    container.innerHTML = '<p class="no-events">No upcoming events in the next 90 days</p>';
+                    container.innerHTML = '<p class="no-events">No upcoming events in the next 5 months</p>';
                 } else {
                     let tabsHtml = '<div class="calendar-tabs">';
                     let contentHtml = '';
@@ -1321,9 +1321,9 @@
                         groupedEvents[monthKey].push(event);
                     });
 
-                    // Generate tabs for exactly the next 3 months
+                    // Generate tabs for exactly the next 5 months
                     const monthsToGenerate = [];
-                    for(let i=0; i<3; i++) {
+                    for(let i=0; i<5; i++) {
                         const m = new Date(now.getFullYear(), now.getMonth() + i, 1);
                         monthsToGenerate.push(m.toLocaleString('en-US', { month: 'long', year: 'numeric' }));
                     }

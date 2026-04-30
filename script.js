@@ -703,26 +703,35 @@ document.addEventListener("DOMContentLoaded", () => {
     =========================== */
   const rail = document.querySelector(".social-rail");
   if (rail) {
-    const EDGE = 18;   // px from left edge to trigger show
-    const HIDE_X = 120; // if mouse goes past this and not hovering rail, hide
+    // Check if we are on the Home page
+    const isHomePage = document.body.getAttribute('data-title') === 'Home';
 
-    function show() {
+    if (isHomePage) {
+      // Permanently show on homepage
       rail.classList.add("show");
-    }
-    function hide() {
-      rail.classList.remove("show");
-    }
+    } else {
+      // Hide/Show on hover for all other pages
+      const EDGE = 18;   // px from left edge to trigger show
+      const HIDE_X = 120; // if mouse goes past this and not hovering rail, hide
 
-    document.addEventListener("mousemove", (e) => {
-      if (e.clientX <= EDGE) {
-        show();
-      } else if (e.clientX > HIDE_X && !rail.matches(":hover")) {
-        hide();
+      function show() {
+        rail.classList.add("show");
       }
-    });
+      function hide() {
+        rail.classList.remove("show");
+      }
 
-    rail.addEventListener("mouseenter", show);
-    rail.addEventListener("mouseleave", hide);
+      document.addEventListener("mousemove", (e) => {
+        if (e.clientX <= EDGE) {
+          show();
+        } else if (e.clientX > HIDE_X && !rail.matches(":hover")) {
+          hide();
+        }
+      });
+
+      rail.addEventListener("mouseenter", show);
+      rail.addEventListener("mouseleave", hide);
+    }
   }
 
   /* ===========================
