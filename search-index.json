@@ -1,4 +1,4 @@
-[
+﻿[
     {
         "title":  "Baby Alyssa\u0027s Gallery | Baby Updates",
         "url":  "baby-updates/baby-gallery.html"
@@ -20,12 +20,16 @@
         "url":  "blog/family-updates.html"
     },
     {
+        "title":  "Family Update",
+        "url":  "blog/family-updates-individual.html"
+    },
+    {
         "title":  "Latest Posts",
         "url":  "blog/latest-posts.html"
     },
     {
-        "title":  "Family Update",
-        "url":  "blog/family-updates-individual.html"
+        "title":  "Latest Post",
+        "url":  "blog/latest-posts-individual.html"
     },
     {
         "title":  "Alcira Victoria Lopez Ruiz",
@@ -44,16 +48,28 @@
         "url":  "family/aurora-rondon-perea.html"
     },
     {
+        "title":  "Alyssa\u0027s Baptism",
+        "url":  "family/baptism.html"
+    },
+    {
+        "title":  "El Bautizo de Alyssa",
+        "url":  "family/baptism-es.html"
+    },
+    {
         "title":  "Alyssa\u0027s Baptism — Godfather Invitation",
         "url":  "family/baptism-godfather.html"
+    },
+    {
+        "title":  "Invitación del Padrino – El Bautizo de Alyssa",
+        "url":  "family/baptism-godfather-es.html"
     },
     {
         "title":  "Alyssa\u0027s Baptism — Godmother Invitation",
         "url":  "family/baptism-godmother.html"
     },
     {
-        "title":  "Alyssa's Baptism",
-        "url":  "family/baptism.html"
+        "title":  "Invitación de la Madrina – El Bautizo de Alyssa",
+        "url":  "family/baptism-godmother-es.html"
     },
     {
         "title":  "Carlota Salazar Mateo",
@@ -74,6 +90,10 @@
     {
         "title":  "Extended Family",
         "url":  "family/extended-family.html"
+    },
+    {
+        "title":  "Family Members Login | Jorge Ranilla",
+        "url":  "family/family-login.html"
     },
     {
         "title":  "Family Tree",
@@ -150,6 +170,10 @@
     {
         "title":  "Family Gallery",
         "url":  "gallery/family.html"
+    },
+    {
+        "title":  "Little Alyssa 🩷",
+        "url":  "gallery/family/alyssa/alyssa-photos.html"
     },
     {
         "title":  "Portraits",

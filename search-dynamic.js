@@ -41,6 +41,51 @@ async function loadSearchIndex() {
         console.warn('search-index.json not found. Search will be unavailable.', e);
         searchPages = [];
     }
+
+    // Dynamically fetch latest Blogger posts so search is always 100% up to date automatically
+    try {
+        const bloggerUrl = 'https://memoria-efimera.blogspot.com/feeds/posts/default?alt=json&max-results=50';
+        const blogRes = await fetch(bloggerUrl);
+        const blogData = await blogRes.json();
+        
+        if (blogData && blogData.feed && blogData.feed.entry) {
+            blogData.feed.entry.forEach(entry => {
+                const title = entry.title.$t;
+                let htmlContent = entry.content ? entry.content.$t : (entry.summary ? entry.summary.$t : '');
+                
+                // Clean HTML tags to get pure text
+                let tmp = document.createElement('DIV');
+                tmp.innerHTML = htmlContent;
+                const cleanContent = (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
+                
+                // Extract Post ID
+                let postId = '';
+                if (entry.id && entry.id.$t) {
+                    const idMatch = entry.id.$t.match(/post-(\d+)$/);
+                    if (idMatch) postId = idMatch[1];
+                }
+                
+                // Determine Category for the correct URL
+                let isFamilyUpdate = false;
+                if (entry.category) {
+                    isFamilyUpdate = entry.category.some(cat => cat.term === 'Family Updates');
+                }
+                
+                const postUrl = isFamilyUpdate ? `blog/family-updates-individual.html?id=${postId}` : `blog/latest-posts-individual.html?id=${postId}`;
+                
+                // If this post isn't already in the static search-index.json, add it on the fly!
+                if (!searchPages.some(p => p.url === postUrl)) {
+                    searchPages.push({
+                        title: title,
+                        url: postUrl,
+                        content: cleanContent
+                    });
+                }
+            });
+        }
+    } catch (e) {
+        console.warn('Failed to load dynamic blog posts for search', e);
+    }
 }
 
 // Open search modal
@@ -66,7 +111,9 @@ window.closeSearchModal = function () {
 };
 
 // Fetch and cache a page's text content
-async function fetchPageContent(url) {
+async function fetchPageContent(page) {
+    if (page.content !== undefined) return page.content;
+    const url = page.url;
     if (pageContentCache[url]) return pageContentCache[url];
     try {
         const prefix = getRootPrefix();
@@ -140,7 +187,7 @@ async function performSearch(query) {
 
     const results = (await Promise.all(
         searchPages.map(async page => {
-            const content = await fetchPageContent(page.url);
+            const content = await fetchPageContent(page);
             const titleMatch = page.title.toLowerCase().includes(lq);
             const bodyMatch = content.toLowerCase().includes(lq);
             if (!titleMatch && !bodyMatch) return null;
