@@ -569,7 +569,7 @@
                     <script>
                         document.addEventListener("DOMContentLoaded", function() {
                             const TOKEN = "THAARXOqFTY2FBYmF1RjV3dHFyYnNIQTB3QWVSM2hDWWxKeWwyeV9NUVNVdmF0ZAXN4YnR4Q1hDR2VvZAmhNQzNHaW9COFRpeXVjdVV3UWRzbDhBNGd4YW9WMml2T2EzQVpia2w3bUZA3SDZAZAYllxckdMSDFQZAmh0UDRlWGZAWT3F3VHhXZA3ZASdUZAuTUN1ZAHJMUjgZD";
-                            const API_URL = \`https://graph.threads.net/v1.0/me/threads?fields=id,media_type,media_url,permalink,text,timestamp,username&access_token=\${TOKEN}\`;
+                            const API_URL = `https://graph.threads.net/v1.0/me/threads?fields=id,media_type,media_url,permalink,text,timestamp,username&access_token=${TOKEN}`;
                             const container = document.getElementById("threads-feed");
 
                             fetch(API_URL)
@@ -581,19 +581,19 @@
                                             const date = new Date(post.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" });
                                             let mediaHTML = "";
                                             if (post.media_url) {
-                                                mediaHTML = \`<img src="\${post.media_url}" class="thread-image" alt="Thread Image">\`;
+                                                mediaHTML = `<img src="${post.media_url}" class="thread-image" alt="Thread Image">`;
                                             }
                                             
                                             // Process text to convert links/handles to blue if desired, or keep it plain.
                                             let text = post.text || "";
                                             
-                                            const postHTML = \`
-                                                <a href="\${post.permalink}" target="_blank" class="thread-post">
-                                                    <p class="thread-text">\${text}</p>
-                                                    \${mediaHTML}
-                                                    <div class="thread-date">\${date}</div>
+                                            const postHTML = `
+                                                <a href="${post.permalink}" target="_blank" class="thread-post">
+                                                    <p class="thread-text">${text}</p>
+                                                    ${mediaHTML}
+                                                    <div class="thread-date">${date}</div>
                                                 </a>
-                                            \`;
+                                            `;
                                             container.innerHTML += postHTML;
                                         });
                                     } else {
