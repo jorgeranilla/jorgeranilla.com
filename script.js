@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const prefix = depth > 0 ? "../".repeat(depth) : "";
     const homeHref = depth > 0 ? prefix + "index.html" : "index.html";
+    const connectHref = depth > 0 ? prefix + "connect/" : "connect/";
     const imagesPrefix = depth > 0 ? prefix + "images/" : "images/";
 
     // Helper function to build section links
@@ -226,6 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <nav class="main-nav" id="mainNav" aria-label="Primary">
           <ul class="nav-links">
             <li><a href="${homeHref}">Home</a></li>
+            <li><a href="${connectHref}">Connect</a></li>
 
             <li class="dropdown-item">
               <span class="dropdown-toggle">${navLabels.family} ▾</span>
