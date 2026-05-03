@@ -2,23 +2,18 @@ BEGIN:VCARD
 VERSION:3.0
 N:Ranilla;Jorge;;;
 FN:Jorge Ranilla
+BDAY:--01-15
 TEL;TYPE=CELL,VOICE:+18646256743
 EMAIL;TYPE=INTERNET:jorgeranilla@gmail.com
 ADR;TYPE=HOME:;;1008 Umstead Grove Way;Durham;NC;27712;United States
 URL;TYPE=Website:https://jorgeranilla.com
-URL;TYPE=Instagram:https://www.instagram.com/jorgeranilla
-URL;TYPE=Threads:https://threads.net/@jorgeranilla
-URL;TYPE=YouTube:https://www.youtube.com/@jorgeranilla
-URL;TYPE=Facebook:https://www.facebook.com/jorgelranilla
-URL;TYPE=LinkedIn:https://www.linkedin.com/in/jorgeranilla
-URL;TYPE=X:https://x.com/jorgeranilla
-URL;TYPE=Subscribe:https://jorgeranilla.substack.com/subscribe
-X-SOCIALPROFILE;TYPE=instagram:https://www.instagram.com/jorgeranilla
-X-SOCIALPROFILE;TYPE=threads:https://threads.net/@jorgeranilla
-X-SOCIALPROFILE;TYPE=youtube:https://www.youtube.com/@jorgeranilla
-X-SOCIALPROFILE;TYPE=facebook:https://www.facebook.com/jorgelranilla
-X-SOCIALPROFILE;TYPE=linkedin:https://www.linkedin.com/in/jorgeranilla
-X-SOCIALPROFILE;TYPE=x:https://x.com/jorgeranilla
+X-SOCIALPROFILE;TYPE=instagram;x-user=jorgeranilla:https://www.instagram.com/jorgeranilla
+X-SOCIALPROFILE;TYPE=facebook;x-user=jorgelranilla:https://www.facebook.com/jorgelranilla
+X-SOCIALPROFILE;TYPE=linkedin;x-user=jorgeranilla:https://www.linkedin.com/in/jorgeranilla
+X-SOCIALPROFILE;TYPE=X;x-user=jorgeranilla:https://x.com/jorgeranilla
+X-SOCIALPROFILE;TYPE=threads;x-user=jorgeranilla:https://threads.net/@jorgeranilla
+X-SOCIALPROFILE;TYPE=youtube;x-user=jorgeranilla:https://www.youtube.com/@jorgeranilla
+X-SOCIALPROFILE;TYPE=substack;x-user=jorgeranilla:https://jorgeranilla.substack.com/subscribe
 PHOTO;ENCODING=b;TYPE=JPEG:/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAYEBQUFBAYFBQU
  HBgYHCQ8KCQgICRMNDgsPFhMXFxYTFRUYGyMeGBohGhUVHikfISQlJygnGB0rLismLiMmJyb/
  2wBDAQYHBwkICRIKChImGRUZJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJ
