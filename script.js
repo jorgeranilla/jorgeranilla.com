@@ -910,10 +910,100 @@ document.addEventListener("DOMContentLoaded", () => {
     const enabledKey = 'ambientAudioEnabled';
     const timeKey = 'ambientAudioTime';
     const savedAtKey = 'ambientAudioSavedAt';
+    const windowStateKey = 'jorgeAmbientAudioState';
     let triedInteractionStart = false;
     let hasSuccessfullyPlayed = false;
-    let userDisabledAmbient = localStorage.getItem(enabledKey) === 'false';
     audio.volume = 0.18;
+
+    function readWindowState() {
+      try {
+        const data = JSON.parse(window.name || '{}');
+        return data && data[windowStateKey] ? data[windowStateKey] : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function writeWindowState(state) {
+      try {
+        let data = {};
+        try {
+          data = JSON.parse(window.name || '{}') || {};
+        } catch (error) {
+          data = {};
+        }
+        data[windowStateKey] = state;
+        window.name = JSON.stringify(data);
+      } catch (error) {
+        // Some browsers may restrict window.name; localStorage still handles normal cases.
+      }
+    }
+
+    function readSavedState() {
+      let localState = null;
+      try {
+        const localTime = parseFloat(localStorage.getItem(timeKey) || '0');
+        const localSavedAt = parseInt(localStorage.getItem(savedAtKey) || '0', 10);
+        const localEnabledValue = localStorage.getItem(enabledKey);
+        localState = {
+          enabled: localEnabledValue !== 'false',
+          time: Number.isFinite(localTime) ? localTime : 0,
+          savedAt: Number.isFinite(localSavedAt) ? localSavedAt : 0
+        };
+      } catch (error) {
+        localState = null;
+      }
+
+      const windowState = readWindowState();
+      if (windowState && (!localState || (windowState.savedAt || 0) > (localState.savedAt || 0))) {
+        return windowState;
+      }
+
+      return localState || { enabled: true, time: 0, savedAt: 0 };
+    }
+
+    function getCurrentOrPreservedTime() {
+      const currentTimeIsUseful = Number.isFinite(audio.currentTime) && audio.currentTime > 0;
+      if (currentTimeIsUseful) {
+        return {
+          time: audio.currentTime,
+          savedAt: Date.now()
+        };
+      }
+
+      const previousState = readSavedState();
+      return {
+        time: previousState.time || 0,
+        savedAt: previousState.savedAt || Date.now()
+      };
+    }
+
+    function writeSavedState(enabled, preserveTimeIfEmpty = true) {
+      const timing = preserveTimeIfEmpty
+        ? getCurrentOrPreservedTime()
+        : {
+            time: Number.isFinite(audio.currentTime) ? audio.currentTime : 0,
+            savedAt: Date.now()
+          };
+
+      const state = {
+        enabled,
+        time: timing.time,
+        savedAt: timing.savedAt
+      };
+
+      try {
+        localStorage.setItem(enabledKey, enabled ? 'true' : 'false');
+        localStorage.setItem(timeKey, String(state.time));
+        localStorage.setItem(savedAtKey, String(state.savedAt));
+      } catch (error) {
+        // window.name fallback below still helps in privacy-restricted contexts.
+      }
+
+      writeWindowState(state);
+    }
+
+    let userDisabledAmbient = readSavedState().enabled === false;
 
     function setPlaying(isPlaying) {
       toggle.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
@@ -922,18 +1012,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveCurrentTime() {
-      if (!hasSuccessfullyPlayed) return;
+      if (!hasSuccessfullyPlayed && !(audio.currentTime > 0)) return;
       if (!Number.isNaN(audio.currentTime) && Number.isFinite(audio.currentTime)) {
-        localStorage.setItem(timeKey, String(audio.currentTime));
-        localStorage.setItem(savedAtKey, String(Date.now()));
+        writeSavedState(!userDisabledAmbient, false);
       }
     }
 
     function getSavedPlaybackTime() {
-      const savedTime = parseFloat(localStorage.getItem(timeKey) || '0');
+      const state = readSavedState();
+      const savedTime = parseFloat(state.time || '0');
       if (!(savedTime > 0)) return 0;
 
-      const savedAt = parseInt(localStorage.getItem(savedAtKey) || '0', 10);
+      const savedAt = parseInt(state.savedAt || '0', 10);
       const elapsed = savedAt > 0 ? Math.max(0, (Date.now() - savedAt) / 1000) : 0;
       const candidateTime = savedTime + elapsed;
 
@@ -967,7 +1057,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         hasSuccessfullyPlayed = true;
         userDisabledAmbient = false;
-        localStorage.setItem(enabledKey, 'true');
+        writeSavedState(true, false);
         setPlaying(true);
       } catch (error) {
         setPlaying(false);
@@ -992,7 +1082,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener('beforeunload', () => {
       saveCurrentTime();
-      localStorage.setItem(enabledKey, userDisabledAmbient ? 'false' : 'true');
+      writeSavedState(!userDisabledAmbient);
+    });
+
+    window.addEventListener('pagehide', () => {
+      saveCurrentTime();
+      writeSavedState(!userDisabledAmbient);
     });
 
     document.addEventListener('click', (event) => {
@@ -1006,11 +1101,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const url = new URL(href, window.location.href);
         if (url.origin === window.location.origin) {
           saveCurrentTime();
-          localStorage.setItem(enabledKey, userDisabledAmbient ? 'false' : 'true');
+          writeSavedState(!userDisabledAmbient);
         }
       } catch (error) {
         saveCurrentTime();
-        localStorage.setItem(enabledKey, userDisabledAmbient ? 'false' : 'true');
+        writeSavedState(!userDisabledAmbient);
       }
     }, true);
 
@@ -1023,7 +1118,7 @@ document.addEventListener("DOMContentLoaded", () => {
         audio.pause();
         saveCurrentTime();
         userDisabledAmbient = true;
-        localStorage.setItem(enabledKey, 'false');
+        writeSavedState(false);
         setPlaying(false);
       }
     });
