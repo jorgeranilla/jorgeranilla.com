@@ -1,0 +1,269 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jorge Ranilla | Mobile Player</title>
+  <link rel="icon" type="image/png" href="images/jr-logo.png">
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .site-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .ambient-shell-toggle {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 46px;
+      height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(205, 92, 92, 0.12);
+      color: #CD5C5C;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+      z-index: 10;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .ambient-shell-toggle svg {
+      width: 15px;
+      height: 15px;
+      fill: currentColor;
+    }
+
+    .ambient-shell-toggle .icon-muted {
+      display: none;
+    }
+
+    .ambient-shell-toggle[aria-pressed="false"] {
+      background: rgba(255, 255, 255, 0.94);
+      color: #555;
+    }
+
+    .ambient-shell-toggle[aria-pressed="false"] .icon-sound {
+      display: none;
+    }
+
+    .ambient-shell-toggle[aria-pressed="false"] .icon-muted {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <iframe class="site-frame" id="siteFrame" name="jorgeAmbientSiteFrame" title="Jorge Ranilla website"></iframe>
+
+  <button class="ambient-shell-toggle" id="ambientShellToggle" type="button" aria-label="Play ambient music" aria-pressed="false">
+    <svg class="icon-sound" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zm-2.5-9.5v2.06A8 8 0 0 1 14 19.44v2.06A10 10 0 0 0 14 2.5z" />
+    </svg>
+    <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm15.3 3 3.1-3.1-1.4-1.4-3.1 3.1-3.1-3.1-1.4 1.4 3.1 3.1-3.1 3.1 1.4 1.4 3.1-3.1 3.1 3.1 1.4-1.4-3.1-3.1z" />
+    </svg>
+  </button>
+
+  <audio id="ambientShellAudio" loop preload="auto" playsinline>
+    <source src="audio/ambient.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    (function setupMobilePersistentPlayer() {
+      const frame = document.getElementById('siteFrame');
+      const audio = document.getElementById('ambientShellAudio');
+      const toggle = document.getElementById('ambientShellToggle');
+      const enabledKey = 'ambientAudioEnabled';
+      const timeKey = 'ambientAudioTime';
+      const savedAtKey = 'ambientAudioSavedAt';
+      const minimumUsefulTime = 0.35;
+      let isPlayingAttempt = false;
+      let saveTimer = null;
+
+      audio.volume = 0.18;
+
+      function getInitialPage() {
+        const params = new URLSearchParams(window.location.search);
+        const requestedPage = params.get('page');
+        if (!requestedPage) return 'index.html';
+
+        try {
+          const url = new URL(requestedPage, window.location.href);
+          if (url.origin !== window.location.origin) return 'index.html';
+          if (url.pathname.endsWith('/mobile-player.html')) return 'index.html';
+          return url.pathname.replace(/^\//, '') + url.search + url.hash;
+        } catch (error) {
+          return requestedPage.replace(/^\/+/, '') || 'index.html';
+        }
+      }
+
+      function saveTime() {
+        if (Number.isFinite(audio.currentTime) && audio.currentTime > minimumUsefulTime) {
+          localStorage.setItem(timeKey, String(audio.currentTime));
+          localStorage.setItem(savedAtKey, String(Date.now()));
+        }
+      }
+
+      function getSavedTime() {
+        const savedTime = parseFloat(localStorage.getItem(timeKey) || '0');
+        if (!(savedTime > minimumUsefulTime)) return 0;
+
+        const savedAt = parseInt(localStorage.getItem(savedAtKey) || '0', 10);
+        const elapsed = savedAt > 0 ? Math.max(0, (Date.now() - savedAt) / 1000) : 0;
+        const candidateTime = savedTime + elapsed;
+
+        if (audio.duration && Number.isFinite(audio.duration) && audio.duration > 0) {
+          return candidateTime % audio.duration;
+        }
+
+        return candidateTime;
+      }
+
+      function setPlayingState(isPlaying) {
+        toggle.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
+        toggle.setAttribute('aria-label', isPlaying ? 'Pause ambient music' : 'Play ambient music');
+      }
+
+      function startSaveTimer() {
+        if (!saveTimer) saveTimer = window.setInterval(saveTime, 1000);
+      }
+
+      function stopSaveTimer() {
+        if (!saveTimer) return;
+        window.clearInterval(saveTimer);
+        saveTimer = null;
+      }
+
+      async function playAudio() {
+        if (isPlayingAttempt) return;
+        isPlayingAttempt = true;
+
+        try {
+          const savedTime = getSavedTime();
+          if (savedTime > minimumUsefulTime) audio.currentTime = savedTime;
+          await audio.play();
+          if (savedTime > minimumUsefulTime && Math.abs(audio.currentTime - savedTime) > 1.5) {
+            audio.currentTime = savedTime;
+          }
+          localStorage.setItem(enabledKey, 'true');
+          setPlayingState(true);
+          startSaveTimer();
+        } catch (error) {
+          setPlayingState(false);
+        } finally {
+          isPlayingAttempt = false;
+        }
+      }
+
+      function pauseAudio() {
+        audio.pause();
+        saveTime();
+        stopSaveTimer();
+        localStorage.setItem(enabledKey, 'false');
+        setPlayingState(false);
+      }
+
+      function makeFrameUrl(url) {
+        const target = new URL(url, frame.contentWindow.location.href);
+        return target.pathname.replace(/^\//, '') + target.search + target.hash;
+      }
+
+      function setShellUrl(page) {
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('page', page);
+        history.pushState({ page }, '', nextUrl);
+      }
+
+      function navigateFrame(page, updateHistory) {
+        saveTime();
+        frame.src = page;
+        if (updateHistory) setShellUrl(page);
+      }
+
+      function wireFrameLinks() {
+        let frameDocument;
+        try {
+          frameDocument = frame.contentDocument;
+        } catch (error) {
+          return;
+        }
+
+        if (!frameDocument) return;
+
+        frameDocument.addEventListener('click', function(event) {
+          const link = event.target.closest('a[href]');
+          if (!link) return;
+          if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+          const rawHref = link.getAttribute('href');
+          if (!rawHref || rawHref.startsWith('#') || rawHref.startsWith('mailto:') || rawHref.startsWith('tel:')) return;
+
+          try {
+            const url = new URL(rawHref, frame.contentWindow.location.href);
+            if (url.origin !== window.location.origin) return;
+            if (url.pathname.endsWith('/mobile-player.html')) return;
+
+            event.preventDefault();
+            navigateFrame(makeFrameUrl(url.href), true);
+          } catch (error) {
+            // Let unusual links behave normally.
+          }
+        }, true);
+      }
+
+      toggle.addEventListener('click', function() {
+        if (audio.paused) {
+          playAudio();
+        } else {
+          pauseAudio();
+        }
+      });
+
+      audio.addEventListener('loadedmetadata', function() {
+        const savedTime = getSavedTime();
+        if (savedTime > minimumUsefulTime) audio.currentTime = savedTime;
+      });
+
+      audio.addEventListener('playing', function() {
+        setPlayingState(true);
+        startSaveTimer();
+      });
+
+      audio.addEventListener('pause', function() {
+        saveTime();
+        stopSaveTimer();
+      });
+
+      window.addEventListener('pagehide', saveTime);
+      window.addEventListener('beforeunload', saveTime);
+      window.addEventListener('popstate', function(event) {
+        const page = event.state && event.state.page ? event.state.page : getInitialPage();
+        navigateFrame(page, false);
+      });
+
+      frame.addEventListener('load', wireFrameLinks);
+      navigateFrame(getInitialPage(), false);
+
+      if (localStorage.getItem(enabledKey) === 'true') {
+        playAudio();
+      }
+    })();
+  </script>
+</body>
+
+</html>

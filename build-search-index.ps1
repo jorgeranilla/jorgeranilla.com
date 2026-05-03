@@ -1,5 +1,6 @@
 $root = "c:\Projects\Antigravity"
 $excludeFolders = @("archive", "babyshower")
+$excludeFiles = @("mobile-player.html")
 $pages = [System.Collections.Generic.List[object]]::new()
 
 function ConvertTo-SearchableText {
@@ -17,7 +18,7 @@ function ConvertTo-SearchableText {
 $htmlFiles = Get-ChildItem -Path $root -Filter "*.html" -Recurse | Where-Object {
     $rel = $_.FullName.Substring($root.Length + 1)
     $topFolder = ($rel -split '\\')[0]
-    -not ($excludeFolders -contains $topFolder)
+    -not ($excludeFolders -contains $topFolder) -and -not ($excludeFiles -contains $rel)
 } | Sort-Object FullName
 
 foreach ($file in $htmlFiles) {
