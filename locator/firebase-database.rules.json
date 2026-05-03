@@ -1,0 +1,40 @@
+{
+  "rules": {
+    "publicLocation": {
+      "jorge": {
+        ".read": true,
+        ".write": "auth != null && auth.uid === 'YOUR_FIREBASE_ADMIN_UID'",
+        ".validate": "newData.hasChildren(['active', 'updatedAt'])",
+        "active": {
+          ".validate": "newData.isBoolean()"
+        },
+        "lat": {
+          ".validate": "newData.val() === null || (newData.isNumber() && newData.val() >= -90 && newData.val() <= 90)"
+        },
+        "lng": {
+          ".validate": "newData.val() === null || (newData.isNumber() && newData.val() >= -180 && newData.val() <= 180)"
+        },
+        "accuracy": {
+          ".validate": "newData.val() === null || (newData.isNumber() && newData.val() >= 0)"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0"
+        },
+        "expiresAt": {
+          ".validate": "newData.val() === null || (newData.isNumber() && newData.val() > 0)"
+        },
+        "$other": {
+          ".validate": false
+        }
+      },
+      "$other": {
+        ".read": false,
+        ".write": false
+      }
+    },
+    "$other": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}

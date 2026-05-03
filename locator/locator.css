@@ -1,0 +1,222 @@
+:root {
+  color-scheme: light;
+  --locator-bg: #f5f7fb;
+  --locator-card: rgba(255, 255, 255, 0.88);
+  --locator-text: #101318;
+  --locator-muted: #6b7280;
+  --locator-line: rgba(16, 19, 24, 0.1);
+  --locator-blue: #0a84ff;
+  --locator-blue-dark: #0066cc;
+  --locator-danger: #d92d20;
+  --locator-shadow: 0 24px 70px rgba(24, 32, 46, 0.13);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(10, 132, 255, 0.15), transparent 32rem),
+    linear-gradient(180deg, #fbfcff 0%, var(--locator-bg) 100%);
+  color: var(--locator-text);
+}
+
+.locator-shell {
+  width: min(100%, 36rem);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: grid;
+  place-items: center;
+}
+
+.locator-card {
+  width: 100%;
+  padding: 1.5rem;
+  background: var(--locator-card);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 2rem;
+  box-shadow: var(--locator-shadow);
+  text-align: center;
+  backdrop-filter: blur(22px);
+}
+
+.locator-avatar {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  box-shadow: 0 14px 36px rgba(16, 19, 24, 0.18);
+}
+
+.locator-avatar--small {
+  width: 4.75rem;
+  height: 4.75rem;
+}
+
+.locator-kicker {
+  margin: 1rem 0 0.25rem;
+  color: var(--locator-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 1rem 0 1.25rem;
+  font-size: 1.55rem;
+  line-height: 1.12;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.locator-map {
+  width: 100%;
+  height: min(65vh, 26rem);
+  margin: 1.25rem 0;
+  border: 1px solid var(--locator-line);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.locator-details,
+.locator-status-grid,
+.locator-form,
+.locator-admin {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.locator-details {
+  margin: 0;
+}
+
+.locator-details div,
+.locator-status-grid div {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--locator-line);
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.68);
+  text-align: left;
+}
+
+dt,
+.locator-status-grid span,
+.locator-duration-label,
+.locator-form label {
+  display: block;
+  color: var(--locator-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+dd {
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+input,
+select,
+.locator-button {
+  width: 100%;
+  min-height: 3.25rem;
+  border: 1px solid var(--locator-line);
+  border-radius: 999px;
+  font: inherit;
+}
+
+input,
+select {
+  margin-top: 0.4rem;
+  padding: 0 1rem;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--locator-text);
+}
+
+select {
+  border-radius: 1rem;
+}
+
+.locator-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--locator-text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.locator-button:hover,
+.locator-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(24, 32, 46, 0.1);
+}
+
+.locator-button--primary {
+  border-color: transparent;
+  background: var(--locator-blue);
+  color: #fff;
+}
+
+.locator-button--primary:hover,
+.locator-button--primary:focus-visible {
+  background: var(--locator-blue-dark);
+}
+
+.locator-button--danger {
+  border-color: rgba(217, 45, 32, 0.24);
+  background: #fff4f2;
+  color: var(--locator-danger);
+}
+
+.locator-actions {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.locator-message {
+  min-height: 1.25rem;
+  margin: 0.25rem 0 0;
+  color: var(--locator-muted);
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.locator-text-button {
+  border: 0;
+  background: transparent;
+  color: var(--locator-muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (min-width: 42rem) {
+  .locator-shell {
+    padding: 3rem 1.5rem;
+  }
+
+  .locator-card {
+    padding: 2rem;
+  }
+
+  .locator-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
