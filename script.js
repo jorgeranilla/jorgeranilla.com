@@ -929,14 +929,26 @@ document.addEventListener("DOMContentLoaded", () => {
     function restoreSavedTime() {
       const savedTime = parseFloat(localStorage.getItem(timeKey) || '0');
       if (savedTime > 0 && (!audio.duration || savedTime < audio.duration)) {
-        audio.currentTime = savedTime;
+        if (Math.abs(audio.currentTime - savedTime) > 1.5) {
+          audio.currentTime = savedTime;
+        }
       }
     }
 
     async function playAmbient() {
       try {
-        restoreSavedTime();
+        const savedTime = parseFloat(localStorage.getItem(timeKey) || '0');
+        if (savedTime > 0) audio.currentTime = savedTime;
+
         await audio.play();
+        
+        // Mobile Safari often ignores currentTime changes before play() resolves. Force it again.
+        if (savedTime > 0 && (!audio.duration || savedTime < audio.duration)) {
+          if (Math.abs(audio.currentTime - savedTime) > 1.5) {
+            audio.currentTime = savedTime;
+          }
+        }
+
         hasSuccessfullyPlayed = true;
         localStorage.setItem(enabledKey, 'true');
         setPlaying(true);
