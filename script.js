@@ -910,6 +910,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const enabledKey = 'ambientAudioEnabled';
     const timeKey = 'ambientAudioTime';
     let triedInteractionStart = false;
+    let hasSuccessfullyPlayed = false;
     audio.volume = 0.18;
 
     function setPlaying(isPlaying) {
@@ -919,6 +920,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveCurrentTime() {
+      if (!hasSuccessfullyPlayed) return;
       if (!Number.isNaN(audio.currentTime) && Number.isFinite(audio.currentTime)) {
         localStorage.setItem(timeKey, String(audio.currentTime));
       }
@@ -935,6 +937,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         restoreSavedTime();
         await audio.play();
+        hasSuccessfullyPlayed = true;
         localStorage.setItem(enabledKey, 'true');
         setPlaying(true);
       } catch (error) {
