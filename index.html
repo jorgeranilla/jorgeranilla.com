@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jorge Ranilla | Home</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="images/jr-logo.png">
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jorgeranilla.com/">
+    <meta property="og:title" content="Jorge Ranilla | Home">
+    <meta property="og:description" content="A space to share family stories, celebrate heritage, and preserve memories across generations.">
+    <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Jorge Ranilla | Home">
+    <meta name="twitter:description" content="A space to share family stories, celebrate heritage, and preserve memories across generations.">
+    <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
+</head>
+
+<body data-title="Home">
+
+    <div id="social-rail-placeholder"></div>
+    <div id="header-placeholder"></div>
+
+    <!-- Dynamic Greeting Section -->
+    <section class="greeting-section">
+        <div class="greeting-content">
+            <div class="date-info">
+                <div id="greeting-text"></div>
+                <div id="current-date"></div>
+            </div>
+            <!-- Scrolling Announcement Ticker -->
+            <div class="ticker-wrapper">
+                <div class="ticker-content" id="ticker-content">
+                    🎀 Welcome to the world, Baby Alyssa! Born March 25, 2026 🩷 | 📢 She's finally here — our hearts are full! | 💕 A new chapter begins for our family
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         CAROUSEL CONFIG - Edit CAROUSEL_SLIDES below to add/remove/reorder slides.
+         Each object needs: cssClass, title, text, link, btnText
+    ============================================================ -->
+    <section class="hero-carousel" id="hero-carousel"></section>
+
+    <script>
+        var CAROUSEL_SLIDES = [
+            {
+                cssClass: 'slide-baptism',
+                title: 'Alyssa\u2019s Baptism \u2728',
+                text: 'A blessed milestone is coming. Alyssa will be baptized on September 13th at St. Francis of Assisi in Raleigh. Our hearts are full.',
+                link: 'family/baptism.html',
+                btnText: 'Read the Announcement'
+            },
+            {
+                cssClass: 'slide-heritage',
+                title: 'Meet the Family',
+                text: 'Discover the stories, heritage, and connections that make us who we are.',
+                link: 'family/heritage-roots.html',
+                btnText: 'Explore Our Roots'
+            },
+            {
+                cssClass: 'slide-family-tree',
+                title: 'Family Tree',
+                text: 'Explore generations of the Ranilla family heritage and discover our rich ancestry.',
+                link: 'family/family-tree.html',
+                btnText: 'Explore Tree'
+            },
+            {
+                cssClass: 'slide-blog',
+                title: 'Memoria Ef\u00edmera',
+                text: 'Stories about family, health journeys, travels, and life\u2019s unexpected moments.',
+                link: 'blog/latest-posts.html',
+                btnText: 'Read The Blog'
+            }
+        ];
+
+        (function buildCarousel() {
+            var section = document.getElementById('hero-carousel');
+            if (!section) return;
+
+            // Build slide divs
+            CAROUSEL_SLIDES.forEach(function(slide, i) {
+                var div = document.createElement('div');
+                div.className = 'slide ' + slide.cssClass + (i === 0 ? ' active' : '');
+                div.innerHTML =
+                    '<div class="slide-content">' +
+                        '<h1>' + slide.title + '</h1>' +
+                        '<p>' + slide.text + '</p>' +
+                        '<a href="' + slide.link + '" class="btn">' + slide.btnText + '</a>' +
+                    '</div>';
+                section.appendChild(div);
+            });
+
+            // Navigation arrows
+            section.insertAdjacentHTML('beforeend',
+                '<button class="carousel-arrow carousel-arrow-left" onclick="changeSlide(-1)" aria-label="Previous slide">' +
+                    '<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>' +
+                '</button>' +
+                '<button class="carousel-arrow carousel-arrow-right" onclick="changeSlide(1)" aria-label="Next slide">' +
+                    '<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>' +
+                '</button>'
+            );
+
+            // Dots - auto-generated, one per slide, always in sync
+            var dotsDiv = document.createElement('div');
+            dotsDiv.className = 'carousel-dots';
+            CAROUSEL_SLIDES.forEach(function(_, i) {
+                var span = document.createElement('span');
+                span.className = 'dot' + (i === 0 ? ' active' : '');
+                span.setAttribute('onclick', 'currentSlide(' + (i + 1) + ')');
+                dotsDiv.appendChild(span);
+            });
+            section.appendChild(dotsDiv);
+        })();
+    </script>
+
+    <!-- Introduction Section -->
+    <section class="introduction-section">
+        <div class="page-content">
+            <div class="intro-container">
+                <div class="intro-text">
+                    <h2 class="intro-title">Welcome</h2>
+                    <p class="intro-description">
+                        This is a space where I share my story, celebrate my family's heritage,
+                        and preserve the memories that connect us across generations. This site is a living archive
+                        of our journey together. Explore the family tree, discover our roots, and get to know the
+                        people and places that shaped who I am.
+                    </p>
+                </div>
+                <div class="intro-subscribe">
+                    <h3 class="subscribe-title">Stay Connected</h3>
+                    <p class="subscribe-description">
+                        Get updates on family events, new posts, and announcements.
+                    </p>
+                    <form action="https://jorgeranilla.substack.com/subscribe" method="GET" target="_blank"
+                        class="embeddable-buttondown-form">
+                        <input type="email" name="email" id="bd-email" placeholder="Enter your email" required />
+                        <button type="submit" class="subscribe-button">Subscribe</button>
+                    </form>
+                    <p class="subscription-note">
+                        Unsubscribe anytime.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Family Update Section -->
+    <section class="latest-update-section">
+        <div class="page-content">
+            <div class="latest-update-header">
+                <h2 class="latest-update-label">
+                    <svg viewBox="0 0 24 24" width="18" height="18" style="display:inline-block;vertical-align:middle;margin-right:7px;fill:#CD5C5C;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                    Latest Family Update
+                </h2>
+                <a href="blog/family-updates.html" class="latest-update-view-all">View all updates →</a>
+            </div>
+
+            <div class="latest-update-row">
+                <div id="latest-update-card" class="latest-update-card">
+                    <div class="latest-update-loading">Loading latest update…</div>
+                </div>
+
+                <div class="latest-update-countdown baby-arrived-card">
+                    <div class="baby-arrived-emoji">🩷</div>
+                    <h3 class="baby-arrived-title">She's Here!</h3>
+                    <p class="baby-arrived-name">Alyssa</p>
+                    <p class="baby-arrived-date">Born March 25, 2026</p>
+                    <div class="baby-days-counter">
+                        <span class="baby-days-number" id="days-old">1</span>
+                        <span class="baby-days-label">day<span id="days-plural"></span> old</span>
+                    </div>
+                    <p class="baby-arrived-msg">💕 Our hearts are so full 💕</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .latest-update-section {
+            background: #fff;
+            padding: 1.5rem 0 2rem;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .latest-update-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1000px;
+            margin: 0 auto 1.1rem;
+        }
+
+        .latest-update-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .latest-update-view-all {
+            font-size: 0.82rem;
+            color: #CD5C5C;
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: color 0.2s;
+        }
+
+        .latest-update-view-all:hover {
+            color: #a03838;
+        }
+
+
+        .latest-update-row {
+            display: flex;
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            align-items: stretch;
+        }
+
+        .latest-update-card {
+            flex: 2;
+            border-left: 4px solid #CD5C5C;
+            background: #fafafa;
+            border-radius: 0 10px 10px 0;
+            padding: 1.25rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            cursor: default;
+        }
+
+        .latest-update-countdown {
+            flex: 1;
+            background: #fff5f8;
+            border: 1px solid #ffe0ed;
+            border-radius: 10px;
+            padding: 1.25rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+
+        .latest-update-card:hover {
+            transform: translateX(3px);
+            box-shadow: 0 4px 16px rgba(205, 92, 92, 0.12);
+        }
+
+        .latest-update-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .latest-update-date {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #CD5C5C;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .latest-update-tag {
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: #f5e5e5;
+            color: #a03838;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+
+        .latest-update-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .latest-update-excerpt {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.65;
+            margin: 0;
+        }
+
+        .latest-update-excerpt a.read-more-link {
+            color: #CD5C5C;
+            font-weight: 600;
+            text-decoration: none;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+
+        .latest-update-excerpt a.read-more-link:hover {
+            color: #a03838;
+            text-decoration: underline;
+        }
+
+        .latest-update-loading {
+            color: #aaa;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .latest-update-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.4rem;
+            }
+
+            .latest-update-card {
+                padding: 1rem 1.25rem;
+            }
+
+            .latest-update-title {
+                font-size: 1.05rem;
+            }
+
+            .latest-update-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <script>
+        (function loadLatestFamilyUpdate() {
+            const callbackName = 'latestUpdateCallback_' + Date.now();
+
+            window[callbackName] = function (data) {
+                try {
+                    const card = document.getElementById('latest-update-card');
+                    const entries = data.feed.entry;
+
+                    if (!entries || entries.length === 0) {
+                        card.innerHTML = '<p class="latest-update-loading">No updates yet.</p>';
+                        return;
+                    }
+
+                    const post = entries[0];
+                    const title = post.title.$t;
+
+                    const date = new Date(post.published.$t).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    }).toUpperCase();
+
+                    // Extract tags (skip the generic "Family Updates" label)
+                    const tags = (post.category || [])
+                        .map(c => c.term)
+                        .filter(t => t !== 'Family Updates');
+
+                    // Build excerpt from content
+                    const tmpDiv = document.createElement('div');
+                    tmpDiv.innerHTML = post.content ? post.content.$t : (post.summary ? post.summary.$t : '');
+                    tmpDiv.querySelectorAll('img').forEach(i => i.remove());
+                    let excerpt = tmpDiv.textContent.trim().replace(/\n{2,}/g, ' ').substring(0, 220);
+                    if (excerpt.length === 220) excerpt = excerpt.trimEnd() + '…';
+
+                    const tagsHTML = tags.slice(0, 3).map(t =>
+                        `<span class="latest-update-tag">${t}</span>`
+                    ).join('');
+
+                    card.innerHTML = `
+                        <div class="latest-update-meta">
+                            <span class="latest-update-date">${date}</span>
+                            ${tagsHTML}
+                        </div>
+                        <h3 class="latest-update-title">${title}</h3>
+                        <p class="latest-update-excerpt">
+                            ${excerpt}
+                            <a href="blog/family-updates.html" class="read-more-link">Read more →</a>
+                        </p>
+                    `;
+                } catch (e) {
+                    document.getElementById('latest-update-card').innerHTML =
+                        '<p class="latest-update-loading">Could not load the latest update.</p>';
+                }
+
+                delete window[callbackName];
+                if (script.parentNode) script.parentNode.removeChild(script);
+            };
+
+            const script = document.createElement('script');
+            script.src = `https://memoria-efimera.blogspot.com/feeds/posts/default/-/Family%20Updates?alt=json-in-script&max-results=1&callback=${callbackName}`;
+            script.onerror = function () {
+                const card = document.getElementById('latest-update-card');
+                if (card) card.innerHTML = '<p class="latest-update-loading">Could not load the latest update.</p>';
+                delete window[callbackName];
+            };
+            document.head.appendChild(script);
+        })();
+    </script>
+
+    <section class="recent-updates">
+        <div class="page-content">
+            <div class="updates-grid updates-grid-two-column">
+
+                <div class="update-column">
+
+                                <h3 class="column-title" style="text-align: center;">
+                                    <svg viewBox="0 0 24 24" width="20" height="20"
+                                        style="display: inline-block; vertical-align: middle; margin-right: 8px; fill: #e74c3c;">
+                                        <path
+                                            d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z" />
+                                    </svg>
+                                    What's Marked on the Calendar
+                                </h3>
+                                <p
+                                    style="display: block; width: 100%; text-align: center; color: #888; font-size: 0.85rem; margin-top: -15px; margin-bottom: 20px; font-style: italic;">
+                                    What's coming up for us
+                                </p>
+                                <div id="calendar-events" style="min-height: 200px;">
+                                    <p style="color: #999; text-align: center; padding: 2rem; font-size: 0.9rem;">
+                                        <span class="loading-spinner"
+                                            style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #e74c3c; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px;"></span>
+                                        Loading events...
+                                    </p>
+                                </div>
+                                <div style="text-align: center; margin-top: 1rem;">
+                                    <a href="webcal://calendar.google.com/calendar/ical/jorgeranilla%40gmail.com/public/basic.ics"
+                                        class="subscribe-btn"
+                                        style="display: inline-block; padding: 0.5rem 1rem; background: #CD5C5C; color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem; transition: background 0.3s;">
+                                        📅 Subscribe to Calendar
+                                    </a>
+                                </div>
+                </div>
+
+                <div class="update-column">
+                    <div class="threads-widget">
+                        <div class="threads-header">
+                            <a href="https://threads.net/@jorgeranilla" target="_blank" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+                                <img src="images/jorge.jpg" alt="Jorge Ranilla" class="threads-avatar">
+                                <div>
+                                    <h3 class="threads-name">Jorge Ranilla</h3>
+                                    <div class="threads-handle">@jorgeranilla</div>
+                                </div>
+                            </a>
+                            <a href="https://threads.net/@jorgeranilla" target="_blank" class="threads-logo-link">
+                                <svg viewBox="0 0 192 192" width="24" height="24" fill="currentColor">
+                                    <path d="M141.537 88.9883C140.71 88.5919 139.87 88.2104 139.019 87.8451C137.537 60.5382 122.616 44.905 97.5619 44.745C97.4484 44.7443 97.3355 44.7443 97.222 44.7443C82.2364 44.7443 69.7731 51.1409 62.102 62.7807L75.881 72.2328C81.6116 63.5383 90.6052 61.6848 97.2286 61.6848C97.3051 61.6848 97.3819 61.6848 97.4576 61.6855C105.707 61.7381 111.932 64.1366 115.961 68.814C118.893 72.2193 120.854 76.925 121.825 82.8638C114.511 81.6207 106.601 81.2385 98.145 81.7233C74.3247 83.0954 59.0111 96.9879 60.0396 116.292C60.5615 126.084 65.4397 134.508 73.775 140.011C80.8224 144.663 89.899 146.938 99.3323 146.423C111.79 145.74 121.563 140.987 128.381 132.296C133.559 125.696 136.834 117.143 138.28 106.366C144.217 109.949 148.617 114.664 151.047 120.332C155.179 129.967 155.42 145.8 142.501 158.708C131.182 170.016 117.576 174.908 97.0135 175.059C74.2042 174.89 56.9538 167.575 45.7381 153.317C35.2355 139.966 29.8077 120.682 29.6052 96C29.8077 71.3178 35.2355 52.0336 45.7381 38.6827C56.9538 24.4249 74.2039 17.11 97.0132 16.9405C119.988 17.1113 137.539 24.4614 149.184 38.788C154.894 45.8136 159.199 54.6488 162.037 64.9503L178.184 60.6422C174.744 47.9622 169.331 37.0357 161.965 27.974C147.036 9.60668 125.202 0.195148 97.0695 0H96.9569C68.8816 0.19447 47.2921 9.6418 32.7883 28.0793C19.8819 44.4864 13.2244 67.3157 13.0007 95.9325L13 96L13.0007 96.0675C13.2244 124.684 19.8819 147.514 32.7883 163.921C47.2921 182.358 68.8816 191.806 96.9569 192H97.0695C122.03 191.827 139.624 185.292 154.118 170.811C173.081 151.866 172.51 128.119 166.26 113.541C161.776 103.087 153.227 94.5962 141.537 88.9883ZM98.4405 129.507C88.0005 130.095 77.1544 125.409 76.6196 115.372C76.2232 107.93 81.9158 99.626 99.0812 98.6368C101.047 98.5234 102.976 98.468 104.871 98.468C111.106 98.468 116.939 99.0737 122.242 100.233C120.264 124.935 108.662 128.946 98.4405 129.507Z"></path>
+                                </svg>
+                            </a>
+                        </div>
+                        <div id="threads-feed" class="threads-feed-container">
+                            <p class="threads-loading">
+                                <span class="loading-spinner" style="display: inline-block; width: 16px; height: 16px; border: 2px solid #e0e0e0; border-top: 2px solid #000; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px; vertical-align: middle;"></span>
+                                Fetching Latest Thoughts...
+                            </p>
+                        </div>
+                    </div>
+
+                    <style>
+                        .threads-widget {
+                            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                            background: #fff;
+                            border-radius: 12px;
+                            border: 1px solid #eaeaea;
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+                            overflow: hidden;
+                            height: 100%;
+                            display: flex;
+                            flex-direction: column;
+                            min-height: 400px;
+                        }
+                        .threads-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 16px 20px;
+                            border-bottom: 1px solid #eaeaea;
+                        }
+                        .threads-avatar {
+                            width: 44px;
+                            height: 44px;
+                            border-radius: 50%;
+                            object-fit: cover;
+                        }
+                        .threads-name {
+                            font-size: 15px;
+                            font-weight: 700;
+                            color: #000;
+                            margin: 0 0 2px 0;
+                        }
+                        .threads-handle {
+                            font-size: 13px;
+                            color: #999;
+                        }
+                        .threads-logo-link {
+                            color: #000;
+                            transition: transform 0.2s;
+                        }
+                        .threads-logo-link:hover {
+                            transform: scale(1.05);
+                        }
+                        .threads-feed-container {
+                            padding: 0;
+                            height: 380px;
+                            overflow-y: auto;
+                            flex: 1;
+                        }
+                        .threads-feed-container::-webkit-scrollbar {
+                            width: 6px;
+                        }
+                        .threads-feed-container::-webkit-scrollbar-thumb {
+                            background: #ddd;
+                            border-radius: 4px;
+                        }
+                        .thread-post {
+                            padding: 16px 20px;
+                            border-bottom: 1px solid #f0f0f0;
+                            text-decoration: none;
+                            color: #000;
+                            display: block;
+                            transition: background 0.2s;
+                        }
+                        .thread-post:hover {
+                            background: #fcfcfc;
+                        }
+                        .thread-post:last-child {
+                            border-bottom: none;
+                        }
+                        .thread-text {
+                            font-size: 14px;
+                            line-height: 1.5;
+                            margin: 0 0 10px 0;
+                            white-space: pre-wrap;
+                            word-wrap: break-word;
+                        }
+                        .thread-date {
+                            font-size: 12px;
+                            color: #999;
+                        }
+                        .threads-loading {
+                            padding: 30px 20px;
+                            text-align: center;
+                            color: #999;
+                            font-size: 14px;
+                        }
+                        .thread-image {
+                            width: 100%;
+                            border-radius: 8px;
+                            margin-top: 10px;
+                            border: 1px solid #eee;
+                        }
+                        @media (max-width: 768px) {
+                            .thread-post, .threads-header {
+                                padding: 14px 14px;
+                            }
+                        }
+                    </style>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            // We are now fetching securely from our Google Apps Script middleman!
+                            const API_URL = "https://script.google.com/macros/s/AKfycbyJlXhmVhvwrVksQQFl_MJcMk6ZRcVMTmfx8yd-co_mfyULfXLnjI9tcQUEp43L4pdoLA/exec";
+                            const container = document.getElementById("threads-feed");
+
+                            fetch(API_URL)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data && data.data && data.data.length > 0) {
+                                        container.innerHTML = "";
+                                        data.data.slice(0, 5).forEach(post => {
+                                            const date = new Date(post.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                                            let mediaHTML = "";
+                                            if (post.media_url) {
+                                                mediaHTML = `<img src="${post.media_url}" class="thread-image" alt="Thread Image">`;
+                                            }
+                                            
+                                            // Process text to convert links/handles to blue if desired, or keep it plain.
+                                            let text = post.text || "";
+                                            
+                                            const postHTML = `
+                                                <a href="${post.permalink}" target="_blank" class="thread-post">
+                                                    <p class="thread-text">${text}</p>
+                                                    ${mediaHTML}
+                                                    <div class="thread-date">${date}</div>
+                                                </a>
+                                            `;
+                                            container.innerHTML += postHTML;
+                                        });
+                                    } else {
+                                        container.innerHTML = "<p class='threads-loading'>No posts found.</p>";
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    container.innerHTML = "<p class='threads-loading'>Could not load Threads.</p>";
+                                });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .recent-updates {
+            background: #f8f9fa;
+            padding: 0.5rem 0 3rem;
+            margin-top: 0;
+        }
+
+        /* Introduction Section Styles */
+        .introduction-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 0.5rem 0 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .intro-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .intro-text {
+            flex: 1;
+        }
+
+        .intro-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 0.75rem;
+            line-height: 1.2;
+        }
+
+        .intro-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #555;
+            margin: 0;
+        }
+
+        /* Subscribe box in intro */
+        .intro-subscribe {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .subscribe-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 0.5rem;
+            text-align: center;
+        }
+
+        .subscribe-description {
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+
+        /* Email Subscription Styles */
+        .email-subscription {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .subscription-description {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+
+        .embeddable-buttondown-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .embeddable-buttondown-form input[type="email"] {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .embeddable-buttondown-form input[type="email"]:focus {
+            outline: none;
+            border-color: #CD5C5C;
+            box-shadow: 0 0 0 3px rgba(205, 92, 92, 0.1);
+        }
+
+        .subscribe-button {
+            padding: 0.75rem 1.5rem;
+            background: #CD5C5C;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: 'Roboto', sans-serif;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            width: 100%;
+        }
+
+        .subscribe-button:hover {
+            background: #b84c4c;
+            transform: translateY(-1px);
+        }
+
+        .subscribe-button:active {
+            transform: translateY(0);
+        }
+
+        .subscription-note {
+            color: #999;
+            font-size: 0.75rem;
+            text-align: center;
+            margin: 0;
+            font-style: italic;
+        }
+
+        /* Responsive styles for introduction and subscription */
+        @media (max-width: 768px) {
+            .intro-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .intro-title {
+                font-size: 1.5rem;
+            }
+
+            .intro-description {
+                font-size: 0.95rem;
+            }
+
+            .subscribe-title {
+                font-size: 1.25rem;
+            }
+
+            .updates-grid-two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .updates-section {
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .updates-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .updates-grid-two-column {
+            grid-template-columns: repeat(2, 1fr);
+            max-width: 900px;
+        }
+
+        .update-column {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-height: 550px;
+            overflow-y: auto;
+            /* For Firefox */
+            scrollbar-width: thin;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .update-column {
+                padding: 1rem 0.75rem;
+            }
+        }
+
+        /* Customize scrollbar to be cleaner */
+        .update-column::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .update-column::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+
+        .update-column::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .column-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 1rem;
+            text-align: center;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .calendar-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0px;
+        }
+
+        .calendar-tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #7f8c8d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+        }
+
+        .calendar-tab-btn:hover {
+            color: #CD5C5C;
+        }
+
+        .calendar-tab-btn.active {
+            color: #CD5C5C;
+            border-bottom-color: #CD5C5C;
+        }
+
+        .calendar-tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .calendar-event {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid #e74c3c;
+            background: #f8f9fa;
+            border-radius: 4px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .calendar-event:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.15);
+        }
+
+        /* Jorge's calendar - Red */
+        .calendar-event.calendar-jorge {
+            border-left-color: #e74c3c;
+        }
+
+        .calendar-event.calendar-jorge:hover {
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.15);
+        }
+
+        .calendar-event.calendar-jorge .event-date {
+            color: #e74c3c;
+        }
+
+        /* Wife's calendar - Purple */
+        .calendar-event.calendar-wife {
+            border-left-color: #9b59b6;
+        }
+
+        .calendar-event.calendar-wife:hover {
+            box-shadow: 0 2px 8px rgba(155, 89, 182, 0.15);
+        }
+
+        .calendar-event.calendar-wife .event-date {
+            color: #9b59b6;
+        }
+
+        .event-date {
+            font-weight: 600;
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .event-title {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .event-time {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .subscribe-btn:hover {
+            background: #b84c4c !important;
+        }
+
+        .no-events {
+            color: #95a5a6;
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Baby Arrived Card Styles */
+        .baby-arrived-card {
+            background: linear-gradient(160deg, #fff0f5 0%, #ffe4f0 100%) !important;
+            border: 1px solid #f9b8d4 !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.2rem;
+        }
+        .baby-arrived-emoji {
+            font-size: 2.4rem;
+            line-height: 1;
+            margin-bottom: 0.2rem;
+            animation: pulse-heart 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-heart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        .baby-arrived-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #c2446e;
+            margin: 0;
+            text-align: center;
+        }
+        .baby-arrived-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #9b3057;
+            margin: 0;
+            line-height: 1.1;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        .baby-arrived-date {
+            font-size: 0.78rem;
+            color: #b05580;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin: 0;
+            text-align: center;
+        }
+        .baby-days-counter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0.5rem 0 0.2rem;
+            background: rgba(255,255,255,0.65);
+            border-radius: 10px;
+            padding: 0.4rem 1.2rem;
+        }
+        .baby-days-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #c2446e;
+            line-height: 1;
+        }
+        .baby-days-label {
+            font-size: 0.68rem;
+            color: #b05580;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .baby-arrived-msg {
+            font-size: 0.82rem;
+            color: #c2446e;
+            font-weight: 500;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* Carousel Slide Backgrounds with 50% Overlay */
+        .slide-baby-shower {
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+                url('images/baby-shower-slide.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Welcome Baby Alyssa Slide */
+        .slide-welcome-baby {
+            background: linear-gradient(135deg,
+                    #fff0f5 0%,
+                    #ffe4f0 30%,
+                    #ffd6e8 60%,
+                    #fff0f5 100%);
+        }
+        .slide-welcome-baby::before {
+            content: '🌸  🌷  🌸  🌺  🌷  🌸  🌺  🌷  🌸';
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 1.3rem;
+            opacity: 0.55;
+            letter-spacing: 8px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .slide-welcome-baby::after {
+            content: '🌸  🌷  🌸  🌺  🌷  🌸  🌺  🌷  🌸';
+            position: absolute;
+            bottom: 42px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 1.3rem;
+            opacity: 0.55;
+            letter-spacing: 8px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .slide-welcome-baby .slide-content {
+            position: relative;
+            z-index: 1;
+        }
+        .slide-welcome-baby .slide-content h1 {
+            color: #c2446e;
+            font-size: 2.1rem;
+            text-shadow: 0 1px 8px rgba(194, 68, 110, 0.12);
+        }
+        .slide-welcome-baby .slide-content p {
+            color: #9b3057;
+        }
+        .slide-welcome-baby .btn {
+            background: #c2446e;
+        }
+        .slide-welcome-baby .btn:hover {
+            background: #9b3057;
+        }
+
+        .slide-heritage {
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+                url('images/heritage-slide.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide-family-tree {
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+                url('images/family-tree-banner.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide-blog {
+            background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+                url('images/blog-slide.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Baptism Slide */
+        .slide-baptism {
+            background: linear-gradient(rgba(255, 252, 245, 0.68), rgba(250, 240, 220, 0.68)),
+                url('images/baptism-slide.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .slide-baptism .slide-content h1 {
+            color: #4a3520;
+            text-shadow: 0 1px 12px rgba(196, 160, 106, 0.2);
+        }
+        .slide-baptism .slide-content p {
+            color: #5a4030;
+        }
+        .slide-baptism .btn {
+            background: linear-gradient(135deg, #6b4c2e 0%, #8b5a2b 100%);
+        }
+        .slide-baptism .btn:hover {
+            background: linear-gradient(135deg, #4a3520 0%, #6b4c2e 100%);
+        }
+
+        /* Special styling for quote slide */
+        .quote-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .quote-author {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            color: #2c3e50;
+        }
+
+        /* Greeting Section Styles */
+        .greeting-section {
+            background-color: #fafafa;
+            padding: 0.4rem 2rem;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .greeting-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+            font-weight: 300;
+            position: relative;
+        }
+
+        .date-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.1rem;
+            flex-shrink: 0;
+        }
+
+        #greeting-text {
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        #current-date {
+            font-size: 0.7rem;
+            opacity: 0.9;
+            text-align: left;
+        }
+
+        /* Announcement Ticker Styles */
+        .ticker-wrapper {
+            position: absolute;
+            right: 5%;
+            left: 25%;
+            overflow: hidden;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scroll-left 18s linear infinite;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2c3e50;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(50%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .ticker-content:hover {
+            animation-play-state: paused;
+        }
+
+        @media (max-width: 768px) {
+            .greeting-section {
+                padding: 0.25rem 2rem;
+            }
+
+            .greeting-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.4rem;
+                padding: 0 2%;
+            }
+
+            .date-info {
+                padding-left: 0;
+            }
+
+            .ticker-wrapper {
+                position: relative;
+                left: 0;
+                right: 0;
+                width: 100%;
+            }
+
+            .ticker-content {
+                font-size: 0.8rem;
+                animation: scroll-left-mobile 15s linear infinite;
+            }
+
+            @keyframes scroll-left-mobile {
+                0% {
+                    transform: translateX(50%);
+                }
+
+                100% {
+                    transform: translateX(-100%);
+                }
+            }
+        }
+    </style>
+
+
+    <script src="script.js?v=2"></script>
+    <script src="search-dynamic.js"></script>
+    <script>
+        // Google Calendar API Integration
+        async function loadCalendarEvents() {
+            const container = document.getElementById('calendar-events');
+            const apiKey = 'AIzaSyC8TYHxr0wwpuwpKc5RH4K5aD1p4KG4XE0';
+            const calendarId = 'jorgeranilla@gmail.com';
+            
+            try {
+                const now = new Date();
+                const timeMin = now.toISOString();
+                
+                // Calculate exactly 120 days from now (4 months)
+                const futureDate = new Date();
+                futureDate.setDate(now.getDate() + 120);
+                const timeMax = futureDate.toISOString();
+                
+                // Fetch upcoming events from Google Calendar API for the next 4 months
+                const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true&orderBy=startTime&maxResults=100`;
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                const events = data.items || [];
+                
+                if (events.length === 0) {
+                    container.innerHTML = '<p class="no-events">No upcoming events in the next 4 months</p>';
+                } else {
+                    let tabsHtml = '<div class="calendar-tabs">';
+                    let contentHtml = '';
+                    
+                    // Group events by month
+                    const groupedEvents = {};
+                    events.forEach(event => {
+                        let startDate;
+                        const isAllDay = !!event.start.date;
+                        if (isAllDay) {
+                            // All-day event: 'YYYY-MM-DD'. Parse locally.
+                            const parts = event.start.date.split('-');
+                            startDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                        } else {
+                            startDate = new Date(event.start.dateTime);
+                        }
+                        
+                        const monthKey = startDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+                        if (!groupedEvents[monthKey]) {
+                            groupedEvents[monthKey] = [];
+                        }
+                        event.parsedStartDate = startDate;
+                        event.isAllDay = isAllDay;
+                        groupedEvents[monthKey].push(event);
+                    });
+
+                    // Generate tabs for exactly the next 4 months
+                    const monthsToGenerate = [];
+                    for(let i=0; i<4; i++) {
+                        const m = new Date(now.getFullYear(), now.getMonth() + i, 1);
+                        monthsToGenerate.push(m.toLocaleString('en-US', { month: 'long', year: 'numeric' }));
+                    }
+
+                    monthsToGenerate.forEach((monthKey, index) => {
+                        const isActive = index === 0;
+                        const safeId = 'tab-' + monthKey.replace(' ', '-');
+                        // Shorten month name for the tab (e.g., "MAY 2026" -> "MAY")
+                        const shortMonth = monthKey.split(' ')[0].toUpperCase();
+                        
+                        tabsHtml += `<button class="calendar-tab-btn ${isActive ? 'active' : ''}" onclick="window.switchCalendarTab(event, '${safeId}')">${shortMonth}</button>`;
+                        
+                        contentHtml += `<div id="${safeId}" class="calendar-tab-content" style="display: ${isActive ? 'block' : 'none'};">`;
+                        
+                        const monthEvents = groupedEvents[monthKey] || [];
+                        if (monthEvents.length === 0) {
+                            contentHtml += `<p class="no-events">No events scheduled</p>`;
+                        } else {
+                            monthEvents.forEach(ev => {
+                                contentHtml += `
+                                <div class="calendar-event calendar-jorge">
+                                    <div class="event-date">${formatDate(ev.parsedStartDate)}</div>
+                                    <div class="event-title">${escapeHtml(ev.summary || 'Busy')}</div>
+                                    ${!ev.isAllDay ? `<div class="event-time">${formatTime(ev.parsedStartDate)}</div>` : ''}
+                                </div>`;
+                            });
+                        }
+                        contentHtml += `</div>`;
+                    });
+                    
+                    tabsHtml += '</div>';
+                    container.innerHTML = tabsHtml + contentHtml;
+                }
+            } catch (error) {
+                console.error('Error loading calendar:', error);
+                container.innerHTML = '<p class="no-events">Unable to load calendar events</p>';
+            }
+        }
+
+        window.switchCalendarTab = function(evt, monthId) {
+            const contents = document.getElementsByClassName('calendar-tab-content');
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].style.display = 'none';
+            }
+            const btns = document.getElementsByClassName('calendar-tab-btn');
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].className = btns[i].className.replace(' active', '');
+            }
+            document.getElementById(monthId).style.display = 'block';
+            evt.currentTarget.className += ' active';
+        };
+
+        function formatDate(date) {
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function formatTime(date) {
+            // Convert UTC time to local timezone
+            const options = {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+            return date.toLocaleTimeString('en-US', options);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load events when page loads
+        document.addEventListener('DOMContentLoaded', loadCalendarEvents);
+
+        // Baby Alyssa – Days Old Counter (birth: March 25, 2026 at 12:27 PM)
+        (function updateDaysOld() {
+            const birthDate = new Date('2026-03-25T12:27:00');
+            const now = new Date();
+            const msPerDay = 1000 * 60 * 60 * 24;
+            const daysOld = Math.floor((now - birthDate) / msPerDay);
+            const el = document.getElementById('days-old');
+            const pl = document.getElementById('days-plural');
+            if (el) el.textContent = daysOld;
+            if (pl) pl.textContent = daysOld === 1 ? '' : 's';
+        })();
+
+
+    </script>
+
+</body>
+
+</html>
