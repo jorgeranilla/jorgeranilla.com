@@ -377,7 +377,7 @@
               const idMatch = post.id.$t.match(/(\d+)$/);
               if (idMatch) postId = idMatch[1];
             }
-            const readMoreUrl = postId ? 'https://jorgeranilla.com/blog/latest-posts-individual.html?id=' + postId : link;
+            const readMoreUrl = postId ? 'latest-posts-individual.html?id=' + postId : link;
 
             const card = document.createElement('div');
             card.className = 'post-card';
