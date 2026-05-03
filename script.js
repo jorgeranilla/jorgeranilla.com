@@ -89,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const prefix = depth > 0 ? "../".repeat(depth) : "";
     const homeHref = depth > 0 ? prefix + "index.html" : "index.html";
-    const connectHref = depth > 0 ? prefix + "connect/" : "connect/";
     const imagesPrefix = depth > 0 ? prefix + "images/" : "images/";
 
     // Helper function to build section links
@@ -227,7 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <nav class="main-nav" id="mainNav" aria-label="Primary">
           <ul class="nav-links">
             <li><a href="${homeHref}">Home</a></li>
-            <li><a href="${connectHref}">Connect</a></li>
 
             <li class="dropdown-item">
               <span class="dropdown-toggle">${navLabels.family} ▾</span>
@@ -488,6 +486,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Back to top button functionality
     const backToTopBtn = document.getElementById('backToTop');
     if (backToTopBtn) {
+
       // Show/hide button based on scroll position
       // Only show if page has significant content (600px threshold)
       window.addEventListener('scroll', () => {
@@ -861,5 +860,132 @@ document.addEventListener("DOMContentLoaded", () => {
 
     showSlides(slideIndex);
   }
+
+  /* ===========================
+     Footer Ambient Audio
+     - Static-site friendly: remembers on/off and current time between pages.
+  =========================== */
+  (function setupFooterAmbientAudio() {
+    function getRootAssetUrl(assetPath) {
+      let scriptUrl = appScriptSource;
+
+      if (!scriptUrl) {
+        const scripts = document.querySelectorAll('script[src*="script.js"]');
+        if (scripts.length > 0) scriptUrl = scripts[0].src;
+      }
+
+      if (scriptUrl) {
+        const cleanScriptUrl = scriptUrl.split('?')[0];
+        const scriptDir = cleanScriptUrl.substring(0, cleanScriptUrl.lastIndexOf('/') + 1);
+        return new URL(assetPath, scriptDir).href;
+      }
+
+      return assetPath;
+    }
+
+    const footer = document.querySelector('.site-footer');
+    if (!footer || document.getElementById('ambientToggle')) return;
+
+    footer.insertAdjacentHTML('afterbegin', `
+      <button class="ambient-footer-corner-toggle" id="ambientToggle" type="button" aria-label="Pause ambient music" aria-pressed="true" title="Pause ambient music">
+        <svg class="ambient-icon ambient-icon-sound" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zm-2.5-9.5v2.06A8 8 0 0 1 14 19.44v2.06A10 10 0 0 0 14 2.5z" />
+        </svg>
+        <svg class="ambient-icon ambient-icon-muted" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm15.3 3 3.1-3.1-1.4-1.4-3.1 3.1-3.1-3.1-1.4 1.4 3.1 3.1-3.1 3.1 1.4 1.4 3.1-3.1 3.1 3.1 1.4-1.4-3.1-3.1z" />
+        </svg>
+      </button>`);
+
+    const audio = document.createElement('audio');
+    const source = document.createElement('source');
+    audio.id = 'ambientAudio';
+    audio.loop = true;
+    audio.preload = 'auto';
+    source.src = getRootAssetUrl('audio/ambient.mp3');
+    source.type = 'audio/mpeg';
+    audio.appendChild(source);
+    document.body.appendChild(audio);
+
+    const toggle = document.getElementById('ambientToggle');
+    const enabledKey = 'ambientAudioEnabled';
+    const timeKey = 'ambientAudioTime';
+    let triedInteractionStart = false;
+    audio.volume = 0.18;
+
+    function setPlaying(isPlaying) {
+      toggle.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
+      toggle.setAttribute('aria-label', isPlaying ? 'Pause ambient music' : 'Play ambient music');
+      toggle.setAttribute('title', isPlaying ? 'Pause ambient music' : 'Play ambient music');
+    }
+
+    function saveCurrentTime() {
+      if (!Number.isNaN(audio.currentTime) && Number.isFinite(audio.currentTime)) {
+        localStorage.setItem(timeKey, String(audio.currentTime));
+      }
+    }
+
+    function restoreSavedTime() {
+      const savedTime = parseFloat(localStorage.getItem(timeKey) || '0');
+      if (savedTime > 0 && (!audio.duration || savedTime < audio.duration)) {
+        audio.currentTime = savedTime;
+      }
+    }
+
+    async function playAmbient() {
+      try {
+        restoreSavedTime();
+        await audio.play();
+        localStorage.setItem(enabledKey, 'true');
+        setPlaying(true);
+      } catch (error) {
+        setPlaying(false);
+      }
+    }
+
+    function startAfterFirstInteraction() {
+      if (triedInteractionStart || localStorage.getItem(enabledKey) === 'false' || !audio.paused) return;
+      triedInteractionStart = true;
+      playAmbient();
+    }
+
+    audio.addEventListener('loadedmetadata', restoreSavedTime);
+    audio.addEventListener('timeupdate', saveCurrentTime);
+    audio.addEventListener('error', () => {
+      audio.pause();
+      setPlaying(false);
+      toggle.classList.add('is-unavailable');
+      toggle.setAttribute('aria-label', 'Ambient music unavailable');
+      toggle.setAttribute('title', 'Ambient music unavailable');
+    });
+
+    window.addEventListener('beforeunload', () => {
+      saveCurrentTime();
+      localStorage.setItem(enabledKey, audio.paused ? 'false' : 'true');
+    });
+
+    toggle.addEventListener('click', async () => {
+      if (toggle.classList.contains('is-unavailable')) return;
+
+      if (audio.paused) {
+        await playAmbient();
+      } else {
+        audio.pause();
+        saveCurrentTime();
+        localStorage.setItem(enabledKey, 'false');
+        setPlaying(false);
+      }
+    });
+
+    // Browsers may block audible autoplay on first visit. When blocked, the
+    // footer icon remains ready for one-tap playback.
+    if (localStorage.getItem(enabledKey) !== 'false') {
+      playAmbient();
+      ['click', 'touchend', 'pointerdown', 'keydown', 'touchstart'].forEach(eventName => {
+        document.addEventListener(eventName, startAfterFirstInteraction, { once: true, passive: true });
+      });
+    } else {
+      setPlaying(false);
+    }
+  })();
 });
 

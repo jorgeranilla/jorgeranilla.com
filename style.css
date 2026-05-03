@@ -427,7 +427,7 @@ body {
 /* Navigation Dots */
 .carousel-dots {
     position: absolute;
-    bottom: 30px;
+    bottom: 16px;
     /* Increased from 20px for more spacing */
     width: 100%;
     text-align: center;
@@ -992,6 +992,7 @@ body {
    FOOTER
 ================================ */
 .site-footer {
+    position: relative;
     background: #f8f9fa;
     border-top: 1px solid #e0e0e0;
     padding: 1.5rem 5%;
@@ -1011,13 +1012,68 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+.ambient-footer-corner-toggle {
+    position: absolute;
+    left: calc(5% + 52px);
+    top: 16px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: #555;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.ambient-footer-corner-toggle:hover {
+    color: #CD5C5C;
+    background: #e0e0e0;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ambient-footer-corner-toggle[aria-pressed="true"] {
+    color: #CD5C5C;
+    background: rgba(205, 92, 92, 0.08);
+}
+
+.ambient-footer-corner-toggle.is-unavailable {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.ambient-icon {
+    width: 13px;
+    height: 13px;
+    fill: currentColor;
+}
+
+.ambient-footer-corner-toggle .ambient-icon-muted {
+    display: none;
+}
+
+.ambient-footer-corner-toggle[aria-pressed="false"] .ambient-icon-sound {
+    display: none;
+}
+
+.ambient-footer-corner-toggle[aria-pressed="false"] .ambient-icon-muted {
+    display: block;
+}
+
 /* ===============================
    BACK TO TOP BUTTON
 ================================ */
 .back-to-top {
     position: fixed;
-    bottom: 30px;
-    left: 30px;
+    bottom: 16px;
+    left: calc(5% - 22px);
     width: 40px;
     height: 40px;
     background: #f0f0f0;
@@ -1051,6 +1107,7 @@ body {
     height: 20px;
     fill: #555;
 }
+
 
 /* ===============================
    MOBILE RESPONSIVENESS
@@ -1257,8 +1314,10 @@ body {
         max-width: 100%;
     }
 
-    /* Hide Side Social Rail */
-    .social-rail {
+    /* Hide Side Social Rail and Footer Controls */
+    .social-rail,
+    .ambient-footer-corner-toggle,
+    .back-to-top {
         display: none !important;
     }
 
