@@ -10,6 +10,6 @@ export const FIREBASE_CONFIG = {
 
 export const GOOGLE_MAPS_API_KEY = 'AIzaSyDweQvQGRHaUMdfYNa7lWA3dUrJYxPhfH8';
 
-export const ADMIN_UID = 'YOUR_FIREBASE_ADMIN_UID';
+export const ADMIN_UID = '5CYFFoj3JCShd9kDjUBESbJjRVY2';
 
 export const LOCATION_PATH = 'publicLocation/jorge';
