@@ -32,6 +32,29 @@
         ".write": false
       }
     },
+    "publicLive": {
+      "alyssa": {
+        ".read": true,
+        ".write": "auth != null && auth.uid === '5CYFFoj3JCShd9kDjUBESbJjRVY2'",
+        ".validate": "newData.hasChildren(['active', 'updatedAt'])",
+        "active": {
+          ".validate": "newData.isBoolean()"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0"
+        },
+        "expiresAt": {
+          ".validate": "newData.val() === null || (newData.isNumber() && newData.val() > 0)"
+        },
+        "$other": {
+          ".validate": false
+        }
+      },
+      "$other": {
+        ".read": false,
+        ".write": false
+      }
+    },
     "$other": {
       ".read": false,
       ".write": false

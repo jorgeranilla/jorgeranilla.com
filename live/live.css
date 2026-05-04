@@ -1,0 +1,142 @@
+:root {
+  color-scheme: light;
+  --live-bg: #f6f7f9;
+  --live-card: rgba(255, 255, 255, 0.9);
+  --live-text: #17191d;
+  --live-muted: #737985;
+  --live-line: rgba(23, 25, 29, 0.08);
+  --live-gold: #d7a930;
+  --live-shadow: 0 24px 70px rgba(30, 36, 48, 0.12);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--live-text);
+  background:
+    radial-gradient(circle at 50% -12rem, rgba(215, 169, 48, 0.12), transparent 32rem),
+    linear-gradient(180deg, #ffffff 0%, var(--live-bg) 100%);
+}
+
+.live-page {
+  width: min(100%, 35rem);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 3.25rem 1rem 2rem;
+  display: grid;
+  align-content: center;
+  gap: 2rem;
+}
+
+.live-header {
+  text-align: center;
+}
+
+.live-header h1 {
+  margin: 0;
+  font-size: clamp(3.25rem, 18vw, 5.6rem);
+  line-height: 0.92;
+  letter-spacing: 0;
+  font-weight: 760;
+}
+
+.live-header p {
+  margin: 1rem 0 0;
+  color: var(--live-muted);
+  font-size: 1rem;
+}
+
+.live-card {
+  width: 100%;
+  padding: 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 2rem;
+  background: var(--live-card);
+  box-shadow: var(--live-shadow);
+  text-align: center;
+  backdrop-filter: blur(22px);
+}
+
+.live-card-header {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+}
+
+.live-eyebrow {
+  margin: 0;
+  padding: 0.34rem 0.7rem;
+  border: 1px solid rgba(215, 169, 48, 0.22);
+  border-radius: 999px;
+  background: rgba(215, 169, 48, 0.08);
+  color: #8a6414;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.live-card h2 {
+  margin: 0;
+  font-size: 1.55rem;
+  line-height: 1.14;
+  letter-spacing: 0;
+}
+
+.live-status {
+  margin: 1.15rem auto 0;
+  color: var(--live-muted);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.live-stream-wrap {
+  margin-top: 1.25rem;
+  animation: liveFadeIn 380ms ease both;
+}
+
+.live-stream-wrap video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  max-height: 68vh;
+  border: 1px solid var(--live-line);
+  border-radius: 1.45rem;
+  background: #111;
+  box-shadow: 0 14px 36px rgba(23, 25, 29, 0.16);
+}
+
+.live-meta {
+  margin: 0.9rem 0 0;
+  color: var(--live-muted);
+  font-size: 0.92rem;
+}
+
+@keyframes liveFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 42rem) {
+  .live-page {
+    padding: 4rem 1.5rem;
+  }
+
+  .live-card {
+    padding: 1.8rem;
+  }
+
+  .live-stream-wrap video {
+    aspect-ratio: 16 / 9;
+  }
+}

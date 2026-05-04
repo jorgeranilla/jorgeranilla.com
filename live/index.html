@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alyssa Live | Jorge Ranilla</title>
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="icon" type="image/png" href="../images/jr-logo.png">
+    <link rel="stylesheet" href="./live.css">
+  </head>
+  <body>
+    <main class="live-page">
+      <header class="live-header">
+        <h1>Live</h1>
+        <p>Real-time access when available</p>
+      </header>
+
+      <section class="live-card" aria-live="polite">
+        <div class="live-card-header">
+          <p class="live-eyebrow" id="live-badge" hidden>LIVE <span aria-hidden="true">🔴</span></p>
+          <h2>👶 Alyssa Live</h2>
+        </div>
+
+        <p class="live-status" id="live-status">Alyssa is not live right now.</p>
+
+        <div class="live-stream-wrap" id="live-stream-wrap" hidden>
+          <video id="live-video" autoplay playsinline controls muted></video>
+          <p class="live-meta" id="live-meta">Streaming now</p>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./live.js"></script>
+  </body>
+</html>

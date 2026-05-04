@@ -1,0 +1,12 @@
+{
+  "database": {
+    "rules": "locator/firebase-database.rules.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "runtime": "nodejs22"
+    }
+  ]
+}
