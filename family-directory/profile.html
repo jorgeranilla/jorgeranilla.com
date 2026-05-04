@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile | Family Directory | Jorge Ranilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="directory.css">
+  <link rel="icon" type="image/png" href="../images/jr-logo.png">
+  <meta name="robots" content="noindex, nofollow">
+</head>
+
+<body data-title="My Profile" data-section="Family">
+  <div id="social-rail-placeholder"></div>
+  <div id="header-placeholder"></div>
+
+  <div class="breadcrumb-bar">
+    <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+  </div>
+
+  <!-- Loading -->
+  <div class="fd-loading" id="fd-loading">
+    <div class="fd-spinner"></div>
+    <span>Loading…</span>
+  </div>
+
+  <!-- Auth Gate -->
+  <div class="fd-auth-gate" id="fd-auth-gate" style="display:none;">
+    <div class="fd-auth-card">
+      <div class="fd-auth-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      </div>
+      <p class="fd-auth-label">Private Access</p>
+      <h1 class="fd-auth-title">My Profile</h1>
+      <p class="fd-auth-sub">Sign in to view and edit your profile.</p>
+      <button class="fd-google-btn" onclick="fdSignIn()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- Pending -->
+  <div class="fd-auth-gate" id="fd-pending" style="display:none;">
+    <div class="fd-auth-card fd-pending-card">
+      <div class="fd-auth-icon fd-pending-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      </div>
+      <p class="fd-auth-label" style="color:#f39c12">Pending Approval</p>
+      <h2 class="fd-auth-title">Almost There!</h2>
+      <p class="fd-auth-sub">Hi <strong class="fd-pending-name"></strong>! Your profile will be available once an admin approves your access.</p>
+      <button class="fd-google-btn" onclick="fdSignOut()" style="margin-top:8px">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- App Content -->
+  <div class="fd-app" id="fd-app">
+    <nav class="fd-nav">
+      <div class="fd-nav-inner">
+        <div class="fd-nav-tabs">
+          <a href="index.html" class="fd-nav-tab">
+            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span>Directory</span>
+          </a>
+          <a href="profile.html" class="fd-nav-tab active">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>My Profile</span>
+          </a>
+          <a href="birthdays.html" class="fd-nav-tab">
+            <svg viewBox="0 0 24 24"><path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12c.01-1.66-1.33-3-2.99-3z"/></svg>
+            <span>Birthdays</span>
+          </a>
+        </div>
+        <div class="fd-nav-user">
+          <img class="fd-nav-avatar" id="fd-user-avatar" src="" alt="">
+          <span class="fd-nav-name" id="fd-user-name"></span>
+          <button class="fd-signout-btn" onclick="fdSignOut()">Sign Out</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="fd-page">
+      <h2 class="fd-page-title">My Profile</h2>
+      <p class="fd-page-sub">Update your contact information and privacy preferences</p>
+
+      <form class="fd-form" id="fd-profile-form" onsubmit="return handleSave(event)">
+        <!-- Photo -->
+        <div class="fd-form-section">
+          <h3 class="fd-form-section-title">Profile Photo</h3>
+          <div class="fd-photo-upload">
+            <img class="fd-photo-preview" id="fd-photo-preview" src="" alt="Profile photo">
+            <div>
+              <label class="fd-photo-btn" for="fd-photo-input">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                Change Photo
+              </label>
+              <input type="file" id="fd-photo-input" accept="image/*" style="display:none" onchange="handlePhotoChange(this)">
+              <p style="font-size:.72rem;color:#bbb;margin:6px 0 0">URL or upload (max 1MB)</p>
+            </div>
+          </div>
+          <div class="fd-field">
+            <label>Photo URL</label>
+            <input type="url" id="fd-photoURL" placeholder="https://example.com/photo.jpg">
+          </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="fd-form-section">
+          <h3 class="fd-form-section-title">Contact Information</h3>
+          <div class="fd-field">
+            <label>Display Name</label>
+            <input type="text" id="fd-displayName" readonly style="background:#f0f0f0;color:#999">
+          </div>
+          <div class="fd-field">
+            <label>Phone Number</label>
+            <input type="tel" id="fd-phone" placeholder="+1 555-555-5555">
+          </div>
+          <div class="fd-field">
+            <label>Email</label>
+            <input type="email" id="fd-email" placeholder="you@example.com">
+          </div>
+          <div class="fd-field">
+            <label>Address</label>
+            <input type="text" id="fd-address" placeholder="123 Main St">
+          </div>
+          <div class="fd-field">
+            <label>City</label>
+            <input type="text" id="fd-city" placeholder="Raleigh">
+          </div>
+          <div class="fd-field">
+            <label>Country</label>
+            <input type="text" id="fd-country" placeholder="United States">
+          </div>
+          <div class="fd-field">
+            <label>Birthday</label>
+            <input type="date" id="fd-birthday">
+          </div>
+          <div class="fd-field">
+            <label>Preferred Contact Method</label>
+            <select id="fd-preferredContact">
+              <option value="email">Email</option>
+              <option value="phone">Phone Call</option>
+              <option value="text">Text / SMS</option>
+              <option value="whatsapp">WhatsApp</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Privacy -->
+        <div class="fd-form-section">
+          <h3 class="fd-form-section-title">Privacy Preferences</h3>
+          <p style="font-size:.82rem;color:#999;margin:0 0 14px">Choose what other family members can see</p>
+          <div class="fd-toggle-group">
+            <div class="fd-toggle">
+              <span class="fd-toggle-label">Show phone number</span>
+              <input type="checkbox" id="fd-priv-phone" checked>
+            </div>
+            <div class="fd-toggle">
+              <span class="fd-toggle-label">Show email address</span>
+              <input type="checkbox" id="fd-priv-email" checked>
+            </div>
+            <div class="fd-toggle">
+              <span class="fd-toggle-label">Show address</span>
+              <input type="checkbox" id="fd-priv-address">
+            </div>
+            <div class="fd-toggle">
+              <span class="fd-toggle-label">Show birthday</span>
+              <input type="checkbox" id="fd-priv-birthday" checked>
+            </div>
+            <div class="fd-toggle">
+              <span class="fd-toggle-label">Show age</span>
+              <input type="checkbox" id="fd-priv-age">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="fd-save-btn" id="fd-save-btn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="directory.js" type="module"></script>
+  <script>
+    function onPageReady() {
+      const p = window.currentProfile;
+      if (!p) return;
+
+      // Populate form
+      document.getElementById('fd-displayName').value = p.displayName || '';
+      document.getElementById('fd-phone').value = p.phone || '';
+      document.getElementById('fd-email').value = p.email || '';
+      document.getElementById('fd-address').value = p.address || '';
+      document.getElementById('fd-city').value = p.city || '';
+      document.getElementById('fd-country').value = p.country || '';
+      document.getElementById('fd-birthday').value = p.birthday || '';
+      document.getElementById('fd-photoURL').value = p.photoURL || '';
+      document.getElementById('fd-preferredContact').value = p.preferredContact || 'email';
+
+      // Photo preview
+      const preview = document.getElementById('fd-photo-preview');
+      preview.src = p.photoURL || defaultAvatar(p.displayName);
+
+      // Privacy toggles
+      const priv = p.privacy || {};
+      document.getElementById('fd-priv-phone').checked = priv.showPhone !== false;
+      document.getElementById('fd-priv-email').checked = priv.showEmail !== false;
+      document.getElementById('fd-priv-address').checked = priv.showAddress === true;
+      document.getElementById('fd-priv-birthday').checked = priv.showBirthday !== false;
+      document.getElementById('fd-priv-age').checked = priv.showAge === true;
+
+      // Live photo URL preview
+      document.getElementById('fd-photoURL').addEventListener('input', function() {
+        if (this.value) preview.src = this.value;
+      });
+    }
+
+    function handlePhotoChange(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      if (file.size > 1048576) {
+        fdToast('Photo must be under 1MB. Try a smaller image.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('fd-photo-preview').src = e.target.result;
+        // Store as base64 data URL (for simplicity; for production use Firebase Storage)
+        document.getElementById('fd-photoURL').value = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function handleSave(e) {
+      e.preventDefault();
+      const btn = document.getElementById('fd-save-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="fd-spinner" style="width:18px;height:18px;border-width:2px"></div> Saving…';
+
+      try {
+        await saveProfile({
+          phone: document.getElementById('fd-phone').value.trim(),
+          email: document.getElementById('fd-email').value.trim(),
+          address: document.getElementById('fd-address').value.trim(),
+          city: document.getElementById('fd-city').value.trim(),
+          country: document.getElementById('fd-country').value.trim(),
+          birthday: document.getElementById('fd-birthday').value,
+          photoURL: document.getElementById('fd-photoURL').value.trim(),
+          preferredContact: document.getElementById('fd-preferredContact').value,
+          privacy: {
+            showPhone: document.getElementById('fd-priv-phone').checked,
+            showEmail: document.getElementById('fd-priv-email').checked,
+            showAddress: document.getElementById('fd-priv-address').checked,
+            showBirthday: document.getElementById('fd-priv-birthday').checked,
+            showAge: document.getElementById('fd-priv-age').checked
+          }
+        });
+        fdToast('Profile saved successfully! ✓');
+      } catch (err) {
+        console.error(err);
+        fdToast('Could not save. Please try again.');
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Save Changes';
+      return false;
+    }
+
+    fdInit();
+  </script>
+
+  <script src="../script.js?v=4"></script>
+  <script src="../search-dynamic.js"></script>
+</body>
+</html>

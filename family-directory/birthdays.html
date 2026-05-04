@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthdays | Family Directory | Jorge Ranilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="directory.css">
+  <link rel="icon" type="image/png" href="../images/jr-logo.png">
+  <meta name="robots" content="noindex, nofollow">
+</head>
+
+<body data-title="Birthdays" data-section="Family">
+  <div id="social-rail-placeholder"></div>
+  <div id="header-placeholder"></div>
+
+  <div class="breadcrumb-bar">
+    <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+  </div>
+
+  <!-- Loading -->
+  <div class="fd-loading" id="fd-loading">
+    <div class="fd-spinner"></div>
+    <span>Loading…</span>
+  </div>
+
+  <!-- Auth Gate -->
+  <div class="fd-auth-gate" id="fd-auth-gate" style="display:none;">
+    <div class="fd-auth-card">
+      <div class="fd-auth-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12c.01-1.66-1.33-3-2.99-3z"/></svg>
+      </div>
+      <p class="fd-auth-label">Private Access</p>
+      <h1 class="fd-auth-title">Family Birthdays</h1>
+      <p class="fd-auth-sub">Sign in to see upcoming family birthdays.</p>
+      <button class="fd-google-btn" onclick="fdSignIn()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- Pending -->
+  <div class="fd-auth-gate" id="fd-pending" style="display:none;">
+    <div class="fd-auth-card fd-pending-card">
+      <div class="fd-auth-icon fd-pending-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      </div>
+      <p class="fd-auth-label" style="color:#f39c12">Pending Approval</p>
+      <h2 class="fd-auth-title">Almost There!</h2>
+      <p class="fd-auth-sub">Hi <strong class="fd-pending-name"></strong>! You'll be able to see birthdays once approved.</p>
+      <button class="fd-google-btn" onclick="fdSignOut()" style="margin-top:8px">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- App Content -->
+  <div class="fd-app" id="fd-app">
+    <nav class="fd-nav">
+      <div class="fd-nav-inner">
+        <div class="fd-nav-tabs">
+          <a href="index.html" class="fd-nav-tab">
+            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span>Directory</span>
+          </a>
+          <a href="profile.html" class="fd-nav-tab">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>My Profile</span>
+          </a>
+          <a href="birthdays.html" class="fd-nav-tab active">
+            <svg viewBox="0 0 24 24"><path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12c.01-1.66-1.33-3-2.99-3z"/></svg>
+            <span>Birthdays</span>
+          </a>
+        </div>
+        <div class="fd-nav-user">
+          <img class="fd-nav-avatar" id="fd-user-avatar" src="" alt="">
+          <span class="fd-nav-name" id="fd-user-name"></span>
+          <button class="fd-signout-btn" onclick="fdSignOut()">Sign Out</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="fd-page">
+      <h2 class="fd-page-title">🎂 Family Birthdays</h2>
+      <p class="fd-page-sub">Never miss a birthday — see who's celebrating soon</p>
+
+      <div id="fd-birthdays-content">
+        <div class="fd-loading"><div class="fd-spinner"></div><span>Loading birthdays…</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="directory.js" type="module"></script>
+  <script>
+    async function onPageReady() {
+      const container = document.getElementById('fd-birthdays-content');
+
+      try {
+        const members = await fetchApprovedMembers();
+        const withBirthdays = members.filter(m => {
+          const p = m.privacy || {};
+          return m.birthday && p.showBirthday !== false;
+        });
+
+        if (withBirthdays.length === 0) {
+          container.innerHTML = `
+            <div class="fd-empty">
+              <svg viewBox="0 0 24 24"><path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12c.01-1.66-1.33-3-2.99-3z"/></svg>
+              <p>No birthdays shared yet. Family members can enable birthday visibility in their profile.</p>
+            </div>`;
+          return;
+        }
+
+        // Sort by days until birthday
+        withBirthdays.sort((a, b) => daysUntilBirthday(a.birthday) - daysUntilBirthday(b.birthday));
+
+        const today = new Date();
+        const currentMonth = today.getMonth();
+
+        // Split into sections
+        const todayBdays = withBirthdays.filter(m => daysUntilBirthday(m.birthday) === 0);
+        const thisMonth = withBirthdays.filter(m => {
+          const [, month] = m.birthday.split('-').map(Number);
+          return (month - 1) === currentMonth && daysUntilBirthday(m.birthday) > 0;
+        });
+        const upcoming = withBirthdays.filter(m => {
+          const [, month] = m.birthday.split('-').map(Number);
+          return (month - 1) !== currentMonth || daysUntilBirthday(m.birthday) > 0;
+        }).filter(m => daysUntilBirthday(m.birthday) > 0 && daysUntilBirthday(m.birthday) <= 90);
+
+        // Remove thisMonth entries from upcoming to avoid duplicates
+        const thisMonthIds = new Set(thisMonth.map(m => m.id));
+        const upcomingFiltered = upcoming.filter(m => !thisMonthIds.has(m.id));
+
+        let html = '';
+
+        // Today's birthdays
+        if (todayBdays.length > 0) {
+          html += `
+            <div class="fd-birthday-section">
+              <h3 class="fd-birthday-section-title">
+                <svg viewBox="0 0 24 24"><path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12c.01-1.66-1.33-3-2.99-3z"/></svg>
+                🎉 Today's Birthdays!
+              </h3>
+              <div class="fd-birthday-list">
+                ${todayBdays.map(m => buildBirthdayCardHTML(m, 0)).join('')}
+              </div>
+            </div>`;
+        }
+
+        // This month
+        if (thisMonth.length > 0) {
+          const monthName = today.toLocaleString('en-US', { month: 'long' });
+          html += `
+            <div class="fd-birthday-section">
+              <h3 class="fd-birthday-section-title">
+                <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
+                Birthdays in ${monthName}
+              </h3>
+              <div class="fd-birthday-list">
+                ${thisMonth.map(m => buildBirthdayCardHTML(m, daysUntilBirthday(m.birthday))).join('')}
+              </div>
+            </div>`;
+        }
+
+        // Upcoming (next 90 days)
+        if (upcomingFiltered.length > 0) {
+          html += `
+            <div class="fd-birthday-section">
+              <h3 class="fd-birthday-section-title">
+                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                Coming Up (Next 90 Days)
+              </h3>
+              <div class="fd-birthday-list">
+                ${upcomingFiltered.map(m => buildBirthdayCardHTML(m, daysUntilBirthday(m.birthday))).join('')}
+              </div>
+            </div>`;
+        }
+
+        // All birthdays (full year view)
+        html += `
+          <div class="fd-birthday-section" style="margin-top:40px">
+            <h3 class="fd-birthday-section-title">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+              All Birthdays
+            </h3>
+            <div class="fd-birthday-list">
+              ${withBirthdays.map(m => buildBirthdayCardHTML(m, daysUntilBirthday(m.birthday))).join('')}
+            </div>
+          </div>`;
+
+        container.innerHTML = html || '<div class="fd-empty"><p>No birthdays to show.</p></div>';
+
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = '<div class="fd-empty"><p>Could not load birthdays.</p></div>';
+      }
+    }
+
+    fdInit();
+  </script>
+
+  <script src="../script.js?v=4"></script>
+  <script src="../search-dynamic.js"></script>
+</body>
+</html>

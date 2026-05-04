@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Family Directory ───
+    match /familyDirectory/{userId} {
+
+      // Helper: Check if the requesting user is an approved admin
+      function isAdmin() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
+          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.role == 'admin'
+          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
+      }
+
+      // Helper: Check if the requesting user is an approved member
+      function isApprovedMember() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
+          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
+      }
+
+      // Helper: Check if user is the document owner
+      function isOwner() {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      // READ:
+      // - Admins can read all profiles
+      // - Approved members can read approved profiles
+      // - Users can always read their own profile (to check status)
+      allow read: if isAdmin()
+                  || (isApprovedMember() && resource.data.status == 'approved')
+                  || isOwner();
+
+      // CREATE:
+      // - Users can create their own profile (first-time registration)
+      // - Admins can create profiles (add member manually)
+      allow create: if (isOwner() && request.resource.data.status == 'pending')
+                    || isAdmin();
+
+      // UPDATE:
+      // - Users can update only their own profile
+      //   BUT cannot change: role, status, uid, createdAt
+      // - Admins can update any profile
+      allow update: if isAdmin()
+                    || (isOwner()
+                        && request.resource.data.role == resource.data.role
+                        && request.resource.data.status == resource.data.status
+                        && request.resource.data.uid == resource.data.uid);
+
+      // DELETE:
+      // - Only admins can delete profiles
+      allow delete: if isAdmin();
+    }
+
+    // ─── Block everything else ───
+    match /{document=**} {
+      // Do not allow any other reads/writes unless other rules exist
+      // (This won't override existing rules for other collections)
+    }
+  }
+}

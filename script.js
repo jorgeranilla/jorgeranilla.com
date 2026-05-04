@@ -114,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
       heritageRoots: buildSectionLink('family', 'heritage-roots.html'),
       familyTree: buildSectionLink('family', 'family-tree.html'),
       ancestry: buildSectionLink('family', 'ancestry.html'),
+      familyDirectory: buildSectionLink('family-directory', 'index.html'),
       familyLogin: buildSectionLink('family', 'family-login.html')
     };
 
@@ -235,6 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <li><a href="${familyLinks.heritageRoots}">${navLabels.heritageRoots}</a></li>
                 <li><a href="${familyLinks.familyTree}">${navLabels.familyTree}</a></li>
                 <li><a href="${familyLinks.ancestry}">${navLabels.ancestry}</a></li>
+                <li><a href="${familyLinks.familyDirectory}">Family Directory 🔒</a></li>
               </ul>
             </li>
 
@@ -623,6 +625,7 @@ document.addEventListener("DOMContentLoaded", () => {
       'Heritage & Roots': `${homePrefix}family/heritage-roots.html`,
       'Extended Family': `${homePrefix}family/extended-family.html`,
       'Travel': `${homePrefix}gallery/travel.html`,
+      'Family Directory': `${homePrefix}family-directory/index.html`,
       'Family': null, // Has submenu items but no dedicated page
       'Gallery': null,
       'Professional': null,

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Directory | Jorge Ranilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="directory.css">
+  <link rel="icon" type="image/png" href="../images/jr-logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Family Directory | Jorge Ranilla">
+  <meta property="og:description" content="Private family directory for approved members.">
+  <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
+  <meta name="robots" content="noindex, nofollow">
+</head>
+
+<body data-title="Family Directory" data-section="Family">
+  <div id="social-rail-placeholder"></div>
+  <div id="header-placeholder"></div>
+
+  <div class="breadcrumb-bar">
+    <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+  </div>
+
+  <!-- Loading -->
+  <div class="fd-loading" id="fd-loading">
+    <div class="fd-spinner"></div>
+    <span>Loading Family Directory…</span>
+  </div>
+
+  <!-- Auth Gate -->
+  <div class="fd-auth-gate" id="fd-auth-gate" style="display:none;">
+    <div class="fd-auth-card">
+      <div class="fd-auth-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      </div>
+      <p class="fd-auth-label">Private Access</p>
+      <h1 class="fd-auth-title">Family Directory</h1>
+      <p class="fd-auth-sub">Sign in with your Google account to view the family directory. Only approved family members can access this page.</p>
+      <button class="fd-google-btn" onclick="fdSignIn()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Sign in with Google
+      </button>
+      <p class="fd-auth-note">
+        <svg viewBox="0 0 24 24" width="12" height="12" style="vertical-align:middle;margin-right:3px;opacity:.5"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        Secured by Firebase · Only approved members can view
+      </p>
+    </div>
+  </div>
+
+  <!-- Pending Approval -->
+  <div class="fd-auth-gate" id="fd-pending" style="display:none;">
+    <div class="fd-auth-card fd-pending-card">
+      <div class="fd-auth-icon fd-pending-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      </div>
+      <p class="fd-auth-label" style="color:#f39c12">Pending Approval</p>
+      <h2 class="fd-auth-title">Almost There!</h2>
+      <p class="fd-auth-sub">
+        Hi <strong class="fd-pending-name"></strong>! Your request has been sent to the family admin. You'll get access once approved.
+      </p>
+      <button class="fd-google-btn" onclick="fdSignOut()" style="margin-top:8px">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- App Content -->
+  <div class="fd-app" id="fd-app">
+    <!-- Sub-Nav -->
+    <nav class="fd-nav">
+      <div class="fd-nav-inner">
+        <div class="fd-nav-tabs">
+          <a href="index.html" class="fd-nav-tab active">
+            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span>Directory</span>
+          </a>
+          <a href="profile.html" class="fd-nav-tab">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>My Profile</span>
+          </a>
+          <a href="birthdays.html" class="fd-nav-tab">
+            <svg viewBox="0 0 24 24"><path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12c.01-1.66-1.33-3-2.99-3z"/></svg>
+            <span>Birthdays</span>
+          </a>
+        </div>
+        <div class="fd-nav-user">
+          <img class="fd-nav-avatar" id="fd-user-avatar" src="" alt="">
+          <span class="fd-nav-name" id="fd-user-name"></span>
+          <button class="fd-signout-btn" onclick="fdSignOut()">Sign Out</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Directory Content -->
+    <div class="fd-page">
+      <h2 class="fd-page-title">Family Directory</h2>
+      <p class="fd-page-sub">Contact information for approved family members</p>
+
+      <!-- Admin Bar -->
+      <div class="fd-admin-bar" id="fd-admin-bar" style="display:none">
+        <span class="fd-admin-label">🔑 Admin Panel</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="fd-admin-btn" onclick="openPendingModal()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            Pending Approvals (<span id="fd-pending-count">0</span>)
+          </button>
+          <button class="fd-admin-btn" onclick="openAddMemberModal()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            Add Member
+          </button>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="fd-search-wrap">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" class="fd-search" id="fd-search" placeholder="Search by name…">
+      </div>
+
+      <!-- Cards Grid -->
+      <div class="fd-grid" id="fd-grid">
+        <div class="fd-loading"><div class="fd-spinner"></div><span>Loading members…</span></div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="fd-empty" id="fd-empty" style="display:none">
+        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <p>No family members found</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Modals -->
+  <div class="fd-modal-overlay" id="fd-pending-modal">
+    <div class="fd-modal">
+      <div class="fd-modal-header">
+        <h3 class="fd-modal-title">Pending Approvals</h3>
+        <button class="fd-modal-close" onclick="closePendingModal()">✕</button>
+      </div>
+      <div class="fd-modal-body" id="fd-pending-list">
+        <p style="color:#999;text-align:center">No pending requests</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="fd-modal-overlay" id="fd-add-modal">
+    <div class="fd-modal">
+      <div class="fd-modal-header">
+        <h3 class="fd-modal-title">Add Family Member</h3>
+        <button class="fd-modal-close" onclick="closeAddMemberModal()">✕</button>
+      </div>
+      <div class="fd-modal-body">
+        <div class="fd-field">
+          <label>Full Name *</label>
+          <input type="text" id="fd-add-name" placeholder="e.g. Maria Ranilla">
+        </div>
+        <div class="fd-field">
+          <label>Email *</label>
+          <input type="email" id="fd-add-email" placeholder="maria@example.com">
+        </div>
+        <div class="fd-field">
+          <label>Relationship</label>
+          <input type="text" id="fd-add-relation" placeholder="e.g. Sister, Cousin">
+        </div>
+        <div class="fd-field">
+          <label>Phone</label>
+          <input type="tel" id="fd-add-phone" placeholder="+1 555-555-5555">
+        </div>
+        <div class="fd-field">
+          <label>City</label>
+          <input type="text" id="fd-add-city" placeholder="Raleigh">
+        </div>
+        <div class="fd-field">
+          <label>Country</label>
+          <input type="text" id="fd-add-country" placeholder="United States">
+        </div>
+        <button class="fd-save-btn" onclick="addMember()" style="width:100%;justify-content:center;margin-top:8px">Add Member</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="fd-modal-overlay" id="fd-edit-modal">
+    <div class="fd-modal">
+      <div class="fd-modal-header">
+        <h3 class="fd-modal-title">Edit Member</h3>
+        <button class="fd-modal-close" onclick="closeEditModal()">✕</button>
+      </div>
+      <div class="fd-modal-body" id="fd-edit-body"></div>
+    </div>
+  </div>
+
+  <script src="directory.js" type="module"></script>
+  <script>
+    let allMembers = [];
+
+    async function onPageReady() {
+      const grid = document.getElementById('fd-grid');
+      const empty = document.getElementById('fd-empty');
+      const adminBar = document.getElementById('fd-admin-bar');
+
+      // Show admin bar
+      if (window.isAdmin && adminBar) {
+        adminBar.style.display = 'flex';
+        loadPendingCount();
+      }
+
+      try {
+        const members = window.isAdmin ? await fetchAllMembers() : await fetchApprovedMembers();
+        allMembers = members;
+
+        if (members.length === 0) {
+          grid.innerHTML = '';
+          empty.style.display = 'block';
+          return;
+        }
+
+        grid.innerHTML = members
+          .filter(m => m.status === 'approved' || window.isAdmin)
+          .map(m => buildCardHTML(m)).join('');
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<div class="fd-empty"><p>Could not load directory.</p></div>';
+      }
+
+      // Search filter
+      document.getElementById('fd-search').addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('.fd-card').forEach(card => {
+          const name = card.dataset.name || '';
+          card.style.display = name.includes(q) ? '' : 'none';
+        });
+      });
+    }
+
+    async function loadPendingCount() {
+      try {
+        const all = await fetchAllMembers();
+        const pending = all.filter(m => m.status === 'pending');
+        const el = document.getElementById('fd-pending-count');
+        if (el) el.textContent = pending.length;
+      } catch(e) { /* silent */ }
+    }
+
+    function openPendingModal() {
+      const modal = document.getElementById('fd-pending-modal');
+      const list = document.getElementById('fd-pending-list');
+      modal.classList.add('active');
+
+      const pending = allMembers.filter(m => m.status === 'pending');
+      if (pending.length === 0) {
+        list.innerHTML = '<p style="color:#999;text-align:center;padding:20px">No pending requests 🎉</p>';
+        return;
+      }
+
+      list.innerHTML = pending.map(m => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0f0">
+          <div>
+            <strong style="font-size:.9rem;color:#2c3e50">${m.displayName || 'Unknown'}</strong>
+            <div style="font-size:.78rem;color:#999">${m.email}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="fd-admin-btn" style="background:#27ae60" onclick="approveMember('${m.id}')">Approve</button>
+            <button class="fd-admin-btn" style="background:#e74c3c" onclick="rejectMember('${m.id}')">Reject</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function closePendingModal() {
+      document.getElementById('fd-pending-modal').classList.remove('active');
+    }
+
+    async function approveMember(uid) {
+      await adminApprove(uid);
+      fdToast('Member approved!');
+      closePendingModal();
+      onPageReady();
+    }
+
+    async function rejectMember(uid) {
+      if (!confirm('Remove this pending request?')) return;
+      await adminDelete(uid);
+      fdToast('Request removed.');
+      closePendingModal();
+      onPageReady();
+    }
+
+    function openAddMemberModal() {
+      document.getElementById('fd-add-modal').classList.add('active');
+    }
+    function closeAddMemberModal() {
+      document.getElementById('fd-add-modal').classList.remove('active');
+    }
+
+    async function addMember() {
+      const name = document.getElementById('fd-add-name').value.trim();
+      const email = document.getElementById('fd-add-email').value.trim();
+      if (!name || !email) { fdToast('Name and email are required.'); return; }
+
+      const { doc, setDoc, serverTimestamp } = window._fb;
+      const id = 'manual_' + Date.now();
+      await setDoc(doc(window._fb.db, 'familyDirectory', id), {
+        uid: id,
+        displayName: name,
+        email: email,
+        phone: document.getElementById('fd-add-phone').value.trim(),
+        relationship: document.getElementById('fd-add-relation').value.trim(),
+        city: document.getElementById('fd-add-city').value.trim(),
+        country: document.getElementById('fd-add-country').value.trim(),
+        photoURL: '',
+        birthday: '',
+        address: '',
+        preferredContact: 'email',
+        role: 'member',
+        status: 'approved',
+        privacy: { showPhone: true, showEmail: true, showAddress: false, showBirthday: true, showAge: false },
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+
+      fdToast('Member added!');
+      closeAddMemberModal();
+      onPageReady();
+    }
+
+    function openAdminEdit(uid) {
+      const member = allMembers.find(m => m.id === uid);
+      if (!member) return;
+
+      const body = document.getElementById('fd-edit-body');
+      body.innerHTML = `
+        <div class="fd-field"><label>Full Name</label><input type="text" id="fd-edit-name" value="${member.displayName || ''}"></div>
+        <div class="fd-field"><label>Email</label><input type="email" id="fd-edit-email" value="${member.email || ''}"></div>
+        <div class="fd-field"><label>Phone</label><input type="tel" id="fd-edit-phone" value="${member.phone || ''}"></div>
+        <div class="fd-field"><label>Relationship</label><input type="text" id="fd-edit-relation" value="${member.relationship || ''}"></div>
+        <div class="fd-field"><label>City</label><input type="text" id="fd-edit-city" value="${member.city || ''}"></div>
+        <div class="fd-field"><label>Country</label><input type="text" id="fd-edit-country" value="${member.country || ''}"></div>
+        <div class="fd-field"><label>Role</label>
+          <select id="fd-edit-role"><option value="member" ${member.role==='member'?'selected':''}>Member</option><option value="admin" ${member.role==='admin'?'selected':''}>Admin</option></select>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button class="fd-save-btn" onclick="saveAdminEdit('${uid}')" style="flex:1;justify-content:center">Save</button>
+          <button class="fd-save-btn" onclick="deleteAdminMember('${uid}')" style="flex:0;background:#e74c3c;justify-content:center">Delete</button>
+        </div>`;
+
+      document.getElementById('fd-edit-modal').classList.add('active');
+    }
+    function closeEditModal() {
+      document.getElementById('fd-edit-modal').classList.remove('active');
+    }
+
+    async function saveAdminEdit(uid) {
+      await adminUpdateProfile(uid, {
+        displayName: document.getElementById('fd-edit-name').value.trim(),
+        email: document.getElementById('fd-edit-email').value.trim(),
+        phone: document.getElementById('fd-edit-phone').value.trim(),
+        relationship: document.getElementById('fd-edit-relation').value.trim(),
+        city: document.getElementById('fd-edit-city').value.trim(),
+        country: document.getElementById('fd-edit-country').value.trim(),
+        role: document.getElementById('fd-edit-role').value,
+      });
+      fdToast('Profile updated!');
+      closeEditModal();
+      onPageReady();
+    }
+
+    async function deleteAdminMember(uid) {
+      if (!confirm('Delete this member permanently?')) return;
+      await adminDelete(uid);
+      fdToast('Member deleted.');
+      closeEditModal();
+      onPageReady();
+    }
+
+    // Close modals on overlay click
+    document.querySelectorAll('.fd-modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) overlay.classList.remove('active');
+      });
+    });
+
+    // Boot
+    fdInit();
+  </script>
+
+  <script src="../script.js?v=4"></script>
+  <script src="../search-dynamic.js"></script>
+</body>
+</html>

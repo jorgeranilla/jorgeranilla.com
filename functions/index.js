@@ -13,6 +13,10 @@ const ALLOWED_ORIGINS = new Set([
   'https://jorgeranilla.com',
   'https://www.jorgeranilla.com',
 ]);
+const CREATE_STREAM_MIN_INTERVAL_MS = 90 * 1000;
+const CREATE_STREAM_RATE_LIMIT_BACKOFF_MS = 10 * 60 * 1000;
+
+let nextCreateStreamAt = 0;
 
 function sendCors(req, res) {
   const origin = req.get('origin');
@@ -63,9 +67,9 @@ async function getAccessToken() {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      client_id: nestClientId.value(),
-      client_secret: nestClientSecret.value(),
-      refresh_token: nestRefreshToken.value(),
+      client_id: nestClientId.value().trim(),
+      client_secret: nestClientSecret.value().trim(),
+      refresh_token: nestRefreshToken.value().trim(),
       grant_type: 'refresh_token',
     }),
   });
@@ -99,6 +103,19 @@ async function executeNestCommand(command, params) {
   return data.results || {};
 }
 
+function isRateLimitError(error) {
+  return /rate.?limit|rate.?limited|resource has been exhausted|quota/i.test(error.message || '');
+}
+
+function rejectIfCreateStreamCoolingDown() {
+  const waitMs = nextCreateStreamAt - Date.now();
+
+  if (waitMs > 0) {
+    const waitSeconds = Math.ceil(waitMs / 1000);
+    throw new Error(`Nest is cooling down. Please try again in ${waitSeconds} seconds.`);
+  }
+}
+
 function makeHandler(handler) {
   return onRequest({
     region: 'us-central1',
@@ -125,9 +142,22 @@ exports.createAlyssaLiveStream = makeHandler(async (req) => {
     throw new Error('Missing WebRTC offer.');
   }
 
-  return executeNestCommand('sdm.devices.commands.CameraLiveStream.GenerateWebRtcStream', {
-    offerSdp,
-  });
+  rejectIfCreateStreamCoolingDown();
+  nextCreateStreamAt = Date.now() + CREATE_STREAM_MIN_INTERVAL_MS;
+
+  try {
+    return await executeNestCommand('sdm.devices.commands.CameraLiveStream.GenerateWebRtcStream', {
+      offerSdp,
+    });
+  } catch (error) {
+    if (isRateLimitError(error)) {
+      nextCreateStreamAt = Date.now() + CREATE_STREAM_RATE_LIMIT_BACKOFF_MS;
+      throw new Error('Nest is rate limiting the stream. Please wait a few minutes before trying again.');
+    }
+
+    nextCreateStreamAt = Date.now() + CREATE_STREAM_MIN_INTERVAL_MS;
+    throw error;
+  }
 });
 
 exports.extendAlyssaLiveStream = makeHandler(async (req) => {
