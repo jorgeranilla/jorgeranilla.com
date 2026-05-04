@@ -110,7 +110,11 @@
           <h3 class="fd-form-section-title">Contact Information</h3>
           <div class="fd-field">
             <label>Display Name</label>
-            <input type="text" id="fd-displayName" readonly style="background:#f0f0f0;color:#999">
+            <input type="text" id="fd-displayName">
+          </div>
+          <div class="fd-field">
+            <label>Relationship</label>
+            <input type="text" id="fd-relationship" placeholder="e.g. Sister, Cousin, Uncle">
           </div>
           <div class="fd-field">
             <label>Phone Number</label>
@@ -191,6 +195,7 @@
 
       // Populate form
       document.getElementById('fd-displayName').value = p.displayName || '';
+      document.getElementById('fd-relationship').value = p.relationship || '';
       document.getElementById('fd-phone').value = p.phone || '';
       document.getElementById('fd-email').value = p.email || '';
       document.getElementById('fd-address').value = p.address || '';
@@ -244,6 +249,8 @@
 
       try {
         await saveProfile({
+          displayName: document.getElementById('fd-displayName').value.trim(),
+          relationship: document.getElementById('fd-relationship').value.trim(),
           phone: document.getElementById('fd-phone').value.trim(),
           email: document.getElementById('fd-email').value.trim(),
           address: document.getElementById('fd-address').value.trim(),

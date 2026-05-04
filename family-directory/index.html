@@ -244,7 +244,7 @@
         }
 
         grid.innerHTML = members
-          .filter(m => m.status === 'approved' || window.isAdmin)
+          .filter(m => (m.status === 'approved' || window.isAdmin) && m.status !== 'claimed')
           .map(m => buildCardHTML(m)).join('');
       } catch (err) {
         console.error(err);

@@ -89,41 +89,135 @@ async function handleAuthState(user) {
     updateNavUser();
     if (typeof onPageReady === 'function') onPageReady();
   } else {
-    // First-time user — create pending profile
-    const { setDoc, serverTimestamp } = window._fb;
-    const newProfile = {
-      uid: user.uid,
-      displayName: user.displayName || '',
-      email: user.email || '',
-      photoURL: user.photoURL || '',
-      phone: '',
-      relationship: '',
-      address: '',
-      city: '',
-      country: '',
-      birthday: '',
-      preferredContact: 'email',
-      role: 'member',
-      status: 'pending',
-      privacy: {
-        showPhone: true,
-        showEmail: true,
-        showAddress: false,
-        showBirthday: true,
-        showAge: false
-      },
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    };
+    // First-time user — check for existing imported record to claim
+    const { setDoc, deleteDoc, collection, getDocs, query, where, serverTimestamp } = window._fb;
+    let claimedProfile = null;
 
-    await setDoc(profileRef, newProfile);
-    currentProfile = { id: user.uid, ...newProfile };
+    if (user.email) {
+      try {
+        // Search for an imported/manual record matching this email
+        const q = query(
+          collection(db, COLLECTION),
+          where('email', '==', user.email)
+        );
+        const matchSnap = await getDocs(q);
+        const matches = matchSnap.docs.filter(d => {
+          const data = d.data();
+          // Only claim records that were imported/manually added (not real user accounts)
+          // These have IDs starting with 'import_' or 'manual_', or don't match any real UID
+          return d.id !== user.uid && (
+            d.id.startsWith('import_') ||
+            d.id.startsWith('manual_') ||
+            (data.uid && data.uid.startsWith('import_')) ||
+            (data.uid && data.uid.startsWith('manual_'))
+          );
+        });
 
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (pendingEl) {
-      pendingEl.style.display = 'flex';
-      const nameEl = pendingEl.querySelector('.fd-pending-name');
-      if (nameEl) nameEl.textContent = user.displayName || user.email;
+        if (matches.length > 0) {
+          const importDoc = matches[0];
+          const importData = importDoc.data();
+
+          // Create the new profile under the real UID, merging imported data with Google info
+          const claimedData = {
+            uid: user.uid,
+            displayName: user.displayName || importData.displayName || '',
+            email: user.email || importData.email || '',
+            photoURL: user.photoURL || importData.photoURL || '',
+            phone: importData.phone || '',
+            relationship: importData.relationship || '',
+            address: importData.address || '',
+            city: importData.city || '',
+            country: importData.country || '',
+            birthday: importData.birthday || '',
+            preferredContact: importData.preferredContact || 'email',
+            role: importData.role || 'member',
+            status: 'approved',  // They were already approved via import
+            privacy: importData.privacy || {
+              showPhone: true,
+              showEmail: true,
+              showAddress: false,
+              showBirthday: true,
+              showAge: false
+            },
+            claimedFrom: importDoc.id,  // Track which import record was claimed
+            createdAt: importData.createdAt || serverTimestamp(),
+            updatedAt: serverTimestamp()
+          };
+
+          await setDoc(profileRef, claimedData);
+
+          // Delete the old imported record to avoid duplicates
+          try {
+            await deleteDoc(doc(db, COLLECTION, importDoc.id));
+          } catch (delErr) {
+            // If delete fails (permissions), mark it as claimed so directory can filter it
+            console.warn('Could not delete old import record, marking as claimed:', delErr);
+            try {
+              const { updateDoc } = window._fb;
+              await updateDoc(doc(db, COLLECTION, importDoc.id), {
+                status: 'claimed',
+                claimedBy: user.uid,
+                updatedAt: serverTimestamp()
+              });
+            } catch (markErr) {
+              console.warn('Could not mark import as claimed:', markErr);
+            }
+          }
+
+          claimedProfile = { id: user.uid, ...claimedData };
+          console.log(`✅ Claimed imported profile "${importData.displayName}" → ${user.uid}`);
+        }
+      } catch (err) {
+        console.warn('Could not search for imported records:', err);
+      }
+    }
+
+    if (claimedProfile) {
+      // Successfully claimed an imported profile — go straight in
+      currentProfile = claimedProfile;
+      isAdmin = currentProfile.role === 'admin';
+
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (appEl) appEl.classList.add('active');
+      updateNavUser();
+      fdToast('Welcome! Your profile has been linked. 🎉');
+      if (typeof onPageReady === 'function') onPageReady();
+    } else {
+      // No imported match found — create fresh pending profile
+      const newProfile = {
+        uid: user.uid,
+        displayName: user.displayName || '',
+        email: user.email || '',
+        photoURL: user.photoURL || '',
+        phone: '',
+        relationship: '',
+        address: '',
+        city: '',
+        country: '',
+        birthday: '',
+        preferredContact: 'email',
+        role: 'member',
+        status: 'pending',
+        privacy: {
+          showPhone: true,
+          showEmail: true,
+          showAddress: false,
+          showBirthday: true,
+          showAge: false
+        },
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      await setDoc(profileRef, newProfile);
+      currentProfile = { id: user.uid, ...newProfile };
+
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (pendingEl) {
+        pendingEl.style.display = 'flex';
+        const nameEl = pendingEl.querySelector('.fd-pending-name');
+        if (nameEl) nameEl.textContent = user.displayName || user.email;
+      }
     }
   }
 }

@@ -26,18 +26,28 @@ service cloud.firestore {
         return request.auth != null && request.auth.uid == userId;
       }
 
+      // Helper: Check if this is an imported/manual record (not a real user account)
+      function isImportedRecord() {
+        return resource.data.uid.matches('import_.*') || resource.data.uid.matches('manual_.*');
+      }
+
       // READ:
       // - Admins can read all profiles
       // - Approved members can read approved profiles
       // - Users can always read their own profile (to check status)
+      // - Authenticated users can read imported records (for claim matching by email)
       allow read: if isAdmin()
                   || (isApprovedMember() && resource.data.status == 'approved')
-                  || isOwner();
+                  || isOwner()
+                  || (request.auth != null && isImportedRecord());
 
       // CREATE:
-      // - Users can create their own profile (first-time registration)
+      // - Users can create their own profile (first-time registration as pending)
+      // - Users can create their own profile as approved IF claiming an import (has claimedFrom)
       // - Admins can create profiles (add member manually)
       allow create: if (isOwner() && request.resource.data.status == 'pending')
+                    || (isOwner() && request.resource.data.status == 'approved'
+                        && request.resource.data.claimedFrom is string)
                     || isAdmin();
 
       // UPDATE:
@@ -51,8 +61,10 @@ service cloud.firestore {
                         && request.resource.data.uid == resource.data.uid);
 
       // DELETE:
-      // - Only admins can delete profiles
-      allow delete: if isAdmin();
+      // - Admins can delete profiles
+      // - Authenticated users can delete imported records (for claim cleanup)
+      allow delete: if isAdmin()
+                    || (request.auth != null && isImportedRecord());
     }
 
     // ─── Block everything else ───
