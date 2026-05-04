@@ -866,8 +866,8 @@ document.addEventListener("DOMContentLoaded", () => {
      - Static-site friendly: remembers on/off and current time between pages.
   =========================== */
   (function setupFooterAmbientAudio() {
-    const isInsideAmbientShell = window.self !== window.top && window.name === 'jorgeAmbientSiteFrame';
-    if (isInsideAmbientShell) return;
+    const mobileMediaQuery = window.matchMedia('(max-width: 900px), (pointer: coarse)');
+    if (mobileMediaQuery.matches) return;
 
     function getRootAssetUrl(assetPath) {
       let scriptUrl = appScriptSource;
