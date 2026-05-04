@@ -243,7 +243,7 @@
         "title":  "Family Directory | Jorge Ranilla",
         "url":  "family-directory/index.html",
         "section":  "family-directory",
-        "content":  "Family Directory | Jorge Ranilla Loading Family Directory… Private Access Family Directory Sign in with your Google account to view the family directory. Only approved family members can access this page. Sign in with Google Secured by Firebase · Only approved members can view Pending Approval Almost There! Hi ! Your request has been sent to the family admin. You\u0027ll get access once approved. Sign Out Family Directory Contact information for approved family members 🔑 Admin Panel Pending Approvals ( 0 ) Add Member Loading members… No family members found Pending Approvals ✕ No pending requests Add Family Member ✕ Full Name * Email * Relationship Phone City Country Add Member Edit Member ✕"
+        "content":  "Family Directory | Jorge Ranilla Loading Family Directory… Private Access Family Directory Sign in with your Google account to view the family directory. Only approved family members can access this page. Sign in with Google Secured by Firebase · Only approved members can view Pending Approval Almost There! Hi ! Your request has been sent to the family admin. You\u0027ll get access once approved. Sign Out Family Directory Contact information for approved family members 🔑 Admin Panel Pending Approvals ( 0 ) Add Member Import Contacts Loading members… No family members found Pending Approvals ✕ No pending requests Add Family Member ✕ Full Name * Email * Relationship Phone City Country Add Member Import Contacts from vCard ✕ Upload a .vcf file to bulk import family contacts. The file is parsed in your browser — nothing is uploaded to any server. Choose .vcf File Preview ( 0 contacts found): Import All Cancel Edit Member ✕"
     },
     {
         "title":  "My Profile | Family Directory | Jorge Ranilla",
@@ -345,7 +345,7 @@
         "title":  "Alyssa Live | Jorge Ranilla",
         "url":  "live/index.html",
         "section":  "live",
-        "content":  "Alyssa Live | Jorge Ranilla LIVE 🔴 👶 Alyssa Live Alyssa is not live right now. Streaming now"
+        "content":  "Alyssa Live | Jorge Ranilla OFFLINE 👶 Alyssa\u0027s Camera The camera is not streaming right now. When Alyssa\u0027s camera is turned on, the live feed will appear here automatically — no need to refresh. Streaming now How it works This page connects to Alyssa\u0027s Nest camera in real time The stream starts automatically when the camera is on No recording is stored — this is live viewing only Tap the video to unmute, expand, or adjust controls All times shown are in Eastern Time (ET) Private family stream · Not indexed · Secured by Firebase"
     },
     {
         "title":  "Locator Admin",
@@ -357,7 +357,7 @@
         "title":  "Locator",
         "url":  "locator/index.html",
         "section":  "locator",
-        "content":  "Jorge Ranilla | Locator Jorge is not sharing his location right now. Latitude Longitude Accuracy Last updated"
+        "content":  "Jorge Ranilla | Locator Jorge is not sharing his location right now. When Jorge decides to share his location, it will appear here in real time on Google Maps. This page updates automatically — no need to refresh. Latitude Longitude Accuracy Last updated How it works Jorge can start or stop sharing at any time from the admin panel Location is shown on an interactive Google Map with live coordinates Updates happen in real time — the pin moves as Jorge moves When sharing stops, the map disappears and no history is stored Admin? Manage location sharing →"
     },
     {
         "title":  "At a Glance",

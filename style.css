@@ -183,6 +183,7 @@ body {
 
 /* clean hover behavior (desktop only) */
 @media (min-width: 901px) {
+
     .dropdown-item:hover>.dropdown-menu,
     .dropdown-item:focus-within>.dropdown-menu {
         display: block;

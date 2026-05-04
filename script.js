@@ -608,11 +608,11 @@ document.addEventListener("DOMContentLoaded", () => {
       'portfolio.html': ['Professional', 'Portfolio'],
 
       // Baptism pages (English & Spanish, main + godparent subpages)
-      'baptism.html':            ["Alyssa's Baptism"],
-      'baptism-es.html':         ["Alyssa's Baptism"],
-      'baptism-godfather.html':  ["Alyssa's Baptism", "Letter to Godfather"],
+      'baptism.html': ["Alyssa's Baptism"],
+      'baptism-es.html': ["Alyssa's Baptism"],
+      'baptism-godfather.html': ["Alyssa's Baptism", "Letter to Godfather"],
       'baptism-godfather-es.html': ["Alyssa's Baptism", "Letter to Godfather"],
-      'baptism-godmother.html':  ["Alyssa's Baptism", "Letter to Godmother"],
+      'baptism-godmother.html': ["Alyssa's Baptism", "Letter to Godmother"],
       'baptism-godmother-es.html': ["Alyssa's Baptism", "Letter to Godmother"],
 
       // Blog section
@@ -1008,9 +1008,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const timing = preserveTimeIfEmpty
         ? getCurrentOrPreservedTime()
         : {
-            time: Number.isFinite(audio.currentTime) ? audio.currentTime : 0,
-            savedAt: Date.now()
-          };
+          time: Number.isFinite(audio.currentTime) ? audio.currentTime : 0,
+          savedAt: Date.now()
+        };
 
       const state = {
         enabled,
@@ -1095,7 +1095,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (savedTime > 0) audio.currentTime = savedTime;
 
         await audio.play();
-        
+
         // Mobile Safari often ignores currentTime changes before play() resolves. Force it again.
         if (savedTime > 0 && (!audio.duration || savedTime < audio.duration)) {
           if (Math.abs(audio.currentTime - savedTime) > 1.5) {
