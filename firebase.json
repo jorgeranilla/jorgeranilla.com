@@ -1,0 +1,15 @@
+{
+  "database": {
+    "rules": "locator/firebase-database.rules.json"
+  },
+  "firestore": {
+    "rules": "family-directory/firestore.rules"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "runtime": "nodejs22"
+    }
+  ]
+}
