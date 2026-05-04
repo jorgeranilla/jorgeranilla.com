@@ -13,7 +13,7 @@ const ALLOWED_ORIGINS = new Set([
   'https://jorgeranilla.com',
   'https://www.jorgeranilla.com',
 ]);
-const CREATE_STREAM_MIN_INTERVAL_MS = 90 * 1000;
+const CREATE_STREAM_MIN_INTERVAL_MS = 15 * 1000;
 const CREATE_STREAM_RATE_LIMIT_BACKOFF_MS = 10 * 60 * 1000;
 
 let nextCreateStreamAt = 0;

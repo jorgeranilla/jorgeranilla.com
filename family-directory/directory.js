@@ -5,12 +5,12 @@
 
 // Firebase config (jorgeranilla-site)
 const firebaseConfig = {
-  apiKey: "AIzaSyBxYkOQFnEfl88VfSmuYG9aRfkJBD1yNKM",
+  apiKey: "AIzaSyBc0zrXLzr9Qhq9iuhXLAXOzbkQ13mEaU4",
   authDomain: "jorgeranilla-site.firebaseapp.com",
   projectId: "jorgeranilla-site",
   storageBucket: "jorgeranilla-site.firebasestorage.app",
   messagingSenderId: "125483521813",
-  appId: "1:125483521813:web:PLACEHOLDER"
+  appId: "1:125483521813:web:f48b02d491cb4c698ffb1c"
 };
 
 /* ── Globals ── */

@@ -59,9 +59,10 @@ function isActiveLive(data) {
 function formatUpdatedAt(timestamp) {
   if (typeof timestamp !== 'number') return 'Streaming now';
 
-  return `Streaming now · Updated ${new Intl.DateTimeFormat(undefined, {
+  return `Streaming now · Updated ${new Intl.DateTimeFormat('en-US', {
     timeStyle: 'short',
-  }).format(new Date(timestamp))}`;
+    timeZone: 'America/New_York',
+  }).format(new Date(timestamp))} ET`;
 }
 
 async function callLiveFunction(name, payload) {
