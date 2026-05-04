@@ -116,8 +116,8 @@ async function startWebRtcStream(attemptId) {
   const remoteStream = new MediaStream();
   video.srcObject = remoteStream;
 
-  pc.addTransceiver('video', { direction: 'recvonly' });
   pc.addTransceiver('audio', { direction: 'recvonly' });
+  pc.addTransceiver('video', { direction: 'recvonly' });
   pc.createDataChannel('data');
 
   pc.addEventListener('track', (event) => {
