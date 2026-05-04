@@ -34,7 +34,7 @@
         <!-- Stream -->
         <div class="live-stream-wrap" id="live-stream-wrap" hidden>
           <video id="live-video" autoplay playsinline controls muted></video>
-          <p class="live-meta" id="live-meta">Streaming now</p>
+          <p class="live-meta" id="live-meta">Streaming now - audio is muted for privacy</p>
         </div>
 
         <!-- Info section -->
@@ -44,7 +44,8 @@
             <li>This page connects to Alyssa's Nest camera in real time</li>
             <li>The stream starts automatically when the camera is on</li>
             <li>No recording is stored — this is live viewing only</li>
-            <li>Tap the video to unmute, expand, or adjust controls</li>
+            <li>Audio is intentionally disabled for privacy; this page shows video only</li>
+            <li>Use the video controls to expand or adjust playback</li>
             <li>All times shown are in Eastern Time (ET)</li>
           </ul>
         </div>
@@ -56,6 +57,6 @@
       </p>
     </main>
 
-    <script type="module" src="./live.js"></script>
+    <script type="module" src="./live.js?v=3"></script>
   </body>
 </html>

@@ -185,7 +185,9 @@ async function startWebRtcStream(attemptId) {
   keepVideoSilent();
   video.srcObject = remoteStream;
 
-  // Video-only viewer stream. Audio is intentionally disabled for privacy.
+  // The Nest WebRTC endpoint requires audio, video, and data m-lines in that order.
+  // We keep audio out of the playback stream below so viewers remain muted.
+  pc.addTransceiver('audio', { direction: 'recvonly' });
   pc.addTransceiver('video', { direction: 'recvonly' });
 
   // Nest requires a data channel to be present
@@ -194,7 +196,6 @@ async function startWebRtcStream(attemptId) {
   pc.addEventListener('track', (event) => {
     if (event.track.kind === 'audio') {
       event.track.enabled = false;
-      event.track.stop();
       keepVideoSilent();
       return;
     }
@@ -244,7 +245,7 @@ function showActive(data) {
   statusDot.classList.add('green');
   offlineIcon.style.display = 'none';
   streamWrap.hidden = false;
-  meta.textContent = 'Streaming now';
+  meta.textContent = 'Streaming now - audio is muted for privacy';
 
   window.clearTimeout(expirationTimer);
   expirationTimer = window.setTimeout(showInactive, Math.max(0, data.expiresAt - Date.now()));

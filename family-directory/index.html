@@ -186,16 +186,16 @@
   <div class="fd-modal-overlay" id="fd-import-modal">
     <div class="fd-modal" style="max-width:600px">
       <div class="fd-modal-header">
-        <h3 class="fd-modal-title">Import Contacts from vCard</h3>
+        <h3 class="fd-modal-title">Import Contacts</h3>
         <button class="fd-modal-close" onclick="closeImportModal()">✕</button>
       </div>
       <div class="fd-modal-body">
         <p style="font-size:.85rem;color:#888;margin:0 0 12px">Upload a <strong>.vcf</strong> file to bulk import family contacts. The file is parsed in your browser — nothing is uploaded to any server.</p>
         <label class="fd-photo-btn" for="fd-vcf-input" style="display:inline-flex;cursor:pointer;margin-bottom:12px">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
-          Choose .vcf File
+          Choose Contact File
         </label>
-        <input type="file" id="fd-vcf-input" accept=".vcf,.vcard" style="display:none" onchange="handleVcfFile(this)">
+        <input type="file" id="fd-vcf-input" accept=".csv,text/csv,.vcf,.vcard" style="display:none" onchange="handleVcfFile(this)">
         <div id="fd-import-preview" style="display:none">
           <p style="font-size:.85rem;color:#2c3e50;font-weight:500;margin:12px 0 8px">Preview (<span id="fd-import-count">0</span> contacts found):</p>
           <div id="fd-import-list" style="max-height:300px;overflow-y:auto;border:1px solid #eee;border-radius:10px"></div>
@@ -218,7 +218,7 @@
     </div>
   </div>
 
-  <script src="directory.js"></script>
+  <script src="directory.js?v=2"></script>
   <script>
     let allMembers = [];
 
@@ -361,6 +361,7 @@
         <div class="fd-field"><label>Full Name</label><input type="text" id="fd-edit-name" value="${member.displayName || ''}"></div>
         <div class="fd-field"><label>Email</label><input type="email" id="fd-edit-email" value="${member.email || ''}"></div>
         <div class="fd-field"><label>Phone</label><input type="tel" id="fd-edit-phone" value="${member.phone || ''}"></div>
+        <div class="fd-field"><label>Address</label><input type="text" id="fd-edit-address" value="${member.address || ''}"></div>
         <div class="fd-field"><label>Relationship</label><input type="text" id="fd-edit-relation" value="${member.relationship || ''}"></div>
         <div class="fd-field"><label>City</label><input type="text" id="fd-edit-city" value="${member.city || ''}"></div>
         <div class="fd-field"><label>Country</label><input type="text" id="fd-edit-country" value="${member.country || ''}"></div>
@@ -383,6 +384,7 @@
         displayName: document.getElementById('fd-edit-name').value.trim(),
         email: document.getElementById('fd-edit-email').value.trim(),
         phone: document.getElementById('fd-edit-phone').value.trim(),
+        address: document.getElementById('fd-edit-address').value.trim(),
         relationship: document.getElementById('fd-edit-relation').value.trim(),
         city: document.getElementById('fd-edit-city').value.trim(),
         country: document.getElementById('fd-edit-country').value.trim(),
@@ -487,13 +489,123 @@
       return contacts;
     }
 
+    function parseCsvRows(text) {
+      const rows = [];
+      let row = [];
+      let value = '';
+      let quoted = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+
+        if (ch === '"') {
+          if (quoted && next === '"') {
+            value += '"';
+            i++;
+          } else {
+            quoted = !quoted;
+          }
+        } else if (ch === ',' && !quoted) {
+          row.push(value);
+          value = '';
+        } else if ((ch === '\n' || ch === '\r') && !quoted) {
+          if (ch === '\r' && next === '\n') i++;
+          row.push(value);
+          if (row.some(cell => cell.trim() !== '')) rows.push(row);
+          row = [];
+          value = '';
+        } else {
+          value += ch;
+        }
+      }
+
+      row.push(value);
+      if (row.some(cell => cell.trim() !== '')) rows.push(row);
+      return rows;
+    }
+
+    function normalizeCsvBirthday(value) {
+      if (!value) return '';
+      const trimmed = value.trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(trimmed)) {
+        const [month, day, year] = trimmed.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      return trimmed;
+    }
+
+    function parseGoogleCsv(text) {
+      const rows = parseCsvRows(text);
+      if (rows.length < 2) return [];
+
+      const headers = rows[0].map(h => h.trim());
+      const index = new Map(headers.map((h, i) => [h, i]));
+      const get = (row, name) => {
+        const i = index.get(name);
+        return i === undefined ? '' : (row[i] || '').trim();
+      };
+      const getFirst = (row, names) => {
+        for (const name of names) {
+          const value = get(row, name);
+          if (value) return value;
+        }
+        return '';
+      };
+
+      return rows.slice(1).map(row => {
+        const firstName = get(row, 'First Name');
+        const middleName = get(row, 'Middle Name');
+        const lastName = get(row, 'Last Name');
+        const fileAs = get(row, 'File As');
+        const displayName = [firstName, middleName, lastName].filter(Boolean).join(' ') || fileAs;
+
+        const email = getFirst(row, [
+          'E-mail 1 - Value',
+          'E-mail 2 - Value',
+          'E-mail 3 - Value',
+          'E-mail 4 - Value'
+        ]);
+        const phone = getFirst(row, [
+          'Phone 1 - Value',
+          'Phone 2 - Value',
+          'Phone 3 - Value'
+        ]);
+
+        const addressPrefix = getFirst(row, ['Address 1 - Street', 'Address 1 - Formatted']) ? 'Address 1' : 'Address 2';
+        const street = getFirst(row, [`${addressPrefix} - Street`, `${addressPrefix} - Formatted`])
+          .replace(/\r?\n/g, ', ')
+          .replace(/\s*,\s*/g, ', ')
+          .trim();
+        const city = get(row, `${addressPrefix} - City`);
+        const region = get(row, `${addressPrefix} - Region`);
+        const postal = get(row, `${addressPrefix} - Postal Code`);
+        const country = get(row, `${addressPrefix} - Country`);
+        const cityLine = [city, region, postal].filter(Boolean).join(', ');
+
+        return {
+          displayName,
+          email,
+          phone,
+          birthday: normalizeCsvBirthday(get(row, 'Birthday')),
+          address: street,
+          city: cityLine,
+          country,
+          photoURL: ''
+        };
+      }).filter(c => c.displayName || c.email || c.phone);
+    }
+
     function handleVcfFile(input) {
       const file = input.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        parsedContacts = parseVcf(e.target.result);
+        const text = e.target.result;
+        const isCsv = /\.csv$/i.test(file.name) || file.type === 'text/csv';
+        parsedContacts = isCsv ? parseGoogleCsv(text) : parseVcf(text);
 
         const preview = document.getElementById('fd-import-preview');
         const list = document.getElementById('fd-import-list');

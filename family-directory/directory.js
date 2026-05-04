@@ -347,6 +347,11 @@ function normalizeBirthday(dateValue) {
   return `${year}-${month}-${day}`;
 }
 
+function isBirthdayYearOmitted(dateStr) {
+  const normalized = normalizeBirthday(dateStr);
+  return normalized.startsWith('1604-');
+}
+
 function formatBirthday(dateStr) {
   const normalized = normalizeBirthday(dateStr);
   if (!normalized) return '';
@@ -368,6 +373,7 @@ function daysUntilBirthday(dateStr) {
 function calcAge(dateStr) {
   const normalized = normalizeBirthday(dateStr);
   if (!normalized) return null;
+  if (isBirthdayYearOmitted(normalized)) return null;
   const birth = new Date(normalized + 'T00:00:00');
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
@@ -412,8 +418,8 @@ function buildCardHTML(member) {
     </div>`;
   }
 
-  if (p.showAddress !== false && (member.city || member.country)) {
-    const loc = [member.city, member.country].filter(Boolean).join(', ');
+  if (p.showAddress !== false && (member.address || member.city || member.country)) {
+    const loc = [member.address, member.city, member.country].filter(Boolean).join(', ');
     infoRows += `<div class="fd-card-row">
       <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
       <span>${loc}</span>
@@ -422,7 +428,8 @@ function buildCardHTML(member) {
 
   if (p.showBirthday !== false && member.birthday) {
     const bdayStr = formatBirthday(member.birthday);
-    const ageStr = (p.showAge !== false) ? ` · Age ${calcAge(member.birthday)}` : '';
+    const age = calcAge(member.birthday);
+    const ageStr = (p.showAge !== false && age !== null) ? ` · Age ${age}` : '';
     infoRows += `<div class="fd-card-row">
       <svg viewBox="0 0 24 24"><path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12c.01-1.66-1.33-3-2.99-3z"/></svg>
       <span>${bdayStr}${ageStr}</span>
@@ -453,7 +460,8 @@ function buildBirthdayCardHTML(member, daysLeft) {
   const photo = member.photoURL || defaultAvatar(member.displayName);
   const bdayStr = formatBirthday(member.birthday);
   const isToday = daysLeft === 0;
-  const ageStr = (p.showAge !== false) ? `<span class="fd-birthday-age">Turning ${calcAge(member.birthday) + (isToday ? 0 : 1)}</span>` : '';
+  const age = calcAge(member.birthday);
+  const ageStr = (p.showAge !== false && age !== null) ? `<span class="fd-birthday-age">Turning ${age + (isToday ? 0 : 1)}</span>` : '';
 
   return `
     <div class="fd-birthday-card ${isToday ? 'today' : ''}">
@@ -484,6 +492,7 @@ window.adminUpdateProfile = adminUpdateProfile;
 window.buildCardHTML = buildCardHTML;
 window.buildBirthdayCardHTML = buildBirthdayCardHTML;
 window.normalizeBirthday = normalizeBirthday;
+window.isBirthdayYearOmitted = isBirthdayYearOmitted;
 window.daysUntilBirthday = daysUntilBirthday;
 window.formatBirthday = formatBirthday;
 window.calcAge = calcAge;
