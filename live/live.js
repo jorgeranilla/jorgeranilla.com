@@ -50,6 +50,11 @@ let activeAttemptId = 0;
 
 // ── Helpers ──
 
+function keepVideoSilent() {
+  video.muted = true;
+  video.volume = 0;
+}
+
 function isActiveLive(data) {
   return Boolean(
     data &&
@@ -57,15 +62,6 @@ function isActiveLive(data) {
       typeof data.expiresAt === 'number' &&
       data.expiresAt > Date.now(),
   );
-}
-
-function formatUpdatedAt(timestamp) {
-  if (typeof timestamp !== 'number') return 'Streaming now';
-
-  return `Streaming now · Updated ${new Intl.DateTimeFormat('en-US', {
-    timeStyle: 'short',
-    timeZone: 'America/New_York',
-  }).format(new Date(timestamp))} ET`;
 }
 
 async function callLiveFunction(name, payload) {
@@ -186,17 +182,24 @@ async function startWebRtcStream(attemptId) {
 
   peerConnection = pc;
   const remoteStream = new MediaStream();
+  keepVideoSilent();
   video.srcObject = remoteStream;
 
-  // Add receive-only transceivers for audio and video
-  pc.addTransceiver('audio', { direction: 'recvonly' });
+  // Video-only viewer stream. Audio is intentionally disabled for privacy.
   pc.addTransceiver('video', { direction: 'recvonly' });
 
   // Nest requires a data channel to be present
   pc.createDataChannel('data');
 
   pc.addEventListener('track', (event) => {
+    if (event.track.kind === 'audio') {
+      event.track.enabled = false;
+      event.track.stop();
+      keepVideoSilent();
+      return;
+    }
     remoteStream.addTrack(event.track);
+    keepVideoSilent();
   });
 
   const offer = await pc.createOffer();
@@ -241,7 +244,7 @@ function showActive(data) {
   statusDot.classList.add('green');
   offlineIcon.style.display = 'none';
   streamWrap.hidden = false;
-  meta.textContent = formatUpdatedAt(data.updatedAt);
+  meta.textContent = 'Streaming now';
 
   window.clearTimeout(expirationTimer);
   expirationTimer = window.setTimeout(showInactive, Math.max(0, data.expiresAt - Date.now()));
@@ -283,3 +286,5 @@ onValue(ref(db, LIVE_PATH), (snapshot) => {
 });
 
 window.addEventListener('pagehide', stopPeerConnection);
+video.addEventListener('volumechange', keepVideoSilent);
+keepVideoSilent();
