@@ -5,6 +5,8 @@
   --live-text: #17191d;
   --live-muted: #737985;
   --live-line: rgba(23, 25, 29, 0.08);
+  --live-green: #28a745;
+  --live-red: #dc3545;
   --live-gold: #d7a930;
   --live-shadow: 0 24px 70px rgba(30, 36, 48, 0.12);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
@@ -30,9 +32,10 @@ body {
   padding: 3.25rem 1rem 2rem;
   display: grid;
   align-content: center;
-  gap: 2rem;
+  gap: 1.6rem;
 }
 
+/* ── Header ── */
 .live-header {
   text-align: center;
 }
@@ -51,9 +54,10 @@ body {
   font-size: 1rem;
 }
 
+/* ── Card ── */
 .live-card {
   width: 100%;
-  padding: 1.35rem;
+  padding: 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 2rem;
   background: var(--live-card);
@@ -65,18 +69,7 @@ body {
 .live-card-header {
   display: grid;
   justify-items: center;
-  gap: 0.6rem;
-}
-
-.live-eyebrow {
-  margin: 0;
-  padding: 0.34rem 0.7rem;
-  border: 1px solid rgba(215, 169, 48, 0.22);
-  border-radius: 999px;
-  background: rgba(215, 169, 48, 0.08);
-  color: #8a6414;
-  font-size: 0.72rem;
-  font-weight: 800;
+  gap: 0.5rem;
 }
 
 .live-card h2 {
@@ -86,13 +79,120 @@ body {
   letter-spacing: 0;
 }
 
+/* ── Status Badge ── */
+.live-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.4s ease;
+}
+
+.live-status-badge.offline {
+  background: rgba(220, 53, 69, 0.08);
+  border: 1px solid rgba(220, 53, 69, 0.18);
+  color: var(--live-red);
+}
+
+.live-status-badge.online {
+  background: rgba(40, 167, 69, 0.08);
+  border: 1px solid rgba(40, 167, 69, 0.22);
+  color: var(--live-green);
+}
+
+/* Status Dot */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.red {
+  background: var(--live-red);
+  box-shadow: 0 0 5px rgba(220, 53, 69, 0.4);
+}
+
+.status-dot.green {
+  background: var(--live-green);
+  box-shadow: 0 0 5px rgba(40, 167, 69, 0.4);
+  animation: pulse-green 2s ease-in-out infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 4px rgba(40, 167, 69, 0.3); }
+  50% { box-shadow: 0 0 10px rgba(40, 167, 69, 0.7), 0 0 18px rgba(40, 167, 69, 0.25); }
+}
+
+/* ── Status Text ── */
 .live-status {
-  margin: 1.15rem auto 0;
+  margin: 1rem auto 0;
   color: var(--live-muted);
   font-size: 1.05rem;
   line-height: 1.55;
+  transition: color 0.3s ease;
 }
 
+.live-status.active {
+  color: var(--live-text);
+}
+
+/* ── Offline icon ── */
+.live-offline-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin: 1rem auto 0.2rem;
+  border-radius: 50%;
+  background: rgba(23, 25, 29, 0.03);
+  border: 1px solid var(--live-line);
+}
+
+.live-offline-icon svg {
+  width: 32px;
+  height: 32px;
+  fill: var(--live-muted);
+  opacity: 0.4;
+}
+
+/* ── Info section ── */
+.live-info {
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--live-line);
+  text-align: left;
+}
+
+.live-info h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--live-muted);
+}
+
+.live-info ul {
+  margin: 0;
+  padding: 0 0 0 1.2rem;
+  font-size: 0.88rem;
+  color: #555;
+  line-height: 1.8;
+}
+
+.live-info ul li {
+  margin: 0;
+}
+
+/* ── Stream ── */
 .live-stream-wrap {
   margin-top: 1.25rem;
   animation: liveFadeIn 380ms ease both;
@@ -115,12 +215,25 @@ body {
   font-size: 0.92rem;
 }
 
+/* ── Footer note ── */
+.live-footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #bbb;
+  padding: 0.5rem 0 1rem;
+}
+
+.live-footer svg {
+  vertical-align: middle;
+  margin-right: 3px;
+  opacity: 0.4;
+}
+
 @keyframes liveFadeIn {
   from {
     opacity: 0;
     transform: translateY(8px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);

@@ -32,6 +32,9 @@ const RETRY_DELAY_MS = 2 * 60 * 1000;
 // ── DOM References ──
 const status = document.querySelector('#live-status');
 const badge = document.querySelector('#live-badge');
+const badgeText = document.querySelector('#badge-text');
+const statusDot = document.querySelector('#status-dot');
+const offlineIcon = document.querySelector('#live-offline-icon');
 const streamWrap = document.querySelector('#live-stream-wrap');
 const video = document.querySelector('#live-video');
 const meta = document.querySelector('#live-meta');
@@ -116,10 +119,16 @@ function showInactive() {
   activeAttemptId += 1;
   retryAfter = 0;
   stopPeerConnection();
-  status.textContent = 'Alyssa is not live right now.';
-  badge.hidden = true;
+  status.textContent = 'Camera is offline right now.';
+  status.classList.remove('active');
+  badge.classList.remove('online');
+  badge.classList.add('offline');
+  badgeText.textContent = 'OFFLINE';
+  statusDot.classList.remove('green');
+  statusDot.classList.add('red');
+  offlineIcon.style.display = 'flex';
   streamWrap.hidden = true;
-  meta.textContent = 'Streaming now';
+  meta.textContent = '';
 }
 
 // ── Stream Extension ──
@@ -224,7 +233,13 @@ function showActive(data) {
   const waitMs = retryAfter - Date.now();
 
   status.textContent = 'Alyssa is live right now 💛';
-  badge.hidden = false;
+  status.classList.add('active');
+  badge.classList.remove('offline');
+  badge.classList.add('online');
+  badgeText.textContent = 'LIVE';
+  statusDot.classList.remove('red');
+  statusDot.classList.add('green');
+  offlineIcon.style.display = 'none';
   streamWrap.hidden = false;
   meta.textContent = formatUpdatedAt(data.updatedAt);
 
@@ -232,7 +247,7 @@ function showActive(data) {
   expirationTimer = window.setTimeout(showInactive, Math.max(0, data.expiresAt - Date.now()));
 
   if (waitMs > 0) {
-    status.textContent = `Alyssa is live right now. Stream will retry in ${Math.ceil(waitMs / 1000)} seconds.`;
+    status.textContent = `Alyssa is live right now. Reconnecting in ${Math.ceil(waitMs / 1000)}s…`;
     retryTimer = window.setTimeout(() => {
       if (attemptId === activeAttemptId) showActive(data);
     }, waitMs);
@@ -241,8 +256,11 @@ function showActive(data) {
 
   startWebRtcStream(attemptId).catch((error) => {
     if (attemptId !== activeAttemptId) return;
-    status.textContent = error.message || 'Alyssa is not live right now.';
-    badge.hidden = true;
+    status.textContent = error.message || 'Camera is offline right now.';
+    status.classList.remove('active');
+    badge.classList.remove('online');
+    badge.classList.add('offline');
+    badgeText.textContent = 'RECONNECTING';
     streamWrap.hidden = true;
     retryAfter = Date.now() + RETRY_DELAY_MS;
     retryTimer = window.setTimeout(() => {

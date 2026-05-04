@@ -207,6 +207,78 @@ select {
   cursor: pointer;
 }
 
+/* ── Description ── */
+.locator-description {
+  margin: 0 0 0.5rem;
+  color: var(--locator-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+/* ── Info section ── */
+.locator-info {
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--locator-line);
+  text-align: left;
+}
+
+.locator-info h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--locator-muted);
+}
+
+.locator-info ul {
+  margin: 0;
+  padding: 0 0 0 1.2rem;
+  font-size: 0.88rem;
+  color: #555;
+  line-height: 1.8;
+}
+
+/* ── Admin Link ── */
+.locator-admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1.4rem;
+  padding: 10px 20px;
+  border: 1px solid var(--locator-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--locator-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 180ms ease;
+}
+
+.locator-admin-link:hover {
+  background: rgba(10, 132, 255, 0.06);
+  border-color: rgba(10, 132, 255, 0.2);
+  color: var(--locator-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 132, 255, 0.1);
+}
+
+/* ── Footer ── */
+.locator-footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #bbb;
+  padding: 0.5rem 0 1rem;
+}
+
+.locator-footer svg {
+  vertical-align: middle;
+  margin-right: 3px;
+  opacity: 0.4;
+}
+
 @media (min-width: 42rem) {
   .locator-shell {
     padding: 3rem 1.5rem;
