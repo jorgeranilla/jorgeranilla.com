@@ -27,7 +27,7 @@ async function fdInit() {
   const { initializeApp } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
   const { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider }
     = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js');
-  const { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp }
+  const { getFirestore, collection, doc, documentId, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp }
     = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
 
   app = initializeApp(firebaseConfig);
@@ -37,7 +37,7 @@ async function fdInit() {
   // Store imports globally for use
   window._fb = {
     auth, db, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
-    collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
+    collection, doc, documentId, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
     query, where, orderBy, serverTimestamp
   };
 
@@ -94,24 +94,17 @@ async function handleAuthState(user) {
     if (typeof onPageReady === 'function') onPageReady();
   } else {
     // First-time user — check for existing imported record to claim
-    const { setDoc, deleteDoc, collection, getDocs, query, where, serverTimestamp } = window._fb;
+    const { setDoc, deleteDoc, collection, documentId, getDocs, query, where, serverTimestamp } = window._fb;
     let claimedProfile = null;
     const normalizedUserEmail = normalizeEmail(user.email);
 
     if (normalizedUserEmail) {
       try {
-        const possibleEmailValues = Array.from(new Set([
-          user.email,
-          user.email.trim(),
-          normalizedUserEmail
-        ].filter(Boolean)));
         const foundMatches = new Map();
 
         const claimQueries = [
-          query(collection(db, COLLECTION), where('emailLower', '==', normalizedUserEmail)),
-          ...possibleEmailValues.map(emailValue => (
-            query(collection(db, COLLECTION), where('email', '==', emailValue))
-          ))
+          query(collection(db, COLLECTION), where(documentId(), '>=', 'import_'), where(documentId(), '<', 'import`')),
+          query(collection(db, COLLECTION), where(documentId(), '>=', 'manual_'), where(documentId(), '<', 'manual`'))
         ];
 
         for (const claimQuery of claimQueries) {

@@ -237,7 +237,7 @@
         "title":  "Family Directory | Jorge Ranilla",
         "url":  "family-directory/index.html",
         "section":  "family-directory",
-        "content":  "Family Directory | Jorge Ranilla Loading Family Directory… Private Access Family Directory Sign in with your Google account to view the family directory. Only approved family members can access this page. Sign in with Google Secured by Firebase · Only approved members can view Pending Approval Almost There! Hi ! Your request has been sent to the family admin. You\u0027ll get access once approved. Sign Out Family Directory Contact information for approved family members 🔑 Admin Panel Pending Approvals ( 0 ) Add Member Import Contacts Loading members… No family members found Pending Approvals ✕ No pending requests Add Family Member ✕ Full Name * Email * Relationship Phone City Country Add Member Import Contacts from vCard ✕ Upload a .vcf file to bulk import family contacts. The file is parsed in your browser — nothing is uploaded to any server. Choose .vcf File Preview ( 0 contacts found): Import All Cancel Edit Member ✕"
+        "content":  "Family Directory | Jorge Ranilla Loading Family Directory… Private Access Family Directory Sign in with your Google account to view the family directory. Only approved family members can access this page. Sign in with Google Secured by Firebase · Only approved members can view Pending Approval Almost There! Hi ! Your request has been sent to the family admin. You\u0027ll get access once approved. Sign Out Family Directory Contact information for approved family members 🔑 Admin Panel Pending Approvals ( 0 ) Add Member Import Contacts Loading members… No family members found Pending Approvals ✕ No pending requests Add Family Member ✕ Full Name * Email * Relationship Phone City Country Add Member Import Contacts ✕ Upload a .vcf file to bulk import family contacts. The file is parsed in your browser — nothing is uploaded to any server. Choose Contact File Preview ( 0 contacts found): Import All Cancel Edit Member ✕"
     },
     {
         "title":  "My Profile | Family Directory | Jorge Ranilla",
@@ -345,7 +345,7 @@
         "title":  "Alyssa Live | Jorge Ranilla",
         "url":  "live/index.html",
         "section":  "live",
-        "content":  "Alyssa Live | Jorge Ranilla OFFLINE 👶 Alyssa\u0027s Camera The camera is not streaming right now. When Alyssa\u0027s camera is turned on, the live feed will appear here automatically — no need to refresh. Streaming now How it works This page connects to Alyssa\u0027s Nest camera in real time The stream starts automatically when the camera is on No recording is stored — this is live viewing only Tap the video to unmute, expand, or adjust controls All times shown are in Eastern Time (ET) Private family stream · Not indexed · Secured by Firebase"
+        "content":  "Alyssa Live | Jorge Ranilla OFFLINE 👶 Alyssa\u0027s Camera The camera is not streaming right now. When Alyssa\u0027s camera is turned on, the live feed will appear here automatically — no need to refresh. Streaming now - audio is muted for privacy How it works This page connects to Alyssa\u0027s Nest camera in real time The stream starts automatically when the camera is on No recording is stored — this is live viewing only Audio is intentionally disabled for privacy; this page shows video only Use the video controls to expand or adjust playback All times shown are in Eastern Time (ET) Private family stream · Not indexed · Secured by Firebase"
     },
     {
         "title":  "Locator Admin",
