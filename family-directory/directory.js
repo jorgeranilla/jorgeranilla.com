@@ -317,25 +317,58 @@ function fdToast(msg) {
 }
 
 /* ── Helpers ── */
+function normalizeBirthday(dateValue) {
+  if (!dateValue) return '';
+
+  if (typeof dateValue === 'object' && typeof dateValue.toDate === 'function') {
+    dateValue = dateValue.toDate();
+  }
+
+  if (dateValue instanceof Date && !Number.isNaN(dateValue.getTime())) {
+    const year = dateValue.getFullYear();
+    const month = String(dateValue.getMonth() + 1).padStart(2, '0');
+    const day = String(dateValue.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  if (typeof dateValue !== 'string') return '';
+
+  const value = dateValue.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  if (/^\d{8}$/.test(value)) return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
+  if (/^--\d{2}-\d{2}$/.test(value)) return `1604-${value.slice(2)}`;
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return '';
+
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function formatBirthday(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr + 'T00:00:00');
+  const normalized = normalizeBirthday(dateStr);
+  if (!normalized) return '';
+  const d = new Date(normalized + 'T00:00:00');
   return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 }
 
 function daysUntilBirthday(dateStr) {
-  if (!dateStr) return Infinity;
+  const normalized = normalizeBirthday(dateStr);
+  if (!normalized) return Infinity;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const [y, m, d] = dateStr.split('-').map(Number);
+  const [, m, d] = normalized.split('-').map(Number);
   let next = new Date(today.getFullYear(), m - 1, d);
   if (next < today) next.setFullYear(next.getFullYear() + 1);
   return Math.round((next - today) / 86400000);
 }
 
 function calcAge(dateStr) {
-  if (!dateStr) return null;
-  const birth = new Date(dateStr + 'T00:00:00');
+  const normalized = normalizeBirthday(dateStr);
+  if (!normalized) return null;
+  const birth = new Date(normalized + 'T00:00:00');
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
   const mDiff = today.getMonth() - birth.getMonth();
@@ -379,7 +412,7 @@ function buildCardHTML(member) {
     </div>`;
   }
 
-  if (member.city || member.country) {
+  if (p.showAddress !== false && (member.city || member.country)) {
     const loc = [member.city, member.country].filter(Boolean).join(', ');
     infoRows += `<div class="fd-card-row">
       <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
@@ -450,6 +483,7 @@ window.adminDelete = adminDelete;
 window.adminUpdateProfile = adminUpdateProfile;
 window.buildCardHTML = buildCardHTML;
 window.buildBirthdayCardHTML = buildBirthdayCardHTML;
+window.normalizeBirthday = normalizeBirthday;
 window.daysUntilBirthday = daysUntilBirthday;
 window.formatBirthday = formatBirthday;
 window.calcAge = calcAge;

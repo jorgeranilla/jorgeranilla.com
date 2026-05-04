@@ -96,10 +96,10 @@
       const container = document.getElementById('fd-birthdays-content');
 
       try {
-        const members = await fetchApprovedMembers();
+        const members = window.isAdmin ? await fetchAllMembers() : await fetchApprovedMembers();
         const withBirthdays = members.filter(m => {
           const p = m.privacy || {};
-          return m.birthday && p.showBirthday !== false;
+          return m.status === 'approved' && m.status !== 'claimed' && normalizeBirthday(m.birthday) && p.showBirthday !== false;
         });
 
         if (withBirthdays.length === 0) {
@@ -120,11 +120,11 @@
         // Split into sections
         const todayBdays = withBirthdays.filter(m => daysUntilBirthday(m.birthday) === 0);
         const thisMonth = withBirthdays.filter(m => {
-          const [, month] = m.birthday.split('-').map(Number);
+          const [, month] = normalizeBirthday(m.birthday).split('-').map(Number);
           return (month - 1) === currentMonth && daysUntilBirthday(m.birthday) > 0;
         });
         const upcoming = withBirthdays.filter(m => {
-          const [, month] = m.birthday.split('-').map(Number);
+          const [, month] = normalizeBirthday(m.birthday).split('-').map(Number);
           return (month - 1) !== currentMonth || daysUntilBirthday(m.birthday) > 0;
         }).filter(m => daysUntilBirthday(m.birthday) > 0 && daysUntilBirthday(m.birthday) <= 90);
 

@@ -342,7 +342,7 @@
         preferredContact: 'email',
         role: 'member',
         status: 'approved',
-        privacy: { showPhone: true, showEmail: true, showAddress: false, showBirthday: true, showAge: false },
+        privacy: { showPhone: true, showEmail: true, showAddress: true, showBirthday: true, showAge: true },
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -428,7 +428,7 @@
       for (const card of cards) {
         if (!card.trim() || !card.includes('END:VCARD')) continue;
 
-        const lines = card.replace(/\r\n /g, '').split(/\r?\n/);
+        const lines = card.replace(/\r?\n[ \t]/g, '').split(/\r?\n/);
         const c = { displayName: '', email: '', phone: '', birthday: '', address: '', city: '', country: '', photoURL: '' };
 
         for (const line of lines) {
@@ -467,7 +467,7 @@
           // Address
           if (line.toUpperCase().includes('ADR') && line.includes(':')) {
             const val = line.split(':').slice(1).join(':');
-            const parts = val.split(';').map(p => p.trim());
+            const parts = val.split(';').map(p => p.replace(/\\n/g, ', ').trim());
             // ADR fields: PO;Ext;Street;City;State;Zip;Country
             const street = parts[2] || '';
             const city = parts[3] || '';
@@ -572,7 +572,7 @@
             preferredContact: c.email ? 'email' : (c.phone ? 'phone' : 'email'),
             role: 'member',
             status: 'approved',
-            privacy: { showPhone: true, showEmail: true, showAddress: false, showBirthday: true, showAge: false },
+            privacy: { showPhone: true, showEmail: true, showAddress: true, showBirthday: true, showAge: true },
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
           });
