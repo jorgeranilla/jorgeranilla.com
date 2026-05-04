@@ -18,6 +18,10 @@ let app, auth, db, currentUser = null, currentProfile = null;
 let isAdmin = false;
 const COLLECTION = 'familyDirectory';
 
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
 /* ── Init ── */
 async function fdInit() {
   const { initializeApp } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
@@ -92,25 +96,40 @@ async function handleAuthState(user) {
     // First-time user — check for existing imported record to claim
     const { setDoc, deleteDoc, collection, getDocs, query, where, serverTimestamp } = window._fb;
     let claimedProfile = null;
+    const normalizedUserEmail = normalizeEmail(user.email);
 
-    if (user.email) {
+    if (normalizedUserEmail) {
       try {
-        // Search for an imported/manual record matching this email
-        const q = query(
-          collection(db, COLLECTION),
-          where('email', '==', user.email)
-        );
-        const matchSnap = await getDocs(q);
-        const matches = matchSnap.docs.filter(d => {
+        const possibleEmailValues = Array.from(new Set([
+          user.email,
+          user.email.trim(),
+          normalizedUserEmail
+        ].filter(Boolean)));
+        const foundMatches = new Map();
+
+        const claimQueries = [
+          query(collection(db, COLLECTION), where('emailLower', '==', normalizedUserEmail)),
+          ...possibleEmailValues.map(emailValue => (
+            query(collection(db, COLLECTION), where('email', '==', emailValue))
+          ))
+        ];
+
+        for (const claimQuery of claimQueries) {
+          const matchSnap = await getDocs(claimQuery);
+          matchSnap.docs.forEach(d => foundMatches.set(d.id, d));
+        }
+
+        const matches = Array.from(foundMatches.values()).filter(d => {
           const data = d.data();
-          // Only claim records that were imported/manually added (not real user accounts)
-          // These have IDs starting with 'import_' or 'manual_', or don't match any real UID
-          return d.id !== user.uid && (
-            d.id.startsWith('import_') ||
+          const isClaimableRecord = d.id.startsWith('import_') ||
             d.id.startsWith('manual_') ||
             (data.uid && data.uid.startsWith('import_')) ||
-            (data.uid && data.uid.startsWith('manual_'))
-          );
+            (data.uid && data.uid.startsWith('manual_'));
+
+          return d.id !== user.uid &&
+            isClaimableRecord &&
+            normalizeEmail(data.email) === normalizedUserEmail &&
+            data.status !== 'claimed';
         });
 
         if (matches.length > 0) {
@@ -122,6 +141,7 @@ async function handleAuthState(user) {
             uid: user.uid,
             displayName: user.displayName || importData.displayName || '',
             email: user.email || importData.email || '',
+            emailLower: normalizedUserEmail,
             photoURL: user.photoURL || importData.photoURL || '',
             phone: importData.phone || '',
             relationship: importData.relationship || '',
@@ -188,6 +208,7 @@ async function handleAuthState(user) {
         uid: user.uid,
         displayName: user.displayName || '',
         email: user.email || '',
+        emailLower: normalizeEmail(user.email),
         photoURL: user.photoURL || '',
         phone: '',
         relationship: '',
@@ -276,9 +297,11 @@ async function saveProfile(data) {
   if (!currentUser) return;
   const { doc, updateDoc, serverTimestamp } = window._fb;
   const ref = doc(db, COLLECTION, currentUser.uid);
-  await updateDoc(ref, { ...data, updatedAt: serverTimestamp() });
+  const payload = { ...data };
+  if ('email' in payload) payload.emailLower = normalizeEmail(payload.email);
+  await updateDoc(ref, { ...payload, updatedAt: serverTimestamp() });
   // Update local
-  Object.assign(currentProfile, data);
+  Object.assign(currentProfile, payload);
 }
 
 /* ── Admin: Approve Member ── */
@@ -299,7 +322,9 @@ async function adminDelete(uid) {
 async function adminUpdateProfile(uid, data) {
   if (!isAdmin) return;
   const { doc, updateDoc, serverTimestamp } = window._fb;
-  await updateDoc(doc(db, COLLECTION, uid), { ...data, updatedAt: serverTimestamp() });
+  const payload = { ...data };
+  if ('email' in payload) payload.emailLower = normalizeEmail(payload.email);
+  await updateDoc(doc(db, COLLECTION, uid), { ...payload, updatedAt: serverTimestamp() });
 }
 
 /* ── Toast ── */
