@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Hub | Jorge Ranilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" type="image/png" href="../images/jr-logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jorgeranilla.com/family/family-login.html">
+  <meta property="og:title" content="Family Hub | Jorge Ranilla">
+  <meta property="og:description" content="Private family hub — access the directory, shared drive, locator, and live stream.">
+  <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Family Hub | Jorge Ranilla">
+  <meta name="twitter:description" content="Private family hub — access the directory, shared drive, locator, and live stream.">
+  <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
+  <meta name="robots" content="noindex, nofollow">
+</head>
+
+<body data-title="Family Hub" data-section="Family">
+  <div id="social-rail-placeholder"></div>
+  <div id="header-placeholder"></div>
+
+  <div class="breadcrumb-bar">
+    <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+  </div>
+
+  <main class="fh-main">
+
+    <!-- ── LOGIN CARD (Auth Gate) ── -->
+    <div class="fh-gate" id="fh-gate">
+      <div class="fh-login-card">
+        <div class="fh-emblem">
+          <svg viewBox="0 0 24 24" width="32" height="32">
+            <path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+          </svg>
+        </div>
+        <p class="fh-label">PRIVATE ACCESS</p>
+        <h1 class="fh-title">Family Hub</h1>
+        <p class="fh-title-sub">Secured Portal</p>
+        <p class="fh-desc">
+          This area is reserved exclusively for family members.<br>
+          Sign in with your Google account to access the hub.
+        </p>
+        <div class="fh-divider">
+          <span class="fh-divider-line"></span>
+          <span class="fh-divider-text">continue with</span>
+          <span class="fh-divider-line"></span>
+        </div>
+
+        <!-- Google Identity Services -->
+        <div id="g_id_onload"
+          data-client_id="125483521813-guc6g7cs88qefh82p159rnu0fnda2ppd.apps.googleusercontent.com"
+          data-context="signin"
+          data-ux_mode="popup"
+          data-callback="fhHandleCredential"
+          data-auto_prompt="false">
+        </div>
+        <div class="fh-btn-wrap">
+          <div class="g_id_signin"
+            data-type="standard"
+            data-shape="rectangular"
+            data-theme="outline"
+            data-text="signin_with"
+            data-size="large"
+            data-logo_alignment="left"
+            data-width="300">
+          </div>
+        </div>
+        <p class="fh-note">
+          <svg viewBox="0 0 24 24" width="12" height="12" style="vertical-align:middle;margin-right:4px;opacity:0.5"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          Secured by Google · We never store your password
+        </p>
+      </div>
+    </div>
+
+    <!-- ── HUB DASHBOARD (After Auth) ── -->
+    <div class="fh-dashboard" id="fh-dashboard" style="display:none">
+
+      <!-- Welcome Header -->
+      <div class="fh-welcome">
+        <div class="fh-welcome-avatar-wrap">
+          <img class="fh-welcome-avatar" id="fh-avatar" src="" alt="">
+        </div>
+        <p class="fh-welcome-label">WELCOME BACK</p>
+        <h2 class="fh-welcome-name" id="fh-name"></h2>
+        <p class="fh-welcome-sub">Choose where you'd like to go</p>
+        <button class="fh-signout" id="fh-signout" onclick="fhSignOut()">Sign Out</button>
+      </div>
+
+      <!-- Feature Cards Grid -->
+      <div class="fh-grid">
+
+        <!-- Family Directory -->
+        <a href="../family-directory/" class="fh-card" id="fh-card-directory">
+          <div class="fh-card-icon fh-icon-directory">
+            <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          </div>
+          <h3 class="fh-card-title">Family Directory</h3>
+          <p class="fh-card-desc">Contact info, birthdays & profiles for all family members</p>
+          <span class="fh-card-arrow">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          </span>
+        </a>
+
+        <!-- Family Shared Drive -->
+        <a href="https://drive.google.com/drive/folders/1TTd5U1IvGbNctYl-aPBPhBshjqBUjlR2?usp=drive_link" target="_blank" rel="noopener" class="fh-card" id="fh-card-drive">
+          <div class="fh-card-icon fh-icon-drive">
+            <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M19 11H7.83l4.88-4.88c.39-.39.39-1.03 0-1.42a.996.996 0 0 0-1.41 0l-6.59 6.59a.996.996 0 0 0 0 1.41l6.59 6.59a.996.996 0 1 0 1.41-1.41L7.83 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" transform="rotate(180 12 12)"/></svg>
+            <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+          </div>
+          <h3 class="fh-card-title">Family Shared Drive</h3>
+          <p class="fh-card-desc">Shared photos, documents & family files on Google Drive</p>
+          <span class="fh-card-arrow fh-card-external">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+          </span>
+        </a>
+
+        <!-- Locator -->
+        <a href="../locator/" class="fh-card" id="fh-card-locator">
+          <div class="fh-card-icon fh-icon-locator">
+            <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </div>
+          <h3 class="fh-card-title">Locator</h3>
+          <p class="fh-card-desc">Real-time GPS tracking for family members on the go</p>
+          <span class="fh-card-arrow">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          </span>
+        </a>
+
+        <!-- Live -->
+        <a href="../live/" class="fh-card" id="fh-card-live">
+          <div class="fh-card-icon fh-icon-live">
+            <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+          </div>
+          <h3 class="fh-card-title">Nest Live</h3>
+          <p class="fh-card-desc">Live camera stream from the family home</p>
+          <span class="fh-card-arrow">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          </span>
+        </a>
+
+      </div>
+    </div>
+
+  </main>
+
+  <style>
+    /* ═══════════════════════════════════
+       FAMILY HUB — Layout & Auth Gate
+    ═══════════════════════════════════ */
+    .fh-main {
+      min-height: calc(100vh - 130px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      background: linear-gradient(160deg, #f0f2f5 0%, #e8ecf1 40%, #dfe4eb 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle pattern overlay */
+    .fh-main::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 80%, rgba(205,92,92,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(44,62,80,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* ── Auth Gate ── */
+    .fh-gate {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .fh-login-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 48px 44px 40px;
+      box-shadow:
+        0 4px 6px rgba(0,0,0,0.04),
+        0 12px 40px rgba(0,0,0,0.09),
+        0 32px 80px rgba(0,0,0,0.06);
+      text-align: center;
+      animation: fhFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes fhFadeUp {
+      from { opacity: 0; transform: translateY(28px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0)    scale(1);    }
+    }
+
+    .fh-emblem {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px; color: #fff;
+      box-shadow: 0 4px 16px rgba(44,62,80,0.4);
+    }
+
+    .fh-label {
+      font-family: 'Roboto', sans-serif; font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 2.5px; color: #CD5C5C; margin: 0 0 10px; text-transform: uppercase;
+    }
+    .fh-title {
+      font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700;
+      color: #1a2535; margin: 0 0 4px; line-height: 1.2;
+    }
+    .fh-title-sub {
+      font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 400;
+      color: #888; margin: 0 0 20px; font-style: italic;
+    }
+    .fh-desc {
+      font-size: 0.88rem; color: #888; line-height: 1.75; margin: 0;
+    }
+
+    .fh-divider {
+      display: flex; align-items: center; gap: 12px; margin: 28px 0 24px;
+    }
+    .fh-divider-line { flex: 1; height: 1px; background: #eee; }
+    .fh-divider-text { font-size: 0.75rem; color: #bbb; letter-spacing: 0.5px; white-space: nowrap; }
+
+    .fh-btn-wrap {
+      display: flex; justify-content: center; min-height: 44px; margin-bottom: 24px;
+    }
+    .fh-note {
+      font-size: 0.75rem; color: #ccc; margin: 0; line-height: 1.5;
+    }
+
+    /* ═══════════════════════════════════
+       DASHBOARD (After Auth)
+    ═══════════════════════════════════ */
+    .fh-dashboard {
+      width: 100%;
+      max-width: 800px;
+      position: relative;
+      z-index: 1;
+      animation: fhFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* ── Welcome Header ── */
+    .fh-welcome {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .fh-welcome-avatar-wrap {
+      width: 80px; height: 80px; border-radius: 50%;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, #2c3e50, #CD5C5C);
+      padding: 3px;
+      box-shadow: 0 6px 24px rgba(44,62,80,0.25);
+    }
+
+    .fh-welcome-avatar {
+      width: 100%; height: 100%; border-radius: 50%;
+      object-fit: cover; display: block;
+      border: 3px solid #fff;
+    }
+
+    .fh-welcome-label {
+      font-family: 'Roboto', sans-serif; font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 2.5px; color: #CD5C5C; margin: 0 0 6px; text-transform: uppercase;
+    }
+
+    .fh-welcome-name {
+      font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700;
+      color: #1a2535; margin: 0 0 6px;
+    }
+
+    .fh-welcome-sub {
+      font-size: 0.9rem; color: #888; margin: 0 0 16px;
+    }
+
+    .fh-signout {
+      background: none; border: 1px solid #ddd; color: #999; font-size: 0.75rem;
+      padding: 6px 18px; border-radius: 20px; cursor: pointer;
+      font-family: 'Roboto', sans-serif; letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+    .fh-signout:hover {
+      border-color: #CD5C5C; color: #CD5C5C;
+    }
+
+    /* ── Feature Cards Grid ── */
+    .fh-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .fh-card {
+      position: relative;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 32px 28px 28px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.03),
+        0 8px 32px rgba(0,0,0,0.07);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fh-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.8);
+      pointer-events: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .fh-card:hover {
+      transform: translateY(-6px);
+      box-shadow:
+        0 8px 16px rgba(0,0,0,0.06),
+        0 20px 48px rgba(0,0,0,0.1);
+    }
+
+    .fh-card:hover::before {
+      border-color: rgba(44,62,80,0.15);
+    }
+
+    /* Staggered card animation */
+    .fh-card:nth-child(1) { animation: fhCardIn 0.5s 0.1s cubic-bezier(0.22,1,0.36,1) both; }
+    .fh-card:nth-child(2) { animation: fhCardIn 0.5s 0.2s cubic-bezier(0.22,1,0.36,1) both; }
+    .fh-card:nth-child(3) { animation: fhCardIn 0.5s 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+    .fh-card:nth-child(4) { animation: fhCardIn 0.5s 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+
+    @keyframes fhCardIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0)    scale(1);    }
+    }
+
+    /* ── Card Icon ── */
+    .fh-card-icon {
+      width: 56px; height: 56px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px;
+      transition: transform 0.3s ease;
+    }
+
+    .fh-card:hover .fh-card-icon {
+      transform: scale(1.08);
+    }
+
+    .fh-icon-directory {
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      color: #fff; box-shadow: 0 4px 14px rgba(52,152,219,0.35);
+    }
+    .fh-icon-drive {
+      background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+      color: #fff; box-shadow: 0 4px 14px rgba(243,156,18,0.35);
+      gap: 0;
+    }
+    .fh-icon-drive svg:first-child { display: none; }
+    .fh-icon-locator {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      color: #fff; box-shadow: 0 4px 14px rgba(231,76,60,0.35);
+    }
+    .fh-icon-live {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      color: #fff; box-shadow: 0 4px 14px rgba(44,62,80,0.35);
+    }
+
+    /* ── Card Content ── */
+    .fh-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-weight: 700; color: #1a2535;
+      margin: 0 0 8px;
+    }
+
+    .fh-card-desc {
+      font-size: 0.82rem; color: #888; line-height: 1.55;
+      margin: 0 0 16px; flex: 1;
+    }
+
+    .fh-card-arrow {
+      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #f5f6f8; color: #999;
+      transition: all 0.3s ease; align-self: flex-end;
+    }
+
+    .fh-card:hover .fh-card-arrow {
+      background: #2c3e50; color: #fff;
+      transform: translateX(4px);
+    }
+
+    .fh-card-external {
+      background: #fef9f0; color: #e67e22;
+    }
+    .fh-card:hover .fh-card-external {
+      background: #e67e22; color: #fff;
+      transform: translateX(4px);
+    }
+
+    /* ═══════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════ */
+    @media (max-width: 640px) {
+      .fh-main { padding: 32px 16px; }
+      .fh-login-card { padding: 36px 24px 32px; }
+      .fh-title { font-size: 1.65rem; }
+      .fh-grid { grid-template-columns: 1fr; gap: 16px; }
+      .fh-dashboard { max-width: 440px; }
+      .fh-welcome-name { font-size: 1.5rem; }
+      .fh-card { padding: 24px 22px 22px; }
+    }
+  </style>
+
+  <script>
+    /* ── JWT Parser ── */
+    function fhParseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(
+        decodeURIComponent(
+          atob(base64).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+          ).join('')
+        )
+      );
+    }
+
+    /* ── Google Callback ── */
+    function fhHandleCredential(response) {
+      const user = fhParseJwt(response.credential);
+      // Store session so refresh keeps them logged in
+      sessionStorage.setItem('fh_user', JSON.stringify(user));
+      fhShowDashboard(user);
+    }
+
+    /* ── Show Dashboard ── */
+    function fhShowDashboard(user) {
+      const name = user.given_name || user.name || 'Family Member';
+      document.getElementById('fh-gate').style.display = 'none';
+      document.getElementById('fh-dashboard').style.display = 'block';
+      document.getElementById('fh-name').textContent = name;
+      if (user.picture) {
+        document.getElementById('fh-avatar').src = user.picture;
+        document.getElementById('fh-avatar').alt = name;
+      } else {
+        // Generate initials avatar
+        const initials = name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+        document.getElementById('fh-avatar').src =
+          `data:image/svg+xml,${encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="#e0d6cc" width="80" height="80" rx="40"/><text x="40" y="48" text-anchor="middle" fill="#8b7e74" font-size="26" font-family="sans-serif">${initials}</text></svg>`
+          )}`;
+      }
+
+      // Re-center main to top for dashboard view
+      document.querySelector('.fh-main').style.alignItems = 'flex-start';
+      document.querySelector('.fh-main').style.paddingTop = '60px';
+    }
+
+    /* ── Sign Out ── */
+    function fhSignOut() {
+      sessionStorage.removeItem('fh_user');
+      document.getElementById('fh-dashboard').style.display = 'none';
+      document.getElementById('fh-gate').style.display = 'block';
+      document.querySelector('.fh-main').style.alignItems = 'center';
+      document.querySelector('.fh-main').style.paddingTop = '';
+    }
+
+    /* ── Check session on load ── */
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = sessionStorage.getItem('fh_user');
+      if (saved) {
+        try {
+          fhShowDashboard(JSON.parse(saved));
+        } catch(e) {
+          sessionStorage.removeItem('fh_user');
+        }
+      }
+    });
+  </script>
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="../script.js?v=4"></script>
+  <script src="../search-dynamic.js"></script>
+</body>
+
+</html>

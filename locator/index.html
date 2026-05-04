@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jorge Ranilla | Locator</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/png" href="../images/jr-logo.png">
+    <link rel="stylesheet" href="./locator.css">
+  </head>
+  <body>
+    <main class="locator-shell">
+      <section class="locator-card" aria-live="polite">
+        <img class="locator-avatar" src="../images/jorge.jpg" alt="Jorge Ranilla">
+        <h1 id="status-message">Jorge is not sharing his location right now.</h1>
+
+        <p class="locator-description">
+          When Jorge decides to share his location, it will appear here in real time on Google Maps. This page updates automatically — no need to refresh.
+        </p>
+
+        <div id="location-content" class="hidden">
+          <div id="map" class="locator-map" aria-label="Map centered on Jorge's live coordinates"></div>
+
+          <dl class="locator-details">
+            <div>
+              <dt>Latitude</dt>
+              <dd id="latitude"></dd>
+            </div>
+            <div>
+              <dt>Longitude</dt>
+              <dd id="longitude"></dd>
+            </div>
+            <div>
+              <dt>Accuracy</dt>
+              <dd id="accuracy"></dd>
+            </div>
+            <div>
+              <dt>Last updated</dt>
+              <dd id="updated-at"></dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="locator-info">
+          <h3>How it works</h3>
+          <ul>
+            <li>Jorge can start or stop sharing at any time from the admin panel</li>
+            <li>Location is shown on an interactive Google Map with live coordinates</li>
+            <li>Updates happen in real time — the pin moves as Jorge moves</li>
+            <li>When sharing stops, the map disappears and no history is stored</li>
+          </ul>
+        </div>
+
+        <a href="./admin/" class="locator-admin-link">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          Admin? Manage location sharing →
+        </a>
+      </section>
+    </main>
+
+    <script type="module" src="./shared/location-public.js"></script>
+  </body>
+</html>
