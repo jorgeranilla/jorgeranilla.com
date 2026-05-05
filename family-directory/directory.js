@@ -121,6 +121,28 @@ async function autoClaimExistingImport(user, profileRef, existingData = {}) {
   return { id: user.uid, ...claimedData };
 }
 
+async function syncGoogleIdentity(user, profileRef, profileData) {
+  const { updateDoc, serverTimestamp } = window._fb;
+  const updates = {};
+
+  if (user.email && normalizeEmail(profileData.email) !== normalizeEmail(user.email)) {
+    updates.email = user.email;
+    updates.emailLower = normalizeEmail(user.email);
+  } else if (user.email && !profileData.emailLower) {
+    updates.emailLower = normalizeEmail(user.email);
+  }
+
+  if (user.photoURL && profileData.photoURL !== user.photoURL) {
+    updates.photoURL = user.photoURL;
+  }
+
+  if (Object.keys(updates).length === 0) return profileData;
+
+  updates.updatedAt = serverTimestamp();
+  await updateDoc(profileRef, updates);
+  return { ...profileData, ...updates };
+}
+
 /* ── Init ── */
 async function fdInit() {
   const { initializeApp } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
@@ -175,6 +197,7 @@ async function handleAuthState(user) {
     currentProfile = { id: profileSnap.id, ...profileSnap.data() };
     const claimedProfile = await autoClaimExistingImport(user, profileRef, currentProfile);
     if (claimedProfile) currentProfile = claimedProfile;
+    currentProfile = await syncGoogleIdentity(user, profileRef, currentProfile);
     isAdmin = currentProfile.role === 'admin';
 
     if (currentProfile.status !== 'approved' && !isAdmin) {
@@ -297,14 +320,12 @@ function updateNavUser() {
 
 /* ── Fetch Approved Members ── */
 async function fetchApprovedMembers() {
-  const { collection, getDocs, query, where } = window._fb;
-  const q = query(
-    collection(db, COLLECTION),
-    where('status', '==', 'approved')
-  );
+  const { collection, getDocs, query } = window._fb;
+  const q = query(collection(db, COLLECTION));
   const snap = await getDocs(q);
   return snap.docs
     .map(d => ({ id: d.id, ...d.data() }))
+    .filter(m => m.status === 'approved')
     .sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
 }
 

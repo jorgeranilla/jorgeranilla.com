@@ -36,11 +36,11 @@ service cloud.firestore {
 
       // READ:
       // - Admins can read all profiles
-      // - Approved members can read approved profiles
+      // - Approved members can read directory profiles; the UI filters visible approved entries
       // - Users can always read their own profile (to check status)
       // - Authenticated users can read imported records (for claim matching by email)
       allow read: if isAdmin()
-                  || (isApprovedMember() && resource.data.status == 'approved')
+                  || isApprovedMember()
                   || isOwner()
                   || (request.auth != null && isImportedRecord());
 
