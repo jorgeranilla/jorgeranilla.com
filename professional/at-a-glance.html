@@ -49,7 +49,8 @@
         <p>
           I value work that makes things run better for both teams and customers. Over time, I have developed a strong
           appreciation for operational discipline, practical problem-solving, and the kind of steady improvements that
-          create lasting results.
+          create lasting results. The common thread in my work is simple: solve problems clearly, improve what can be
+          improved, and leave things better organized than I found them.
         </p>
       </div>
     </section>
@@ -82,6 +83,51 @@
       </article>
     </section>
 
+    <section class="glance-work">
+      <div class="glance-section-heading">
+        <span class="section-kicker">Representative Work</span>
+        <h3>Practical areas of contribution.</h3>
+        <p>
+          My work is less about headline projects and more about dependable contributions that make daily operations
+          clearer, smoother, and easier to maintain over time.
+        </p>
+      </div>
+
+      <div class="glance-work-grid">
+        <article class="glance-card">
+          <h3>Process Improvement</h3>
+          <p>
+            Reviewing workflows, identifying friction points, and helping adjust processes so they become clearer,
+            more consistent, and easier to follow.
+          </p>
+        </article>
+
+        <article class="glance-card">
+          <h3>Operations Support</h3>
+          <p>
+            Supporting daily work with dependable execution, strong follow-through, and attention to the standards
+            that keep teams moving well.
+          </p>
+        </article>
+
+        <article class="glance-card">
+          <h3>Documentation and Organization</h3>
+          <p>
+            Creating, refining, and cleaning up documentation so procedures are easier to understand, maintain, and
+            repeat with confidence.
+          </p>
+        </article>
+
+        <article class="glance-card">
+          <h3>Professional Growth</h3>
+          <p>
+            Learning through experience, staying adaptable, and continuing to build stronger judgment through
+            practical challenges and feedback.
+          </p>
+        </article>
+      </div>
+    </section>
+
     <section class="glance-details">
       <div class="glance-detail-block">
         <h3>Professional Focus</h3>
@@ -102,6 +148,16 @@
           <li>I believe the best improvements are the ones that hold up over time.</li>
         </ul>
       </div>
+
+      <div class="glance-detail-block">
+        <h3>How I Think About Good Work</h3>
+        <ul class="glance-list">
+          <li>Strong operations are built through discipline, clarity, and consistency.</li>
+          <li>Good systems help people repeat good work with less confusion.</li>
+          <li>Small improvements can create meaningful long-term value.</li>
+          <li>Accuracy and follow-through matter most when work depends on trust.</li>
+        </ul>
+      </div>
     </section>
 
     <section class="glance-cta">
@@ -110,7 +166,7 @@
       </p>
       <div class="glance-actions">
         <a href="resume.html" class="glance-btn glance-btn--primary">View Resume</a>
-        <a href="portfolio.html" class="glance-btn glance-btn--secondary">Explore Portfolio</a>
+        <a href="https://www.linkedin.com/in/jorgeranilla" class="glance-btn glance-btn--secondary" target="_blank" rel="noopener noreferrer">View LinkedIn</a>
       </div>
     </section>
   </main>
@@ -178,10 +234,34 @@
     }
 
     .glance-card p,
+    .glance-section-heading p,
     .glance-cta p {
       color: #555;
       line-height: 1.75;
       margin: 0;
+    }
+
+    .glance-work {
+      margin-bottom: 2rem;
+    }
+
+    .glance-section-heading {
+      max-width: 780px;
+      margin-bottom: 1.25rem;
+    }
+
+    .glance-section-heading h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin: 0 0 0.65rem;
+    }
+
+    .glance-work-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
     }
 
     .glance-details {
@@ -268,7 +348,7 @@
     }
   </style>
 
-  <script src="../script.js?v=5"></script>
+  <script src="../script.js?v=7"></script>
   <script src="../search-dynamic.js"></script>
 </body>
 

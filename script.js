@@ -137,8 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const professionalLinks = {
       atAGlance: buildSectionLink('professional', 'at-a-glance.html'),
-      resume: buildSectionLink('professional', 'resume.html'),
-      portfolio: buildSectionLink('professional', 'portfolio.html')
+      resume: buildSectionLink('professional', 'resume.html')
     };
     const blogLinks = {
       latestPosts: buildSectionLink('blog', 'latest-posts.html'),
@@ -263,7 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
               <ul class="dropdown-menu">
                 <li><a href="${professionalLinks.atAGlance}">At a Glance</a></li>
                 <li><a href="${professionalLinks.resume}">Resume</a></li>
-                <li><a href="${professionalLinks.portfolio}">Portfolio</a></li>
               </ul>
             </li>
           </ul>
@@ -606,7 +604,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Professional section
       'at-a-glance.html': ['Professional', 'At a Glance'],
       'resume.html': ['Professional', 'Resume'],
-      'portfolio.html': ['Professional', 'Portfolio'],
 
       // Baptism pages (English & Spanish, main + godparent subpages)
       'baptism.html': ["Alyssa's Baptism"],
@@ -867,7 +864,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===========================
      Footer Ambient Audio
-     - Static-site friendly: remembers on/off and current time between pages.
+     - User-initiated only: the audio file is loaded after the icon is clicked.
   =========================== */
   (function setupFooterAmbientAudio() {
     const mobileMediaQuery = window.matchMedia('(max-width: 900px), (pointer: coarse)');
@@ -894,7 +891,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!footer || document.getElementById('ambientToggle')) return;
 
     footer.insertAdjacentHTML('afterbegin', `
-      <button class="ambient-footer-corner-toggle" id="ambientToggle" type="button" aria-label="Pause ambient music" aria-pressed="true" title="Pause ambient music">
+      <button class="ambient-footer-corner-toggle" id="ambientToggle" type="button" aria-label="Play ambient music" aria-pressed="false" title="Play ambient music">
         <svg class="ambient-icon ambient-icon-sound" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zm-2.5-9.5v2.06A8 8 0 0 1 14 19.44v2.06A10 10 0 0 0 14 2.5z" />
         </svg>
@@ -903,29 +900,15 @@ document.addEventListener("DOMContentLoaded", () => {
         </svg>
       </button>`);
 
-    const audio = document.createElement('audio');
-    const source = document.createElement('source');
-    audio.id = 'ambientAudio';
-    audio.loop = true;
-    audio.preload = 'auto';
-    audio.playsInline = true;
-    audio.setAttribute('playsinline', '');
-    source.src = getRootAssetUrl('audio/ambient.mp3');
-    source.type = 'audio/mpeg';
-    audio.appendChild(source);
-    document.body.appendChild(audio);
-
     const toggle = document.getElementById('ambientToggle');
-    const enabledKey = 'ambientAudioEnabled';
     const timeKey = 'ambientAudioTime';
     const savedAtKey = 'ambientAudioSavedAt';
     const sessionStateKey = 'jorgeAmbientAudioSessionState';
     const windowStateKey = 'jorgeAmbientAudioState';
     const minimumUsefulTime = 0.35;
+    let audio = null;
     let isAttemptingPlay = false;
-    let hasSuccessfullyPlayed = false;
     let ambientSaveTimer = null;
-    audio.volume = 0.18;
 
     function readWindowState() {
       try {
@@ -957,9 +940,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const localTime = parseFloat(localStorage.getItem(timeKey) || '0');
         const localSavedAt = parseInt(localStorage.getItem(savedAtKey) || '0', 10);
-        const localEnabledValue = localStorage.getItem(enabledKey);
         states.push({
-          enabled: localEnabledValue !== 'false',
           time: Number.isFinite(localTime) ? localTime : 0,
           savedAt: Number.isFinite(localSavedAt) ? localSavedAt : 0
         });
@@ -986,10 +967,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      return { enabled: true, time: 0, savedAt: 0 };
+      return { time: 0, savedAt: 0 };
     }
 
-    function getCurrentOrPreservedTime() {
+    function getCurrentTimeState() {
+      if (!audio) {
+        const previousState = readSavedState();
+        return {
+          time: previousState.time || 0,
+          savedAt: previousState.savedAt || Date.now()
+        };
+      }
+
       const currentTimeIsUseful = Number.isFinite(audio.currentTime) && audio.currentTime > minimumUsefulTime;
       if (currentTimeIsUseful) {
         return {
@@ -1005,22 +994,10 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }
 
-    function writeSavedState(enabled, preserveTimeIfEmpty = true) {
-      const timing = preserveTimeIfEmpty
-        ? getCurrentOrPreservedTime()
-        : {
-          time: Number.isFinite(audio.currentTime) ? audio.currentTime : 0,
-          savedAt: Date.now()
-        };
-
-      const state = {
-        enabled,
-        time: timing.time,
-        savedAt: timing.savedAt
-      };
+    function writeSavedState() {
+      const state = getCurrentTimeState();
 
       try {
-        localStorage.setItem(enabledKey, enabled ? 'true' : 'false');
         localStorage.setItem(timeKey, String(state.time));
         localStorage.setItem(savedAtKey, String(state.savedAt));
       } catch (error) {
@@ -1036,8 +1013,6 @@ document.addEventListener("DOMContentLoaded", () => {
       writeWindowState(state);
     }
 
-    let userDisabledAmbient = readSavedState().enabled === false;
-
     function setPlaying(isPlaying) {
       toggle.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
       toggle.setAttribute('aria-label', isPlaying ? 'Pause ambient music' : 'Play ambient music');
@@ -1045,11 +1020,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveCurrentTime() {
+      if (!audio) return;
       const currentTimeIsUseful = Number.isFinite(audio.currentTime) && audio.currentTime > minimumUsefulTime;
       if (currentTimeIsUseful) {
-        writeSavedState(!userDisabledAmbient, false);
-      } else if (hasSuccessfullyPlayed) {
-        writeSavedState(!userDisabledAmbient);
+        writeSavedState();
       }
     }
 
@@ -1081,35 +1055,73 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function restoreSavedTime() {
+      if (!audio) return;
       const savedTime = getSavedPlaybackTime();
       if (savedTime > 0 && (!audio.duration || savedTime < audio.duration)) {
         if (Math.abs(audio.currentTime - savedTime) > 1.5) audio.currentTime = savedTime;
       }
     }
 
-    async function playAmbient(force = false) {
-      if (isAttemptingPlay || (!force && userDisabledAmbient)) return false;
+    function ensureAudio() {
+      if (audio) return audio;
+
+      audio = document.createElement('audio');
+      const source = document.createElement('source');
+
+      audio.id = 'ambientAudio';
+      audio.loop = true;
+      audio.preload = 'none';
+      audio.playsInline = true;
+      audio.volume = 0.18;
+      audio.setAttribute('playsinline', '');
+      source.type = 'audio/mpeg';
+      source.src = getRootAssetUrl('audio/ambient.mp3');
+      audio.appendChild(source);
+      document.body.appendChild(audio);
+
+      audio.addEventListener('loadedmetadata', restoreSavedTime);
+      audio.addEventListener('timeupdate', saveCurrentTime);
+      audio.addEventListener('playing', () => {
+        setPlaying(true);
+        startSaveHeartbeat();
+      });
+      audio.addEventListener('pause', () => {
+        saveCurrentTime();
+        stopSaveHeartbeat();
+        setPlaying(false);
+      });
+      audio.addEventListener('error', () => {
+        audio.pause();
+        stopSaveHeartbeat();
+        setPlaying(false);
+        toggle.classList.add('is-unavailable');
+        toggle.setAttribute('aria-label', 'Ambient music unavailable');
+        toggle.setAttribute('title', 'Ambient music unavailable');
+      });
+
+      return audio;
+    }
+
+    async function playAmbient() {
+      if (isAttemptingPlay) return false;
       isAttemptingPlay = true;
 
       try {
+        const ambientAudio = ensureAudio();
         const savedTime = getSavedPlaybackTime();
-        if (savedTime > 0) audio.currentTime = savedTime;
+        if (savedTime > 0) ambientAudio.currentTime = savedTime;
 
-        await audio.play();
+        await ambientAudio.play();
 
-        // Mobile Safari often ignores currentTime changes before play() resolves. Force it again.
-        if (savedTime > 0 && (!audio.duration || savedTime < audio.duration)) {
-          if (Math.abs(audio.currentTime - savedTime) > 1.5) {
-            audio.currentTime = savedTime;
+        if (savedTime > 0 && (!ambientAudio.duration || savedTime < ambientAudio.duration)) {
+          if (Math.abs(ambientAudio.currentTime - savedTime) > 1.5) {
+            ambientAudio.currentTime = savedTime;
           }
         }
 
-        hasSuccessfullyPlayed = true;
-        userDisabledAmbient = false;
-        writeSavedState(true);
+        writeSavedState();
         setPlaying(true);
         startSaveHeartbeat();
-        removeInteractionStartListeners();
         return true;
       } catch (error) {
         setPlaying(false);
@@ -1119,63 +1131,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function startAfterFirstInteraction() {
-      if (userDisabledAmbient || !audio.paused) return;
-      playAmbient();
-    }
-
-    const interactionEvents = ['click', 'touchend', 'pointerdown', 'keydown', 'touchstart'];
-
-    function addInteractionStartListeners() {
-      interactionEvents.forEach(eventName => {
-        document.addEventListener(eventName, startAfterFirstInteraction, { passive: true });
-      });
-    }
-
-    function removeInteractionStartListeners() {
-      interactionEvents.forEach(eventName => {
-        document.removeEventListener(eventName, startAfterFirstInteraction);
-      });
-    }
-
-    audio.addEventListener('loadedmetadata', restoreSavedTime);
-    audio.addEventListener('timeupdate', saveCurrentTime);
-    audio.addEventListener('playing', () => {
-      hasSuccessfullyPlayed = true;
-      writeSavedState(true);
-      startSaveHeartbeat();
-    });
-    audio.addEventListener('pause', () => {
-      saveCurrentTime();
-      stopSaveHeartbeat();
-    });
-    audio.addEventListener('error', () => {
-      audio.pause();
-      stopSaveHeartbeat();
-      setPlaying(false);
-      toggle.classList.add('is-unavailable');
-      toggle.setAttribute('aria-label', 'Ambient music unavailable');
-      toggle.setAttribute('title', 'Ambient music unavailable');
-    });
-
     window.addEventListener('beforeunload', () => {
       saveCurrentTime();
-      writeSavedState(!userDisabledAmbient);
     });
 
     window.addEventListener('pagehide', () => {
       saveCurrentTime();
-      writeSavedState(!userDisabledAmbient);
     });
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') {
         saveCurrentTime();
-        writeSavedState(!userDisabledAmbient);
       }
     });
 
     document.addEventListener('click', (event) => {
+      if (!audio) return;
       const link = event.target.closest('a[href]');
       if (!link) return;
 
@@ -1186,37 +1157,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const url = new URL(href, window.location.href);
         if (url.origin === window.location.origin) {
           saveCurrentTime();
-          writeSavedState(!userDisabledAmbient);
         }
       } catch (error) {
         saveCurrentTime();
-        writeSavedState(!userDisabledAmbient);
       }
     }, true);
 
     toggle.addEventListener('click', async () => {
       if (toggle.classList.contains('is-unavailable')) return;
 
-      if (audio.paused) {
-        await playAmbient(true);
+      if (!audio || audio.paused) {
+        await playAmbient();
       } else {
         audio.pause();
         saveCurrentTime();
         stopSaveHeartbeat();
-        userDisabledAmbient = true;
-        writeSavedState(false);
         setPlaying(false);
       }
     });
 
-    // Browsers may block audible autoplay on first visit. When blocked, the
-    // footer icon remains ready for one-tap playback.
-    if (!userDisabledAmbient) {
-      playAmbient();
-      addInteractionStartListeners();
-    } else {
-      setPlaying(false);
-    }
+    setPlaying(false);
   })();
 });
 
