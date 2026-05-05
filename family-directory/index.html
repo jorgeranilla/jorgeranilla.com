@@ -163,10 +163,6 @@
           <input type="email" id="fd-add-email" placeholder="maria@example.com">
         </div>
         <div class="fd-field">
-          <label>Relationship</label>
-          <input type="text" id="fd-add-relation" placeholder="e.g. Sister, Cousin">
-        </div>
-        <div class="fd-field">
           <label>Phone</label>
           <input type="tel" id="fd-add-phone" placeholder="+1 555-555-5555">
         </div>
@@ -218,7 +214,7 @@
     </div>
   </div>
 
-  <script src="directory.js?v=2"></script>
+  <script src="directory.js?v=3"></script>
   <script>
     let allMembers = [];
 
@@ -334,7 +330,6 @@
         email: email,
         emailLower: email.toLowerCase(),
         phone: document.getElementById('fd-add-phone').value.trim(),
-        relationship: document.getElementById('fd-add-relation').value.trim(),
         city: document.getElementById('fd-add-city').value.trim(),
         country: document.getElementById('fd-add-country').value.trim(),
         photoURL: '',
@@ -363,7 +358,6 @@
         <div class="fd-field"><label>Email</label><input type="email" id="fd-edit-email" value="${member.email || ''}"></div>
         <div class="fd-field"><label>Phone</label><input type="tel" id="fd-edit-phone" value="${member.phone || ''}"></div>
         <div class="fd-field"><label>Address</label><input type="text" id="fd-edit-address" value="${member.address || ''}"></div>
-        <div class="fd-field"><label>Relationship</label><input type="text" id="fd-edit-relation" value="${member.relationship || ''}"></div>
         <div class="fd-field"><label>City</label><input type="text" id="fd-edit-city" value="${member.city || ''}"></div>
         <div class="fd-field"><label>Country</label><input type="text" id="fd-edit-country" value="${member.country || ''}"></div>
         <div class="fd-field"><label>Role</label>
@@ -386,7 +380,6 @@
         email: document.getElementById('fd-edit-email').value.trim(),
         phone: document.getElementById('fd-edit-phone').value.trim(),
         address: document.getElementById('fd-edit-address').value.trim(),
-        relationship: document.getElementById('fd-edit-relation').value.trim(),
         city: document.getElementById('fd-edit-city').value.trim(),
         country: document.getElementById('fd-edit-country').value.trim(),
         role: document.getElementById('fd-edit-role').value,
@@ -682,7 +675,6 @@
             city: c.city || '',
             country: c.country || '',
             photoURL: c.photoURL || '',
-            relationship: '',
             preferredContact: c.email ? 'email' : (c.phone ? 'phone' : 'email'),
             role: 'member',
             status: 'approved',

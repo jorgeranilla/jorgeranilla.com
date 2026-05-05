@@ -73,7 +73,6 @@ function mergeClaimedProfileData(user, importDoc, existingData = {}) {
     emailLower: normalizedEmail,
     photoURL: user.photoURL || existingData.photoURL || importData.photoURL || '',
     phone: existingData.phone || importData.phone || '',
-    relationship: existingData.relationship || importData.relationship || '',
     address: existingData.address || importData.address || '',
     city: existingData.city || importData.city || '',
     country: existingData.country || importData.country || '',
@@ -257,7 +256,6 @@ async function handleAuthState(user) {
         emailLower: normalizeEmail(user.email),
         photoURL: user.photoURL || '',
         phone: '',
-        relationship: '',
         address: '',
         city: '',
         country: '',
@@ -469,13 +467,6 @@ function buildCardHTML(member) {
 
   let infoRows = '';
 
-  if (member.relationship) {
-    infoRows += `<div class="fd-card-row">
-      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-      <span>${member.relationship}</span>
-    </div>`;
-  }
-
   if (p.showPhone !== false && member.phone) {
     infoRows += `<div class="fd-card-row">
       <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
@@ -520,7 +511,6 @@ function buildCardHTML(member) {
       ${adminBadge}
       <img class="fd-card-photo" src="${photo}" alt="${member.displayName}" onerror="this.src='${defaultAvatar(member.displayName)}'">
       <h3 class="fd-card-name">${member.displayName || 'Family Member'}</h3>
-      <p class="fd-card-relation">${member.relationship || ''}</p>
       <div class="fd-card-info">${infoRows}</div>
       ${preferred}
     </div>`;

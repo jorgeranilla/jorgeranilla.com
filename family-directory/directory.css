@@ -225,12 +225,6 @@
   font-size: 1.1rem; font-weight: 600;
   color: #2c3e50; margin: 0 0 4px;
 }
-.fd-card-relation {
-  font-size: .78rem; color: #CD5C5C;
-  font-weight: 500; letter-spacing: .5px;
-  text-transform: uppercase; margin: 0 0 14px;
-}
-
 .fd-card-info {
   width: 100%; text-align: left;
   display: flex; flex-direction: column; gap: 8px;

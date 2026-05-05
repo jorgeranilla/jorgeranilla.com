@@ -96,12 +96,9 @@
                 Change Photo
               </label>
               <input type="file" id="fd-photo-input" accept="image/*" style="display:none" onchange="handlePhotoChange(this)">
-              <p style="font-size:.72rem;color:#bbb;margin:6px 0 0">URL or upload (max 1MB)</p>
+              <input type="hidden" id="fd-photoURL">
+              <p style="font-size:.72rem;color:#bbb;margin:6px 0 0">Upload a profile photo (max 1MB)</p>
             </div>
-          </div>
-          <div class="fd-field">
-            <label>Photo URL</label>
-            <input type="url" id="fd-photoURL" placeholder="https://example.com/photo.jpg">
           </div>
         </div>
 
@@ -111,10 +108,6 @@
           <div class="fd-field">
             <label>Display Name</label>
             <input type="text" id="fd-displayName">
-          </div>
-          <div class="fd-field">
-            <label>Relationship</label>
-            <input type="text" id="fd-relationship" placeholder="e.g. Sister, Cousin, Uncle">
           </div>
           <div class="fd-field">
             <label>Phone Number</label>
@@ -187,7 +180,7 @@
     </div>
   </div>
 
-  <script src="directory.js?v=2"></script>
+  <script src="directory.js?v=3"></script>
   <script>
     function onPageReady() {
       const p = window.currentProfile;
@@ -195,7 +188,6 @@
 
       // Populate form
       document.getElementById('fd-displayName').value = p.displayName || '';
-      document.getElementById('fd-relationship').value = p.relationship || '';
       document.getElementById('fd-phone').value = p.phone || '';
       document.getElementById('fd-email').value = p.email || '';
       document.getElementById('fd-address').value = p.address || '';
@@ -217,10 +209,6 @@
       document.getElementById('fd-priv-birthday').checked = priv.showBirthday !== false;
       document.getElementById('fd-priv-age').checked = priv.showAge === true;
 
-      // Live photo URL preview
-      document.getElementById('fd-photoURL').addEventListener('input', function() {
-        if (this.value) preview.src = this.value;
-      });
     }
 
     function handlePhotoChange(input) {
@@ -250,7 +238,6 @@
       try {
         await saveProfile({
           displayName: document.getElementById('fd-displayName').value.trim(),
-          relationship: document.getElementById('fd-relationship').value.trim(),
           phone: document.getElementById('fd-phone').value.trim(),
           email: document.getElementById('fd-email').value.trim(),
           address: document.getElementById('fd-address').value.trim(),
