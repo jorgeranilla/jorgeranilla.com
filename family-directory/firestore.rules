@@ -56,12 +56,20 @@ service cloud.firestore {
       // UPDATE:
       // - Users can update only their own profile
       //   BUT cannot change: role, status, uid, createdAt
+      //   EXCEPT when claiming an imported/manual profile, pending can become approved
       // - Admins can update any profile
       allow update: if isAdmin()
                     || (isOwner()
                         && request.resource.data.role == resource.data.role
-                        && request.resource.data.status == resource.data.status
-                        && request.resource.data.uid == resource.data.uid);
+                        && request.resource.data.uid == resource.data.uid
+                        && (
+                          request.resource.data.status == resource.data.status
+                          || (
+                            resource.data.status == 'pending'
+                            && request.resource.data.status == 'approved'
+                            && request.resource.data.claimedFrom is string
+                          )
+                        ));
 
       // DELETE:
       // - Admins can delete profiles

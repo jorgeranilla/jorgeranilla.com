@@ -22,6 +22,105 @@ function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
 
+async function findClaimableProfileByEmail(email) {
+  const { collection, documentId, getDocs, query, where, orderBy } = window._fb;
+  const normalizedEmail = normalizeEmail(email);
+
+  if (!normalizedEmail) return null;
+
+  const foundMatches = new Map();
+  const claimQueries = [
+    query(
+      collection(db, COLLECTION),
+      where(documentId(), '>=', 'import_'),
+      where(documentId(), '<', 'import`'),
+      orderBy(documentId())
+    ),
+    query(
+      collection(db, COLLECTION),
+      where(documentId(), '>=', 'manual_'),
+      where(documentId(), '<', 'manual`'),
+      orderBy(documentId())
+    )
+  ];
+
+  for (const claimQuery of claimQueries) {
+    const matchSnap = await getDocs(claimQuery);
+    matchSnap.docs.forEach(d => foundMatches.set(d.id, d));
+  }
+
+  return Array.from(foundMatches.values()).find(d => {
+    const data = d.data();
+    const isClaimableRecord = d.id.startsWith('import_') ||
+      d.id.startsWith('manual_') ||
+      (data.uid && data.uid.startsWith('import_')) ||
+      (data.uid && data.uid.startsWith('manual_'));
+
+    return isClaimableRecord &&
+      normalizeEmail(data.email) === normalizedEmail &&
+      data.status !== 'claimed';
+  }) || null;
+}
+
+function mergeClaimedProfileData(user, importDoc, existingData = {}) {
+  const importData = importDoc.data();
+  const normalizedEmail = normalizeEmail(user.email || importData.email);
+
+  return {
+    uid: user.uid,
+    displayName: user.displayName || existingData.displayName || importData.displayName || '',
+    email: user.email || existingData.email || importData.email || '',
+    emailLower: normalizedEmail,
+    photoURL: user.photoURL || existingData.photoURL || importData.photoURL || '',
+    phone: existingData.phone || importData.phone || '',
+    relationship: existingData.relationship || importData.relationship || '',
+    address: existingData.address || importData.address || '',
+    city: existingData.city || importData.city || '',
+    country: existingData.country || importData.country || '',
+    birthday: existingData.birthday || importData.birthday || '',
+    preferredContact: existingData.preferredContact || importData.preferredContact || 'email',
+    role: existingData.role || importData.role || 'member',
+    status: 'approved',
+    privacy: existingData.privacy || importData.privacy || {
+      showPhone: true,
+      showEmail: true,
+      showAddress: false,
+      showBirthday: true,
+      showAge: false
+    },
+    claimedFrom: importDoc.id,
+    createdAt: existingData.createdAt || importData.createdAt,
+    updatedAt: window._fb.serverTimestamp()
+  };
+}
+
+async function cleanupClaimedImport(importDoc, uid) {
+  const { doc, deleteDoc, updateDoc, serverTimestamp } = window._fb;
+
+  try {
+    await deleteDoc(doc(db, COLLECTION, importDoc.id));
+  } catch (delErr) {
+    console.warn('Could not delete old import record, marking as claimed:', delErr);
+    await updateDoc(doc(db, COLLECTION, importDoc.id), {
+      status: 'claimed',
+      claimedBy: uid,
+      updatedAt: serverTimestamp()
+    });
+  }
+}
+
+async function autoClaimExistingImport(user, profileRef, existingData = {}) {
+  const { setDoc } = window._fb;
+  const importDoc = await findClaimableProfileByEmail(user.email);
+
+  if (!importDoc) return null;
+
+  const claimedData = mergeClaimedProfileData(user, importDoc, existingData);
+  await setDoc(profileRef, claimedData);
+  await cleanupClaimedImport(importDoc, user.uid);
+  return { id: user.uid, ...claimedData };
+}
+
 /* ── Init ── */
 async function fdInit() {
   const { initializeApp } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
@@ -74,6 +173,8 @@ async function handleAuthState(user) {
 
   if (profileSnap.exists()) {
     currentProfile = { id: profileSnap.id, ...profileSnap.data() };
+    const claimedProfile = await autoClaimExistingImport(user, profileRef, currentProfile);
+    if (claimedProfile) currentProfile = claimedProfile;
     isAdmin = currentProfile.role === 'admin';
 
     if (currentProfile.status !== 'approved' && !isAdmin) {
@@ -94,91 +195,20 @@ async function handleAuthState(user) {
     if (typeof onPageReady === 'function') onPageReady();
   } else {
     // First-time user — check for existing imported record to claim
-    const { setDoc, deleteDoc, collection, documentId, getDocs, query, where, serverTimestamp } = window._fb;
+    const { setDoc, serverTimestamp } = window._fb;
     let claimedProfile = null;
     const normalizedUserEmail = normalizeEmail(user.email);
 
     if (normalizedUserEmail) {
       try {
-        const foundMatches = new Map();
-
-        const claimQueries = [
-          query(collection(db, COLLECTION), where(documentId(), '>=', 'import_'), where(documentId(), '<', 'import`')),
-          query(collection(db, COLLECTION), where(documentId(), '>=', 'manual_'), where(documentId(), '<', 'manual`'))
-        ];
-
-        for (const claimQuery of claimQueries) {
-          const matchSnap = await getDocs(claimQuery);
-          matchSnap.docs.forEach(d => foundMatches.set(d.id, d));
-        }
-
-        const matches = Array.from(foundMatches.values()).filter(d => {
-          const data = d.data();
-          const isClaimableRecord = d.id.startsWith('import_') ||
-            d.id.startsWith('manual_') ||
-            (data.uid && data.uid.startsWith('import_')) ||
-            (data.uid && data.uid.startsWith('manual_'));
-
-          return d.id !== user.uid &&
-            isClaimableRecord &&
-            normalizeEmail(data.email) === normalizedUserEmail &&
-            data.status !== 'claimed';
-        });
-
-        if (matches.length > 0) {
-          const importDoc = matches[0];
-          const importData = importDoc.data();
-
-          // Create the new profile under the real UID, merging imported data with Google info
-          const claimedData = {
-            uid: user.uid,
-            displayName: user.displayName || importData.displayName || '',
-            email: user.email || importData.email || '',
-            emailLower: normalizedUserEmail,
-            photoURL: user.photoURL || importData.photoURL || '',
-            phone: importData.phone || '',
-            relationship: importData.relationship || '',
-            address: importData.address || '',
-            city: importData.city || '',
-            country: importData.country || '',
-            birthday: importData.birthday || '',
-            preferredContact: importData.preferredContact || 'email',
-            role: importData.role || 'member',
-            status: 'approved',  // They were already approved via import
-            privacy: importData.privacy || {
-              showPhone: true,
-              showEmail: true,
-              showAddress: false,
-              showBirthday: true,
-              showAge: false
-            },
-            claimedFrom: importDoc.id,  // Track which import record was claimed
-            createdAt: importData.createdAt || serverTimestamp(),
-            updatedAt: serverTimestamp()
-          };
-
+        const importDoc = await findClaimableProfileByEmail(user.email);
+        if (importDoc) {
+          const claimedData = mergeClaimedProfileData(user, importDoc);
+          if (!claimedData.createdAt) claimedData.createdAt = serverTimestamp();
           await setDoc(profileRef, claimedData);
-
-          // Delete the old imported record to avoid duplicates
-          try {
-            await deleteDoc(doc(db, COLLECTION, importDoc.id));
-          } catch (delErr) {
-            // If delete fails (permissions), mark it as claimed so directory can filter it
-            console.warn('Could not delete old import record, marking as claimed:', delErr);
-            try {
-              const { updateDoc } = window._fb;
-              await updateDoc(doc(db, COLLECTION, importDoc.id), {
-                status: 'claimed',
-                claimedBy: user.uid,
-                updatedAt: serverTimestamp()
-              });
-            } catch (markErr) {
-              console.warn('Could not mark import as claimed:', markErr);
-            }
-          }
-
+          await cleanupClaimedImport(importDoc, user.uid);
           claimedProfile = { id: user.uid, ...claimedData };
-          console.log(`✅ Claimed imported profile "${importData.displayName}" → ${user.uid}`);
+          console.log(`✅ Claimed imported profile "${importDoc.data().displayName}" → ${user.uid}`);
         }
       } catch (err) {
         console.warn('Could not search for imported records:', err);
@@ -267,22 +297,25 @@ function updateNavUser() {
 
 /* ── Fetch Approved Members ── */
 async function fetchApprovedMembers() {
-  const { collection, getDocs, query, where, orderBy } = window._fb;
+  const { collection, getDocs, query, where } = window._fb;
   const q = query(
     collection(db, COLLECTION),
-    where('status', '==', 'approved'),
-    orderBy('displayName')
+    where('status', '==', 'approved')
   );
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
 }
 
 /* ── Fetch All Members (Admin) ── */
 async function fetchAllMembers() {
-  const { collection, getDocs, orderBy, query } = window._fb;
-  const q = query(collection(db, COLLECTION), orderBy('displayName'));
+  const { collection, getDocs, query } = window._fb;
+  const q = query(collection(db, COLLECTION));
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
 }
 
 /* ── Save Own Profile ── */
