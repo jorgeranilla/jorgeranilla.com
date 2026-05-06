@@ -171,6 +171,7 @@
 
   <script src="../script.js?v=7"></script>
   <script src="../search-dynamic.js"></script>
+  <script src="family/smart-family-gallery.js?v=1"></script>
   <script>
     // ── CONFIG ─────────────────────────────────────────────
     const DRIVE_API_KEY = 'AIzaSyCadJTGnwhASQ-kj7p4AnGFAwXIIFChoSs';
@@ -356,7 +357,15 @@
       document.body.style.overflow = '';
     }
 
-    loadGallery();
+    JRFamilyGallery.start({
+      mode: 'all',
+      masterFolderId: '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ',
+      pageSize: 25,
+      emptyText: 'No photos yet - check back soon!',
+      errorText: "Couldn't load photos right now. Please try refreshing the page.",
+      photoAlt: 'Family moment',
+      videoAlt: 'Family video'
+    });
   </script>
 </body>
 

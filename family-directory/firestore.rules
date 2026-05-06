@@ -79,6 +79,29 @@ service cloud.firestore {
     }
 
     // ─── Block everything else ───
+    // --- Family Photo Tags ---
+    match /familyPhotoTags/{photoId} {
+
+      function isAdmin() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
+          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.role == 'admin'
+          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
+      }
+
+      function isApprovedMember() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
+          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
+      }
+
+      allow read: if resource.data.status == 'approved'
+                  || isApprovedMember()
+                  || isAdmin();
+
+      allow create, update, delete: if isAdmin();
+    }
+
     match /{document=**} {
       // Do not allow any other reads/writes unless other rules exist
       // (This won't override existing rules for other collections)

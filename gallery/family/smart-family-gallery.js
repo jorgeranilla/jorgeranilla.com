@@ -1,0 +1,378 @@
+(function () {
+  const DEFAULT_FIREBASE_CONFIG = {
+    apiKey: 'AIzaSyBc0zrXLzr9Qhq9iuhXLAXOzbkQ13mEaU4',
+    authDomain: 'jorgeranilla-site.firebaseapp.com',
+    projectId: 'jorgeranilla-site',
+    storageBucket: 'jorgeranilla-site.firebasestorage.app',
+    messagingSenderId: '125483521813',
+    appId: '1:125483521813:web:f48b02d491cb4c698ffb1c'
+  };
+
+  const DEFAULTS = {
+    driveApiKey: 'AIzaSyCadJTGnwhASQ-kj7p4AnGFAwXIIFChoSs',
+    masterFolderId: '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ',
+    legacyFolderId: '',
+    mode: 'all',
+    personSlug: '',
+    personAliases: [],
+    albumSlug: '',
+    pageSize: 25,
+    drivePageSize: 200,
+    tagCollection: 'familyPhotoTags',
+    firebaseConfig: DEFAULT_FIREBASE_CONFIG,
+    emptyText: 'No photos yet - check back soon!',
+    errorText: "Couldn't load photos right now. Please try refreshing the page.",
+    photoAlt: 'Family photo',
+    videoAlt: 'Family video',
+    fallbackNotice: ''
+  };
+
+  let config = {};
+  let allFiles = [];
+  let currentPage = 0;
+  let lightboxIdx = 0;
+  let lightboxReady = false;
+
+  function mergeConfig(nextConfig) {
+    config = { ...DEFAULTS, ...(nextConfig || {}) };
+  }
+
+  function compareFilesByName(a, b) {
+    return b.name.localeCompare(a.name, undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    });
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function getType(mimeType) {
+    return String(mimeType || '').startsWith('video/') ? 'video' : 'image';
+  }
+
+  function driveThumb(fileId, size) {
+    return `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w${size}`;
+  }
+
+  async function fetchDriveFolder(folderId) {
+    if (!folderId) return [];
+
+    const files = [];
+    let pageToken = '';
+
+    do {
+      const q = encodeURIComponent(
+        `'${folderId}' in parents and ` +
+        `(mimeType contains 'image/' or mimeType contains 'video/') and ` +
+        `trashed = false`
+      );
+
+      const params = [
+        `q=${q}`,
+        `key=${encodeURIComponent(config.driveApiKey)}`,
+        'fields=nextPageToken,files(id,name,mimeType,createdTime,modifiedTime,md5Checksum,size)',
+        'orderBy=createdTime desc',
+        `pageSize=${encodeURIComponent(config.drivePageSize)}`
+      ];
+
+      if (pageToken) {
+        params.push(`pageToken=${encodeURIComponent(pageToken)}`);
+      }
+
+      const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params.join('&')}`);
+      const data = await response.json();
+
+      if (!response.ok || !data.files) {
+        throw new Error(data.error?.message || 'Drive API error');
+      }
+
+      files.push(...data.files.map(file => ({
+        id: file.id,
+        name: file.name,
+        type: getType(file.mimeType),
+        mimeType: file.mimeType,
+        createdTime: file.createdTime || '',
+        modifiedTime: file.modifiedTime || '',
+        md5Checksum: file.md5Checksum || '',
+        size: file.size || ''
+      })));
+
+      pageToken = data.nextPageToken || '';
+    } while (pageToken);
+
+    return files.sort(compareFilesByName);
+  }
+
+  async function loadApprovedTags() {
+    if (config.mode === 'all') return new Map();
+
+    try {
+      const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
+      const { getFirestore, collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
+
+      const app = getApps().length ? getApps()[0] : initializeApp(config.firebaseConfig);
+      const db = getFirestore(app);
+      const approvedQuery = query(
+        collection(db, config.tagCollection),
+        where('status', '==', 'approved')
+      );
+      const snapshot = await getDocs(approvedQuery);
+      const tags = new Map();
+
+      snapshot.docs.forEach(docSnap => {
+        const data = docSnap.data() || {};
+        tags.set(docSnap.id, {
+          ...data,
+          id: docSnap.id,
+          people: Array.isArray(data.people) ? data.people : [],
+          albums: Array.isArray(data.albums) ? data.albums : []
+        });
+      });
+
+      return tags;
+    } catch (error) {
+      console.warn('Family photo tags are unavailable; using fallback folder when possible.', error);
+      return new Map();
+    }
+  }
+
+  function matchesConfiguredGallery(tag) {
+    if (!tag) return false;
+
+    if (config.mode === 'person') {
+      const aliases = [config.personSlug, ...config.personAliases].filter(Boolean);
+      return aliases.some(alias => tag.people.includes(alias));
+    }
+
+    if (config.mode === 'album') {
+      return tag.albums.includes(config.albumSlug);
+    }
+
+    return true;
+  }
+
+  async function resolveGalleryFiles() {
+    const masterFiles = await fetchDriveFolder(config.masterFolderId);
+    const tags = await loadApprovedTags();
+
+    if (config.mode === 'all') {
+      return masterFiles;
+    }
+
+    const taggedFiles = masterFiles
+      .filter(file => matchesConfiguredGallery(tags.get(file.id)))
+      .map(file => ({ ...file, tags: tags.get(file.id) }));
+
+    if (taggedFiles.length > 0 || !config.legacyFolderId) {
+      return taggedFiles;
+    }
+
+    return fetchDriveFolder(config.legacyFolderId);
+  }
+
+  function setLoading(isLoading) {
+    const loading = document.getElementById('gallery-loading');
+    if (loading) loading.style.display = isLoading ? 'flex' : 'none';
+  }
+
+  function showError(message) {
+    const error = document.getElementById('gallery-error');
+    if (!error) return;
+
+    error.style.display = 'block';
+    const text = error.querySelector('p');
+    if (text) text.textContent = message;
+  }
+
+  function updateCountBadge() {
+    const badge = document.getElementById('photo-count');
+    if (!badge) return;
+
+    const imgs = allFiles.filter(file => file.type === 'image').length;
+    const vids = allFiles.filter(file => file.type === 'video').length;
+    let label = `${imgs} photo${imgs !== 1 ? 's' : ''}`;
+
+    if (vids > 0) {
+      label += ` · ${vids} video${vids !== 1 ? 's' : ''}`;
+    }
+
+    badge.textContent = label;
+    badge.style.display = 'inline-block';
+  }
+
+  function renderPage(page) {
+    currentPage = page;
+
+    const gallery = document.getElementById('gallery');
+    const pagination = document.getElementById('gallery-pagination');
+    const indicator = document.getElementById('page-indicator');
+    const prevBtn = document.getElementById('page-prev');
+    const nextBtn = document.getElementById('page-next');
+
+    if (!gallery) return;
+
+    gallery.innerHTML = '';
+
+    const totalPages = Math.ceil(allFiles.length / config.pageSize);
+    const start = page * config.pageSize;
+    const slice = allFiles.slice(start, start + config.pageSize);
+
+    slice.forEach((file, localIdx) => {
+      const globalIdx = start + localIdx;
+      const thumb = driveThumb(file.id, 600);
+      const item = document.createElement('div');
+      item.className = `gallery-item${file.type === 'video' ? ' gallery-item--video' : ''}`;
+
+      if (file.type === 'video') {
+        item.innerHTML = `
+          <img src="${thumb}" alt="${escapeHtml(config.videoAlt)}" loading="lazy">
+          <div class="video-play-btn" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path fill="white" d="M8 5v14l11-7z"/></svg>
+          </div>`;
+      } else {
+        item.innerHTML = `<img src="${thumb}" alt="${escapeHtml(config.photoAlt)}" loading="lazy">`;
+      }
+
+      item.addEventListener('click', () => openLightbox(globalIdx));
+      gallery.appendChild(item);
+    });
+
+    if (pagination && indicator && prevBtn && nextBtn) {
+      if (totalPages > 1) {
+        pagination.style.display = 'flex';
+        indicator.textContent = `Page ${page + 1} of ${totalPages}`;
+        prevBtn.disabled = page === 0;
+        nextBtn.disabled = page >= totalPages - 1;
+      } else {
+        pagination.style.display = 'none';
+      }
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function changePage(dir) {
+    const totalPages = Math.ceil(allFiles.length / config.pageSize);
+    const next = currentPage + dir;
+
+    if (next >= 0 && next < totalPages) {
+      renderPage(next);
+    }
+  }
+
+  function initLightbox() {
+    if (lightboxReady) return;
+
+    const lb = document.getElementById('lightbox');
+    const close = document.getElementById('lightboxClose');
+    const next = document.getElementById('lightboxNext');
+    const prev = document.getElementById('lightboxPrev');
+
+    if (!lb || !close || !next || !prev) return;
+
+    close.addEventListener('click', closeLightbox);
+    next.addEventListener('click', () => shiftLightbox(1));
+    prev.addEventListener('click', () => shiftLightbox(-1));
+    lb.addEventListener('click', event => {
+      if (event.target === lb) closeLightbox();
+    });
+    document.addEventListener('keydown', event => {
+      if (!lb.classList.contains('active')) return;
+      if (event.key === 'Escape') closeLightbox();
+      if (event.key === 'ArrowRight') shiftLightbox(1);
+      if (event.key === 'ArrowLeft') shiftLightbox(-1);
+    });
+
+    lightboxReady = true;
+  }
+
+  function openLightbox(globalIdx) {
+    lightboxIdx = globalIdx;
+    showItem();
+
+    const lb = document.getElementById('lightbox');
+    if (!lb) return;
+
+    lb.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function showItem() {
+    const file = allFiles[lightboxIdx];
+    const img = document.getElementById('lightboxImg');
+    const video = document.getElementById('lightboxVideo');
+    const counter = document.getElementById('lightboxCounter');
+
+    if (!file || !img || !video || !counter) return;
+
+    counter.textContent = `${lightboxIdx + 1} / ${allFiles.length}`;
+
+    if (file.type === 'video') {
+      img.style.display = 'none';
+      video.style.display = 'block';
+      video.src = `https://drive.google.com/file/d/${encodeURIComponent(file.id)}/preview`;
+    } else {
+      video.src = '';
+      video.style.display = 'none';
+      img.style.display = 'block';
+      img.src = driveThumb(file.id, 1600);
+      img.alt = file.name || config.photoAlt;
+    }
+  }
+
+  function shiftLightbox(dir) {
+    const next = lightboxIdx + dir;
+
+    if (next < 0 || next >= allFiles.length) return;
+
+    lightboxIdx = next;
+    showItem();
+  }
+
+  function closeLightbox() {
+    const lb = document.getElementById('lightbox');
+    const video = document.getElementById('lightboxVideo');
+
+    if (lb) lb.classList.remove('active');
+    if (video) video.src = '';
+
+    document.body.style.overflow = '';
+  }
+
+  async function start(nextConfig) {
+    mergeConfig(nextConfig || window.JRFamilyGalleryConfig);
+    window.changePage = changePage;
+    setLoading(true);
+
+    try {
+      allFiles = await resolveGalleryFiles();
+      setLoading(false);
+
+      if (allFiles.length === 0) {
+        showError(config.emptyText);
+        return;
+      }
+
+      updateCountBadge();
+      renderPage(0);
+      initLightbox();
+    } catch (error) {
+      console.error('Gallery load error:', error);
+      setLoading(false);
+      showError(config.errorText);
+    }
+  }
+
+  window.changePage = changePage;
+  window.JRFamilyGallery = {
+    start,
+    changePage
+  };
+})();

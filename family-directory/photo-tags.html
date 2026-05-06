@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Tags | Family Directory | Jorge Ranilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="directory.css">
+  <link rel="icon" type="image/png" href="../images/jr-logo.png">
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    .fd-tag-toolbar {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .fd-tag-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .fd-filter-pill {
+      border: 1px solid #ececec;
+      background: #fff;
+      border-radius: 999px;
+      color: #777;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-size: .8rem;
+      font-weight: 500;
+      padding: 9px 14px;
+      transition: all .2s;
+    }
+
+    .fd-filter-pill.active,
+    .fd-filter-pill:hover {
+      border-color: #CD5C5C;
+      color: #CD5C5C;
+      box-shadow: 0 2px 10px rgba(205, 92, 92, .08);
+    }
+
+    .fd-photo-tag-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    .fd-photo-tag-card {
+      background: #fff;
+      border: 1px solid #f2f2f2;
+      border-radius: 18px;
+      box-shadow: 0 2px 14px rgba(0,0,0,.05);
+      overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .fd-photo-tag-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,0,0,.08);
+    }
+
+    .fd-photo-tag-preview {
+      aspect-ratio: 4 / 3;
+      background: #f5f5f5;
+      display: block;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .fd-photo-tag-body {
+      padding: 16px;
+    }
+
+    .fd-photo-tag-name {
+      color: #2c3e50;
+      font-size: .86rem;
+      font-weight: 600;
+      line-height: 1.35;
+      margin: 0 0 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .fd-photo-tag-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .fd-tag-status {
+      border-radius: 999px;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .4px;
+      padding: 4px 8px;
+      text-transform: uppercase;
+    }
+
+    .fd-tag-status.approved {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .fd-tag-status.pending {
+      background: #fff8e1;
+      color: #b26a00;
+    }
+
+    .fd-tag-status.untagged {
+      background: #f2f2f2;
+      color: #888;
+    }
+
+    .fd-person-chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      max-height: 160px;
+      overflow: auto;
+      padding: 2px 0;
+    }
+
+    .fd-person-chip {
+      border: 1px solid #e9e9e9;
+      background: #fafafa;
+      border-radius: 999px;
+      color: #666;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-size: .74rem;
+      line-height: 1;
+      padding: 8px 10px;
+      transition: all .2s;
+    }
+
+    .fd-person-chip.selected {
+      background: #CD5C5C;
+      border-color: #CD5C5C;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(205, 92, 92, .18);
+    }
+
+    .fd-photo-tag-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .fd-mini-btn {
+      align-items: center;
+      background: #2c3e50;
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      flex: 1;
+      font-family: 'Roboto', sans-serif;
+      font-size: .78rem;
+      font-weight: 600;
+      justify-content: center;
+      padding: 10px 12px;
+      transition: all .2s;
+    }
+
+    .fd-mini-btn:hover {
+      background: #CD5C5C;
+      transform: translateY(-1px);
+    }
+
+    .fd-mini-btn.secondary {
+      background: #f4f4f4;
+      color: #777;
+    }
+
+    .fd-mini-btn.secondary:hover {
+      background: #ececec;
+      color: #333;
+    }
+
+    .fd-tag-summary {
+      color: #999;
+      font-size: .8rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .fd-restricted-card {
+      background: #fff;
+      border: 1px solid #f2f2f2;
+      border-radius: 18px;
+      box-shadow: 0 2px 14px rgba(0,0,0,.05);
+      padding: 28px;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .fd-photo-tag-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .fd-tag-controls {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .fd-filter-pill {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body data-title="Photo Tags" data-section="Family">
+  <div id="social-rail-placeholder"></div>
+  <div id="header-placeholder"></div>
+
+  <div class="breadcrumb-bar">
+    <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
+  </div>
+
+  <div class="fd-loading" id="fd-loading">
+    <div class="fd-spinner"></div>
+    <span>Loading...</span>
+  </div>
+
+  <div class="fd-auth-gate" id="fd-auth-gate" style="display:none;">
+    <div class="fd-auth-card">
+      <div class="fd-auth-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      </div>
+      <p class="fd-auth-label">Private Access</p>
+      <h1 class="fd-auth-title">Photo Tags</h1>
+      <p class="fd-auth-sub">Sign in with your admin Google account to manage family photo tags.</p>
+      <button class="fd-google-btn" onclick="fdSignIn()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+
+  <div class="fd-auth-gate" id="fd-pending" style="display:none;">
+    <div class="fd-auth-card fd-pending-card">
+      <div class="fd-auth-icon fd-pending-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      </div>
+      <p class="fd-auth-label" style="color:#f39c12">Pending Approval</p>
+      <h2 class="fd-auth-title">Almost There!</h2>
+      <p class="fd-auth-sub">Hi <strong class="fd-pending-name"></strong>! Your profile will be available once an admin approves your access.</p>
+      <button class="fd-google-btn" onclick="fdSignOut()" style="margin-top:8px">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="fd-app" id="fd-app">
+    <nav class="fd-nav">
+      <div class="fd-nav-inner">
+        <div class="fd-nav-tabs">
+          <a href="index.html" class="fd-nav-tab">
+            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span>Directory</span>
+          </a>
+          <a href="profile.html" class="fd-nav-tab">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>My Profile</span>
+          </a>
+          <a href="birthdays.html" class="fd-nav-tab">
+            <svg viewBox="0 0 24 24"><path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12c.01-1.66-1.33-3-2.99-3z"/></svg>
+            <span>Birthdays</span>
+          </a>
+          <a href="photo-tags.html" class="fd-nav-tab active">
+            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+            <span>Photo Tags</span>
+          </a>
+        </div>
+        <div class="fd-nav-user">
+          <img class="fd-nav-avatar" id="fd-user-avatar" src="" alt="">
+          <span class="fd-nav-name" id="fd-user-name"></span>
+          <button class="fd-signout-btn" onclick="fdSignOut()">Sign Out</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="fd-page">
+      <h2 class="fd-page-title">Photo Tags</h2>
+      <p class="fd-page-sub">Assign Family folder photos to the people who appear in them</p>
+
+      <div id="fd-photo-tags-restricted" class="fd-restricted-card" style="display:none">
+        <h3 class="fd-modal-title" style="margin-bottom:8px">Admin Access Only</h3>
+        <p class="fd-tag-summary">Only approved admins can manage photo tags.</p>
+      </div>
+
+      <div id="fd-photo-tags-admin" style="display:none">
+        <div class="fd-tag-toolbar">
+          <div class="fd-search-wrap" style="margin-bottom:0">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" class="fd-search" id="fd-photo-search" placeholder="Search photos or people...">
+          </div>
+          <div class="fd-tag-controls">
+            <button class="fd-filter-pill active" data-filter="all">All</button>
+            <button class="fd-filter-pill" data-filter="untagged">Untagged</button>
+            <button class="fd-filter-pill" data-filter="tagged">Tagged</button>
+            <button class="fd-filter-pill" data-filter="approved">Approved</button>
+          </div>
+          <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading Family folder photos...</p>
+        </div>
+
+        <div class="fd-loading" id="fd-photo-tags-loading">
+          <div class="fd-spinner"></div>
+          <span>Loading photos...</span>
+        </div>
+
+        <div class="fd-photo-tag-grid" id="fd-photo-tag-grid"></div>
+
+        <div class="fd-empty" id="fd-photo-tags-empty" style="display:none">
+          <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <p>No photos match this filter</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="directory.js?v=3"></script>
+  <script src="photo-tags.js?v=1"></script>
+  <script src="../script.js?v=7"></script>
+  <script src="../search-dynamic.js"></script>
+</body>
+
+</html>

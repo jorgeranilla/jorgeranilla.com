@@ -129,6 +129,7 @@
 
     <script src="../../../script.js?v=7"></script>
     <script src="../../../search-dynamic.js"></script>
+    <script src="../smart-family-gallery.js?v=1"></script>
     <script>
         // ── CONFIG ─────────────────────────────────────────────
         const DRIVE_API_KEY = 'AIzaSyCadJTGnwhASQ-kj7p4AnGFAwXIIFChoSs';
@@ -314,7 +315,18 @@
             document.body.style.overflow = '';
         }
 
-        loadGallery();
+        JRFamilyGallery.start({
+            mode: 'person',
+            personSlug: 'alyssa-ranilla',
+            personAliases: ['alyssa'],
+            masterFolderId: '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ',
+            legacyFolderId: '1-wReYBRsvusbPHEm82Ca4XItIWN3lgHe',
+            pageSize: 25,
+            emptyText: 'No photos yet - check back soon!',
+            errorText: "Couldn't load photos right now. Please try refreshing the page.",
+            photoAlt: "Alyssa's photo",
+            videoAlt: 'Alyssa video'
+        });
     </script>
 </body>
 
