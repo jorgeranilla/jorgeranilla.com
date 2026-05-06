@@ -652,7 +652,8 @@ body {
 
 .heritage-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 250px));
+    justify-content: center;
     gap: 2rem;
     margin-top: 2.5rem;
 }
@@ -709,6 +710,30 @@ body {
 
 .heritage-read-more:hover {
     text-decoration: underline;
+}
+
+.bio-album-actions {
+    margin-top: 1.6rem;
+    margin-bottom: 0.75rem;
+}
+
+.bio-album-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #c0617a;
+    color: #fff;
+    padding: 0.42rem 0.95rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.bio-album-link:hover {
+    background: #a84f67;
+    transform: translateY(-1px);
 }
 
 .heritage-social-icons {

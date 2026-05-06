@@ -73,13 +73,14 @@ async function loadPhotoTagMembers() {
     .filter(member => member.status === 'approved' && member.status !== 'claimed')
     .map(member => ({
       ...member,
-      tagSlug: makePhotoTagSlug(member.displayName || member.email || member.id),
+      personSlug: makePhotoTagSlug(member.displayName || member.email || member.id),
+      tagKey: `member:${member.id}`,
       tagLabel: member.displayName || member.email || member.id
     }))
-    .filter(member => member.tagSlug)
+    .filter(member => member.tagKey && member.personSlug)
     .sort((a, b) => a.tagLabel.localeCompare(b.tagLabel, undefined, { sensitivity: 'base' }));
 
-  photoTagMembers = approved;
+  photoTagMembers = disambiguateDuplicateMemberLabels(approved);
 }
 
 async function loadPhotoTagRecords() {
@@ -147,6 +148,7 @@ function normalizePhotoTagRecord(id, data) {
     id,
     ...data,
     people: Array.isArray(data.people) ? data.people : [],
+    peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
     peopleLabels: Array.isArray(data.peopleLabels) ? data.peopleLabels : [],
     personIds: Array.isArray(data.personIds) ? data.personIds : [],
     albums: Array.isArray(data.albums) ? data.albums : ['family'],
@@ -163,6 +165,29 @@ function makePhotoTagSlug(value) {
     .replace(/^-+|-+$/g, '');
 }
 
+function disambiguateDuplicateMemberLabels(members) {
+  const counts = new Map();
+
+  members.forEach(member => {
+    const key = String(member.tagLabel || '').trim().toLowerCase();
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+
+  return members.map(member => {
+    const key = String(member.tagLabel || '').trim().toLowerCase();
+
+    if ((counts.get(key) || 0) < 2) {
+      return member;
+    }
+
+    const hint = member.email || member.city || member.id;
+    return {
+      ...member,
+      displayTagLabel: hint ? `${member.tagLabel} (${hint})` : `${member.tagLabel} (${member.id})`
+    };
+  });
+}
+
 function escapePhotoTagHtml(value) {
   return String(value || '')
     .replace(/&/g, '&amp;')
@@ -177,8 +202,21 @@ function photoTagThumbnail(file, size = 600) {
 }
 
 function getPhotoTagLabel(slug) {
-  const member = photoTagMembers.find(item => item.tagSlug === slug);
+  const member = photoTagMembers.find(item =>
+    item.tagKey === slug ||
+    item.personSlug === slug ||
+    item.id === slug
+  );
   return member?.tagLabel || slug;
+}
+
+function isMemberSelectedForTag(tag, member) {
+  if (!tag) return false;
+
+  return tag.people.includes(member.tagKey) ||
+    tag.people.includes(member.personSlug) ||
+    tag.peopleAliases.includes(member.personSlug) ||
+    tag.personIds.includes(member.id);
 }
 
 function getPhotoTagRecord(fileId) {
@@ -261,11 +299,11 @@ function renderPhotoTagCard(file) {
           ${photoTagMembers.map(member => `
             <button
               type="button"
-              class="fd-person-chip${selectedPeople.has(member.tagSlug) ? ' selected' : ''}"
+              class="fd-person-chip${isMemberSelectedForTag(tag, member) ? ' selected' : ''}"
               data-file-id="${escapePhotoTagHtml(file.id)}"
-              data-person-slug="${escapePhotoTagHtml(member.tagSlug)}"
+              data-person-key="${escapePhotoTagHtml(member.tagKey)}"
               onclick="togglePhotoTagPerson(this)">
-              ${escapePhotoTagHtml(member.tagLabel)}
+              ${escapePhotoTagHtml(member.displayTagLabel || member.tagLabel)}
             </button>
           `).join('')}
         </div>
@@ -288,7 +326,7 @@ async function savePhotoTag(fileId) {
   if (!file || !card) return;
 
   const selectedChips = Array.from(card.querySelectorAll('.fd-person-chip.selected'));
-  const selectedPeople = selectedChips.map(chip => chip.dataset.personSlug).filter(Boolean);
+  const selectedPeople = selectedChips.map(chip => chip.dataset.personKey).filter(Boolean);
 
   if (selectedPeople.length === 0) {
     fdToast('Select at least one person before publishing.');
@@ -296,7 +334,7 @@ async function savePhotoTag(fileId) {
   }
 
   const selectedMembers = selectedPeople
-    .map(slug => photoTagMembers.find(member => member.tagSlug === slug))
+    .map(key => photoTagMembers.find(member => member.tagKey === key))
     .filter(Boolean);
 
   const payload = {
@@ -306,6 +344,7 @@ async function savePhotoTag(fileId) {
     mimeType: file.mimeType,
     type: file.type,
     people: selectedPeople,
+    peopleAliases: selectedMembers.map(member => member.personSlug),
     peopleLabels: selectedMembers.map(member => member.tagLabel),
     personIds: selectedMembers.map(member => member.id),
     albums: ['family'],

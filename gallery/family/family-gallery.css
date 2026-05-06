@@ -226,28 +226,22 @@
 
 /* ── Back Button ── */
 .back-to-profile {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: #c0617a;
-  color: white;
+  display: inline-block;
+  color: var(--accent-color);
+  font-size: 0.85rem;
+  font-weight: 600;
   text-decoration: none;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  margin-bottom: 2rem;
+  transition: color 0.2s ease;
 }
 
 .back-to-profile:hover {
-  background: #a84f67;
-  transform: translateX(-4px);
+  text-decoration: underline;
 }
 
 .back-link-container {
   text-align: center;
-  margin-top: 3rem;
-  margin-bottom: 2rem;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 /* ── Photo count badge ── */

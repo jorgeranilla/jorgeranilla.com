@@ -1,5 +1,5 @@
-$root = "c:\Projects\Antigravity"
-$excludeFolders = @("archive", "babyshower")
+$root = $PSScriptRoot
+$excludeFolders = @("archive", "babyshower", "functions")
 $excludeFiles = @("mobile-player.html")
 $pages = [System.Collections.Generic.List[object]]::new()
 

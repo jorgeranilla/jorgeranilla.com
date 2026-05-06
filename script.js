@@ -568,6 +568,18 @@ document.addEventListener("DOMContentLoaded", () => {
       'maria-carlota-ruiz.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Maria Carlota'],
       'victoriano-cateriano.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Victoriano Cateriano'],
       'lucila-dongo-salcedo.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Lucila Dongo Salcedo'],
+      'luis-fernando.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Luis Fernando'],
+      'fernando-javier.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Fernando Javier'],
+      'lorenzo-david.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Lorenzo David'],
+      'eugenio-jesus.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Eugenio Jesus'],
+      'ernesto.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Ernesto'],
+      'luisa-cristina.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Luisa Cristina'],
+      'monica-del-carmen.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Monica del Carmen'],
+      'paola-andrea.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Paola Andrea'],
+      'milagros.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Milagros'],
+      'adriana.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Adriana'],
+      'alessandra.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Alessandra'],
+      'paola-josefina.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Paola Josefina'],
 
       // Family section - Other pages
       'my-story.html': ['Family', 'My Story'],
@@ -599,6 +611,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Gallery section - Other pages
       'family.html': ['Gallery', 'Family'],
+      'person.html': ['Gallery', 'Family', 'Photo Album'],
       'portraits.html': ['Gallery', 'Portraits'],
 
       // Professional section
@@ -696,6 +709,63 @@ document.addEventListener("DOMContentLoaded", () => {
       el.innerHTML = `${homeLink} ${sep} <span class="breadcrumb-parent">${dataSection}</span> ${sep} <span class="current-page">${currentTitle}</span>`;
     } else {
       el.innerHTML = `${homeLink} ${sep} <span class="current-page">${currentTitle}</span>`;
+    }
+  })();
+
+  /* ===========================
+     Family Bio Album Link
+     - Adds a tagged-photo album link to existing bio pages.
+  =========================== */
+  (function injectFamilyBioAlbumLink() {
+    if (document.body.getAttribute('data-section') !== 'Family') return;
+
+    const path = window.location.pathname.split('/').pop() || '';
+    const file = decodeURIComponent(path).toLowerCase();
+    const excludedFiles = new Set([
+      'ancestry.html',
+      'baptism.html',
+      'baptism-es.html',
+      'baptism-godfather.html',
+      'baptism-godfather-es.html',
+      'baptism-godmother.html',
+      'baptism-godmother-es.html',
+      'extended-family.html',
+      'family-tree.html',
+      'heritage-roots.html',
+      'my-story.html',
+      'the-kids.html'
+    ]);
+
+    if (!file.endsWith('.html') || excludedFiles.has(file)) return;
+
+    const aboutText = document.querySelector('.about-text');
+    if (!aboutText || aboutText.querySelector('a[href*="gallery/family"]')) return;
+
+    const slug = file.replace(/\.html$/i, '').replace(/-es$/i, '');
+    const titleEl = document.querySelector('.page-title');
+    const displayName = (titleEl?.textContent || document.body.getAttribute('data-title') || titleFromSlug(slug)).trim();
+    const backLink = aboutText.querySelector('.heritage-read-more')?.closest('p');
+    const albumAction = document.createElement('p');
+    const albumLink = document.createElement('a');
+
+    albumAction.className = 'bio-album-actions';
+    albumLink.className = 'bio-album-link';
+    albumLink.href = `../gallery/family/person.html?person=${encodeURIComponent(slug)}&name=${encodeURIComponent(displayName)}`;
+    albumLink.textContent = 'View Photo Album';
+    albumAction.appendChild(albumLink);
+
+    if (backLink) {
+      aboutText.insertBefore(albumAction, backLink);
+    } else {
+      aboutText.appendChild(albumAction);
+    }
+
+    function titleFromSlug(value) {
+      return String(value || '')
+        .split('-')
+        .filter(Boolean)
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
     }
   })();
 

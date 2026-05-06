@@ -132,6 +132,8 @@
           ...data,
           id: docSnap.id,
           people: Array.isArray(data.people) ? data.people : [],
+          peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
+          personIds: Array.isArray(data.personIds) ? data.personIds : [],
           albums: Array.isArray(data.albums) ? data.albums : []
         });
       });
@@ -148,7 +150,13 @@
 
     if (config.mode === 'person') {
       const aliases = [config.personSlug, ...config.personAliases].filter(Boolean);
-      return aliases.some(alias => tag.people.includes(alias));
+      const tagPeople = [
+        ...tag.people,
+        ...tag.peopleAliases,
+        ...tag.personIds
+      ];
+
+      return aliases.some(alias => tagPeople.includes(alias));
     }
 
     if (config.mode === 'album') {
