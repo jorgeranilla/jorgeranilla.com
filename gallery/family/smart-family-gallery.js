@@ -157,18 +157,18 @@
         'ernesto': 'ernesto-herrera',
         'luisa-cristina': 'luisa-astocondor',
         'monica-del-carmen': 'monica-astocondor',
-        'paola-andres': 'paola-pallete',
+        'paola-andrea': 'paola-pallete',
         'milagros': 'milagros-herrera',
         'adriana': 'adriana-astocondor',
         'alessandra': 'alessandra-briceno',
         'paola-josefina': 'paola-ranilla',
-        'victor-andres': 'victor-ranilla',
-        'maria-eugenia': 'maria-ranilla',
-        'shane': 'shane-ranilla',
-        'jorge': 'jorge-ranilla',
-        'jorge-luis': 'jorge-ranilla-cateriano',
-        'sylvia-ines': 'sylvia-astocondor',
-        'alyssa': 'alyssa-ranilla'
+        'victor-andres-ranilla': 'victor-ranilla',
+        'maria-eugenia-ranilla': 'maria-ranilla',
+        'shane-ranilla': 'shane-ranilla',
+        'jorge-ranilla': 'jorge-ranilla',
+        'jorge-luis-ranilla': 'jorge-ranilla-cateriano',
+        'sylvia-ines-astocondor': 'sylvia-astocondor',
+        'alyssa-ranilla': 'alyssa-ranilla'
       };
 
       const aliases = [config.personSlug, ...config.personAliases].filter(Boolean);
