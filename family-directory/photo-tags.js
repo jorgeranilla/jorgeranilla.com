@@ -461,7 +461,6 @@ function renderPhotoTags() {
 
   summary.textContent = `${photoTagFiles.length} photos in Family folder · ${taggedCount} tagged · ${untaggedCount} untagged`;
 
-  summary.textContent = summary.textContent.replace(/\u00C2\u00B7/g, '-');
   summary.textContent = `${photoTagFiles.length} photos in Family folder - ${approvedCount} approved - ${needsReviewCount} need retag - ${untaggedCount} untagged`;
 
   if (visible.length === 0) {
