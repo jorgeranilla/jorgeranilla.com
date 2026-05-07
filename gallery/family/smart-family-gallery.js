@@ -246,7 +246,7 @@
       label += ` · ${vids} video${vids !== 1 ? 's' : ''}`;
     }
 
-    badge.textContent = label;
+    badge.textContent = label.replace(/\u00C2\u00B7/g, '-');
     badge.style.display = 'inline-block';
   }
 
