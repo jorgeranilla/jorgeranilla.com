@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Pre-compute all navigation links to ensure they're evaluated correctly
     const familyLinks = {
-      myStory: buildSectionLink('family', 'my-story.html'),
+      myStory: buildSectionLink('family', 'jorge-ranilla.html'),
       theKids: buildSectionLink('family', 'the-kids.html'),
       heritageRoots: buildSectionLink('family', 'heritage-roots.html'),
       familyTree: buildSectionLink('family', 'family-tree.html'),
@@ -732,7 +732,6 @@ document.addEventListener("DOMContentLoaded", () => {
       'extended-family.html',
       'family-tree.html',
       'heritage-roots.html',
-      'my-story.html',
       'the-kids.html'
     ]);
 

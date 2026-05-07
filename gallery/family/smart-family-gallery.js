@@ -149,7 +149,37 @@
     if (!tag) return false;
 
     if (config.mode === 'person') {
+      const LEGACY_SLUG_MAP = {
+        'luis-fernando': 'luis-fernando-astocondor',
+        'fernando-javier': 'fernando-pallete',
+        'lorenzo-david': 'lorenzo-lu',
+        'eugenio-jesus': 'eugenio-astocondor',
+        'ernesto': 'ernesto-herrera',
+        'luisa-cristina': 'luisa-astocondor',
+        'monica-del-carmen': 'monica-astocondor',
+        'paola-andres': 'paola-pallete',
+        'milagros': 'milagros-herrera',
+        'adriana': 'adriana-astocondor',
+        'alessandra': 'alessandra-briceno',
+        'paola-josefina': 'paola-ranilla',
+        'victor-andres': 'victor-ranilla',
+        'maria-eugenia': 'maria-ranilla',
+        'shane': 'shane-ranilla',
+        'jorge': 'jorge-ranilla',
+        'jorge-luis': 'jorge-ranilla-cateriano',
+        'sylvia-ines': 'sylvia-astocondor',
+        'alyssa': 'alyssa-ranilla'
+      };
+
       const aliases = [config.personSlug, ...config.personAliases].filter(Boolean);
+      
+      // Automatically expand aliases to include their full directory names
+      aliases.forEach(alias => {
+        if (LEGACY_SLUG_MAP[alias] && !aliases.includes(LEGACY_SLUG_MAP[alias])) {
+          aliases.push(LEGACY_SLUG_MAP[alias]);
+        }
+      });
+
       const tagPeople = [
         ...tag.people,
         ...tag.peopleAliases,
