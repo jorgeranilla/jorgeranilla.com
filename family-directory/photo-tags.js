@@ -285,6 +285,8 @@ function renderPhotoTagCard(file) {
     ? Array.from(selectedPeople).map(getPhotoTagLabel).join(', ')
     : 'No people assigned yet';
 
+  const selectedMembersList = photoTagMembers.filter(m => isMemberSelectedForTag(tag, m));
+
   return `
     <article class="fd-photo-tag-card" data-file-id="${escapePhotoTagHtml(file.id)}">
       <img class="fd-photo-tag-preview" src="${photoTagThumbnail(file)}" alt="${escapePhotoTagHtml(file.name)}" loading="lazy">
@@ -295,14 +297,24 @@ function renderPhotoTagCard(file) {
           <span class="fd-tag-status untagged">${escapePhotoTagHtml(file.type)}</span>
         </div>
         <p class="fd-tag-summary">${escapePhotoTagHtml(labels)}</p>
-        <div class="fd-person-chip-wrap" aria-label="People in this photo">
-          ${photoTagMembers.map(member => `
+
+        <div class="fd-tagging-area">
+          <input type="text" 
+            class="fd-tag-search-input" 
+            placeholder="Type name to tag..." 
+            oninput="handleTagAutocomplete(this, '${escapePhotoTagHtml(file.id)}')"
+            onfocus="handleTagAutocomplete(this, '${escapePhotoTagHtml(file.id)}')">
+          <div class="fd-tag-suggestions" id="suggestions-${escapePhotoTagHtml(file.id)}"></div>
+        </div>
+
+        <div class="fd-person-chip-wrap" id="chips-${escapePhotoTagHtml(file.id)}" aria-label="People in this photo">
+          ${selectedMembersList.map(member => `
             <button
               type="button"
-              class="fd-person-chip${isMemberSelectedForTag(tag, member) ? ' selected' : ''}"
+              class="fd-person-chip selected"
               data-file-id="${escapePhotoTagHtml(file.id)}"
               data-person-key="${escapePhotoTagHtml(member.tagKey)}"
-              onclick="togglePhotoTagPerson(this)">
+              onclick="removeTagChip(this)">
               ${escapePhotoTagHtml(member.displayTagLabel || member.tagLabel)}
             </button>
           `).join('')}
@@ -316,9 +328,77 @@ function renderPhotoTagCard(file) {
   `;
 }
 
-function togglePhotoTagPerson(button) {
-  button.classList.toggle('selected');
+function handleTagAutocomplete(input, fileId) {
+  const suggestionsDiv = document.getElementById(`suggestions-${fileId}`);
+  const chipsWrap = document.getElementById(`chips-${fileId}`);
+  if (!suggestionsDiv || !chipsWrap) return;
+
+  const term = input.value.trim().toLowerCase();
+  
+  const selectedKeys = Array.from(chipsWrap.querySelectorAll('.fd-person-chip.selected'))
+    .map(chip => chip.dataset.personKey);
+
+  const matches = photoTagMembers.filter(m => {
+    if (selectedKeys.includes(m.tagKey)) return false;
+    if (!term) return false;
+
+    const label = (m.displayTagLabel || m.tagLabel).toLowerCase();
+    return label.includes(term);
+  });
+
+  if (matches.length === 0 || !term) {
+    suggestionsDiv.style.display = 'none';
+    suggestionsDiv.innerHTML = '';
+    return;
+  }
+
+  suggestionsDiv.innerHTML = matches.slice(0, 8).map(m => `
+    <div class="fd-tag-suggestion-item" 
+         onclick="addTagChip('${fileId}', '${escapePhotoTagHtml(m.tagKey)}', '${escapePhotoTagHtml(m.displayTagLabel || m.tagLabel)}')">
+      ${escapePhotoTagHtml(m.displayTagLabel || m.tagLabel)}
+    </div>
+  `).join('');
+  
+  suggestionsDiv.style.display = 'block';
 }
+
+function addTagChip(fileId, tagKey, displayLabel) {
+  const chipsWrap = document.getElementById(`chips-${fileId}`);
+  const input = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"] .fd-tag-search-input`);
+  const suggestionsDiv = document.getElementById(`suggestions-${fileId}`);
+  
+  if (!chipsWrap) return;
+
+  const exists = chipsWrap.querySelector(`[data-person-key="${CSS.escape(tagKey)}"]`);
+  if (!exists) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'fd-person-chip selected';
+    btn.dataset.fileId = fileId;
+    btn.dataset.personKey = tagKey;
+    btn.textContent = displayLabel;
+    btn.onclick = function() { removeTagChip(this); };
+    chipsWrap.appendChild(btn);
+  }
+
+  if (input) {
+    input.value = '';
+    input.focus();
+  }
+  if (suggestionsDiv) {
+    suggestionsDiv.style.display = 'none';
+  }
+}
+
+function removeTagChip(button) {
+  button.remove();
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.fd-tagging-area')) {
+    document.querySelectorAll('.fd-tag-suggestions').forEach(el => el.style.display = 'none');
+  }
+});
 
 async function savePhotoTag(fileId) {
   const file = photoTagFiles.find(item => item.id === fileId);
@@ -405,7 +485,9 @@ async function clearPhotoTag(fileId) {
   }
 }
 
-window.togglePhotoTagPerson = togglePhotoTagPerson;
+window.handleTagAutocomplete = handleTagAutocomplete;
+window.addTagChip = addTagChip;
+window.removeTagChip = removeTagChip;
 window.savePhotoTag = savePhotoTag;
 window.clearPhotoTag = clearPhotoTag;
 
