@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Pre-compute all navigation links to ensure they're evaluated correctly
     const familyLinks = {
       myStory: buildSectionLink('family', 'jorge-ranilla.html'),
-      theKids: buildSectionLink('family', 'the-kids.html'),
+
       heritageRoots: buildSectionLink('family', 'heritage-roots.html'),
       familyTree: buildSectionLink('family', 'family-tree.html'),
       ancestry: buildSectionLink('family', 'ancestry.html'),
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const navLabels = {
       family: 'Family',
       myStory: 'My Story',
-      theKids: 'The Kids',
+
       heritageRoots: 'Heritage & Roots',
       familyTree: 'Family Tree',
       ancestry: 'Ancestry'
@@ -233,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="dropdown-toggle">${navLabels.family} ▾</span>
               <ul class="dropdown-menu">
                 <li><a href="${familyLinks.myStory}">${navLabels.myStory}</a></li>
-                <li><a href="${familyLinks.theKids}">${navLabels.theKids}</a></li>
+
                 <li><a href="${familyLinks.heritageRoots}">${navLabels.heritageRoots}</a></li>
                 <li><a href="${familyLinks.familyTree}">${navLabels.familyTree}</a></li>
                 <li><a href="${familyLinks.ancestry}">${navLabels.ancestry}</a></li>
@@ -583,14 +583,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Family section - Other pages
       'my-story.html': ['Family', 'My Story'],
-      'the-kids.html': ['Family', 'The Kids'],
+
 
       // Spanish versions - mirror English hierarchy
       'heritage-roots-es.html': ['Family', 'Heritage & Roots'],
       'extended-family-es.html': ['Family', 'Heritage & Roots', 'Extended Family'],
       'ancestry-es.html': ['Family', 'Heritage & Roots', 'Ancestry'],
       'my-story-es.html': ['Family', 'My Story'],
-      'the-kids-es.html': ['Family', 'The Kids'],
+
       'jorge-ranilla-es.html': ['Family', 'Heritage & Roots', 'Jorge'],
       'shane-ranilla-es.html': ['Family', 'Heritage & Roots', 'Shane'],
       'alyssa-ranilla-es.html': ['Family', 'Heritage & Roots', 'Alyssa'],
@@ -731,8 +731,7 @@ document.addEventListener("DOMContentLoaded", () => {
       'baptism-godmother-es.html',
       'extended-family.html',
       'family-tree.html',
-      'heritage-roots.html',
-      'the-kids.html'
+      'heritage-roots.html'
     ]);
 
     if (!file.endsWith('.html') || excludedFiles.has(file)) return;
