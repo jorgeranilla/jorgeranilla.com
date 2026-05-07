@@ -1,11 +1,5 @@
 ﻿[
     {
-        "title":  "Photo Tags | Family Directory | Jorge Ranilla",
-        "url":  "admin/index.html",
-        "section":  "admin",
-        "content":  "Photo Tags | Family Directory | Jorge Ranilla Loading... Private Access Photo Tags Sign in with your admin Google account to manage family photo tags. Sign in with Google Pending Approval Almost There! Hi ! Your profile will be available once an admin approves your access. Sign Out Photo Tags Assign Family folder photos to the people who appear in them Admin Access Only Only approved admins can manage photo tags. All Untagged Tagged Approved Loading Family folder photos... Loading photos... No photos match this filter"
-    },
-    {
         "title":  "Family Updates",
         "url":  "blog/family-updates.html",
         "section":  "blog",
@@ -304,6 +298,12 @@
         "url":  "family-directory/index.html",
         "section":  "family-directory",
         "content":  "Family Directory | Jorge Ranilla Loading Family Directory… Private Access Family Directory Sign in with your Google account to view the family directory. Only approved family members can access this page. Sign in with Google Secured by Firebase · Only approved members can view Pending Approval Almost There! Hi ! Your request has been sent to the family admin. You\u0027ll get access once approved. Sign Out Family Directory Contact information for approved family members 🔑 Admin Panel Pending Approvals ( 0 ) Add Member Import Contacts Photo Tags Loading members… No family members found Pending Approvals ✕ No pending requests Add Family Member ✕ Full Name * Email Phone City Country Add Member Import Contacts ✕ Upload a .vcf file to bulk import family contacts. The file is parsed in your browser — nothing is uploaded to any server. Choose Contact File Preview ( 0 contacts found): Import All Cancel Edit Member ✕"
+    },
+    {
+        "title":  "Photo Tags | Family Directory | Jorge Ranilla",
+        "url":  "family-directory/photo-tags.html",
+        "section":  "family-directory",
+        "content":  "Photo Tags | Family Directory | Jorge Ranilla Loading... Private Access Photo Tags Sign in with your admin Google account to manage family photo tags. Sign in with Google Pending Approval Almost There! Hi ! Your profile will be available once an admin approves your access. Sign Out Photo Tags Assign Family folder photos to the people who appear in them Admin Access Only Only approved admins can manage photo tags. All Untagged Tagged Approved Loading Family folder photos... Loading photos... No photos match this filter"
     },
     {
         "title":  "My Profile | Family Directory | Jorge Ranilla",
