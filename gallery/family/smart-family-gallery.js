@@ -181,9 +181,9 @@
       });
 
       const tagPeople = [
-        ...(tag.people || []),
-        ...(tag.peopleAliases || []),
-        ...(tag.personIds || [])
+        ...(Array.isArray(tag.people) ? tag.people : []),
+        ...(Array.isArray(tag.peopleAliases) ? tag.peopleAliases : []),
+        ...(Array.isArray(tag.personIds) ? tag.personIds : [])
       ];
 
       return aliases.some(alias => tagPeople.includes(alias));
