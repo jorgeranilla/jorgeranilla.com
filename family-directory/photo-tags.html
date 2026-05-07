@@ -111,9 +111,25 @@
       color: #b26a00;
     }
 
+    .fd-tag-status.needs-review {
+      background: #fff3e0;
+      color: #c45100;
+    }
+
     .fd-tag-status.untagged {
       background: #f2f2f2;
       color: #888;
+    }
+
+    .fd-tag-review-note {
+      background: #fff9f0;
+      border: 1px solid #ffe1b8;
+      border-radius: 10px;
+      color: #9a4b00;
+      font-size: .76rem;
+      line-height: 1.45;
+      margin: 0 0 12px;
+      padding: 9px 10px;
     }
 
     .fd-person-chip-wrap {
@@ -381,6 +397,7 @@
             <button class="fd-filter-pill" data-filter="untagged">Untagged</button>
             <button class="fd-filter-pill" data-filter="tagged">Tagged</button>
             <button class="fd-filter-pill" data-filter="approved">Approved</button>
+            <button class="fd-filter-pill" data-filter="needs-review">Needs Retag</button>
           </div>
           <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading Family folder photos...</p>
         </div>
@@ -401,7 +418,7 @@
   </div>
 
   <script src="directory.js"></script>
-  <script src="photo-tags.js"></script>
+  <script src="photo-tags.js?v=3"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>

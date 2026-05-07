@@ -26,6 +26,7 @@
     videoAlt: 'Family video',
     fallbackNotice: ''
   };
+  const TAG_CONTENT_FIELDS = ['mimeType', 'type', 'md5Checksum', 'size'];
 
   let config = {};
   let allFiles = [];
@@ -59,6 +60,26 @@
 
   function driveThumb(fileId, size) {
     return `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w${size}`;
+  }
+
+  function getDriveFieldValue(source, field) {
+    return String(source?.[field] || '').trim();
+  }
+
+  function hasSavedDriveFingerprint(tag) {
+    const drive = tag?.drive || {};
+    return TAG_CONTENT_FIELDS.some(field => getDriveFieldValue(drive, field));
+  }
+
+  function isApprovedTagCurrentForFile(file, tag) {
+    if (!tag || tag.status !== 'approved') return false;
+    if (!hasSavedDriveFingerprint(tag)) return false;
+
+    return TAG_CONTENT_FIELDS.every(field => {
+      const saved = getDriveFieldValue(tag.drive, field);
+      const current = getDriveFieldValue(file, field);
+      return !saved || !current || saved === current;
+    });
   }
 
   async function fetchDriveFolder(folderId) {
@@ -134,7 +155,9 @@
           people: Array.isArray(data.people) ? data.people : [],
           peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
           personIds: Array.isArray(data.personIds) ? data.personIds : [],
-          albums: Array.isArray(data.albums) ? data.albums : []
+          albums: Array.isArray(data.albums) ? data.albums : [],
+          drive: data.drive && typeof data.drive === 'object' ? data.drive : {},
+          status: data.status || ''
         });
       });
 
@@ -150,7 +173,7 @@
 
     if (config.mode === 'person') {
       const PERSON_ALIAS_MAP = {
-        'luis-fernando': ['fernando-astocondor', 'luis-fernando-astocondor'],
+        'luis-fernando': ['luis-fernando-astocondor'],
         'fernando-javier': ['fernando-pallete', 'fernando-javier-pallete'],
         'lorenzo-david': ['lorenzo-lu', 'lorenzo-david-lu'],
         'eugenio-jesus': ['eugenio-astocondor', 'eugenio-jesus-astocondor'],
@@ -160,12 +183,14 @@
         'paola-andrea': ['paola-pallete'],
         'milagros': ['milagros-herrera'],
         'adriana': ['adriana-astocondor'],
-        'alessandra': ['alessandra-prietto', 'alessandra-briceno'],
+        'alessandra': ['alessandra-briceno'],
         'paola-josefina': ['paola-ranilla'],
         'victor-andres-ranilla': ['victor-ranilla'],
         'maria-eugenia-ranilla': ['maria-ranilla'],
+        'shane-ranilla': ['shane-ranilla'],
+        'jorge-ranilla': ['jorge-ranilla'],
         'jorge-luis-ranilla': ['jorge-ranilla-cateriano'],
-        'sylvia-ines-astocondor': ['sylvia-astocondor-salazar', 'sylvia-astocondor'],
+        'sylvia-ines-astocondor': ['sylvia-astocondor'],
         'eugenio-astocondor': ['eugenio-astocondor-salazar'],
         'alyssa-ranilla': ['alyssa-ranilla']
       };
@@ -210,7 +235,10 @@
     }
 
     const taggedFiles = masterFiles
-      .filter(file => matchesConfiguredGallery(tags.get(file.id)))
+      .filter(file => {
+        const tag = tags.get(file.id);
+        return isApprovedTagCurrentForFile(file, tag) && matchesConfiguredGallery(tag);
+      })
       .map(file => ({ ...file, tags: tags.get(file.id) }));
 
     if (taggedFiles.length > 0 || !config.legacyFolderId) {

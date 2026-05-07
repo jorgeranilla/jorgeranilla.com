@@ -2,6 +2,42 @@ const PHOTO_TAGS_DRIVE_API_KEY = 'AIzaSyCadJTGnwhASQ-kj7p4AnGFAwXIIFChoSs';
 const PHOTO_TAGS_MASTER_FOLDER_ID = '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ';
 const PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const PHOTO_TAGS_DRIVE_PAGE_SIZE = 200;
+const PHOTO_TAGS_CONTENT_FIELDS = ['mimeType', 'type', 'md5Checksum', 'size'];
+const PHOTO_TAGS_STATUS_LABELS = {
+  approved: 'Approved',
+  pending: 'Pending',
+  'needs-review': 'Needs Retag',
+  untagged: 'Untagged'
+};
+const PHOTO_TAG_CANONICAL_SLUGS = {
+  'luis-fernando': 'luis-fernando-astocondor',
+  'fernando-astocondor': 'luis-fernando-astocondor',
+  'fernando-javier': 'fernando-pallete',
+  'lorenzo-david': 'lorenzo-lu',
+  'eugenio-jesus': 'eugenio-astocondor',
+  'ernesto': 'ernesto-herrera',
+  'luisa-cristina': 'luisa-astocondor',
+  'monica-del-carmen': 'monica-astocondor',
+  'paola-andrea': 'paola-pallete',
+  'paola-andres': 'paola-pallete',
+  'milagros': 'milagros-herrera',
+  'adriana': 'adriana-astocondor',
+  'alessandra': 'alessandra-briceno',
+  'alessandra-prietto': 'alessandra-briceno',
+  'paola-josefina': 'paola-ranilla',
+  'victor-andres': 'victor-ranilla',
+  'victor-andres-ranilla': 'victor-ranilla',
+  'maria-eugenia': 'maria-ranilla',
+  'maria-eugenia-ranilla': 'maria-ranilla',
+  'shane': 'shane-ranilla',
+  'jorge': 'jorge-ranilla',
+  'jorge-luis': 'jorge-ranilla-cateriano',
+  'jorge-luis-ranilla': 'jorge-ranilla-cateriano',
+  'sylvia-ines': 'sylvia-astocondor',
+  'sylvia-ines-astocondor': 'sylvia-astocondor',
+  'sylvia-astocondor-salazar': 'sylvia-astocondor',
+  'alyssa': 'alyssa-ranilla'
+};
 
 let photoTagMembers = [];
 let photoTagFiles = [];
@@ -35,6 +71,7 @@ async function initPhotoTagger() {
       loadPhotoTagFiles()
     ]);
 
+    await syncComputedPhotoTagStatuses();
     renderPhotoTags();
   } catch (error) {
     console.error('Photo tag load error:', error);
@@ -71,12 +108,19 @@ async function loadPhotoTagMembers() {
   const members = await fetchAllMembers();
   const approved = members
     .filter(member => member.status === 'approved' && member.status !== 'claimed')
-    .map(member => ({
-      ...member,
-      personSlug: makePhotoTagSlug(member.displayName || member.email || member.id),
-      tagKey: `member:${member.id}`,
-      tagLabel: member.displayName || member.email || member.id
-    }))
+    .map(member => {
+      const rawPersonSlug = makePhotoTagSlug(member.displayName || member.email || member.id);
+      const personSlug = canonicalPhotoTagSlug(rawPersonSlug);
+
+      return {
+        ...member,
+        rawPersonSlug,
+        personSlug,
+        alternatePersonSlugs: rawPersonSlug && rawPersonSlug !== personSlug ? [rawPersonSlug] : [],
+        tagKey: `member:${member.id}`,
+        tagLabel: member.displayName || member.email || member.id
+      };
+    })
     .filter(member => member.tagKey && member.personSlug)
     .sort((a, b) => a.tagLabel.localeCompare(b.tagLabel, undefined, { sensitivity: 'base' }));
 
@@ -144,15 +188,23 @@ async function loadPhotoTagFiles() {
 }
 
 function normalizePhotoTagRecord(id, data) {
+  const people = Array.isArray(data.people) ? data.people : [];
+  const peopleAliases = Array.isArray(data.peopleAliases) ? data.peopleAliases : [];
+  const personIds = Array.isArray(data.personIds) ? data.personIds : [];
+  const storedStatus = String(data.status || '').trim();
+  const hasSavedPeople = people.length > 0 || peopleAliases.length > 0 || personIds.length > 0;
+
   return {
     id,
     ...data,
-    people: Array.isArray(data.people) ? data.people : [],
-    peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
+    people,
+    peopleAliases,
     peopleLabels: Array.isArray(data.peopleLabels) ? data.peopleLabels : [],
-    personIds: Array.isArray(data.personIds) ? data.personIds : [],
+    personIds,
     albums: Array.isArray(data.albums) ? data.albums : ['family'],
-    status: data.status || 'approved'
+    drive: data.drive && typeof data.drive === 'object' ? data.drive : {},
+    status: storedStatus || (hasSavedPeople ? 'needs-review' : 'untagged'),
+    _storedStatus: storedStatus
   };
 }
 
@@ -163,6 +215,11 @@ function makePhotoTagSlug(value) {
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+}
+
+function canonicalPhotoTagSlug(value) {
+  const slug = makePhotoTagSlug(value);
+  return PHOTO_TAG_CANONICAL_SLUGS[slug] || slug;
 }
 
 function disambiguateDuplicateMemberLabels(members) {
@@ -205,6 +262,7 @@ function getPhotoTagLabel(slug) {
   const member = photoTagMembers.find(item =>
     item.tagKey === slug ||
     item.personSlug === slug ||
+    item.alternatePersonSlugs?.includes(slug) ||
     item.id === slug
   );
   return member?.tagLabel || slug;
@@ -215,8 +273,94 @@ function isMemberSelectedForTag(tag, member) {
 
   return tag.people.includes(member.tagKey) ||
     tag.people.includes(member.personSlug) ||
+    member.alternatePersonSlugs?.some(slug => tag.people.includes(slug)) ||
     tag.peopleAliases.includes(member.personSlug) ||
+    member.alternatePersonSlugs?.some(slug => tag.peopleAliases.includes(slug)) ||
     tag.personIds.includes(member.id);
+}
+
+function hasSavedTagPeople(tag) {
+  return Boolean(tag && (
+    (Array.isArray(tag.people) && tag.people.length > 0) ||
+    (Array.isArray(tag.peopleAliases) && tag.peopleAliases.length > 0) ||
+    (Array.isArray(tag.personIds) && tag.personIds.length > 0)
+  ));
+}
+
+function getDriveFieldValue(source, field) {
+  return String(source?.[field] || '').trim();
+}
+
+function hasSavedDriveFingerprint(tag) {
+  const drive = tag?.drive || {};
+  return PHOTO_TAGS_CONTENT_FIELDS.some(field => getDriveFieldValue(drive, field));
+}
+
+function getChangedDriveFields(file, tag) {
+  const drive = tag?.drive || {};
+
+  return PHOTO_TAGS_CONTENT_FIELDS.filter(field => {
+    const saved = getDriveFieldValue(drive, field);
+    const current = getDriveFieldValue(file, field);
+    return saved && current && saved !== current;
+  });
+}
+
+function hasUnresolvedTagPeople(tag) {
+  if (!hasSavedTagPeople(tag)) return false;
+
+  const selectedMembers = photoTagMembers.filter(member => isMemberSelectedForTag(tag, member));
+
+  if (selectedMembers.length === 0) return true;
+
+  const hasMissingSavedPerson = (tag.people || []).some(value =>
+    !selectedMembers.some(member =>
+      member.tagKey === value ||
+      member.personSlug === value ||
+      member.alternatePersonSlugs?.includes(value) ||
+      member.id === value
+    )
+  );
+
+  if (hasMissingSavedPerson) return true;
+
+  return selectedMembers.some(member =>
+    !tag.people.includes(member.tagKey) ||
+    !tag.peopleAliases.includes(member.personSlug) ||
+    !tag.personIds.includes(member.id)
+  );
+}
+
+function getPhotoTagReviewReason(file, tag) {
+  if (!hasSavedTagPeople(tag)) return '';
+
+  if (hasUnresolvedTagPeople(tag)) {
+    return 'One or more saved people no longer match an available tag profile. Review and publish again.';
+  }
+
+  if (!tag._storedStatus) {
+    return 'This tag was saved before explicit approval tracking. Review and publish again.';
+  }
+
+  if (tag._storedStatus === 'approved') {
+    if (!hasSavedDriveFingerprint(tag)) {
+      return 'This approval is missing the Drive file fingerprint. Review and publish again.';
+    }
+
+    if (getChangedDriveFields(file, tag).length > 0) {
+      return 'The Google Drive file changed after approval. Review and publish again.';
+    }
+  }
+
+  if (tag.status === 'needs-review') {
+    return tag.reviewReason || 'Review these tags before publishing.';
+  }
+
+  if (tag.name && file.name && tag.name !== file.name) {
+    return 'File name changed since approval. Save and publish to refresh the saved metadata.';
+  }
+
+  return '';
 }
 
 function getPhotoTagRecord(fileId) {
@@ -225,13 +369,61 @@ function getPhotoTagRecord(fileId) {
 
 function isPhotoTagged(file) {
   const tag = getPhotoTagRecord(file.id);
-  return Boolean(tag && tag.people.length > 0);
+  return hasSavedTagPeople(tag);
 }
 
 function getPhotoTagStatus(file) {
   const tag = getPhotoTagRecord(file.id);
-  if (!tag || tag.people.length === 0) return 'untagged';
+  if (!hasSavedTagPeople(tag)) return 'untagged';
+
+  if (hasUnresolvedTagPeople(tag)) return 'needs-review';
+
+  if (!tag._storedStatus) return 'needs-review';
+
+  if (tag._storedStatus === 'approved') {
+    if (!hasSavedDriveFingerprint(tag)) return 'needs-review';
+    if (getChangedDriveFields(file, tag).length > 0) return 'needs-review';
+  }
+
   return tag.status || 'approved';
+}
+
+async function syncComputedPhotoTagStatuses() {
+  const updates = [];
+
+  photoTagFiles.forEach(file => {
+    const tag = getPhotoTagRecord(file.id);
+    if (!hasSavedTagPeople(tag)) return;
+
+    const computedStatus = getPhotoTagStatus(file);
+    const storedStatus = tag._storedStatus || '';
+
+    if (computedStatus !== 'needs-review' || storedStatus === 'needs-review') return;
+
+    const reviewReason = getPhotoTagReviewReason(file, tag) || 'Review these tags before publishing.';
+
+    updates.push(
+      window._fb.setDoc(
+        window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, file.id),
+        {
+          status: 'needs-review',
+          reviewReason,
+          reviewCheckedAt: window._fb.serverTimestamp()
+        },
+        { merge: true }
+      ).then(() => {
+        photoTagRecords.set(file.id, normalizePhotoTagRecord(file.id, {
+          ...tag,
+          status: 'needs-review',
+          reviewReason
+        }));
+      })
+    );
+  });
+
+  if (updates.length > 0) {
+    await Promise.all(updates);
+  }
 }
 
 function getVisiblePhotoTagFiles() {
@@ -243,6 +435,7 @@ function getVisiblePhotoTagFiles() {
     if (photoTagFilter === 'untagged' && tagged) return false;
     if (photoTagFilter === 'tagged' && !tagged) return false;
     if (photoTagFilter === 'approved' && status !== 'approved') return false;
+    if (photoTagFilter === 'needs-review' && status !== 'needs-review') return false;
 
     if (!photoTagSearch) return true;
 
@@ -263,10 +456,13 @@ function renderPhotoTags() {
   const visible = getVisiblePhotoTagFiles();
   const taggedCount = photoTagFiles.filter(isPhotoTagged).length;
   const untaggedCount = photoTagFiles.length - taggedCount;
+  const needsReviewCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'needs-review').length;
+  const approvedCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'approved').length;
 
   summary.textContent = `${photoTagFiles.length} photos in Family folder · ${taggedCount} tagged · ${untaggedCount} untagged`;
 
   summary.textContent = summary.textContent.replace(/\u00C2\u00B7/g, '-');
+  summary.textContent = `${photoTagFiles.length} photos in Family folder - ${approvedCount} approved - ${needsReviewCount} need retag - ${untaggedCount} untagged`;
 
   if (visible.length === 0) {
     grid.innerHTML = '';
@@ -282,12 +478,17 @@ function renderPhotoTagCard(file) {
   const tag = getPhotoTagRecord(file.id);
   const selectedPeople = new Set(tag?.people || []);
   const status = getPhotoTagStatus(file);
-  const statusText = status === 'approved' ? 'Approved' : status === 'pending' ? 'Pending' : 'Untagged';
-  const labels = selectedPeople.size
-    ? Array.from(selectedPeople).map(getPhotoTagLabel).join(', ')
-    : 'No people assigned yet';
-
   const selectedMembersList = photoTagMembers.filter(m => isMemberSelectedForTag(tag, m));
+  const statusText = PHOTO_TAGS_STATUS_LABELS[status] || status;
+  const labels = selectedMembersList.length
+    ? selectedMembersList.map(member => member.displayTagLabel || member.tagLabel).join(', ')
+    : tag?.peopleLabels?.length
+      ? tag.peopleLabels.join(', ')
+      : selectedPeople.size
+        ? Array.from(selectedPeople).map(getPhotoTagLabel).join(', ')
+        : 'No people assigned yet';
+  const reviewReason = getPhotoTagReviewReason(file, tag);
+  const publishText = status === 'needs-review' ? 'Approve Tags' : 'Save & Publish';
 
   return `
     <article class="fd-photo-tag-card" data-file-id="${escapePhotoTagHtml(file.id)}">
@@ -299,6 +500,7 @@ function renderPhotoTagCard(file) {
           <span class="fd-tag-status untagged">${escapePhotoTagHtml(file.type)}</span>
         </div>
         <p class="fd-tag-summary">${escapePhotoTagHtml(labels)}</p>
+        ${reviewReason ? `<p class="fd-tag-review-note">${escapePhotoTagHtml(reviewReason)}</p>` : ''}
 
         <div class="fd-tagging-area">
           <input type="text" 
@@ -322,7 +524,7 @@ function renderPhotoTagCard(file) {
           `).join('')}
         </div>
         <div class="fd-photo-tag-actions">
-          <button type="button" class="fd-mini-btn" onclick="savePhotoTag('${escapePhotoTagHtml(file.id)}')">Save & Publish</button>
+          <button type="button" class="fd-mini-btn" onclick="savePhotoTag('${escapePhotoTagHtml(file.id)}')">${escapePhotoTagHtml(publishText)}</button>
           <button type="button" class="fd-mini-btn secondary" onclick="clearPhotoTag('${escapePhotoTagHtml(file.id)}')">Clear</button>
         </div>
       </div>
@@ -432,12 +634,16 @@ async function savePhotoTag(fileId) {
     albums: ['family'],
     source: 'manual',
     status: 'approved',
+    reviewReason: null,
     drive: {
+      mimeType: file.mimeType,
+      type: file.type,
       createdTime: file.createdTime,
       modifiedTime: file.modifiedTime,
       md5Checksum: file.md5Checksum,
       size: file.size
     },
+    approvedAt: window._fb.serverTimestamp(),
     updatedAt: window._fb.serverTimestamp()
   };
 
