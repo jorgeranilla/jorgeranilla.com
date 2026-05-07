@@ -149,35 +149,40 @@
     if (!tag) return false;
 
     if (config.mode === 'person') {
-      const LEGACY_SLUG_MAP = {
-        'luis-fernando': 'luis-fernando-astocondor',
-        'fernando-javier': 'fernando-pallete',
-        'lorenzo-david': 'lorenzo-lu',
-        'eugenio-jesus': 'eugenio-astocondor',
-        'ernesto': 'ernesto-herrera',
-        'luisa-cristina': 'luisa-astocondor',
-        'monica-del-carmen': 'monica-astocondor',
-        'paola-andrea': 'paola-pallete',
-        'milagros': 'milagros-herrera',
-        'adriana': 'adriana-astocondor',
-        'alessandra': 'alessandra-briceno',
-        'paola-josefina': 'paola-ranilla',
-        'victor-andres-ranilla': 'victor-ranilla',
-        'maria-eugenia-ranilla': 'maria-ranilla',
-        'shane-ranilla': 'shane-ranilla',
-        'jorge-ranilla': 'jorge-ranilla',
-        'jorge-luis-ranilla': 'jorge-ranilla-cateriano',
-        'sylvia-ines-astocondor': 'sylvia-astocondor',
-        'alyssa-ranilla': 'alyssa-ranilla'
+      const PERSON_ALIAS_MAP = {
+        'luis-fernando': ['fernando-astocondor', 'luis-fernando-astocondor'],
+        'fernando-javier': ['fernando-pallete', 'fernando-javier-pallete'],
+        'lorenzo-david': ['lorenzo-lu', 'lorenzo-david-lu'],
+        'eugenio-jesus': ['eugenio-astocondor', 'eugenio-jesus-astocondor'],
+        'ernesto': ['ernesto-herrera'],
+        'luisa-cristina': ['luisa-astocondor'],
+        'monica-del-carmen': ['monica-astocondor'],
+        'paola-andrea': ['paola-pallete'],
+        'milagros': ['milagros-herrera'],
+        'adriana': ['adriana-astocondor'],
+        'alessandra': ['alessandra-prietto', 'alessandra-briceno'],
+        'paola-josefina': ['paola-ranilla'],
+        'victor-andres-ranilla': ['victor-ranilla'],
+        'maria-eugenia-ranilla': ['maria-ranilla'],
+        'jorge-luis-ranilla': ['jorge-ranilla-cateriano'],
+        'sylvia-ines-astocondor': ['sylvia-astocondor-salazar', 'sylvia-astocondor'],
+        'eugenio-astocondor': ['eugenio-astocondor-salazar'],
+        'alyssa-ranilla': ['alyssa-ranilla']
+      };
+      const STRICT_PERSON_ALIASES = {
+        'eugenio-astocondor': ['eugenio-astocondor-salazar']
       };
 
-      const aliases = [config.personSlug, ...config.personAliases].filter(Boolean);
-      
-      // Automatically expand aliases to include their full directory names
-      aliases.forEach(alias => {
-        if (LEGACY_SLUG_MAP[alias] && !aliases.includes(LEGACY_SLUG_MAP[alias])) {
-          aliases.push(LEGACY_SLUG_MAP[alias]);
-        }
+      const aliases = STRICT_PERSON_ALIASES[config.personSlug]
+        ? [...STRICT_PERSON_ALIASES[config.personSlug]]
+        : [config.personSlug, ...config.personAliases].filter(Boolean);
+
+      aliases.slice().forEach(alias => {
+        (PERSON_ALIAS_MAP[alias] || []).forEach(mappedAlias => {
+          if (mappedAlias && !aliases.includes(mappedAlias)) {
+            aliases.push(mappedAlias);
+          }
+        });
       });
 
       const tagPeople = [
