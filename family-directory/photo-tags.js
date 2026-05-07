@@ -71,7 +71,12 @@ async function initPhotoTagger() {
       loadPhotoTagFiles()
     ]);
 
-    await syncComputedPhotoTagStatuses();
+    try {
+      await syncComputedPhotoTagStatuses();
+    } catch (syncError) {
+      console.warn('Could not sync stale photo tag statuses:', syncError);
+    }
+
     renderPhotoTags();
   } catch (error) {
     console.error('Photo tag load error:', error);
