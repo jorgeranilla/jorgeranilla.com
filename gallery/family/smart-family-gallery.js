@@ -181,16 +181,16 @@
       });
 
       const tagPeople = [
-        ...tag.people,
-        ...tag.peopleAliases,
-        ...tag.personIds
+        ...(tag.people || []),
+        ...(tag.peopleAliases || []),
+        ...(tag.personIds || [])
       ];
 
       return aliases.some(alias => tagPeople.includes(alias));
     }
 
     if (config.mode === 'album') {
-      return tag.albums.includes(config.albumSlug);
+      return (tag.albums || []).includes(config.albumSlug);
     }
 
     return true;
