@@ -499,8 +499,9 @@ function buildCardHTML(member) {
     </div>`;
   }
 
-  const preferred = member.preferredContact
-    ? `<div class="fd-card-preferred">✦ Preferred: ${member.preferredContact}</div>` : '';
+  const tagBadge = member.isPhotoTagOnly
+    ? `<div class="fd-card-preferred" style="background:#f1f3f4; color:#5f6368; border: 1px solid #dadce0;">Photo Tags Only</div>` 
+    : '';
 
   const adminBadge = showAdmin
     ? `<button class="fd-admin-btn" style="position:absolute;top:10px;left:10px;font-size:.65rem;padding:4px 8px" onclick="openAdminEdit('${member.id}')">Edit</button>` : '';
@@ -512,7 +513,7 @@ function buildCardHTML(member) {
       <img class="fd-card-photo" src="${photo}" alt="${member.displayName}" onerror="this.src='${defaultAvatar(member.displayName)}'">
       <h3 class="fd-card-name">${member.displayName || 'Family Member'}</h3>
       <div class="fd-card-info">${infoRows}</div>
-      ${preferred}
+      ${tagBadge}
     </div>`;
 }
 
