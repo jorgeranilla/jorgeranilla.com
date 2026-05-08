@@ -85,7 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Current section is the immediate parent directory (if any)
     // We assume the strict structure: root -> section -> file
-    const currentSection = depth > 0 ? pageDir.split('/').pop() : null;
+    const isArchivePage = window.location.pathname.split('/').includes('archive');
+    const currentSection = !isArchivePage && depth > 0 ? pageDir.split('/').pop() : null;
 
     const prefix = depth > 0 ? "../".repeat(depth) : "";
     const homeHref = depth > 0 ? prefix + "index.html" : "index.html";
@@ -132,8 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const galleryLinks = {
       family: buildSectionLink('gallery', 'family.html'),
-      portraits: buildSectionLink('gallery', 'portraits.html'),
-      travel: buildSectionLink('gallery', 'travel.html')
+      portraits: buildSectionLink('gallery', 'portraits.html')
     };
     const professionalLinks = {
       atAGlance: buildSectionLink('professional', 'at-a-glance.html'),
@@ -245,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
               <ul class="dropdown-menu">
                 <li><a href="${galleryLinks.family}">Family</a></li>
                 <li><a href="${galleryLinks.portraits}">Portraits</a></li>
-                <li><a href="${galleryLinks.travel}">Travel</a></li>
               </ul>
             </li>
 
@@ -537,6 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
       depth = relativePath.split('/').filter(p => p).length;
     }
     const homePrefix = depth > 0 ? "../" : "";
+    const rootPrefix = depth > 0 ? "../".repeat(depth) : "";
 
     const path = window.location.pathname.split("/").pop() || "index.html";
     const file = decodeURIComponent(path).toLowerCase();
@@ -635,7 +635,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const CLICKABLE_PAGES = {
       'Heritage & Roots': `${homePrefix}family/heritage-roots.html`,
       'Extended Family': `${homePrefix}family/extended-family.html`,
-      'Travel': `${homePrefix}gallery/travel.html`,
+      'Travel': `${rootPrefix}archive/gallery/travel.html`,
       'Family Directory': `${homePrefix}family-directory/index.html`,
       'Family': null, // Has submenu items but no dedicated page
       'Gallery': null,
