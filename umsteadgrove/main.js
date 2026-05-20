@@ -419,9 +419,14 @@ function gtag_event(action, params = {}) {
 /* ─── SCROLL REVEAL ─────────────────────────────────────────────────────────── */
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
-}, { threshold: 0.1 });
-// Observe all .reveal elements (including dynamically injected ones from IIFE)
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}, { threshold: 0.08 });
+
+function observeRevealElements() {
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => revealObserver.observe(el));
+}
+// Observe on load and after a short delay (captures dynamically rendered items)
+observeRevealElements();
+setTimeout(observeRevealElements, 100);
 
 /* ─── TOAST ─────────────────────────────────────────────────────────────────── */
 let toastTimer;

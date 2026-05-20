@@ -182,12 +182,16 @@ const SITE_CONFIG = {
   // ─── FAQ ─────────────────────────────────────────────────────────────────────
   faq: [
     {
-      q: "Is the seller offering any closing cost assistance?",
-      a: "Yes! The seller is offering $10,000 toward the buyer's closing costs. This can significantly reduce the amount you need to bring to closing and is a great opportunity for buyers looking to preserve cash after the purchase."
+      q: "Is the seller offering closing cost assistance?",
+      a: "Yes — the seller is offering $10,000 toward the buyer's closing costs as part of the purchase agreement. The buyer has full flexibility in how those funds are applied at settlement, which may include buyer's agent compensation if the buyer has chosen to work with a buyer's agent. Specific terms are subject to negotiation in the purchase contract."
+    },
+    {
+      q: "Can I use a buyer's agent, and who pays them?",
+      a: "Buyer's agents are welcome. Since the August 2024 NAR settlement, buyer's agent compensation is negotiated separately between you and your agent. The seller's $10,000 concession toward closing costs gives you real flexibility — buyers who have agreed to pay their agent can apply part or all of the concession toward that fee. Unrepresented buyers can apply the full $10,000 toward other closing costs. Either way, you benefit."
     },
     {
       q: "What improvements have been made to the home?",
-      a: "The sellers have invested meaningfully in this home since purchase. Key upgrades include: a fully finished and freshly painted attached garage; a significantly extended back patio with a screened covered area; a full vinyl privacy fence enclosing the backyard; a purpose-built enclosed structure for garbage and recycling bins; and a dedicated home gym that conveys with the property."
+      a: "The sellers have invested meaningfully in this home since purchase. Key upgrades include: a fully finished and freshly painted attached garage; a significantly extended back patio with a screened covered area; a full vinyl privacy fence enclosing the backyard; a purpose-built enclosed structure for garbage and recycling bins; and a dedicated home gym that conveys with the property. Total approximate upgrade value: $20,200."
     },
     {
       q: "Does the home gym convey with the sale?",
@@ -195,39 +199,35 @@ const SITE_CONFIG = {
     },
     {
       q: "Is this home listed on the MLS?",
-      a: "No. This is a direct For Sale By Owner listing. Buyer's agents are welcome and will be considered for a negotiated buyer's agent commission. Please inquire."
-    },
-    {
-      q: "Is there a buyer's agent commission offered?",
-      a: "The seller is open to discussing a buyer's agent commission. Please inquire via the contact form or email for current terms."
+      a: "No. This is a direct For Sale By Owner listing. There is no MLS number. Buyer's agents are welcome and the $10,000 seller concession can be applied toward their compensation."
     },
     {
       q: "Can I request a showing?",
-      a: "Absolutely. Use the form below to request a showing and we'll confirm available times within 24 hours."
+      a: "Absolutely. Use the form on this page to request a showing and the seller will confirm available times within 24 hours."
     },
     {
-      q: "Do I need to be pre-approved to tour the home?",
-      a: "Pre-approval is encouraged but not required to schedule a showing. We do ask that serious buyers be prepared to provide a pre-approval letter prior to submitting an offer."
+      q: "Do I need to be pre-approved to tour?",
+      a: "Pre-approval is encouraged but not required to schedule a showing. Serious buyers should be prepared to provide a pre-approval letter prior to submitting an offer."
     },
     {
       q: "How do I submit an offer?",
-      a: "Please work with your real estate attorney or agent to prepare a North Carolina Offer to Purchase and Contract (Standard Form 2-T). Completed offers may be sent directly to the seller via the email listed on this page."
+      a: "Please work with your real estate attorney or buyer's agent to prepare a North Carolina Offer to Purchase and Contract (Standard Form 2-T). Completed offers may be sent directly to the seller via the email listed on this page."
     },
     {
       q: "Are there any known issues with the home?",
-      a: "The NC Residential Property Disclosure Statement is available upon request. The seller encourages all buyers to conduct a thorough independent home inspection during the due diligence period."
+      a: "The NC Residential Property Disclosure Statement is available upon request. The home was built in 2024 and is under the builder's structural warranty. The seller encourages all buyers to conduct a thorough independent home inspection during the due diligence period."
     },
     {
       q: "What is included in the sale?",
-      a: "The refrigerator, stove, washer, dryer, and dedicated home gym setup are included with the sale. Other inclusions such as garage door openers, window treatments, and related items can be confirmed in the purchase agreement."
+      a: "Included: refrigerator, stove, washer, dryer, and the full home gym setup. Other items such as garage door openers, window treatments, and fixtures can be confirmed in the purchase agreement."
     },
     {
-      q: "What makes the location convenient?",
-      a: "Umstead Grove gives you a quiet, intimate 50-home setting with quick access to everyday essentials and major Durham destinations. Publix at Latta Park recently opened nearby, and the former Northgate Mall site is planned for a Target-anchored redevelopment. Plans and tenant details can change, so buyers should verify current project status independently."
+      q: "What makes the location stand out?",
+      a: "Umstead Grove is an intimate 50-home community surrounded by natural forests, with quick access to Publix at Latta Park (~1 mi), Costco (~7 mi), Duke University & Hospital (~7 mi), Downtown Durham (~8 mi), Eno River State Park (~4 mi), and RTP/RDU Airport (~17–25 min). The former Northgate Mall site is also planned for a Target-anchored redevelopment."
     },
     {
       q: "When is the seller hoping to close?",
-      a: "The seller is flexible on closing timeline. A 30–45 day close is preferred, but terms are open to negotiation based on buyer needs."
+      a: "A 30–45 day close is preferred, but the seller is flexible and open to negotiation based on the buyer's needs and lender timeline."
     },
   ],
 
