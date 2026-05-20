@@ -28,11 +28,10 @@ const adminEmails  = defineSecret('UG_ADMIN_EMAILS');
 
 // ─── FIREBASE INIT ────────────────────────────────────────────────────────────
 if (!admin.apps.length) admin.initializeApp();
-const { getFirestore } = require('firebase-admin/firestore');
-const db      = getFirestore('umsteadgrove');   // isolated DB — never touches (default)
+const db      = admin.firestore();   // default DB — collection 'umsteadgrove' keeps data isolated
 const storage = admin.storage();
 
-const COLLECTION   = 'umsteadgrove_leads';
+const COLLECTION   = 'umsteadgrove';
 const BUCKET_PREFIX = 'umsteadgrove/preapprovals/';
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_MIME  = new Set(['application/pdf','image/jpeg','image/png']);
@@ -269,7 +268,15 @@ function parseMultipart(req) {
     });
     bb.on('close', () => resolve({ fields, fileBuffer, fileMime, fileName, fileTooLarge }));
     bb.on('error', reject);
-    req.pipe(bb);
+
+    // Cloud Functions v2 (Cloud Run) buffers the body before the handler runs,
+    // so req.pipe() gets an empty stream. Use rawBody when available.
+    if (req.rawBody) {
+      bb.write(req.rawBody);
+      bb.end();
+    } else {
+      req.pipe(bb);
+    }
   });
 }
 
