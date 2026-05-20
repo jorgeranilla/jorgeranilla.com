@@ -28,7 +28,8 @@ const adminEmails  = defineSecret('UG_ADMIN_EMAILS');
 
 // ─── FIREBASE INIT ────────────────────────────────────────────────────────────
 if (!admin.apps.length) admin.initializeApp();
-const db      = admin.firestore();
+const { getFirestore } = require('firebase-admin/firestore');
+const db      = getFirestore('umsteadgrove');   // isolated DB — never touches (default)
 const storage = admin.storage();
 
 const COLLECTION   = 'umsteadgrove_leads';
