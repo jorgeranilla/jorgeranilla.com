@@ -5,6 +5,23 @@
   "firestore": {
     "rules": "family-directory/firestore.rules"
   },
+  "hosting": {
+    "public": ".",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "functions/**"],
+    "rewrites": [
+      { "source": "/api/umsteadgrove/submit",     "function": "umsteadgroveSubmit"     },
+      { "source": "/api/umsteadgrove/leads/**",   "function": "umsteadgroveUpdateLead" },
+      { "source": "/api/umsteadgrove/leads",      "function": "umsteadgroveLeads"      },
+      { "source": "/api/umsteadgrove/download/**","function": "umsteadgroveDownload"   },
+      { "source": "/api/umsteadgrove/broadcast",  "function": "umsteadgroveSendUpdate" }
+    ],
+    "headers": [
+      {
+        "source": "/umsteadgrove/admin.html",
+        "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+      }
+    ]
+  },
   "functions": [
     {
       "source": "functions",

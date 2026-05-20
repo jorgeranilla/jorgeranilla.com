@@ -183,3 +183,11 @@ exports.stopAlyssaLiveStream = makeHandler(async (req) => {
     mediaSessionId,
   });
 });
+
+// ─── UMSTEAD GROVE FSBO ──────────────────────────────────────────────────────
+const ug = require('./umsteadgrove');
+exports.umsteadgroveSubmit     = ug.umsteadgroveSubmit;
+exports.umsteadgroveLeads      = ug.umsteadgroveLeads;
+exports.umsteadgroveUpdateLead = ug.umsteadgroveUpdateLead;
+exports.umsteadgroveDownload   = ug.umsteadgroveDownload;
+exports.umsteadgroveSendUpdate = ug.umsteadgroveSendUpdate;

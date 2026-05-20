@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="meta-title">Umstead Grove | Durham, NC | For Sale By Owner</title>
+  <meta name="description" id="meta-desc" content="Beautiful home for sale by owner in Durham, NC. Request a showing today.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" id="og-title" content="Umstead Grove | FSBO Durham NC">
+  <meta property="og:image" id="og-image" content="house.png">
+  <meta property="og:url" id="og-url" content="">
+  <meta name="theme-color" content="#1a3a2e">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><span>Umstead</span> Grove</div>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#highlights">Features</a></li>
+        <li><a href="#neighborhood">Location</a></li>
+        <li><a href="#contact" class="nav-cta" id="nav-cta-btn">Request Showing</a></li>
+      </ul>
+      <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="nav-mobile" id="nav-mobile">
+      <a href="#gallery">Gallery</a>
+      <a href="#highlights">Features</a>
+      <a href="#neighborhood">Location</a>
+      <a href="#contact">Request a Showing</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <div class="hero-two-col">
+      <div>
+        <div class="hero-badge"><span>🏡 For Sale By Owner · Durham, NC</span></div>
+        <p class="hero-address" id="hero-address">Loading address…</p>
+        <h1 class="hero-title serif">Your Dream Home<br>Awaits in Durham</h1>
+        <div class="hero-price" id="hero-price">—</div>
+        <div id="hero-concession-badge" style="display:none;margin-bottom:20px">
+          <span style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.15);border:1.5px solid var(--gold);border-radius:50px;padding:8px 18px;font-size:0.88rem;color:var(--gold);font-weight:600">
+            🎁 <span id="hero-concession-text">Seller offering $10,000 toward buyer's closing costs</span>
+          </span>
+        </div>
+        <div class="hero-stats" id="hero-stats">
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-beds">—</span><span class="hero-stat-lbl">Bedrooms</span></div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-baths">—</span><span class="hero-stat-lbl">Bathrooms</span></div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-sqft">—</span><span class="hero-stat-lbl">Sq Ft</span></div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-lot">—</span><span class="hero-stat-lbl">Lot</span></div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-year">—</span><span class="hero-stat-lbl">Built</span></div>
+        </div>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary" id="cta-showing">📅 Request a Showing</a>
+          <a href="#contact" class="btn btn-outline" id="cta-info">Submit Buyer Info</a>
+          <a id="cta-email-preapproval" href="#" class="btn btn-outline">✉ Email Pre-Approval</a>
+        </div>
+      </div>
+      <div class="hero-photo-card reveal">
+        <img src="house.png" alt="Property exterior" id="hero-main-photo">
+        <div class="hero-photo-badge">For Sale By Owner</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="container">
+    <div class="text-center">
+      <p class="section-label">Photo Tour</p>
+      <h2 class="section-title">A Home That Feels Ready</h2>
+    </div>
+    <div class="gallery-grid" id="gallery-grid"></div>
+    <div class="gallery-more">
+      <a href="#contact" class="btn btn-outline-green" id="cta-tour">Schedule an In-Person Tour →</a>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS -->
+<section id="highlights">
+  <div class="container">
+    <div class="text-center">
+      <p class="section-label">Why It Stands Out</p>
+      <h2 class="section-title">Warm, Practical, Move-In Ready</h2>
+      <p class="section-sub">The layout, upgrades, and included appliances make this home feel easy to live in from day one.</p>
+    </div>
+    <div class="highlights-grid" id="highlights-grid"></div>
+    <div class="upgrade-summary" id="upgrade-summary"></div>
+  </div>
+</section>
+
+<!-- NEIGHBORHOOD -->
+<section id="neighborhood">
+  <div class="container">
+    <p class="section-label">Location & Community</p>
+    <h2 class="section-title">Perfectly Situated in Durham</h2>
+    <div class="neighborhood-grid">
+      <div>
+        <p id="neighborhood-desc" style="color:var(--text-mid);margin-bottom:24px;"></p>
+        <ul class="proximity-list" id="proximity-list"></ul>
+        <div class="community-facts" id="community-facts"></div>
+      </div>
+      <div>
+        <div class="map-placeholder" id="map-container">
+          <span style="font-size:2rem">🗺️</span>
+          <p>Interactive map coming soon</p>
+          <p style="font-size:0.8rem">Add Google Maps embed URL to config.js</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET CONTEXT -->
+<section id="market-context">
+  <div class="container">
+    <div class="market-header">
+      <div>
+        <p class="section-label">Price Context</p>
+        <h2 class="section-title">Competitive Inside the Neighborhood</h2>
+      </div>
+      <p class="market-updated" id="market-updated"></p>
+    </div>
+    <p class="section-sub" id="market-intro"></p>
+    <div class="market-grid" id="market-grid"></div>
+    <div hidden>
+      <div class="disclosure-card reveal">
+        <h3>📋 Available Disclosure Documents</h3>
+        <ul id="disclosure-list"></ul>
+        <p style="font-size:0.85rem;color:var(--text-light);margin-top:16px;" id="disclosure-notes"></p>
+      </div>
+      <div class="disclosure-card reveal">
+        <h3>🏘️ HOA Information</h3>
+        <ul id="hoa-list"></ul>
+      </div>
+    </div>
+    <div class="market-takeaways">
+      <h3>Value at a glance</h3>
+      <ul id="market-takeaways"></ul>
+      <p id="market-disclaimer"></p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT / FORM -->
+<section id="contact">
+  <div class="container">
+    <p class="section-label">Connect With Seller</p>
+    <h2 class="section-title">Request a Showing or Submit Buyer Information</h2>
+    <p class="section-sub">Fill out the form below to schedule a tour or register your interest. All fields marked * are required.</p>
+    <div class="contact-grid">
+      <div class="contact-info-box reveal">
+        <div class="info-card">
+          <h4>📧 Email Pre-Approval Directly</h4>
+          <p>You may also email your pre-approval letter directly to:</p>
+          <a id="seller-email-link" href="#"><strong id="seller-email-display">seller@email.com</strong></a>
+          <p style="margin-top:8px;font-size:0.8rem">Please redact any sensitive information before sending. Do not include Social Security numbers, bank account numbers, or tax returns.</p>
+        </div>
+        <div class="info-card">
+          <h4>📞 Questions?</h4>
+          <p id="seller-contact-info">Contact the seller by email or phone.</p>
+        </div>
+        <div class="preapproval-box" hidden>
+          <h4>🔒 Your Information is Secure</h4>
+          <p>Uploaded documents are stored securely and are never publicly accessible. Information submitted will only be used for communications related to this property sale.</p>
+        </div>
+        <div class="fh-badge" hidden>
+          <span class="fh-icon">🏛️</span>
+          <span>We support Fair Housing. This property is offered without regard to race, color, religion, national origin, sex, familial status, or disability.</span>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h3 class="serif">Buyer Registration &amp; Showing Request</h3>
+        <form id="buyer-form" novalidate>
+          <div class="form-grid">
+
+            <p class="form-section-title full">Contact Information</p>
+
+            <div class="form-group">
+              <label for="f-name">Full Name *</label>
+              <input type="text" id="f-name" name="fullName" class="form-control" autocomplete="name" placeholder="Jane Smith" required>
+              <span class="form-error-msg" id="err-name">Please enter your full name.</span>
+            </div>
+            <div class="form-group">
+              <label for="f-email">Email Address *</label>
+              <input type="email" id="f-email" name="email" class="form-control" autocomplete="email" placeholder="jane@example.com" required>
+              <span class="form-error-msg" id="err-email">Please enter a valid email.</span>
+            </div>
+            <div class="form-group">
+              <label for="f-phone">Phone Number *</label>
+              <input type="tel" id="f-phone" name="phone" class="form-control" autocomplete="tel" placeholder="(919) 555-0100" required>
+              <span class="form-error-msg" id="err-phone">Please enter your phone number.</span>
+            </div>
+            <div class="form-group">
+              <label for="f-contact-pref">Preferred Contact Method *</label>
+              <select id="f-contact-pref" name="contactPreference" class="form-control" required>
+                <option value="">— Select —</option>
+                <option value="email">Email</option>
+                <option value="phone_call">Phone Call</option>
+                <option value="text">Text Message</option>
+              </select>
+            </div>
+
+            <hr class="form-divider full">
+            <p class="form-section-title full">Financing</p>
+
+            <div class="form-group">
+              <label for="f-preapproved">Pre-Approval Status *</label>
+              <select id="f-preapproved" name="preApprovalStatus" class="form-control" required>
+                <option value="">— Select —</option>
+                <option value="yes">Yes, I am pre-approved</option>
+                <option value="in_process">In process</option>
+                <option value="no">Not yet</option>
+                <option value="prefer_not">Prefer not to say</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="f-lender">Lender Name <span class="opt">(optional)</span></label>
+              <input type="text" id="f-lender" name="lenderName" class="form-control" placeholder="ABC Mortgage">
+            </div>
+            <div class="form-group full">
+              <label for="f-budget">Approximate Purchase Budget / Range <span class="opt">(optional)</span></label>
+              <input type="text" id="f-budget" name="budget" class="form-control" placeholder="e.g. $600K–$700K">
+            </div>
+
+            <hr class="form-divider full">
+            <p class="form-section-title full">Representation</p>
+
+            <div class="form-group">
+              <label for="f-agent">Working with a Buyer's Agent? *</label>
+              <select id="f-agent" name="hasBuyerAgent" class="form-control" required>
+                <option value="">— Select —</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="f-agent-name">Agent Name <span class="opt">(optional)</span></label>
+              <input type="text" id="f-agent-name" name="agentName" class="form-control" placeholder="Agent's full name">
+            </div>
+            <div class="form-group full">
+              <label for="f-agent-contact">Agent Email / Phone <span class="opt">(optional)</span></label>
+              <input type="text" id="f-agent-contact" name="agentContact" class="form-control" placeholder="agent@email.com or (919) 555-0200">
+            </div>
+
+            <hr class="form-divider full">
+            <p class="form-section-title full">Showing Request</p>
+
+            <div class="form-group full">
+              <label for="f-showing-dt">Preferred Showing Date &amp; Time</label>
+              <input type="datetime-local" id="f-showing-dt" name="showingDateTime" class="form-control">
+            </div>
+            <div class="form-group full">
+              <label for="f-message">Message / Questions <span class="opt">(optional)</span></label>
+              <textarea id="f-message" name="message" class="form-control" placeholder="Any questions about the property, or multiple showing date preferences?"></textarea>
+            </div>
+
+            <hr class="form-divider full">
+            <p class="form-section-title full">Pre-Approval Letter <span style="font-weight:400;color:var(--text-light)">(Optional)</span></p>
+
+            <div class="form-group full">
+              <div class="upload-zone" id="upload-zone" role="button" tabindex="0" aria-label="Upload pre-approval letter">
+                <div class="upload-icon">📄</div>
+                <p><strong>Click to upload</strong> or drag &amp; drop</p>
+                <p>PDF, JPG, or PNG · Max 10 MB</p>
+                <input type="file" id="f-upload" name="preApprovalFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+                <div class="upload-file-name" id="upload-file-name"></div>
+              </div>
+              <p style="font-size:0.8rem;color:var(--text-light);margin-top:6px">Or email your letter directly to the seller — see the sidebar. Please redact any sensitive information.</p>
+            </div>
+
+            <hr class="form-divider full">
+            <div class="form-group full">
+              <div class="form-checkboxes">
+                <label class="check-label required-check">
+                  <input type="checkbox" id="chk-no-contract" name="ackNoContract" required>
+                  <span>* I understand that submitting this form does not create a contract, offer, acceptance, agency relationship, or guarantee a showing.</span>
+                </label>
+                <label class="check-label required-check">
+                  <input type="checkbox" id="chk-no-sensitive" name="ackNoSensitive" required>
+                  <span>* I understand the seller will not request Social Security numbers, bank account numbers, or sensitive financial records through this website.</span>
+                </label>
+                <label class="check-label">
+                  <input type="checkbox" id="chk-consent" name="consentUpdates">
+                  <span>I consent to receive future property-related updates by email/text (e.g., open houses, price changes, status changes). You may opt out at any time.</span>
+                </label>
+                <label class="check-label">
+                  <input type="checkbox" id="chk-privacy" name="ackPrivacy" required>
+                  <span>* I acknowledge the Privacy Notice: my information will only be used for communications related to this property sale.</span>
+                </label>
+              </div>
+              <span class="form-error-msg" id="err-checkboxes">Please check all required boxes above.</span>
+            </div>
+
+            <div class="full">
+              <button type="submit" class="btn btn-green btn-full" id="submit-btn">
+                <span id="submit-label">Submit Buyer Information</span>
+              </button>
+            </div>
+            <div class="full">
+              <div class="success-banner" id="success-banner">
+                <h4>✅ Submission Received!</h4>
+                <p>Thank you! The seller will follow up within 24 hours to confirm your request. Check your email for a confirmation.</p>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEGAL / COMPLIANCE -->
+<section id="legal" hidden>
+  <div class="container">
+    <p class="section-label">Legal &amp; Compliance</p>
+    <div class="legal-cards">
+      <div class="legal-card">
+        <h4>🏛️ Fair Housing</h4>
+        <p>This property is offered in compliance with the Fair Housing Act. We do not discriminate based on race, color, religion, national origin, sex, familial status, or disability.</p>
+      </div>
+      <div class="legal-card">
+        <h4>🔒 Privacy Notice</h4>
+        <p>Information you submit will only be used for communications related to this property sale. We do not sell or share your information with third parties for marketing purposes.</p>
+      </div>
+      <div class="legal-card">
+        <h4>⚠️ Seller Disclaimer</h4>
+        <p>Seller is not a licensed real estate agent. Buyer is encouraged to consult their own real estate agent, attorney, lender, inspector, and other professionals.</p>
+      </div>
+      <div class="legal-card">
+        <h4>📄 Form Disclaimer</h4>
+        <p>Submitting a form does not create a contract, offer, acceptance, agency relationship, or guarantee of a showing. All information is believed accurate but not guaranteed.</p>
+      </div>
+      <div class="legal-card">
+        <h4>🛡️ Document Security</h4>
+        <p>Uploaded pre-approval letters are stored securely and are never publicly accessible. Do not upload documents containing Social Security numbers, bank accounts, or tax returns.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo"><span>Umstead</span> Grove · Durham, NC</div>
+      <div class="footer-links">
+        <a href="#hero">Home</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+        <a href="admin.html">Admin ↗</a>
+      </div>
+    </div>
+    <p class="footer-copy" id="footer-copy">© 2026 For Sale By Owner — Umstead Grove, Durham, NC. Equal Housing Opportunity 🏛️</p>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous">‹</button>
+  <img class="lb-img" id="lb-img" src="" alt="">
+  <button class="lb-nav lb-next" id="lb-next" aria-label="Next">›</button>
+  <div class="lb-close" id="lb-close" role="button" tabindex="0" aria-label="Close">✕</div>
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" role="alert" aria-live="polite"></div>
+
+<script src="main.js"></script>
+</body>
+</html>
