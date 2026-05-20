@@ -134,13 +134,15 @@ const SITE_CONFIG = {
 
   // ─── GALLERY ─────────────────────────────────────────────────────────────────
   gallery: [
-    { src: "house.png",       alt: "Exterior front view",     caption: "Craftsman exterior with covered porch" },
-    { src: "living_room.png", alt: "Living room",             caption: "Open-concept living room with stone fireplace" },
-    { src: "kitchen.png",     alt: "Chef's kitchen",          caption: "Chef's kitchen with quartz island" },
-    { src: "bedroom.png",     alt: "Owner's suite",           caption: "Spacious owner's suite with tray ceiling" },
-    { src: "bathroom.png",    alt: "Owner's bathroom",        caption: "Spa-like owner's bath" },
-    { src: "backyard.png",    alt: "Backyard deck",           caption: "Private backyard with expanded deck" },
-    // Add more: { src: "photo7.jpg", alt: "Description", caption: "Caption" }
+    { src: "images/9.jpg",  alt: "Exterior front view",          caption: "Craftsman exterior · 2-car garage" },
+    { src: "images/8.jpg",  alt: "Builder floor plan rendering",   caption: "Chatham plan · Builder rendering" },
+    { src: "images/7.jpg",  alt: "Gourmet kitchen with island",    caption: "Kitchen · Slate cabinets · Quartz island" },
+    { src: "images/5.jpg",  alt: "Upstairs loft / living area",    caption: "Upstairs loft · Open layout" },
+    { src: "images/6.jpg",  alt: "Owner's suite",                  caption: "Owner's suite · Tray ceiling" },
+    { src: "images/1.jpg",  alt: "Owner's bathroom",              caption: "Owner's bath · Double vanity · Walk-in shower" },
+    { src: "images/3.jpg",  alt: "Secondary bedroom",             caption: "Secondary bedroom · Natural light" },
+    { src: "images/2.jpg",  alt: "Secondary bedroom",             caption: "Secondary bedroom · Carpet flooring" },
+    { src: "images/4.jpg",  alt: "Secondary bedroom",             caption: "Secondary bedroom · 2-car views" },
   ],
 
   // ─── NEIGHBORHOOD ────────────────────────────────────────────────────────────
@@ -242,7 +244,7 @@ const SITE_CONFIG = {
     title:       "Umstead Grove | $549,900 | Durham, NC | For Sale By Owner",
     description: "Move-in ready home for sale by owner in Durham, NC. Seller offering $10,000 toward closing costs. Features include home gym, finished garage, screened patio, and vinyl privacy fence. Request a showing today.",
     url:         "https://jorgeranilla.com/umsteadgrove",
-    ogImage:     "https://jorgeranilla.com/umsteadgrove/house.png",
+    ogImage:     "https://jorgeranilla.com/umsteadgrove/images/9.jpg",
     themeColor:  "#1a3a2e",
     accentColor: "#c9a84c",
   },
