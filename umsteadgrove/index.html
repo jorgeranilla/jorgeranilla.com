@@ -167,27 +167,59 @@
     <h2 class="section-title">Request a Showing or Submit Buyer Information</h2>
     <p class="section-sub">Fill out the form below to schedule a tour or register your interest. All fields marked * are required.</p>
     <div class="contact-grid">
+
+      <!-- SIDEBAR -->
       <div class="contact-info-box reveal">
-        <div class="info-card">
-          <h4>📧 Email Pre-Approval Directly</h4>
-          <p>You may also email your pre-approval letter directly to:</p>
-          <a id="seller-email-link" href="#"><strong id="seller-email-display">seller@email.com</strong></a>
-          <p style="margin-top:8px;font-size:0.8rem">Please redact any sensitive information before sending. Do not include Social Security numbers, bank account numbers, or tax returns.</p>
+
+        <!-- Seller card -->
+        <div class="seller-card">
+          <div class="seller-avatar">JR</div>
+          <div class="seller-info">
+            <p class="seller-name" id="seller-name-display">Jorge Ranilla</p>
+            <p class="seller-role">Property Owner · For Sale By Owner</p>
+          </div>
         </div>
-        <div class="info-card">
-          <h4>📞 Questions?</h4>
-          <p id="seller-contact-info">Contact the seller by email or phone.</p>
+
+        <!-- Contact methods -->
+        <div class="contact-methods">
+          <a id="seller-email-link" href="#" class="contact-method-row">
+            <span class="cm-icon">✉️</span>
+            <span class="cm-body">
+              <span class="cm-label">Email</span>
+              <span class="cm-value" id="seller-email-display">seller@email.com</span>
+            </span>
+            <span class="cm-arrow">→</span>
+          </a>
+          <a id="seller-phone-link" href="#" class="contact-method-row">
+            <span class="cm-icon">📞</span>
+            <span class="cm-body">
+              <span class="cm-label">Phone / Text</span>
+              <span class="cm-value" id="seller-phone-display">—</span>
+            </span>
+            <span class="cm-arrow">→</span>
+          </a>
         </div>
-        <div class="preapproval-box" hidden>
-          <h4>🔒 Your Information is Secure</h4>
-          <p>Uploaded documents are stored securely and are never publicly accessible. Information submitted will only be used for communications related to this property sale.</p>
+
+        <!-- What to expect -->
+        <div class="expect-card">
+          <p class="expect-title">What to expect</p>
+          <ul class="expect-list">
+            <li>📅 Response within <strong>24 hours</strong></li>
+            <li>🔒 Your info stays <strong>private &amp; secure</strong></li>
+            <li>🏡 No obligation to buy or offer</li>
+            <li>🤝 Buyer's agents welcome</li>
+          </ul>
         </div>
-        <div class="fh-badge" hidden>
+
+        <!-- Fair Housing -->
+        <div class="fh-badge-full">
           <span class="fh-icon">🏛️</span>
-          <span>We support Fair Housing. This property is offered without regard to race, color, religion, national origin, sex, familial status, or disability.</span>
+          <span>Equal Housing Opportunity. This property is offered without regard to race, color, religion, national origin, sex, familial status, or disability.</span>
         </div>
+
       </div>
 
+      <!-- FORM -->
       <div class="form-card">
         <h3 class="serif">Buyer Registration &amp; Showing Request</h3>
         <form id="buyer-form" novalidate>
@@ -238,8 +270,8 @@
               <input type="text" id="f-lender" name="lenderName" class="form-control" placeholder="ABC Mortgage">
             </div>
             <div class="form-group full">
-              <label for="f-budget">Approximate Purchase Budget / Range <span class="opt">(optional)</span></label>
-              <input type="text" id="f-budget" name="budget" class="form-control" placeholder="e.g. $600K–$700K">
+              <label for="f-budget">Approximate Budget / Range <span class="opt">(optional)</span></label>
+              <input type="text" id="f-budget" name="budget" class="form-control" placeholder="e.g. $500K–$600K">
             </div>
 
             <hr class="form-divider full">
@@ -266,27 +298,18 @@
             <p class="form-section-title full">Showing Request</p>
 
             <div class="form-group full">
-              <label for="f-showing-dt">Preferred Showing Date &amp; Time</label>
+              <label for="f-showing-dt">Preferred Showing Date &amp; Time <span class="opt">(optional)</span></label>
               <input type="datetime-local" id="f-showing-dt" name="showingDateTime" class="form-control">
             </div>
             <div class="form-group full">
               <label for="f-message">Message / Questions <span class="opt">(optional)</span></label>
-              <textarea id="f-message" name="message" class="form-control" placeholder="Any questions about the property, or multiple showing date preferences?"></textarea>
+              <textarea id="f-message" name="message" class="form-control" placeholder="Any questions about the property, or multiple date preferences for a showing?"></textarea>
             </div>
 
-            <hr class="form-divider full">
-            <p class="form-section-title full">Pre-Approval Letter <span style="font-weight:400;color:var(--text-light)">(Optional)</span></p>
-
-            <div class="form-group full">
-              <div class="upload-zone" id="upload-zone" role="button" tabindex="0" aria-label="Upload pre-approval letter">
-                <div class="upload-icon">📄</div>
-                <p><strong>Click to upload</strong> or drag &amp; drop</p>
-                <p>PDF, JPG, or PNG · Max 10 MB</p>
-                <input type="file" id="f-upload" name="preApprovalFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
-                <div class="upload-file-name" id="upload-file-name"></div>
-              </div>
-              <p style="font-size:0.8rem;color:var(--text-light);margin-top:6px">Or email your letter directly to the seller — see the sidebar. Please redact any sensitive information.</p>
-            </div>
+            <!-- Hidden file input kept for backend compatibility, but UI removed -->
+            <input type="file" id="f-upload" name="preApprovalFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+            <div id="upload-file-name" style="display:none"></div>
+            <div id="upload-zone" style="display:none"></div>
 
             <hr class="form-divider full">
             <div class="form-group full">
@@ -301,9 +324,9 @@
                 </label>
                 <label class="check-label">
                   <input type="checkbox" id="chk-consent" name="consentUpdates">
-                  <span>I consent to receive future property-related updates by email/text (e.g., open houses, price changes, status changes). You may opt out at any time.</span>
+                  <span>I consent to receive future property updates by email or text (open houses, price changes). You may opt out at any time.</span>
                 </label>
-                <label class="check-label">
+                <label class="check-label required-check">
                   <input type="checkbox" id="chk-privacy" name="ackPrivacy" required>
                   <span>* I acknowledge the Privacy Notice: my information will only be used for communications related to this property sale.</span>
                 </label>
@@ -313,15 +336,16 @@
 
             <div class="full">
               <button type="submit" class="btn btn-green btn-full" id="submit-btn">
-                <span id="submit-label">Submit Buyer Information</span>
+                <span id="submit-label">📅 Request a Showing</span>
               </button>
             </div>
             <div class="full">
               <div class="success-banner" id="success-banner">
-                <h4>✅ Submission Received!</h4>
-                <p>Thank you! The seller will follow up within 24 hours to confirm your request. Check your email for a confirmation.</p>
+                <h4>✅ Request Received!</h4>
+                <p>Thank you! The seller will follow up within 24 hours to confirm. Check your email for a confirmation.</p>
               </div>
             </div>
+
           </div>
         </form>
       </div>

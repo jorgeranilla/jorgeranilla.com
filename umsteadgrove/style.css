@@ -221,7 +221,38 @@ section { padding: 80px 0; }
 #contact .section-sub { color: rgba(255,255,255,0.7); }
 .contact-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 60px; align-items: start; margin-top: 48px; }
 @media(max-width:900px) { .contact-grid { grid-template-columns: 1fr; } }
-.contact-info-box { display: flex; flex-direction: column; gap: 24px; }
+.contact-info-box { display: flex; flex-direction: column; gap: 16px; }
+
+/* Seller card */
+.seller-card { display: flex; align-items: center; gap: 16px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22); border-radius: var(--radius); padding: 20px; }
+.seller-avatar { width: 54px; height: 54px; border-radius: 50%; background: var(--gold-light); color: var(--green-dark); font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(255,225,130,0.3); }
+.seller-info { display: flex; flex-direction: column; gap: 3px; }
+.seller-name { color: var(--white); font-weight: 700; font-size: 1.05rem; font-family: 'Playfair Display', serif; }
+.seller-role { color: rgba(255,255,255,0.55); font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.09em; }
+
+/* Contact method rows */
+.contact-methods { display: flex; flex-direction: column; gap: 10px; }
+.contact-method-row { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.17); border-radius: var(--radius); padding: 14px 16px; transition: all var(--transition); text-decoration: none; }
+.contact-method-row:hover { background: rgba(255,255,255,0.18); border-color: var(--gold-light); transform: translateX(4px); }
+.cm-icon { font-size: 1.25rem; flex-shrink: 0; }
+.cm-body { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.cm-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.48); font-weight: 600; }
+.cm-value { color: var(--white); font-weight: 600; font-size: 0.91rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cm-arrow { color: var(--gold-light); font-size: 1rem; flex-shrink: 0; transition: transform var(--transition); }
+.contact-method-row:hover .cm-arrow { transform: translateX(3px); }
+
+/* What to expect */
+.expect-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.13); border-radius: var(--radius); padding: 18px 20px; }
+.expect-title { color: var(--gold-light); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.13em; font-weight: 700; margin-bottom: 12px; }
+.expect-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.expect-list li { color: rgba(255,255,255,0.8); font-size: 0.87rem; }
+.expect-list li strong { color: var(--white); }
+
+/* Fair Housing full badge */
+.fh-badge-full { display: flex; align-items: flex-start; gap: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius); padding: 13px 15px; font-size: 0.77rem; color: rgba(255,255,255,0.55); line-height: 1.55; }
+.fh-badge-full .fh-icon { font-size: 1.05rem; flex-shrink: 0; margin-top: 1px; }
+
+/* Legacy cards */
 .info-card { background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.22); border-radius: var(--radius); padding: 20px; }
 .info-card h4 { color: var(--gold-light); margin-bottom: 8px; font-family: 'Playfair Display', serif; }
 .info-card p, .info-card a { color: rgba(255,255,255,0.8); font-size: 0.9rem; }

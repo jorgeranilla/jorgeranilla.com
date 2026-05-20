@@ -153,7 +153,7 @@ const SITE_CONFIG = {
       { name: "Duke University & Hospital",  distance: "within ~7 mi / ~12 min" },
       { name: "Downtown Durham",             distance: "~8 mi / ~15 min" },
       { name: "Former Northgate Mall Target redevelopment", distance: "~6 mi / planned" },
-      { name: "RTP / RDU Airport",           distance: "~17-20 mi / ~25-30 min" },
+      { name: "RTP / RDU Airport",           distance: "~17–25 min" },
     ],
     walkScore:    "[XX]",
     transitScore: "[XX]",

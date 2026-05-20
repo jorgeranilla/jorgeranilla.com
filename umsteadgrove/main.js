@@ -41,8 +41,16 @@
   // Seller contact sidebar
   document.getElementById('seller-email-display').textContent = C.seller.email;
   document.getElementById('seller-email-link').href = `mailto:${C.seller.email}`;
-  document.getElementById('seller-contact-info').textContent =
-    `${C.seller.name} · ${C.seller.email}` + (C.seller.phone ? ` · ${C.seller.phone}` : '');
+  const nameEl = document.getElementById('seller-name-display');
+  if (nameEl) nameEl.textContent = C.seller.name;
+  const phoneDisplayEl = document.getElementById('seller-phone-display');
+  const phoneLinkEl = document.getElementById('seller-phone-link');
+  if (phoneDisplayEl && C.seller.phone) {
+    phoneDisplayEl.textContent = C.seller.phone;
+    if (phoneLinkEl) phoneLinkEl.href = `tel:${C.seller.phone.replace(/\D/g,'')}`;
+  } else if (phoneLinkEl) {
+    phoneLinkEl.style.display = 'none';
+  }
 
   // Highlights
   const hGrid = document.getElementById('highlights-grid');
