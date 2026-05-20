@@ -24,7 +24,7 @@ const smtpPort     = defineSecret('UG_SMTP_PORT');
 const smtpUser     = defineSecret('UG_SMTP_USER');
 const smtpPass     = defineSecret('UG_SMTP_PASS');
 const sellerEmail  = defineSecret('UG_SELLER_EMAIL');
-const adminPassword = defineSecret('UG_ADMIN_PASSWORD');
+const adminEmails  = defineSecret('UG_ADMIN_EMAILS');
 
 // ─── FIREBASE INIT ────────────────────────────────────────────────────────────
 if (!admin.apps.length) admin.initializeApp();
@@ -42,11 +42,25 @@ const ALLOWED_ORIGINS = new Set([
   'https://www.umsteadgrove.com',
 ]);
 
-const FUNCTION_OPTS = {
+const BASE_FUNCTION_OPTS = {
   region: 'us-central1',
   invoker: 'public',
   minInstances: 0,
-  secrets: [smtpHost, smtpPort, smtpUser, smtpPass, sellerEmail, adminPassword],
+};
+
+const MAIL_FUNCTION_OPTS = {
+  ...BASE_FUNCTION_OPTS,
+  secrets: [smtpHost, smtpPort, smtpUser, smtpPass, sellerEmail],
+};
+
+const ADMIN_FUNCTION_OPTS = {
+  ...BASE_FUNCTION_OPTS,
+  secrets: [adminEmails],
+};
+
+const ADMIN_MAIL_FUNCTION_OPTS = {
+  ...BASE_FUNCTION_OPTS,
+  secrets: [smtpHost, smtpPort, smtpUser, smtpPass, sellerEmail, adminEmails],
 };
 
 // ─── CORS HELPER ─────────────────────────────────────────────────────────────
@@ -63,10 +77,28 @@ function cors(req, res) {
 }
 
 // ─── ADMIN AUTH HELPER ────────────────────────────────────────────────────────
-function checkAdmin(req) {
+async function checkAdmin(req) {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '').trim();
-  return token === adminPassword.value();
+  if (!token) return false;
+
+  let decoded;
+  try {
+    decoded = await admin.auth().verifyIdToken(token);
+  } catch {
+    return false;
+  }
+
+  const email = (decoded.email || '').toLowerCase();
+  if (!email || decoded.email_verified === false) return false;
+
+  const allowed = new Set(
+    adminEmails.value()
+      .split(/[,\s]+/)
+      .map(v => v.trim().toLowerCase())
+      .filter(Boolean)
+  );
+  return allowed.has(email);
 }
 
 // ─── MAILER ──────────────────────────────────────────────────────────────────
@@ -241,7 +273,7 @@ function parseMultipart(req) {
 }
 
 // ─── SUBMIT ENDPOINT ──────────────────────────────────────────────────────────
-exports.umsteadgroveSubmit = onRequest(FUNCTION_OPTS, async (req, res) => {
+exports.umsteadgroveSubmit = onRequest(MAIL_FUNCTION_OPTS, async (req, res) => {
   if (cors(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only.' });
 
@@ -330,9 +362,9 @@ exports.umsteadgroveSubmit = onRequest(FUNCTION_OPTS, async (req, res) => {
 });
 
 // ─── LIST LEADS (ADMIN) ───────────────────────────────────────────────────────
-exports.umsteadgroveLeads = onRequest(FUNCTION_OPTS, async (req, res) => {
+exports.umsteadgroveLeads = onRequest(ADMIN_FUNCTION_OPTS, async (req, res) => {
   if (cors(req, res)) return;
-  if (!checkAdmin(req)) return res.status(401).json({ error: 'Unauthorized.' });
+  if (!(await checkAdmin(req))) return res.status(401).json({ error: 'Unauthorized.' });
 
   const snap = await db.collection(COLLECTION).orderBy('dateSubmitted', 'desc').get();
   const leads = snap.docs.map(d => {
@@ -348,9 +380,9 @@ exports.umsteadgroveLeads = onRequest(FUNCTION_OPTS, async (req, res) => {
 });
 
 // ─── UPDATE LEAD (ADMIN) ──────────────────────────────────────────────────────
-exports.umsteadgroveUpdateLead = onRequest(FUNCTION_OPTS, async (req, res) => {
+exports.umsteadgroveUpdateLead = onRequest(ADMIN_FUNCTION_OPTS, async (req, res) => {
   if (cors(req, res)) return;
-  if (!checkAdmin(req)) return res.status(401).json({ error: 'Unauthorized.' });
+  if (!(await checkAdmin(req))) return res.status(401).json({ error: 'Unauthorized.' });
   if (req.method !== 'PATCH') return res.status(405).json({ error: 'PATCH only.' });
 
   const id = req.query.id;
@@ -369,9 +401,9 @@ exports.umsteadgroveUpdateLead = onRequest(FUNCTION_OPTS, async (req, res) => {
 });
 
 // ─── DOWNLOAD PRE-APPROVAL (ADMIN) ───────────────────────────────────────────
-exports.umsteadgroveDownload = onRequest(FUNCTION_OPTS, async (req, res) => {
+exports.umsteadgroveDownload = onRequest(ADMIN_FUNCTION_OPTS, async (req, res) => {
   if (cors(req, res)) return;
-  if (!checkAdmin(req)) return res.status(401).json({ error: 'Unauthorized.' });
+  if (!(await checkAdmin(req))) return res.status(401).json({ error: 'Unauthorized.' });
 
   const id = req.query.id;
   if (!id) return res.status(400).json({ error: 'Lead ID required.' });
@@ -386,9 +418,9 @@ exports.umsteadgroveDownload = onRequest(FUNCTION_OPTS, async (req, res) => {
 });
 
 // ─── SEND BULK UPDATE (ADMIN) ─────────────────────────────────────────────────
-exports.umsteadgroveSendUpdate = onRequest(FUNCTION_OPTS, async (req, res) => {
+exports.umsteadgroveSendUpdate = onRequest(ADMIN_MAIL_FUNCTION_OPTS, async (req, res) => {
   if (cors(req, res)) return;
-  if (!checkAdmin(req)) return res.status(401).json({ error: 'Unauthorized.' });
+  if (!(await checkAdmin(req))) return res.status(401).json({ error: 'Unauthorized.' });
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only.' });
 
   const { type, payload } = req.body;
