@@ -9,12 +9,7 @@
     "public": ".",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "functions/**", "umsteadgrove/**"],
     "rewrites": [],
-    "headers": [
-      {
-        "source": "/umsteadgrove/admin.html",
-        "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
-      }
-    ]
+    "headers": []
   },
   "functions": [
     {
