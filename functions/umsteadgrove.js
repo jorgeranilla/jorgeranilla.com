@@ -44,7 +44,7 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 const BASE_FUNCTION_OPTS = {
-  region: 'us-central1',
+  region: 'us-east4',   // Northern Virginia — closest to Durham, NC
   invoker: 'public',
   minInstances: 0,
 };
