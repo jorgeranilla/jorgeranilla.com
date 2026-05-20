@@ -35,7 +35,12 @@ const COLLECTION   = 'umsteadgrove_leads';
 const BUCKET_PREFIX = 'umsteadgrove/preapprovals/';
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_MIME  = new Set(['application/pdf','image/jpeg','image/png']);
-const ORIGIN = 'https://jorgeranilla.com';
+const ALLOWED_ORIGINS = new Set([
+  'https://jorgeranilla.com',
+  'https://www.jorgeranilla.com',
+  'https://umsteadgrove.com',
+  'https://www.umsteadgrove.com',
+]);
 
 const FUNCTION_OPTS = {
   region: 'us-central1',
@@ -46,8 +51,11 @@ const FUNCTION_OPTS = {
 
 // ─── CORS HELPER ─────────────────────────────────────────────────────────────
 function cors(req, res) {
-  res.set('Access-Control-Allow-Origin', ORIGIN);
-  res.set('Vary', 'Origin');
+  const origin = req.get('origin') || '';
+  if (ALLOWED_ORIGINS.has(origin)) {
+    res.set('Access-Control-Allow-Origin', origin);
+    res.set('Vary', 'Origin');
+  }
   res.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') { res.status(204).send(''); return true; }
@@ -144,7 +152,7 @@ function sellerNotificationEmail(lead) {
           <td style="padding:8px 12px;color:#4a4a4a">${v}</td>
         </tr>`).join('')}
     </table>
-    <p><a href="https://jorgeranilla.com/umsteadgrove/admin.html" style="background:${GREEN};color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:bold">Open Admin Panel →</a></p>
+    <p><a href="https://umsteadgrove.com/admin.html" style="background:${GREEN};color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:bold">Open Admin Panel →</a></p>
   `);
 }
 
@@ -158,7 +166,7 @@ function priceUpdateEmail(to, name, newPrice, note = '') {
     </div>
     ${note ? `<p>${note}</p>` : ''}
     <p>If you'd like to schedule a showing or have questions, please reply to this email or visit the property page.</p>
-    <a href="https://jorgeranilla.com/umsteadgrove" style="background:${GREEN};color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block">View Property →</a>
+    <a href="https://umsteadgrove.com" style="background:${GREEN};color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block">View Property →</a>
   `, '<p style="margin:6px 0 0">You received this because you opted in to property updates. Reply STOP to unsubscribe.</p>');
 }
 
@@ -173,7 +181,7 @@ function openHouseEmail(to, name, date, time, address) {
       <p style="margin:8px 0 0;color:rgba(255,255,255,0.7);font-size:14px">${address}</p>
     </div>
     <p>No appointment needed. Come tour the home and meet the seller directly!</p>
-    <a href="https://jorgeranilla.com/umsteadgrove" style="background:${GOLD};color:${GREEN};padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:bold">View Property Details →</a>
+    <a href="https://umsteadgrove.com" style="background:${GOLD};color:${GREEN};padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:bold">View Property Details →</a>
   `, '<p style="margin:6px 0 0">You received this because you opted in to property updates. Reply STOP to unsubscribe.</p>');
 }
 
@@ -194,7 +202,7 @@ function followUpEmail(lead) {
     <p>Hi ${lead.fullName},</p>
     <p>Thank you for your interest in Umstead Grove! We wanted to follow up and see if you have any questions or would like to schedule a showing.</p>
     <p>The property is still available. We'd love to hear from you.</p>
-    <a href="https://jorgeranilla.com/umsteadgrove#contact" style="background:${GREEN};color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block">Request a Showing →</a>
+    <a href="https://umsteadgrove.com#contact" style="background:${GREEN};color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block">Request a Showing →</a>
   `, '<p>You received this because you submitted a buyer inquiry for Umstead Grove. Reply STOP to unsubscribe.</p>');
 }
 

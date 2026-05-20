@@ -7,14 +7,8 @@
   },
   "hosting": {
     "public": ".",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "functions/**"],
-    "rewrites": [
-      { "source": "/api/umsteadgrove/submit",     "function": "umsteadgroveSubmit"     },
-      { "source": "/api/umsteadgrove/leads/**",   "function": "umsteadgroveUpdateLead" },
-      { "source": "/api/umsteadgrove/leads",      "function": "umsteadgroveLeads"      },
-      { "source": "/api/umsteadgrove/download/**","function": "umsteadgroveDownload"   },
-      { "source": "/api/umsteadgrove/broadcast",  "function": "umsteadgroveSendUpdate" }
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "functions/**", "umsteadgrove/**"],
+    "rewrites": [],
     "headers": [
       {
         "source": "/umsteadgrove/admin.html",
