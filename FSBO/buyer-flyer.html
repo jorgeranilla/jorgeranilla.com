@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Umstead Grove Buyer Flyer</title>
+  <style>
+    @page { size: Letter; margin: 0; }
+    * { box-sizing: border-box; }
+    :root {
+      --green: #183a2e;
+      --green-2: #214d3d;
+      --gold: #c9a84c;
+      --gold-2: #dfc56d;
+      --cream: #f7f2e8;
+      --paper: #fffdf8;
+      --ink: #17231e;
+      --muted: #687269;
+      --line: #e4dccb;
+      --white: #ffffff;
+    }
+    body {
+      margin: 0;
+      background: #d9d3c7;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .page {
+      position: relative;
+      width: 8.5in;
+      height: 11in;
+      margin: 0 auto 24px;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 12px 32px rgba(0,0,0,.18);
+      break-after: page;
+    }
+    @media print {
+      body { background: white; }
+      .page { margin: 0; box-shadow: none; }
+    }
+    .top-rule { position:absolute; inset:0 0 auto 0; height:.2in; background:var(--green); border-bottom:3px solid var(--gold); }
+    .footer { position:absolute; inset:auto 0 0 0; height:.36in; background:var(--green); color:#eaf0eb; display:flex; align-items:center; justify-content:space-between; padding:0 .5in; font-size:9px; }
+    .footer strong { color:var(--gold-2); font-family: Georgia, serif; font-size:11px; }
+    h1, h2, h3 { margin:0; }
+    h1, h2 { font-family: Georgia, "Times New Roman", serif; }
+    h2 { font-size:28px; color:var(--green); line-height:1.05; letter-spacing:.01em; }
+    h3 { color:var(--green); font-size:13px; }
+    p { margin:0; line-height:1.38; }
+    .page-title { position:absolute; left:.55in; top:.48in; right:.55in; padding-bottom:.1in; border-bottom:2px solid var(--gold); }
+    .content { position:absolute; left:.55in; right:.55in; top:1.06in; bottom:.55in; }
+    .muted { color:var(--muted); }
+    .small { font-size:9px; line-height:1.28; }
+    .body { font-size:12px; }
+    .card { background:white; border:1px solid var(--line); border-radius:12px; }
+    .callout { background:var(--green); color:white; border-radius:14px; }
+    .gold { color:var(--gold-2); }
+    .grid { display:grid; gap:.16in; }
+    .two { grid-template-columns:1fr 1fr; }
+    .three { grid-template-columns:repeat(3, 1fr); }
+    .cover-hero {
+      position:absolute; inset:0 0 3.62in 0;
+      background:linear-gradient(rgba(0,0,0,.34), rgba(0,0,0,.40)), url("../images/exterior-front.jpg") center 42% / cover;
+    }
+    .cover-tag {
+      position:absolute; top:.52in; left:0; right:0;
+      text-align:center; color:var(--gold-2);
+      font-family:Georgia, serif; font-weight:bold; font-size:18px; letter-spacing:.06em;
+    }
+    .cover-title {
+      position:absolute; top:1.43in; left:.4in; right:.4in;
+      text-align:center; color:white; font:700 59px/1 Georgia, serif;
+      text-shadow:0 3px 18px rgba(0,0,0,.45);
+    }
+    .cover-address {
+      position:absolute; top:2.17in; left:.5in; right:.5in;
+      text-align:center; color:white; font-weight:700; font-size:17px;
+      text-shadow:0 2px 10px rgba(0,0,0,.45);
+    }
+    .cover-bottom {
+      position:absolute; inset:auto 0 0 0; height:4.05in;
+      background:var(--green); border-top:5px solid var(--gold);
+      padding:.48in .58in .5in;
+    }
+    .price { color:var(--gold-2); font:900 48px/1 Arial Black, Arial, sans-serif; }
+    .fsbo { color:#e8efe9; font-weight:700; margin-top:.08in; font-size:14px; }
+    .cover-copy { width:4.65in; color:white; margin-top:.19in; font-size:12px; line-height:1.45; }
+    .stats { display:flex; gap:.095in; margin-top:.26in; }
+    .stat { width:.82in; height:.72in; background:#fffaf0; border-radius:12px; display:flex; flex-direction:column; justify-content:center; text-align:center; border:1px solid rgba(201,168,76,.4); }
+    .stat strong { color:var(--green); font:900 20px/1 Arial Black, Arial, sans-serif; }
+    .stat span { color:var(--muted); font-size:8px; font-weight:800; letter-spacing:.05em; margin-top:.08in; text-transform:uppercase; }
+    .qr-card { position:absolute; right:.68in; bottom:.86in; width:1.7in; height:1.95in; background:white; border:3px solid var(--gold); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.07in; }
+    .qr-card img { width:1.12in; height:1.12in; image-rendering:pixelated; }
+    .qr-card b { color:var(--green); font-size:12px; }
+    .contact-cover { position:absolute; left:0; right:0; bottom:.23in; text-align:center; color:white; font-weight:700; font-size:15px; }
+    .photo-row { display:grid; grid-template-columns:1fr 1fr; gap:.25in; }
+    .photo { height:2.14in; border-radius:14px; background-position:center; background-size:cover; border:1px solid var(--line); }
+    .caption { background:var(--cream); border-radius:0 0 12px 12px; padding:.08in .16in; color:var(--muted); font-size:9px; }
+    .highlight-grid { display:grid; grid-template-columns:1fr 1fr; gap:.18in .22in; margin-top:.28in; }
+    .highlight { min-height:.89in; padding:.18in .2in .16in .42in; position:relative; }
+    .highlight::before { content:""; position:absolute; left:.18in; top:.25in; width:.1in; height:.1in; border-radius:50%; background:var(--gold); }
+    .highlight h3 { margin-bottom:.05in; }
+    .highlight p { font-size:10.2px; color:#26342d; }
+    .bottom-line { position:absolute; left:.55in; right:.55in; bottom:.72in; min-height:.9in; padding:.22in .28in; }
+    .bottom-line h3 { color:var(--gold-2); font-family:Georgia, serif; font-size:18px; margin-bottom:.05in; }
+    .bottom-line p { color:white; font-size:11.5px; }
+    .upgrade-hero { height:1.05in; padding:.22in .3in; display:grid; grid-template-columns:2.1in 1fr; align-items:center; margin-bottom:.28in; }
+    .upgrade-hero .big { color:var(--gold-2); font:900 40px/1 Arial Black, Arial, sans-serif; }
+    .upgrade-hero h3 { color:white; font-size:16px; margin-bottom:.04in; }
+    .upgrade-hero p { color:#eef5ef; font-size:10px; }
+    .upgrade-list { display:grid; gap:.17in; }
+    .upgrade { min-height:.73in; display:grid; grid-template-columns:1fr 1.05in; align-items:center; padding:.14in .22in; }
+    .upgrade strong { color:var(--green); font-size:14px; }
+    .upgrade p { font-size:10.5px; margin-top:.03in; color:#2b3630; }
+    .upgrade .value { color:var(--gold); font:900 22px/1 Arial Black, Arial, sans-serif; text-align:right; }
+    .included { position:absolute; left:.55in; right:.55in; bottom:.78in; padding:.2in .26in; border:2px solid var(--gold); background:var(--cream); border-radius:14px; }
+    .market-intro { font-size:12px; margin-bottom:.24in; }
+    .price-cards { display:grid; grid-template-columns:1fr 1fr; gap:.22in; margin-bottom:.28in; }
+    .price-card { padding:.19in; text-align:center; }
+    .price-card.dark { background:var(--green); color:white; border:0; }
+    .price-card .num { font:900 28px/1 Arial Black, Arial, sans-serif; color:var(--gold-2); }
+    .price-card:not(.dark) .num { color:var(--green); }
+    .price-card .label { margin-top:.06in; font-size:10px; font-weight:800; letter-spacing:.04em; }
+    .range-title { color:var(--green); font-weight:800; margin:.05in 0 .12in; }
+    .range { position:relative; height:.64in; margin:0 .18in .28in; }
+    .range .bar { position:absolute; left:0; right:0; top:.12in; height:.2in; background:linear-gradient(90deg, #b6953e, var(--gold-2)); border-radius:99px; }
+    .range .dot { position:absolute; left:65.7%; top:.035in; width:.36in; height:.36in; margin-left:-.18in; border-radius:50%; background:var(--green); border:3px solid white; color:white; display:flex; align-items:center; justify-content:center; font-size:6px; font-weight:900; }
+    .range .labels { position:absolute; left:0; right:0; top:.4in; display:flex; justify-content:space-between; font-size:10px; font-weight:800; color:var(--green); }
+    .source-grid { display:grid; grid-template-columns:1fr 1fr; gap:.16in .22in; }
+    .source { min-height:.75in; padding:.14in .18in; display:grid; grid-template-columns:1fr 1.05in; align-items:center; }
+    .source strong { color:var(--green); font-size:12px; }
+    .source small { color:var(--muted); font-size:8.5px; }
+    .source .num { text-align:right; color:var(--gold); font:900 22px/1 Arial Black, Arial, sans-serif; }
+    table { width:100%; border-collapse:collapse; font-size:9px; margin-top:.12in; overflow:hidden; border-radius:9px; }
+    th { background:var(--green); color:white; padding:.08in .05in; }
+    td { padding:.07in .04in; border-bottom:1px solid var(--line); text-align:center; background:white; }
+    tr.subject td { background:var(--cream); color:var(--green); font-weight:800; }
+    td:first-child, th:first-child { text-align:left; padding-left:.12in; }
+    .disclaimer { position:absolute; left:.55in; right:.55in; bottom:.72in; font-size:8.8px; color:var(--muted); line-height:1.3; }
+    .nearby-grid { display:grid; grid-template-columns:1fr 1fr; gap:.16in .22in; margin-top:.22in; }
+    .nearby { padding:.12in .16in .12in .34in; position:relative; min-height:.48in; }
+    .nearby::before { content:""; position:absolute; left:.16in; top:.22in; width:.08in; height:.08in; border-radius:50%; background:var(--gold); }
+    .nearby strong { color:var(--green); font-size:10.5px; }
+    .nearby span { display:block; color:var(--muted); font-size:9px; margin-top:.02in; }
+    .buyer-notes { position:absolute; left:.55in; right:.55in; bottom:.74in; padding:.22in .28in; }
+    .buyer-notes h3 { color:var(--gold-2); font-family:Georgia, serif; font-size:17px; margin-bottom:.05in; }
+    .buyer-notes p { color:#eef5ef; font-size:10.3px; }
+    .steps { display:grid; grid-template-columns:1fr 1fr; gap:.22in; margin-top:.28in; }
+    .step { padding:.18in .2in; min-height:.86in; }
+    .step h3 { margin-bottom:.06in; }
+    .step p { font-size:10.5px; }
+    .packet { margin-top:.32in; padding:.24in .3in; background:var(--cream); border:2px solid var(--gold); border-radius:16px; }
+    .packet h3 { font-family:Georgia, serif; font-size:21px; margin-bottom:.08in; }
+    .final-contact { position:absolute; left:.95in; right:.95in; bottom:.7in; height:1.18in; padding:.18in .28in; display:grid; grid-template-columns:1.05in 1fr; gap:.24in; align-items:center; }
+    .final-contact .mini-qr { background:white; border:2px solid var(--gold); border-radius:10px; padding:.08in; }
+    .final-contact img { width:.82in; height:.82in; image-rendering:pixelated; display:block; }
+    .final-contact h2 { color:var(--gold-2); font-size:25px; margin-bottom:.05in; }
+    .final-contact p { color:white; font-weight:700; font-size:13px; line-height:1.45; }
+  </style>
+</head>
+<body>
+  <section class="page cover">
+    <div class="cover-hero"></div>
+    <div class="cover-tag">SERIOUS BUYER INFORMATION PACKET</div>
+    <h1 class="cover-title">UmsteadGrove.com</h1>
+    <div class="cover-address">1008 Umstead Grove Way, Durham, NC 27712</div>
+    <div class="cover-bottom">
+      <div class="price">$531,330</div>
+      <div class="fsbo">For Sale By Owner | Buyer Agents Welcome</div>
+      <p class="cover-copy">Move-in ready 2024 home in an intimate North Durham community, with 4 bedrooms, flexible main-level space, a loft, private fenced yard, and meaningful owner upgrades already completed.</p>
+      <div class="stats">
+        <div class="stat"><strong>4</strong><span>Beds</span></div>
+        <div class="stat"><strong>3</strong><span>Baths</span></div>
+        <div class="stat"><strong>2,670</strong><span>Sq Ft</span></div>
+        <div class="stat"><strong>2024</strong><span>Built</span></div>
+        <div class="stat"><strong>2-car</strong><span>Garage</span></div>
+      </div>
+      <div class="qr-card">
+        <img src="qr-code.png" alt="QR code">
+        <b>Scan for photos</b>
+      </div>
+      <div class="contact-cover">864-625-6743 | jorgeranilla@gmail.com</div>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="top-rule"></div>
+    <div class="page-title"><h2>Why This Home Stands Out</h2></div>
+    <main class="content">
+      <div class="photo-row">
+        <div>
+          <div class="photo" style="background-image:url('../images/kitchen-island.jpg')"></div>
+          <div class="caption">Kitchen | Slate cabinets | Quartz island | LED under-cabinet lighting</div>
+        </div>
+        <div>
+          <div class="photo" style="background-image:url('../images/open-concept-kitchen-living.jpg')"></div>
+          <div class="caption">Open-concept kitchen and living | Natural light</div>
+        </div>
+      </div>
+      <p class="small muted" style="margin-top:.1in;">Builder/floor-plan imagery shown for layout and finish reference; exterior and in-person condition should be verified during showing.</p>
+      <div class="highlight-grid">
+        <div class="card highlight"><h3>Main-level flex space</h3><p>Great for guests, multigenerational needs, a quiet office, or anyone who prefers fewer stairs.</p></div>
+        <div class="card highlight"><h3>Gourmet kitchen</h3><p>Slate cabinetry, ice white quartz counters, large island, stainless appliances, and LED lighting.</p></div>
+        <div class="card highlight"><h3>Energy-efficient 2024 build</h3><p>Spray foam insulation, tankless gas water heater, smart-home features, and modern systems.</p></div>
+        <div class="card highlight"><h3>Finished garage + gym</h3><p>Professionally finished garage and a dedicated home gym setup that conveys with the sale.</p></div>
+        <div class="card highlight"><h3>Private outdoor space</h3><p>Covered patio, screened/enclosed area, expanded hardscape, and full privacy fence.</p></div>
+        <div class="card highlight"><h3>Buyer-friendly FSBO</h3><p>Buyer agents welcome; seller-paid concessions available. Contact owner directly for details.</p></div>
+      </div>
+    </main>
+    <div class="callout bottom-line"><h3>Bottom line</h3><p>A newer 4-bedroom home with the flexibility buyers usually want after closing: private outdoor living, appliance package, functional storage, comfort upgrades, and useful first-floor flex space already in place.</p></div>
+    <div class="footer"><strong>UmsteadGrove.com</strong><span>1008 Umstead Grove Way, Durham, NC 27712</span><span>2</span></div>
+  </section>
+
+  <section class="page">
+    <div class="top-rule"></div>
+    <div class="page-title"><h2>Owner Upgrades Included</h2></div>
+    <main class="content">
+      <div class="callout upgrade-hero">
+        <div class="big">$26,600</div>
+        <div>
+          <h3>Approximate seller-paid upgrades</h3>
+          <p>Meaningful improvements completed after purchase, so buyers can enjoy upgraded outdoor living, daily function, and comfort from day one.</p>
+        </div>
+      </div>
+      <div class="upgrade-list">
+        <div class="card upgrade"><div><strong>Private fenced yard</strong><p>Full vinyl privacy fence enclosing the backyard.</p></div><div class="value">$7,000</div></div>
+        <div class="card upgrade"><div><strong>Outdoor living</strong><p>Expanded concrete patio plus patio enclosure with rails.</p></div><div class="value">$12,000</div></div>
+        <div class="card upgrade"><div><strong>Everyday utility</strong><p>Trash enclosure, concrete pad, and mesh gutter guards.</p></div><div class="value">$4,200</div></div>
+        <div class="card upgrade"><div><strong>Laundry + drop zone</strong><p>Utility sink, hanging rack, added storage, hooks, bench, and shoe storage.</p></div><div class="value">$2,200</div></div>
+        <div class="card upgrade"><div><strong>Comfort + lighting</strong><p>Remote-control ceiling fans and under-cabinet LED kitchen lighting.</p></div><div class="value">$1,200</div></div>
+      </div>
+    </main>
+    <div class="included">
+      <h3>Also included</h3>
+      <p class="body">Refrigerator, stove, washer, dryer, and the full home gym setup. Seller-paid concessions are available; call owner directly for details.</p>
+    </div>
+    <div class="footer"><strong>UmsteadGrove.com</strong><span>Buyer-facing upgrade summary</span><span>3</span></div>
+  </section>
+
+  <section class="page">
+    <div class="top-rule"></div>
+    <div class="page-title"><h2>Pricing & Market Context</h2></div>
+    <main class="content">
+      <p class="market-intro">The original realtor report was prepared to help price the home. For buyers, the useful takeaway is simple: the current asking price sits inside multiple value signals while offering a 2024 build, 4 bedrooms, flexible living space, and owner-paid upgrades.</p>
+      <div class="price-cards">
+        <div class="card price-card dark"><div class="num">$531,330</div><div class="label">CURRENT ASKING PRICE</div></div>
+        <div class="card price-card"><div class="num">$199 / sq ft</div><div class="label">BASED ON 2,670 SQ FT</div></div>
+      </div>
+      <div class="range-title">Realtor market range from report</div>
+      <div class="range">
+        <div class="bar"></div>
+        <div class="dot">LIST</div>
+        <div class="labels"><span>$488K</span><span>$520K</span><span>$554K</span></div>
+      </div>
+      <div class="source-grid">
+        <div class="card source"><div><strong>Black Knight estimate</strong><br><small>Range: $522.2K - $565.8K</small></div><div class="num">$544K</div></div>
+        <div class="card source"><div><strong>Redfin range signal</strong><br><small>From original report summary</small></div><div class="num">$536.4K</div></div>
+        <div class="card source"><div><strong>DASH CMA range</strong><br><small>Range: $486.8K - $553.2K</small></div><div class="num">$518.9K</div></div>
+        <div class="card source"><div><strong>Closed comp average</strong><br><small>Avg. sold price, 3 selected comps</small></div><div class="num">$551.3K</div></div>
+      </div>
+      <h3 style="margin-top:.22in;">Active neighborhood comparison</h3>
+      <table>
+        <thead><tr><th>Property</th><th>Price</th><th>Beds/Baths</th><th>Sq Ft</th><th>$/Sq Ft</th><th>Main Flex</th></tr></thead>
+        <tbody>
+          <tr class="subject"><td>This home</td><td>$531,330</td><td>4 / 3</td><td>2,670</td><td>$199</td><td>Yes</td></tr>
+          <tr><td>3000 Farndale Trce</td><td>$525,000</td><td>4 / 2.5</td><td>2,366</td><td>$222</td><td>No</td></tr>
+          <tr><td>1113 Umstead Grove Way</td><td>$515,000</td><td>4 / 2.5</td><td>2,569</td><td>$200</td><td>No</td></tr>
+          <tr><td>1105 Umstead Grove Way</td><td>$535,000</td><td>5 / 3.5</td><td>3,355</td><td>$159</td><td>Yes</td></tr>
+        </tbody>
+      </table>
+    </main>
+    <p class="disclaimer">Market data changes quickly and is not an appraisal. Buyer should independently verify comparable sales, measurements, schools, HOA, taxes, and all property condition details during due diligence.</p>
+    <div class="footer"><strong>UmsteadGrove.com</strong><span>Pricing context from seller/realtor research</span><span>4</span></div>
+  </section>
+
+  <section class="page">
+    <div class="top-rule"></div>
+    <div class="page-title"><h2>Location, Layout & Daily Life</h2></div>
+    <main class="content">
+      <div class="photo-row">
+        <div>
+          <div class="photo" style="height:1.72in;background-image:url('../images/lot-location.jpg')"></div>
+          <div class="caption">Lot location in Umstead Grove</div>
+        </div>
+        <div>
+          <div class="photo" style="height:1.72in;background-image:url('../images/floor-plan.jpg')"></div>
+          <div class="caption">Builder floor plan reference</div>
+        </div>
+      </div>
+      <p class="body" style="margin-top:.25in;">Umstead Grove is a small 50-home community surrounded by natural forest, with quick access to everyday shopping, parks, Duke, Downtown Durham, RTP, and RDU.</p>
+      <div class="nearby-grid">
+        <div class="card nearby"><strong>Publix at Latta Park</strong><span>~1 mi / ~3 min</span></div>
+        <div class="card nearby"><strong>Easley Elementary</strong><span>~1.1 mi / ~4 min</span></div>
+        <div class="card nearby"><strong>Eno River access</strong><span>~4 mi / ~8 min</span></div>
+        <div class="card nearby"><strong>Duke University & Hospital</strong><span>~7 mi / ~12 min</span></div>
+        <div class="card nearby"><strong>Downtown Durham</strong><span>~8 mi / ~15 min</span></div>
+        <div class="card nearby"><strong>RTP / RDU Airport</strong><span>~17 mi / ~20 min</span></div>
+        <div class="card nearby"><strong>Costco</strong><span>within ~7 mi / ~12 min</span></div>
+        <div class="card nearby"><strong>Planned Target redevelopment</strong><span>~6 mi / planned</span></div>
+      </div>
+    </main>
+    <div class="callout buyer-notes">
+      <h3>Buyer notes</h3>
+      <p>HOA is listed at approximately $94/month. Property report notes minimal flood hazard zone X and no foreclosure history. School proximity includes Easley Elementary, Carrington Middle, and Riverside High; buyer should verify assignment and ratings.</p>
+    </div>
+    <div class="footer"><strong>UmsteadGrove.com</strong><span>North Durham convenience</span><span>5</span></div>
+  </section>
+
+  <section class="page">
+    <div class="top-rule"></div>
+    <div class="page-title"><h2>Ready for a Serious Look?</h2></div>
+    <main class="content">
+      <div class="photo-row">
+        <div class="photo" style="height:1.9in;background-image:url('../images/dining-area-patio-view.jpg')"></div>
+        <div class="photo" style="height:1.9in;background-image:url('../images/owners-suite.jpg')"></div>
+      </div>
+      <div class="steps">
+        <div class="card step"><h3>Schedule a showing</h3><p>Contact the owner directly. Pre-approval is encouraged for serious buyers before submitting an offer.</p></div>
+        <div class="card step"><h3>Submit an offer</h3><p>Work with your buyer's agent or real estate attorney to prepare a North Carolina Offer to Purchase and Contract.</p></div>
+      </div>
+      <div class="packet">
+        <h3>Request the buyer packet</h3>
+        <p class="body">Available upon request: NC Residential Property Disclosure Statement, HOA documents and CC&Rs, survey if available, and additional showing details. The home was built in 2024 and remains subject to applicable builder warranties; buyer should verify coverage.</p>
+      </div>
+    </main>
+    <div class="callout final-contact">
+      <div class="mini-qr"><img src="qr-code.png" alt="QR code"></div>
+      <div>
+        <h2>UmsteadGrove.com</h2>
+        <p>864-625-6743<br>jorgeranilla@gmail.com</p>
+      </div>
+    </div>
+    <div class="footer"><strong>UmsteadGrove.com</strong><span>Information believed accurate but not guaranteed</span><span>6</span></div>
+  </section>
+</body>
+</html>

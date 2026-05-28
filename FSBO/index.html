@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Umstead Grove — Home For Sale | Durham, NC</title>
+  <meta name="description" content="Beautiful home for sale by owner in Durham, NC. Redirecting to the property website...">
+  <!-- Instant redirect for bots/crawlers -->
+  <meta http-equiv="refresh" content="1;url=https://www.umsteadgrove.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #1a3a2e;
+      --green-light: #2a5040;
+      --gold: #c9a84c;
+      --cream: #f5f0e8;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--green);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Subtle animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(201,168,76,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 20%, rgba(42,80,64,0.5) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .card {
+      text-align: center;
+      padding: 56px 48px;
+      max-width: 420px;
+      width: 90%;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .trees {
+      font-size: 2.4rem;
+      margin-bottom: 8px;
+      animation: sway 4s ease-in-out infinite;
+      display: inline-block;
+    }
+
+    @keyframes sway {
+      0%, 100% { transform: rotate(-2deg); }
+      50%       { transform: rotate(2deg); }
+    }
+
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--cream);
+      margin-bottom: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    .brand span {
+      color: var(--gold);
+    }
+
+    .tagline {
+      font-size: 0.8rem;
+      color: rgba(245,240,232,0.5);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      height: 4px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), #e8c96a);
+      border-radius: 99px;
+      width: 0%;
+      animation: fillBar 1s ease forwards;
+    }
+
+    @keyframes fillBar {
+      from { width: 0%; }
+      to   { width: 100%; }
+    }
+
+    .redirect-msg {
+      font-size: 0.85rem;
+      color: rgba(245,240,232,0.6);
+      margin-bottom: 32px;
+    }
+
+    .redirect-msg strong {
+      color: var(--gold);
+    }
+
+    .address-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 99px;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    .manual-link {
+      display: block;
+      margin-top: 28px;
+      font-size: 0.78rem;
+      color: rgba(245,240,232,0.4);
+    }
+
+    .manual-link a {
+      color: rgba(245,240,232,0.5);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="trees">🌲🌲🌲</div>
+    <h1 class="brand"><span>Umstead</span> Grove</h1>
+    <p class="tagline">Durham, NC &nbsp;·&nbsp; For Sale By Owner</p>
+
+    <div class="progress-wrap">
+      <div class="progress-bar"></div>
+    </div>
+
+    <p class="redirect-msg">Taking you to <strong>umsteadgrove.com</strong>…</p>
+
+    <div class="address-pill">
+      🏡 1008 Umstead Grove Way, Durham, NC 27712
+    </div>
+
+    <p class="manual-link">
+      Not redirecting? <a href="https://www.umsteadgrove.com">Click here</a>
+    </p>
+  </div>
+
+  <script>
+    // Redirect after 1 second
+    setTimeout(function() {
+      window.location.replace('https://www.umsteadgrove.com');
+    }, 1000);
+  </script>
+
+</body>
+</html>
