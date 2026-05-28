@@ -114,6 +114,18 @@
             margin: 0 0 1rem;
         }
 
+        .fiction-disclaimer {
+            margin: 1rem 0 1.75rem;
+            padding: 0.85rem 1rem;
+            background: #fff8f6;
+            border-left: 4px solid #CD5C5C;
+            border-radius: 8px;
+            color: #5f5f5f;
+            font-size: 0.78rem;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
         .post-share-row {
             display: flex;
             align-items: center;
@@ -252,6 +264,10 @@
                             </div>
                             <h1 class="post-title">${title}</h1>
                         </div>
+
+                        <aside class="fiction-disclaimer" role="note" aria-label="Fiction disclaimer">
+                            The stories published on this blog are works of fiction partially inspired by real experiences, memories, and observations. Some names, characters, places, events, and dialogues have been altered, fictionalized, or invented. The content should not be interpreted as a literal representation of real events or people. Any resemblance to real persons, living or deceased, is purely coincidental.
+                        </aside>
 
                         <div class="post-content">
                             ${cleanContent}
