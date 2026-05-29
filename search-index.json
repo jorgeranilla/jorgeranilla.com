@@ -15,7 +15,7 @@
         "title":  "Latest Posts",
         "url":  "blog/latest-posts.html",
         "section":  "blog",
-        "content":  "Jorge Ranilla | Latest Posts Latest Posts Memoria Efimera \"Un espacio personal donde los recuerdos, las emociones y los giros inesperados de la vida se entrelazan.\" A personal space where memories, emotions, and life\u0027s unexpected turns intertwine. Here I share stories about family, health journeys, travels, reflections, and the moments that shape our lives. Posts are written in Spanish. Loading latest posts... Visit Full Blog"
+        "content":  "Jorge Ranilla | Latest Posts Latest Posts Memoria Efimera \"Un espacio personal donde los recuerdos, las emociones y los giros inesperados de la vida se entrelazan.\" A personal space where memories, emotions, and life\u0027s unexpected turns intertwine. Here I share stories about family, health journeys, travels, reflections, and the moments that shape our lives. Posts are written in Spanish. Loading latest posts..."
     },
     {
         "title":  "Latest Post",
@@ -358,24 +358,6 @@
         "url":  "index.html",
         "section":  "Home",
         "content":  "Jorge Ranilla | Home 🎀 Welcome to the world, Baby Alyssa! Born March 25, 2026 🩷 | 📢 She\u0027s finally here — our hearts are full! | 💕 A new chapter begins for our family Welcome This is a space where I share my story, celebrate my family\u0027s heritage, and preserve the memories that connect us across generations. This site is a living archive of our journey together. Explore the family tree, discover our roots, and get to know the people and places that shaped who I am. Stay Connected Get updates on family events, new posts, and announcements. Subscribe Unsubscribe anytime. Latest Family Update View all updates → Loading latest update… 🩷 She\u0027s Here! Alyssa Born March 25, 2026 1 day old 💕 Our hearts are so full 💕 What\u0027s Marked on the Calendar What\u0027s coming up for us Loading events... 📅 Subscribe to Calendar Jorge Ranilla @jorgeranilla Fetching Latest Thoughts..."
-    },
-    {
-        "title":  "Alyssa Live | Jorge Ranilla",
-        "url":  "live/index.html",
-        "section":  "live",
-        "content":  "Alyssa Live | Jorge Ranilla OFFLINE 👶 Alyssa\u0027s Camera The camera is not streaming right now. When Alyssa\u0027s camera is turned on, the live feed will appear here automatically — no need to refresh. Streaming now - audio is muted for privacy How it works This page connects to Alyssa\u0027s Nest camera in real time The stream starts automatically when the camera is on No recording is stored — this is live viewing only Audio is intentionally disabled for privacy; this page shows video only Use the video controls to expand or adjust playback All times shown are in Eastern Time (ET) Private family stream · Not indexed · Secured by Firebase"
-    },
-    {
-        "title":  "Locator Admin",
-        "url":  "locator/admin/index.html",
-        "section":  "locator",
-        "content":  "Jorge Ranilla | Locator Admin Admin Location Sharing Sign in with Google Status Inactive Last update Never Duration 30 minutes 1 hour 2 hours 4 hours Start Sharing Stop Sharing Log Out"
-    },
-    {
-        "title":  "Locator",
-        "url":  "locator/index.html",
-        "section":  "locator",
-        "content":  "Jorge Ranilla | Locator Jorge is not sharing his location right now. When Jorge decides to share his location, it will appear here in real time on Google Maps. This page updates automatically — no need to refresh. Latitude Longitude Accuracy Last updated How it works Jorge can start or stop sharing at any time from the admin panel Location is shown on an interactive Google Map with live coordinates Updates happen in real time — the pin moves as Jorge moves When sharing stops, the map disappears and no history is stored Admin? Manage location sharing →"
     },
     {
         "title":  "At a Glance",

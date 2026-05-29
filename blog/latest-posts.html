@@ -45,11 +45,9 @@
     </div>
 
     <div id="loading" class="loading-message">Loading latest posts...</div>
+    <div id="post-page-summary" class="post-page-summary" aria-live="polite"></div>
     <div id="posts-grid" class="posts-grid"></div>
-
-    <div class="blog-cta">
-      <a href="https://memoria-efimera.blogspot.com/" target="_blank" class="blog-btn">Visit Full Blog</a>
-    </div>
+    <nav id="blog-pagination" class="blog-pagination" aria-label="Blog pagination"></nav>
   </main>
 
   <style>
@@ -93,11 +91,18 @@
       font-size: 1.1rem;
     }
 
+    .post-page-summary {
+      text-align: center;
+      color: #888;
+      font-size: 0.85rem;
+      margin: -1rem 0 1.5rem;
+    }
+
     .posts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 2rem;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
     }
 
     .post-card {
@@ -251,27 +256,61 @@
       text-decoration: underline;
     }
 
-    .blog-cta {
-      text-align: center;
-      margin-top: 3rem;
+    .blog-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin: 0 auto 2.5rem;
     }
 
-    .blog-btn {
-      display: inline-block;
-      background: #2c3e50;
-      color: white;
-      padding: 1rem 2.5rem;
-      border-radius: 8px;
+    .pagination-link,
+    .pagination-current,
+    .pagination-ellipsis {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      min-height: 24px;
+      padding: 0.16rem 0.34rem;
+      border-radius: 5px;
+      font-size: 0.64rem;
+      font-weight: 400;
+    }
+
+    .pagination-link {
+      color: #555;
+      background: #fff;
+      border: 1px solid #e5e5e5;
       text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
     }
 
-    .blog-btn:hover {
+    .pagination-link:hover {
       background: #CD5C5C;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(205, 92, 92, 0.3);
+      border-color: #CD5C5C;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .pagination-link.disabled {
+      color: #bbb;
+      background: #f8f8f8;
+      pointer-events: none;
+    }
+
+    .pagination-current {
+      color: #fff;
+      background: #2c3e50;
+      border: 1px solid #2c3e50;
+      font-weight: 500;
+    }
+
+    .pagination-ellipsis {
+      color: #aaa;
+      min-width: 18px;
+      padding-inline: 0.25rem;
     }
   </style>
 
@@ -331,113 +370,235 @@
       return familyMembers;
     }
 
-    // Fetch posts from Blogger RSS feed using JSONP to bypass CORS
-    function loadBlogPosts() {
-      // Create a unique callback name
-      const callbackName = 'blogCallback_' + Date.now();
+    const POSTS_PER_PAGE = 24;
+    const BLOGGER_BATCH_SIZE = 50;
+    const BLOGGER_FEED_URL = 'https://memoria-efimera.blogspot.com/feeds/posts/default';
 
-      // Define the callback function globally
-      window[callbackName] = function (data) {
-        try {
-          const posts = data.feed.entry || [];
-          const postsGrid = document.getElementById('posts-grid');
-          const loading = document.getElementById('loading');
+    function getCurrentPage() {
+      const params = new URLSearchParams(window.location.search);
+      const page = parseInt(params.get('page'), 10);
+      return Number.isFinite(page) && page > 0 ? page : 1;
+    }
 
-          loading.style.display = 'none';
+    function buildPageUrl(page) {
+      const params = new URLSearchParams(window.location.search);
+      if (page <= 1) {
+        params.delete('page');
+      } else {
+        params.set('page', String(page));
+      }
 
-          let postsDisplayed = 0;
-          const maxPosts = 12;
+      const query = params.toString();
+      return 'latest-posts.html' + (query ? '?' + query : '');
+    }
 
-          posts.forEach(post => {
-            // Stop if we've already displayed 12 posts
-            if (postsDisplayed >= maxPosts) return;
+    function escapeHtml(value) {
+      const div = document.createElement('div');
+      div.textContent = value == null ? '' : String(value);
+      return div.innerHTML;
+    }
 
-            // Skip posts with "Family Updates" category
-            const categories = post.category || [];
-            const isFamilyUpdate = categories.some(cat => cat.term === 'Family Updates');
-            if (isFamilyUpdate) return;
+    function htmlToText(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html || '';
+      div.querySelectorAll('script, style, img').forEach(el => el.remove());
+      return div.textContent.trim().replace(/\s+/g, ' ');
+    }
 
-            const title = post.title.$t;
-            const link = post.link.find(l => l.rel === 'alternate').href;
-            const date = new Date(post.published.$t).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            });
-            const content = post.content ? post.content.$t : post.summary.$t;
-            const excerpt = content.replace(/<[^>]*>/g, '').substring(0, 250) + '...';
+    function isFamilyUpdate(post) {
+      const categories = post.category || [];
+      return categories.some(cat => cat.term === 'Family Updates');
+    }
 
-            // Detect themes and family members
-            const themes = detectThemes(title, content);
-            const familyMembers = detectFamilyMembers(title, content);
+    function getPostId(post) {
+      if (!post.id || !post.id.$t) return '';
+      const idMatch = post.id.$t.match(/(\d+)$/);
+      return idMatch ? idMatch[1] : '';
+    }
 
-            // Build individual post URL
-            let postId = '';
-            if (post.id && post.id.$t) {
-              const idMatch = post.id.$t.match(/(\d+)$/);
-              if (idMatch) postId = idMatch[1];
-            }
-            const readMoreUrl = postId ? 'latest-posts-individual.html?id=' + postId : link;
+    function fetchBloggerFeed(startIndex, maxResults) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'blogCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
 
-            const card = document.createElement('div');
-            card.className = 'post-card';
+        function cleanup() {
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
 
-            let themesHTML = '';
-            if (themes.length > 0) {
-              themesHTML = '<div class="post-themes">' +
-                themes.map(theme =>
-                  `<span class="theme-badge ${theme.class}">${theme.emoji} ${theme.name}</span>`
-                ).join('') +
-                '</div>';
-            }
+        window[callbackName] = function (data) {
+          cleanup();
+          resolve(data);
+        };
 
-            let familyHTML = '';
-            if (familyMembers.length > 0) {
-              familyHTML = '<div class="family-connections">' +
-                familyMembers.map(member =>
-                  `<a href="../family/${member.slug}.html" class="family-link" title="Read about ${member.name}">
-                    <span class="family-icon"></span>${member.name}
-                </a>`
-                ).join('') +
-                '</div>';
-            }
+        script.onerror = function () {
+          cleanup();
+          reject(new Error('Error loading blog feed script'));
+        };
 
-            card.innerHTML = `
-            <div class="post-content">
-                <div class="post-date">${date}</div>
-                <h3 class="post-title">${title}</h3>
-                ${themesHTML}
-                <p class="post-excerpt">${excerpt}</p>
-                <div class="post-footer">
-                  <a href="${readMoreUrl}" class="post-link">Read More →</a>
-                </div>
-                ${familyHTML}
-            </div>
-            `;
+        script.src = `${BLOGGER_FEED_URL}?alt=json-in-script&start-index=${startIndex}&max-results=${maxResults}&callback=${callbackName}`;
+        document.head.appendChild(script);
+      });
+    }
 
-            postsGrid.appendChild(card);
-            postsDisplayed++;
+    function createPostCard(post) {
+      const title = post.title.$t;
+      const alternateLink = (post.link || []).find(l => l.rel === 'alternate');
+      const link = alternateLink ? alternateLink.href : 'https://memoria-efimera.blogspot.com/';
+      const date = new Date(post.published.$t).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      const content = post.content ? post.content.$t : (post.summary ? post.summary.$t : '');
+      const plainText = htmlToText(content);
+      const excerpt = plainText.length > 250 ? plainText.substring(0, 250).trimEnd() + '...' : plainText;
+      const themes = detectThemes(title, content);
+      const familyMembers = detectFamilyMembers(title, content);
+      const postId = getPostId(post);
+      const readMoreUrl = postId ? 'latest-posts-individual.html?id=' + postId : link;
+
+      const card = document.createElement('div');
+      card.className = 'post-card';
+
+      let themesHTML = '';
+      if (themes.length > 0) {
+        themesHTML = '<div class="post-themes">' +
+          themes.map(theme =>
+            `<span class="theme-badge ${theme.class}">${theme.emoji} ${escapeHtml(theme.name)}</span>`
+          ).join('') +
+          '</div>';
+      }
+
+      let familyHTML = '';
+      if (familyMembers.length > 0) {
+        familyHTML = '<div class="family-connections">' +
+          familyMembers.map(member =>
+            `<a href="../family/${member.slug}.html" class="family-link" title="Read about ${escapeHtml(member.name)}">
+              <span class="family-icon"></span>${escapeHtml(member.name)}
+            </a>`
+          ).join('') +
+          '</div>';
+      }
+
+      card.innerHTML = `
+        <div class="post-content">
+          <div class="post-date">${escapeHtml(date)}</div>
+          <h3 class="post-title">${escapeHtml(title)}</h3>
+          ${themesHTML}
+          <p class="post-excerpt">${escapeHtml(excerpt)}</p>
+          <div class="post-footer">
+            <a href="${escapeHtml(readMoreUrl)}" class="post-link">Read More →</a>
+          </div>
+          ${familyHTML}
+        </div>
+      `;
+
+      return card;
+    }
+
+    function renderPagination(currentPage, hasNextPage) {
+      const pagination = document.getElementById('blog-pagination');
+      if (!pagination) return;
+
+      if (currentPage === 1 && !hasNextPage) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      const parts = [];
+
+      if (currentPage > 1) {
+        parts.push(`<a href="${buildPageUrl(currentPage - 1)}" class="pagination-link">&larr; Newer</a>`);
+      } else {
+        parts.push('<span class="pagination-link disabled">&larr; Newer</span>');
+      }
+
+      const firstNumber = Math.max(1, currentPage - 2);
+      if (firstNumber > 1) {
+        parts.push(`<a href="${buildPageUrl(1)}" class="pagination-link">1</a>`);
+        if (firstNumber > 2) parts.push('<span class="pagination-ellipsis">...</span>');
+      }
+
+      const lastNumber = currentPage + (hasNextPage ? 1 : 0);
+      for (let page = firstNumber; page <= lastNumber; page++) {
+        if (page === currentPage) {
+          parts.push(`<span class="pagination-current" aria-current="page">${page}</span>`);
+        } else {
+          parts.push(`<a href="${buildPageUrl(page)}" class="pagination-link">${page}</a>`);
+        }
+      }
+
+      if (hasNextPage) {
+        parts.push(`<a href="${buildPageUrl(currentPage + 1)}" class="pagination-link">Older &rarr;</a>`);
+      } else {
+        parts.push('<span class="pagination-link disabled">Older &rarr;</span>');
+      }
+
+      pagination.innerHTML = parts.join('');
+    }
+
+    async function loadBlogPosts() {
+      const currentPage = getCurrentPage();
+      const postsGrid = document.getElementById('posts-grid');
+      const loading = document.getElementById('loading');
+      const summary = document.getElementById('post-page-summary');
+      const postsNeeded = currentPage * POSTS_PER_PAGE + 1;
+      const collectedPosts = [];
+
+      postsGrid.innerHTML = '';
+      if (summary) summary.textContent = '';
+      loading.style.display = 'block';
+      loading.textContent = currentPage === 1 ? 'Loading latest posts...' : `Loading posts page ${currentPage}...`;
+
+      try {
+        let startIndex = 1;
+        let hasMoreFeedEntries = true;
+        let batchesLoaded = 0;
+
+        while (collectedPosts.length < postsNeeded && hasMoreFeedEntries && batchesLoaded < 20) {
+          const data = await fetchBloggerFeed(startIndex, BLOGGER_BATCH_SIZE);
+          const feed = data.feed || {};
+          const entries = feed.entry || [];
+          const totalResults = parseInt(feed.openSearch$totalResults && feed.openSearch$totalResults.$t, 10) || 0;
+
+          entries.forEach(post => {
+            if (!isFamilyUpdate(post)) collectedPosts.push(post);
           });
 
-          // Clean up
-          delete window[callbackName];
-          document.head.removeChild(script);
-        } catch (error) {
-          document.getElementById('loading').textContent = 'Error loading posts. Please visit the blog directly.';
-          console.error('Error processing blog posts:', error);
+          startIndex += BLOGGER_BATCH_SIZE;
+          hasMoreFeedEntries = entries.length === BLOGGER_BATCH_SIZE && (!totalResults || startIndex <= totalResults);
+          batchesLoaded++;
         }
-      };
 
-      // Create script tag for JSONP request
-      const script = document.createElement('script');
-      script.src = `https://memoria-efimera.blogspot.com/feeds/posts/default?alt=json-in-script&max-results=25&callback=${callbackName}`;
-      script.onerror = function () {
-        document.getElementById('loading').textContent = 'Error loading posts. Please visit the blog directly.';
-        console.error('Error loading blog feed script');
-        delete window[callbackName];
-      };
+        const pageStart = (currentPage - 1) * POSTS_PER_PAGE;
+        const pagePosts = collectedPosts.slice(pageStart, pageStart + POSTS_PER_PAGE);
+        const hasNextPage = collectedPosts.length > pageStart + POSTS_PER_PAGE || hasMoreFeedEntries;
 
-      document.head.appendChild(script);
+        if (pagePosts.length === 0) {
+          loading.textContent = currentPage === 1 ? 'No posts found.' : 'No posts found on this page.';
+          renderPagination(currentPage, false);
+          return;
+        }
+
+        loading.style.display = 'none';
+        pagePosts.forEach(post => postsGrid.appendChild(createPostCard(post)));
+
+        if (summary) {
+          const firstVisible = pageStart + 1;
+          const lastVisible = pageStart + pagePosts.length;
+          summary.textContent = `Showing posts ${firstVisible}-${lastVisible}`;
+        }
+
+        document.title = currentPage === 1
+          ? 'Jorge Ranilla | Latest Posts'
+          : `Jorge Ranilla | Latest Posts - Page ${currentPage}`;
+
+        renderPagination(currentPage, hasNextPage);
+      } catch (error) {
+        loading.textContent = 'Error loading posts. Please try again later.';
+        console.error('Error processing blog posts:', error);
+      }
     }
 
     // Load posts when page loads
