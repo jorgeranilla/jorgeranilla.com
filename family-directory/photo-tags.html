@@ -132,6 +132,18 @@
       padding: 9px 10px;
     }
 
+    .fd-tag-rename-note {
+      background: #f3f8ff;
+      border: 1px solid #cfe2ff;
+      border-radius: 10px;
+      color: #24517a;
+      font-size: .76rem;
+      font-weight: 500;
+      line-height: 1.45;
+      margin: 0 0 12px;
+      padding: 9px 10px;
+    }
+
     .fd-person-chip-wrap {
       display: flex;
       flex-wrap: wrap;
@@ -398,6 +410,7 @@
             <button class="fd-filter-pill" data-filter="tagged">Tagged</button>
             <button class="fd-filter-pill" data-filter="approved">Approved</button>
             <button class="fd-filter-pill" data-filter="needs-review">Needs Retag</button>
+            <button class="fd-filter-pill" data-filter="needs-rename">Needs Rename</button>
           </div>
           <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading Family folder photos...</p>
         </div>
@@ -418,7 +431,7 @@
   </div>
 
   <script src="directory.js"></script>
-  <script src="photo-tags.js?v=3"></script>
+  <script src="photo-tags.js?v=5"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>

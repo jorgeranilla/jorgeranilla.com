@@ -3,6 +3,7 @@ const PHOTO_TAGS_MASTER_FOLDER_ID = '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ';
 const PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const PHOTO_TAGS_DRIVE_PAGE_SIZE = 200;
 const PHOTO_TAGS_CONTENT_FIELDS = ['mimeType', 'type', 'md5Checksum', 'size'];
+const PHOTO_TAGS_STANDARD_NAME_RE = /^(\d{4})\.(\d{2})\.(\d{2})_(\d{4})(\.[a-z0-9]+)$/i;
 const PHOTO_TAGS_STATUS_LABELS = {
   approved: 'Approved',
   pending: 'Pending',
@@ -72,6 +73,7 @@ async function initPhotoTagger() {
     ]);
 
     try {
+      await syncRenamedPhotoTagMetadata();
       await syncComputedPhotoTagStatuses();
     } catch (syncError) {
       console.warn('Could not sync stale photo tag statuses:', syncError);
@@ -156,7 +158,7 @@ async function loadPhotoTagFiles() {
     const params = [
       `q=${q}`,
       `key=${encodeURIComponent(PHOTO_TAGS_DRIVE_API_KEY)}`,
-      'fields=nextPageToken,files(id,name,mimeType,createdTime,modifiedTime,md5Checksum,size)',
+      'fields=nextPageToken,files(id,name,mimeType,createdTime,modifiedTime,md5Checksum,size,imageMediaMetadata(time))',
       'orderBy=createdTime desc',
       `pageSize=${PHOTO_TAGS_DRIVE_PAGE_SIZE}`
     ];
@@ -179,6 +181,7 @@ async function loadPhotoTagFiles() {
       type: String(file.mimeType || '').startsWith('video/') ? 'video' : 'image',
       createdTime: file.createdTime || '',
       modifiedTime: file.modifiedTime || '',
+      takenTime: file.imageMediaMetadata?.time || '',
       md5Checksum: file.md5Checksum || '',
       size: file.size || ''
     })));
@@ -186,10 +189,116 @@ async function loadPhotoTagFiles() {
     pageToken = data.nextPageToken || '';
   } while (pageToken);
 
-  photoTagFiles = files.sort((a, b) => b.name.localeCompare(a.name, undefined, {
+  photoTagFiles = assignPhotoTagSuggestedNames(files).sort((a, b) => b.name.localeCompare(a.name, undefined, {
     numeric: true,
     sensitivity: 'base'
   }));
+}
+
+function parsePhotoTagDateKey(value) {
+  const raw = String(value || '').trim();
+  const dateParts = raw.match(/^(\d{4})[:.-](\d{2})[:.-](\d{2})/);
+
+  if (dateParts) {
+    return `${dateParts[1]}.${dateParts[2]}.${dateParts[3]}`;
+  }
+
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return '';
+
+  return [
+    parsed.getFullYear(),
+    String(parsed.getMonth() + 1).padStart(2, '0'),
+    String(parsed.getDate()).padStart(2, '0')
+  ].join('.');
+}
+
+function getPhotoTagFileExtension(file) {
+  const name = String(file?.name || '');
+  const match = name.match(/\.([a-z0-9]+)$/i);
+  if (match) return `.${match[1].toLowerCase()}`;
+  if (file?.type === 'video') return '.mp4';
+  return '.jpg';
+}
+
+function getPhotoTagTakenSortValue(file) {
+  const raw = String(file?.takenTime || file?.createdTime || file?.modifiedTime || '').trim();
+  const normalized = raw.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
+  const parsed = new Date(normalized);
+  return Number.isNaN(parsed.getTime()) ? Number.MAX_SAFE_INTEGER : parsed.getTime();
+}
+
+function getPhotoTagNameMatch(file) {
+  return String(file?.name || '').match(PHOTO_TAGS_STANDARD_NAME_RE);
+}
+
+function isPhotoTagStandardName(file) {
+  const match = getPhotoTagNameMatch(file);
+  if (!match) return false;
+
+  return Boolean(file.suggestedName && file.name.toLowerCase() === file.suggestedName.toLowerCase());
+}
+
+function assignPhotoTagSuggestedNames(files) {
+  const maxSequenceByDate = new Map();
+  const renameGroups = new Map();
+
+  files.forEach(file => {
+    const nameMatch = getPhotoTagNameMatch(file);
+
+    if (nameMatch) {
+      const dateKey = `${nameMatch[1]}.${nameMatch[2]}.${nameMatch[3]}`;
+      const sequence = Number(nameMatch[4]);
+      maxSequenceByDate.set(dateKey, Math.max(maxSequenceByDate.get(dateKey) || 0, sequence));
+    }
+  });
+
+  files.forEach(file => {
+    const dateKey = parsePhotoTagDateKey(file.takenTime || file.createdTime || file.modifiedTime);
+    file.dateTakenKey = dateKey;
+
+    if (!dateKey) {
+      file.suggestedName = '';
+      return;
+    }
+
+    const nameMatch = getPhotoTagNameMatch(file);
+    if (nameMatch) {
+      file.suggestedName = file.name;
+      return;
+    }
+
+    if (!renameGroups.has(dateKey)) {
+      renameGroups.set(dateKey, []);
+    }
+
+    renameGroups.get(dateKey).push(file);
+  });
+
+  renameGroups.forEach((group, dateKey) => {
+    group
+      .sort((a, b) =>
+        getPhotoTagTakenSortValue(a) - getPhotoTagTakenSortValue(b) ||
+        a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }) ||
+        a.id.localeCompare(b.id)
+      )
+      .forEach((file, index) => {
+        const sequence = (maxSequenceByDate.get(dateKey) || 0) + index + 1;
+        file.suggestedName = `${dateKey}_${String(sequence).padStart(4, '0')}${getPhotoTagFileExtension(file)}`;
+      });
+  });
+
+  return files;
+}
+
+function getPhotoTagRenameMessage(file) {
+  if (isPhotoTagStandardName(file)) return '';
+
+  if (!file.suggestedName) {
+    return 'Rename this file before tagging. I could not find a date taken, so use YYYY.MM.DD_0001.ext.';
+  }
+
+  return `Rename this file in Google Drive before publishing tags: ${file.suggestedName}`;
 }
 
 function normalizePhotoTagRecord(id, data) {
@@ -431,6 +540,53 @@ async function syncComputedPhotoTagStatuses() {
   }
 }
 
+async function syncRenamedPhotoTagMetadata() {
+  const updates = [];
+
+  photoTagFiles.forEach(file => {
+    const tag = getPhotoTagRecord(file.id);
+    if (!hasSavedTagPeople(tag)) return;
+    if (tag.status !== 'approved') return;
+    if (hasUnresolvedTagPeople(tag)) return;
+    if (getChangedDriveFields(file, tag).length > 0) return;
+    if (!tag.name || !file.name || tag.name === file.name) return;
+
+    const payload = {
+      name: file.name,
+      mimeType: file.mimeType,
+      type: file.type,
+      drive: {
+        ...tag.drive,
+        mimeType: file.mimeType,
+        type: file.type,
+        createdTime: file.createdTime,
+        modifiedTime: file.modifiedTime,
+        md5Checksum: file.md5Checksum,
+        size: file.size
+      },
+      updatedAt: window._fb.serverTimestamp()
+    };
+
+    updates.push(
+      window._fb.setDoc(
+        window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, file.id),
+        payload,
+        { merge: true }
+      ).then(() => {
+        photoTagRecords.set(file.id, normalizePhotoTagRecord(file.id, {
+          ...tag,
+          ...payload,
+          updatedAt: tag.updatedAt
+        }));
+      })
+    );
+  });
+
+  if (updates.length > 0) {
+    await Promise.all(updates);
+  }
+}
+
 function getVisiblePhotoTagFiles() {
   return photoTagFiles.filter(file => {
     const tag = getPhotoTagRecord(file.id);
@@ -441,11 +597,12 @@ function getVisiblePhotoTagFiles() {
     if (photoTagFilter === 'tagged' && !tagged) return false;
     if (photoTagFilter === 'approved' && status !== 'approved') return false;
     if (photoTagFilter === 'needs-review' && status !== 'needs-review') return false;
+    if (photoTagFilter === 'needs-rename' && !getPhotoTagRenameMessage(file)) return false;
 
     if (!photoTagSearch) return true;
 
     const labels = tag?.peopleLabels?.join(' ') || tag?.people?.map(getPhotoTagLabel).join(' ') || '';
-    return `${file.name} ${labels}`.toLowerCase().includes(photoTagSearch);
+    return `${file.name} ${file.suggestedName || ''} ${labels}`.toLowerCase().includes(photoTagSearch);
   });
 }
 
@@ -463,10 +620,11 @@ function renderPhotoTags() {
   const untaggedCount = photoTagFiles.length - taggedCount;
   const needsReviewCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'needs-review').length;
   const approvedCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'approved').length;
+  const needsRenameCount = photoTagFiles.filter(file => getPhotoTagRenameMessage(file)).length;
 
   summary.textContent = `${photoTagFiles.length} photos in Family folder · ${taggedCount} tagged · ${untaggedCount} untagged`;
 
-  summary.textContent = `${photoTagFiles.length} photos in Family folder - ${approvedCount} approved - ${needsReviewCount} need retag - ${untaggedCount} untagged`;
+  summary.textContent = `${photoTagFiles.length} photos in Family folder - ${approvedCount} approved - ${needsReviewCount} need retag - ${needsRenameCount} need rename - ${untaggedCount} untagged`;
 
   if (visible.length === 0) {
     grid.innerHTML = '';
@@ -492,6 +650,7 @@ function renderPhotoTagCard(file) {
         ? Array.from(selectedPeople).map(getPhotoTagLabel).join(', ')
         : 'No people assigned yet';
   const reviewReason = getPhotoTagReviewReason(file, tag);
+  const renameMessage = getPhotoTagRenameMessage(file);
   const publishText = status === 'needs-review' ? 'Approve Tags' : 'Save & Publish';
 
   return `
@@ -504,6 +663,7 @@ function renderPhotoTagCard(file) {
           <span class="fd-tag-status untagged">${escapePhotoTagHtml(file.type)}</span>
         </div>
         <p class="fd-tag-summary">${escapePhotoTagHtml(labels)}</p>
+        ${renameMessage ? `<p class="fd-tag-rename-note">${escapePhotoTagHtml(renameMessage)}</p>` : ''}
         ${reviewReason ? `<p class="fd-tag-review-note">${escapePhotoTagHtml(reviewReason)}</p>` : ''}
 
         <div class="fd-tagging-area">
@@ -644,6 +804,8 @@ async function savePhotoTag(fileId) {
       type: file.type,
       createdTime: file.createdTime,
       modifiedTime: file.modifiedTime,
+      takenTime: file.takenTime,
+      suggestedName: file.suggestedName,
       md5Checksum: file.md5Checksum,
       size: file.size
     },
