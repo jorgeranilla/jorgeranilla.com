@@ -378,21 +378,33 @@
         "content":  "Jorge Ranilla | Resume Resume Download my full resume or connect with me on LinkedIn for more details about my professional experience. Download PDF View LinkedIn Profile If the PDF doesn\u0027t display above, click here to open it in a new tab . Jorge Ranilla Resume View or download my professional resume as a PDF document. View Resume PDF"
     },
     {
-        "title":  "Cart — Bloomsai Co.",
+        "title":  "Cart - Bloomsai Co.",
         "url":  "shop/cart.html",
         "section":  "shop",
-        "content":  "Cart — Bloomsai Co. Made for the Journey · Free shipping on orders over $75"
+        "content":  "Cart - Bloomsai Co. Made for the Journey · Free shipping on orders over $75"
     },
     {
-        "title":  "Bloomsai Co. — by Jorge Ranilla",
+        "title":  "Contact - Bloomsai Co.",
+        "url":  "shop/contact.html",
+        "section":  "shop",
+        "content":  "Contact - Bloomsai Co. Made for the Journey · Free shipping on orders over $75 Let\u0027s Connect Questions, ideas, or order help? Send a note about sizing, shipping, custom ideas, or anything you want to know before ordering. Email Us Shop Email hello@jorgeranilla.com Best for order questions, sizing, shipping, returns, and custom ideas. Send Email Instagram @jorgeranilla Follow along for drops, behind-the-scenes notes, and early product previews. Open Instagram Quick Answers How do I choose a size? Product pages list available sizes. If you are between sizes, email before ordering and I can help you pick the better fit. How does shipping work? Standard shipping is 5-7 business days. Orders over $75 ship free. Can I return something? Unworn items can be returned within 30 days. Send an email with your order details and I will help from there. How should I care for the pieces? Wash apparel cold, avoid bleach, and hang dry or tumble dry low. For accessories and prints, spot clean gently. Do you take custom ideas? Yes. If a piece, phrase, or small run would make sense for Bloomsai Co., send the idea over."
+    },
+    {
+        "title":  "Bloomsai Co. - by Jorge Ranilla",
         "url":  "shop/index.html",
         "section":  "shop",
-        "content":  "Bloomsai Co. — by Jorge Ranilla Made for the Journey · Free shipping on orders over $75 Made for the Journey Wear something real. Inspired by growth, roots, and the connections we build with people and places throughout our lives. Shop All New Arrivals All Products 5 Items All Shirts Hoodies Hats Accessories Prints Loading products…"
+        "content":  "Bloomsai Co. - by Jorge Ranilla Made for the Journey · Free shipping on orders over $75 Made for the Journey Wear something real. Small-batch pieces inspired by growth, roots, and the everyday places that become part of us. Shop the Drop Contact Featured Pieces View All Loading products... Small Batch Starting with a focused set of pieces keeps the shop personal, intentional, and easy to grow. Creator Led Bloomsai Co. carries Jorge Ranilla\u0027s point of view without turning the store into personal merch."
     },
     {
-        "title":  "Product — Bloomsai Co.",
+        "title":  "Product - Bloomsai Co.",
         "url":  "shop/product.html",
         "section":  "shop",
-        "content":  "Product — Bloomsai Co. Made for the Journey · Free shipping on orders over $75 Loading product…"
+        "content":  "Product - Bloomsai Co. Made for the Journey · Free shipping on orders over $75 Loading product..."
+    },
+    {
+        "title":  "Shop - Bloomsai Co.",
+        "url":  "shop/shop.html",
+        "section":  "shop",
+        "content":  "Shop - Bloomsai Co. Made for the Journey · Free shipping on orders over $75 Shop The first Bloomsai pieces. A focused catalog of everyday goods, built to grow slowly and stay personal. All Products 5 Items All Shirts Hoodies Hats Accessories Prints Loading products..."
     }
 ]

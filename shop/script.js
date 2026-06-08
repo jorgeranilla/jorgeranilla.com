@@ -100,9 +100,12 @@ async function initStorefront() {
 
   const products = await loadProducts();
   window._shopProducts = products;
+  const limit = Number.parseInt(grid.dataset.limit || '', 10);
+  const visibleProducts = Number.isFinite(limit) ? products.slice(0, limit) : products;
 
-  renderProductGrid(products, grid);
+  renderProductGrid(visibleProducts, grid);
   initFilters(products, grid);
+  updateCollectionMeta(visibleProducts, 'all');
 }
 
 function renderProductGrid(products, grid) {
@@ -131,20 +134,24 @@ function productCardHTML(p) {
   const badgeMap = { 'New': '', 'Bestseller': 'bestseller', 'Limited': 'limited' };
   const badgeClass = p.badge ? badgeMap[p.badge] || '' : '';
   return `
-    <a class="product-card" href="product.html?id=${p.id}">
+    <article class="product-card">
       <div class="card-image-wrap">
-        <img src="${p.image}" alt="${p.name}" loading="lazy" />
-        ${p.badge ? `<span class="card-badge ${badgeClass}">${p.badge}</span>` : ''}
+        <a class="product-image-link" href="product.html?id=${p.id}">
+          <img src="${p.image}" alt="${p.name}" loading="lazy" />
+          ${p.badge ? `<span class="card-badge ${badgeClass}">${p.badge}</span>` : ''}
+        </a>
         <div class="card-actions">
           <button class="card-quick-add" data-id="${p.id}" aria-label="Quick add ${p.name}">Quick Add</button>
         </div>
       </div>
-      <div class="card-info">
-        <div class="card-category">${p.category}</div>
-        <div class="card-name">${p.name}</div>
-        <div class="card-price">$${p.price}</div>
-      </div>
-    </a>`;
+      <a class="product-card-link" href="product.html?id=${p.id}">
+        <div class="card-info">
+          <div class="card-category">${p.category}</div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-price">$${p.price}</div>
+        </div>
+      </a>
+    </article>`;
 }
 
 function initFilters(products, grid) {
@@ -159,7 +166,19 @@ function initFilters(products, grid) {
     const cat = btn.dataset.cat;
     const filtered = cat === 'all' ? products : products.filter(p => p.category === cat);
     renderProductGrid(filtered, grid);
+    updateCollectionMeta(filtered, cat);
   });
+}
+
+function updateCollectionMeta(products, cat) {
+  const count = document.getElementById('results-count');
+  const title = document.getElementById('collection-title');
+  if (count) count.textContent = `${products.length} Item${products.length === 1 ? '' : 's'}`;
+  if (title && cat) {
+    title.textContent = cat === 'all'
+      ? 'All Products'
+      : cat.charAt(0).toUpperCase() + cat.slice(1);
+  }
 }
 
 /* ─── QUICK-ADD MODAL ────────────────────────── */
@@ -253,7 +272,7 @@ function productDetailHTML(p) {
 
       <div class="product-info-panel">
         <div class="product-breadcrumb">
-          <a href="index.html">Shop</a>
+          <a href="shop.html">Shop</a>
           <span>/</span>
           <span>${p.category}</span>
         </div>
@@ -376,7 +395,7 @@ function renderCartPage(root) {
         <svg viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke-width="1"/><line x1="3" y1="6" x2="21" y2="6" stroke-width="1"/><path d="M16 10a4 4 0 01-8 0" stroke-width="1"/></svg>
         <h2>Your cart is empty</h2>
         <p>Looks like you haven't added anything yet.</p>
-        <a href="index.html" class="btn-primary" style="margin-top:8px;text-align:center;">Continue Shopping</a>
+        <a href="shop.html" class="btn-primary" style="margin-top:8px;text-align:center;">Continue Shopping</a>
       </div>`;
     return;
   }
@@ -415,7 +434,7 @@ function renderCartPage(root) {
           <button class="btn-checkout" onclick="handleCheckout()">Proceed to Checkout</button>
           <p class="summary-note">Taxes calculated at checkout.<br>Free shipping on orders over $75.</p>
         </div>
-        <a href="index.html" class="section-link" style="margin-top:16px;display:flex;">
+        <a href="shop.html" class="section-link" style="margin-top:16px;display:flex;">
           ← Continue Shopping
         </a>
       </div>
@@ -467,9 +486,11 @@ function handleCheckout() {
   if (cart.length === 0) return;
 
   const lines = cart.map(i => `${i.qty}x ${i.name} (${i.size}) — $${(i.price * i.qty).toFixed(2)}`).join('%0A');
-  const total = cartTotal().toFixed(2);
+  const subtotal = cartTotal();
+  const shipping = subtotal >= 75 ? 0 : 8;
+  const total = (subtotal + shipping).toFixed(2);
   const subject = `Bloomsai Co. — Order Request`;
-  const body = `Hello,%0A%0AI'd like to place an order:%0A%0A${lines}%0A%0AOrder Total: $${total}%0A%0APlease let me know how to proceed.`;
+  const body = `Hello,%0A%0AI'd like to place an order:%0A%0A${lines}%0A%0ASubtotal: $${subtotal.toFixed(2)}%0AShipping: ${shipping === 0 ? 'Free' : '$' + shipping.toFixed(2)}%0AOrder Total: $${total}%0A%0APlease let me know how to proceed.`;
   window.location.href = `mailto:hello@jorgeranilla.com?subject=${encodeURIComponent(subject)}&body=${body}`;
 }
 

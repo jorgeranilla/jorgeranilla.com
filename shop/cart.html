@@ -3,41 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cart — Bloomsai Co.</title>
-  <meta name="description" content="Your shopping cart — Jorge Ranilla Shop." />
+  <title>Cart - Bloomsai Co.</title>
+  <meta name="description" content="Your Bloomsai Co. shopping cart." />
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
 <body>
 
-  <!-- Announcement Bar -->
   <div class="announcement-bar">
-    Made for the Journey &nbsp;·&nbsp; Free shipping on orders over $75
+    Made for the Journey &nbsp;&middot;&nbsp; Free shipping on orders over $75
   </div>
 
-  <!-- Header -->
   <header class="shop-header">
     <div class="container header-inner">
       <a href="index.html" class="header-brand" aria-label="Bloomsai Co. Home">
-        <span class="brand-name">Bloomsai Co.</span>
-        <span class="brand-sub">by Jorge Ranilla</span>
+        <img src="images/bloomsai-logo.svg" alt="Bloomsai - Made for the Journey" class="brand-logo" width="320" height="86" />
       </a>
 
       <nav class="header-nav" aria-label="Shop navigation">
-        <a href="index.html" id="nav-all">All</a>
-        <a href="index.html?cat=shirts" id="nav-shirts">Shirts</a>
-        <a href="index.html?cat=hoodies" id="nav-hoodies">Hoodies</a>
-        <a href="index.html?cat=hats" id="nav-hats">Hats</a>
-        <a href="index.html?cat=accessories" id="nav-accessories">Accessories</a>
-        <a href="index.html?cat=prints" id="nav-prints">Prints</a>
+        <a href="index.html">Home</a>
+        <a href="shop.html" class="active">Shop</a>
+        <a href="contact.html">Contact</a>
       </nav>
 
       <div class="header-actions">
-        <a href="../index.html" class="back-link" title="Back to main site">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
-          Main Site
-        </a>
         <a href="cart.html" class="btn-icon" aria-label="Cart" id="cart-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -50,48 +40,43 @@
     </div>
   </header>
 
-  <!-- Cart Content -->
   <main class="cart-page">
     <div class="container">
-      <div id="cart-root">
-        <!-- Rendered by script.js -->
-      </div>
+      <div id="cart-root"></div>
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="shop-footer">
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="index.html" class="header-brand">
-            <span class="brand-name">Bloomsai Co.</span>
-            <span class="brand-sub">by Jorge Ranilla</span>
+            <img src="images/bloomsai-logo-light.svg" alt="Bloomsai - Made for the Journey" class="brand-logo brand-logo-footer" width="320" height="86" />
           </a>
-          <p>Inspired by growth, roots, and the connections we build with people and places throughout our lives.</p>
+          <p>Small-batch pieces inspired by growth, roots, and the connections we build throughout our lives.</p>
         </div>
         <div class="footer-col">
-          <h4>Shop</h4>
+          <h4>Explore</h4>
           <ul>
-            <li><a href="index.html" id="footer-all">All Products</a></li>
-            <li><a href="index.html?cat=shirts" id="footer-shirts">Shirts</a></li>
-            <li><a href="index.html?cat=hoodies" id="footer-hoodies">Hoodies</a></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="cart.html">Cart</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h4>Info</h4>
+          <h4>Support</h4>
           <ul>
-            <li><a href="#" id="footer-sizing">Size Guide</a></li>
-            <li><a href="#" id="footer-shipping">Shipping & Returns</a></li>
-            <li><a href="#" id="footer-care">Care Instructions</a></li>
+            <li><a href="contact.html#faq">Size Guide</a></li>
+            <li><a href="contact.html#faq">Shipping & Returns</a></li>
+            <li><a href="contact.html#faq">Care Instructions</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Connect</h4>
           <ul>
-            <li><a href="https://www.instagram.com/jorgeranilla" target="_blank" rel="noopener" id="footer-instagram">Instagram</a></li>
-            <li><a href="../connect/index.html" id="footer-contact">Contact</a></li>
-            <li><a href="../index.html" id="footer-main-site">Main Site</a></li>
+            <li><a href="https://www.instagram.com/jorgeranilla" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a href="mailto:hello@jorgeranilla.com">Email</a></li>
           </ul>
         </div>
       </div>
