@@ -159,14 +159,22 @@
         <div class="page-content">
             <div class="latest-update-row">
                 <div id="latest-update-card" class="latest-update-card">
-                    <div class="card-eyebrow card-eyebrow--right">
+                    <div class="card-eyebrow">
+                        <span class="card-eyebrow-title card-eyebrow-title--family">
+                            <svg viewBox="0 0 24 24" width="16" height="16"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                            Latest Family Updates
+                        </span>
                         <a href="blog/family-updates.html" class="card-eyebrow-link">View all updates →</a>
                     </div>
                     <div class="latest-update-loading">Loading latest update…</div>
                 </div>
 
                 <div class="latest-update-countdown blog-random-card">
-                    <div class="card-eyebrow card-eyebrow--right">
+                    <div class="card-eyebrow">
+                        <span class="card-eyebrow-title card-eyebrow-title--blog">
+                            <span class="card-eyebrow-icon" aria-hidden="true">📖</span>
+                            From the Blog
+                        </span>
                         <a href="blog/latest-posts.html" class="card-eyebrow-link">View all posts →</a>
                     </div>
                     <div id="blog-random-loading" class="blog-random-state">Loading a story…</div>
@@ -219,13 +227,45 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
             color: #CD5C5C;
             margin-bottom: 0.65rem;
             width: 100%;
+        }
+        .card-eyebrow-title {
+            align-items: center;
+            display: inline-flex;
+            gap: 0.45rem;
+            min-width: 0;
+        }
+        .card-eyebrow-title svg {
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+        .card-eyebrow-title--family {
+            color: #2c3e50;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.98rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+        .card-eyebrow-title--family svg {
+            color: #CD5C5C;
+        }
+        .card-eyebrow-title--blog {
+            color: #CD5C5C;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+        .card-eyebrow-icon {
+            font-size: 0.76rem;
+            letter-spacing: 0;
+            line-height: 1;
         }
         .card-eyebrow-link {
             font-size: 0.72rem;
@@ -239,10 +279,6 @@
         .card-eyebrow-link:hover {
             color: #a03838;
         }
-        .card-eyebrow--right {
-            justify-content: flex-end;
-        }
-
         .latest-update-label {
             font-family: 'Playfair Display', serif;
             font-size: 1.15rem;
@@ -408,6 +444,11 @@
                         day: 'numeric'
                     }).toUpperCase();
 
+                    // Extract tags (skip the generic "Family Updates" label)
+                    const tags = (post.category || [])
+                        .map(c => c.term)
+                        .filter(t => t !== 'Family Updates');
+
                     // Build excerpt from content
                     const tmpDiv = document.createElement('div');
                     tmpDiv.innerHTML = post.content ? post.content.$t : (post.summary ? post.summary.$t : '');
@@ -415,10 +456,16 @@
                     let excerpt = tmpDiv.textContent.trim().replace(/\n{2,}/g, ' ').substring(0, 220);
                     if (excerpt.length === 220) excerpt = excerpt.trimEnd() + '…';
 
-                    const tagsHTML = '<span class="latest-update-tag">Family Updates</span>';
+                    const tagsHTML = tags.slice(0, 3).map(t =>
+                        `<span class="latest-update-tag">${t}</span>`
+                    ).join('');
 
                     card.innerHTML = `
-                        <div class="card-eyebrow card-eyebrow--right">
+                        <div class="card-eyebrow">
+                            <span class="card-eyebrow-title card-eyebrow-title--family">
+                                <svg viewBox="0 0 24 24" width="16" height="16"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                                Latest Family Updates
+                            </span>
                             <a href="blog/family-updates.html" class="card-eyebrow-link">View all updates →</a>
                         </div>
                         <div class="latest-update-meta">
