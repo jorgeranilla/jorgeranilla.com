@@ -80,6 +80,14 @@
                 text: 'Stories about family, health journeys, travels, and life\u2019s unexpected moments.',
                 link: 'blog/latest-posts.html',
                 btnText: 'Read The Blog'
+            },
+            {
+                cssClass: 'slide-shop',
+                eyebrow: 'Another project in development.',
+                title: 'Bloomsai Co.',
+                text: 'Made for the Journey. A small shop project with a focused first set of everyday pieces.',
+                link: 'shop/index.html',
+                btnText: 'Visit the Shop'
             }
         ];
 
@@ -93,6 +101,7 @@
                 div.className = 'slide ' + slide.cssClass + (i === 0 ? ' active' : '');
                 div.innerHTML =
                     '<div class="slide-content">' +
+                        (slide.eyebrow ? '<span class="carousel-eyebrow">' + slide.eyebrow + '</span>' : '') +
                         '<h1>' + slide.title + '</h1>' +
                         '<p>' + slide.text + '</p>' +
                         '<a href="' + slide.link + '" class="btn">' + slide.btnText + '</a>' +
@@ -1230,6 +1239,92 @@
                 url('images/blog-slide.png');
             background-size: cover;
             background-position: center;
+        }
+
+        .slide-shop {
+            align-items: flex-start;
+            text-align: left;
+            padding-left: clamp(42px, 10vw, 150px);
+            background: #f7f5f0;
+            overflow: hidden;
+        }
+
+        .slide-shop::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(247, 245, 240, 0.98) 0%, rgba(247, 245, 240, 0.92) 46%, rgba(247, 245, 240, 0.42) 100%),
+                url('shop/images/tshirt-01.png') right 11% center / auto 112% no-repeat;
+            z-index: 0;
+        }
+
+        .slide-shop .slide-content {
+            position: relative;
+            z-index: 1;
+            max-width: 470px;
+            padding-bottom: 44px;
+        }
+
+        .slide-shop .carousel-eyebrow {
+            display: inline-flex;
+            margin-bottom: 12px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #777;
+        }
+
+        .slide-shop .slide-content h1 {
+            color: #0a0a0a;
+            font-size: 2.35rem;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .slide-shop .slide-content p {
+            color: #333;
+            line-height: 1.65;
+            max-width: 440px;
+        }
+
+        .slide-shop .btn {
+            background: #0a0a0a;
+            border-radius: 2px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .slide-shop .btn:hover {
+            background: #333;
+        }
+
+        @media (max-width: 700px) {
+            .slide-shop {
+                padding: 34px 28px 0;
+            }
+
+            .slide-shop::before {
+                background:
+                    linear-gradient(rgba(247, 245, 240, 0.96), rgba(247, 245, 240, 0.88)),
+                    url('shop/images/tshirt-01.png') right bottom / 58% auto no-repeat;
+            }
+
+            .slide-shop .slide-content {
+                max-width: 330px;
+            }
+
+            .slide-shop .slide-content h1 {
+                font-size: 2rem;
+            }
+
+            .slide-shop .slide-content p {
+                font-size: 0.98rem;
+            }
         }
 
         /* Baptism Slide */

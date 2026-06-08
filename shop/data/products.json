@@ -46,17 +46,5 @@
     "details": ["12oz Cotton canvas", "Double-stitched shoulder straps", "Interior zip pocket", "Dimensions: 15\" x 16\" x 4\""],
     "image": "images/tote-01.png",
     "images": ["images/tote-01.png"]
-  },
-  {
-    "id": "stickers-01",
-    "name": "Sticker Pack Vol.1",
-    "category": "prints",
-    "price": 12,
-    "badge": "Limited",
-    "sizes": ["Pack of 5"],
-    "description": "Five original designs. Waterproof vinyl. Stick them anywhere — laptop, water bottle, your face.",
-    "details": ["5 original designs per pack", "Weatherproof vinyl sticker", "Die-cut precision edges", "3\" average diameter"],
-    "image": "images/stickers-01.png",
-    "images": ["images/stickers-01.png"]
   }
 ]

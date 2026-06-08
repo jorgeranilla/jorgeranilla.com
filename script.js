@@ -143,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
       latestPosts: buildSectionLink('blog', 'latest-posts.html'),
       familyUpdates: buildSectionLink('blog', 'family-updates.html')
     };
+    const shopHref = buildSectionLink('', 'shop/index.html');
 
     // Social Rail HTML
     const socialRailHTML = `
@@ -255,6 +256,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <li><a href="${blogLinks.familyUpdates}">Family Updates</a></li>
               </ul>
             </li>
+
+            <li><a href="${shopHref}">Shop</a></li>
 
             <li class="dropdown-item">
               <span class="dropdown-toggle">Professional ▾</span>
