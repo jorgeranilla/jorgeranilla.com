@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -154,32 +154,38 @@
         </div>
     </section>
 
-    <!-- Latest Family Update Section -->
+    <!-- Family Update + Blog Section -->
     <section class="latest-update-section">
         <div class="page-content">
-            <div class="latest-update-header">
-                <h2 class="latest-update-label">
-                    <svg viewBox="0 0 24 24" width="18" height="18" style="display:inline-block;vertical-align:middle;margin-right:7px;fill:#CD5C5C;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
-                    Latest Family Update
-                </h2>
-                <a href="blog/family-updates.html" class="latest-update-view-all">View all updates →</a>
-            </div>
-
             <div class="latest-update-row">
                 <div id="latest-update-card" class="latest-update-card">
+                    <div class="card-eyebrow">
+                        <span>
+                            <svg viewBox="0 0 24 24" width="13" height="13" style="display:inline-block;vertical-align:middle;margin-right:5px;fill:#CD5C5C;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                            Family Update
+                        </span>
+                        <a href="blog/family-updates.html" class="card-eyebrow-link">View all updates →</a>
+                    </div>
                     <div class="latest-update-loading">Loading latest update…</div>
                 </div>
 
-                <div class="latest-update-countdown baby-arrived-card">
-                    <div class="baby-arrived-emoji">🩷</div>
-                    <h3 class="baby-arrived-title">She's Here!</h3>
-                    <p class="baby-arrived-name">Alyssa</p>
-                    <p class="baby-arrived-date">Born March 25, 2026</p>
-                    <div class="baby-days-counter">
-                        <span class="baby-days-number" id="days-old">1</span>
-                        <span class="baby-days-label">day<span id="days-plural"></span> old</span>
+                <div class="latest-update-countdown blog-random-card">
+                    <div class="card-eyebrow card-eyebrow--right">
+                        <a href="blog/latest-posts.html" class="card-eyebrow-link">View all posts →</a>
                     </div>
-                    <p class="baby-arrived-msg">💕 Our hearts are so full 💕</p>
+                    <div id="blog-random-loading" class="blog-random-state">Loading a story…</div>
+                    <div id="blog-random-content" class="blog-random-inner" style="display:none;">
+                        <div class="latest-update-meta">
+                            <span id="blog-random-meta" class="blog-random-meta"></span>
+                            <span id="blog-random-tag" class="blog-random-tag"></span>
+                        </div>
+                        <h3 id="blog-random-title" class="blog-random-title"></h3>
+                        <p id="blog-random-excerpt" class="blog-random-excerpt"></p>
+                        <div class="blog-random-footer">
+                            <a id="blog-random-link" href="#" class="blog-random-btn">Read more →</a>
+                            <button onclick="pickRandomPost()" class="blog-random-refresh">↻ shuffle</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -196,9 +202,48 @@
         .latest-update-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 1.5rem;
             max-width: 1000px;
-            margin: 0 auto 1.1rem;
+            margin: 0 auto 0.6rem;
+        }
+
+        .latest-update-header-col {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 2;
+        }
+
+        .latest-update-header-col--blog {
+            flex: 1;
+        }
+
+        /* Small eyebrow row inside each card */
+        .card-eyebrow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #CD5C5C;
+            margin-bottom: 0.65rem;
+        }
+        .card-eyebrow-link {
+            font-size: 0.72rem;
+            color: #CD5C5C;
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 0;
+            text-transform: none;
+            transition: color 0.2s;
+        }
+        .card-eyebrow-link:hover {
+            color: #a03838;
+        }
+        .card-eyebrow--right {
+            justify-content: flex-end;
         }
 
         .latest-update-label {
@@ -383,6 +428,13 @@
                     ).join('');
 
                     card.innerHTML = `
+                        <div class="card-eyebrow">
+                            <span>
+                                <svg viewBox="0 0 24 24" width="13" height="13" style="display:inline-block;vertical-align:middle;margin-right:5px;fill:#CD5C5C;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                                Family Update
+                            </span>
+                            <a href="blog/family-updates.html" class="card-eyebrow-link">View all updates →</a>
+                        </div>
                         <div class="latest-update-meta">
                             <span class="latest-update-date">${date}</span>
                             ${tagsHTML}
@@ -968,80 +1020,101 @@
             font-size: 0.9rem;
         }
 
-        /* Baby Arrived Card Styles */
-        .baby-arrived-card {
-            background: linear-gradient(160deg, #fff0f5 0%, #ffe4f0 100%) !important;
-            border: 1px solid #f9b8d4 !important;
+        /* Blog Random Read Card */
+        .blog-random-card {
+            background: #fafafa !important;
+            border: none !important;
+            border-left: 4px solid #CD5C5C !important;
+            border-radius: 0 10px 10px 0 !important;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            gap: 0.2rem;
+            gap: 0.4rem;
+            text-align: left;
+            padding: 1.25rem 1.75rem !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06) !important;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
-        .baby-arrived-emoji {
-            font-size: 2.4rem;
-            line-height: 1;
-            margin-bottom: 0.2rem;
-            animation: pulse-heart 1.5s ease-in-out infinite;
+        .blog-random-card:hover {
+            transform: translateX(3px);
+            box-shadow: 0 4px 16px rgba(205, 92, 92, 0.12) !important;
         }
-        @keyframes pulse-heart {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+
+        .blog-random-state {
+            color: #aaa;
+            font-size: 0.9rem;
+            font-style: italic;
         }
-        .baby-arrived-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #c2446e;
-            margin: 0;
-            text-align: center;
-        }
-        .baby-arrived-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 600;
-            color: #9b3057;
-            margin: 0;
-            line-height: 1.1;
-            text-align: center;
-            letter-spacing: 1px;
-        }
-        .baby-arrived-date {
-            font-size: 0.78rem;
-            color: #b05580;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            margin: 0;
-            text-align: center;
-        }
-        .baby-days-counter {
+        .blog-random-inner {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            margin: 0.5rem 0 0.2rem;
-            background: rgba(255,255,255,0.65);
-            border-radius: 10px;
-            padding: 0.4rem 1.2rem;
+            align-items: flex-start;
+            gap: 0.4rem;
+            width: 100%;
         }
-        .baby-days-number {
+        .blog-random-tag {
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: #f5e5e5;
+            color: #a03838;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+        .blog-random-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #c2446e;
-            line-height: 1;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.4;
         }
-        .baby-days-label {
-            font-size: 0.68rem;
-            color: #b05580;
-            letter-spacing: 1.5px;
+        .blog-random-excerpt {
+            font-size: 0.88rem;
+            color: #666;
+            line-height: 1.6;
+            margin: 0;
+        }
+        .blog-random-meta {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #CD5C5C;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
         }
-        .baby-arrived-msg {
-            font-size: 0.82rem;
-            color: #c2446e;
-            font-weight: 500;
-            margin: 0;
-            text-align: center;
+        .blog-random-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.2rem;
+            flex-wrap: wrap;
+        }
+        .blog-random-btn {
+            color: #CD5C5C;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: color 0.2s;
+        }
+        .blog-random-btn:hover {
+            color: #a03838;
+            text-decoration: underline;
+        }
+        .blog-random-refresh {
+            background: none;
+            border: 1px solid #e0c0c0;
+            color: #CD5C5C;
+            font-size: 0.72rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            transition: background 0.2s, color 0.2s, transform 0.3s;
+        }
+        .blog-random-refresh:hover {
+            background: #f5e5e5;
+            color: #a03838;
+            transform: rotate(180deg);
         }
 
         /* Carousel Slide Backgrounds with 50% Overlay */
@@ -1414,16 +1487,89 @@
         // Load events when page loads
         document.addEventListener('DOMContentLoaded', loadCalendarEvents);
 
-        // Baby Alyssa – Days Old Counter (birth: March 25, 2026 at 12:27 PM)
-        (function updateDaysOld() {
-            const birthDate = new Date('2026-03-25T12:27:00');
-            const now = new Date();
-            const msPerDay = 1000 * 60 * 60 * 24;
-            const daysOld = Math.floor((now - birthDate) / msPerDay);
-            const el = document.getElementById('days-old');
-            const pl = document.getElementById('days-plural');
-            if (el) el.textContent = daysOld;
-            if (pl) pl.textContent = daysOld === 1 ? '' : 's';
+        // Blog Random Read – fetches up to 50 posts, excludes Family Updates, links to internal reader
+        (function initRandomBlogPost() {
+            var allEntries = null;
+
+            function getPostId(post) {
+                if (!post.id || !post.id.$t) return '';
+                var m = post.id.$t.match(/(\d+)$/);
+                return m ? m[1] : '';
+            }
+
+            function isFamilyUpdate(post) {
+                var cats = post.category || [];
+                return cats.some(function(c) { return c.term === 'Family Updates'; });
+            }
+
+            function renderBlogPost(post) {
+                var title = post.title.$t;
+
+                // Build internal link using numeric post ID → blog/latest-posts-individual.html?id=
+                var postId = getPostId(post);
+                var link = postId
+                    ? 'blog/latest-posts-individual.html?id=' + postId
+                    : 'blog/latest-posts.html';
+
+                var date = new Date(post.published.$t).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric'
+                }).toUpperCase();
+
+                // Show first non-Family-Updates category label
+                var cats = (post.category || []).map(function(c) { return c.term; })
+                    .filter(function(t) { return t !== 'Family Updates'; });
+                var tag = cats.length > 0 ? cats[0] : 'Blog';
+
+                var tmpDiv = document.createElement('div');
+                tmpDiv.innerHTML = post.content ? post.content.$t : (post.summary ? post.summary.$t : '');
+                tmpDiv.querySelectorAll('img, script, style').forEach(function(i) { i.remove(); });
+                var excerpt = tmpDiv.textContent.trim().replace(/\s{2,}/g, ' ').substring(0, 200);
+                if (excerpt.length === 200) excerpt = excerpt.trimEnd() + '\u2026';
+
+                document.getElementById('blog-random-tag').textContent = tag;
+                document.getElementById('blog-random-title').textContent = title;
+                document.getElementById('blog-random-excerpt').textContent = excerpt;
+                document.getElementById('blog-random-meta').textContent = date;
+                document.getElementById('blog-random-link').href = link;
+
+                document.getElementById('blog-random-loading').style.display = 'none';
+                document.getElementById('blog-random-content').style.display = 'flex';
+            }
+
+            window.pickRandomPost = function () {
+                if (!allEntries || allEntries.length === 0) return;
+                renderBlogPost(allEntries[Math.floor(Math.random() * allEntries.length)]);
+            };
+
+            var callbackName = 'randomBlogCb_' + Date.now();
+            window[callbackName] = function (data) {
+                try {
+                    var raw = data.feed.entry || [];
+                    // Filter out Family Updates posts so there is no overlap with the left card
+                    allEntries = raw
+                        .filter(function(p) { return !isFamilyUpdate(p); })
+                        .sort(function(a, b) {
+                            return new Date(b.published.$t) - new Date(a.published.$t);
+                        });
+                    if (allEntries.length > 0) {
+                        renderBlogPost(allEntries[0]);
+                    } else {
+                        document.getElementById('blog-random-loading').textContent = 'No posts found.';
+                    }
+                } catch (e) {
+                    document.getElementById('blog-random-loading').textContent = 'Could not load post.';
+                }
+                delete window[callbackName];
+                if (script.parentNode) script.parentNode.removeChild(script);
+            };
+
+            var script = document.createElement('script');
+            script.src = 'https://memoria-efimera.blogspot.com/feeds/posts/default?alt=json-in-script&max-results=50&callback=' + callbackName;
+            script.onerror = function () {
+                document.getElementById('blog-random-loading').textContent = 'Could not load post.';
+                delete window[callbackName];
+            };
+            document.head.appendChild(script);
         })();
 
 

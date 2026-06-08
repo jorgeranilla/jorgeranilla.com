@@ -259,6 +259,66 @@
 }
 
 /* ── Empty State ── */
+.fd-card-claim-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin: 4px 0 12px;
+}
+
+.fd-card-claim-badge {
+  border-radius: 999px;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .4px;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.fd-card-claim-badge.claimed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.fd-card-claim-badge.unclaimed {
+  background: #fff8e1;
+  color: #9a6200;
+}
+
+.fd-card-claim-badge.pending {
+  background: #fff3e0;
+  color: #c45100;
+}
+
+.fd-card-claim-badge.synced {
+  background: #e8f0fe;
+  color: #2557a7;
+}
+
+.fd-card-sync-note {
+  color: #8a8f98;
+  font-size: .72rem;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.fd-sync-result {
+  background: #f8fbff;
+  border: 1px solid #d8e8ff;
+  border-radius: 12px;
+  color: #33506f;
+  display: none;
+  font-size: .82rem;
+  line-height: 1.5;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+}
+
+.fd-sync-result.active {
+  display: block;
+}
+
 .fd-empty {
   text-align: center; padding: 60px 20px;
   color: #ccc;

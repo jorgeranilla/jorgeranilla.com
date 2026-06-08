@@ -17,9 +17,36 @@ const firebaseConfig = {
 let app, auth, db, currentUser = null, currentProfile = null;
 let isAdmin = false;
 const COLLECTION = 'familyDirectory';
+const GOOGLE_CONTACTS_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
 
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
+}
+
+function normalizePhone(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function isImportedFamilyRecord(member = {}) {
+  const id = String(member.id || '');
+  const uid = String(member.uid || '');
+  return id.startsWith('import_') ||
+    id.startsWith('manual_') ||
+    uid.startsWith('import_') ||
+    uid.startsWith('manual_');
+}
+
+function isClaimedFamilyRecord(member = {}) {
+  if (member.status === 'claimed') return true;
+  if (member.claimedBy || member.claimedByUid || member.claimedAt) return true;
+  if (member.claimedFrom && !isImportedFamilyRecord(member)) return true;
+  return Boolean(member.uid && member.id === member.uid && !isImportedFamilyRecord(member));
+}
+
+function getFamilyRecordClaimStatus(member = {}) {
+  if (member.status === 'pending') return 'pending';
+  if (isClaimedFamilyRecord(member)) return 'claimed';
+  return 'unclaimed';
 }
 
 async function findClaimableProfileByEmail(email) {
@@ -88,6 +115,14 @@ function mergeClaimedProfileData(user, importDoc, existingData = {}) {
       showAge: false
     },
     claimedFrom: importDoc.id,
+    claimedByUid: user.uid,
+    claimedByEmail: user.email || importData.email || '',
+    claimedAt: window._fb.serverTimestamp(),
+    googleContactResourceName: existingData.googleContactResourceName || importData.googleContactResourceName || '',
+    googleContactEtag: existingData.googleContactEtag || importData.googleContactEtag || '',
+    googleContactLabels: existingData.googleContactLabels || importData.googleContactLabels || [],
+    googleContactLastSyncedAt: existingData.googleContactLastSyncedAt || importData.googleContactLastSyncedAt || null,
+    syncSource: existingData.syncSource || importData.syncSource || '',
     createdAt: existingData.createdAt || importData.createdAt,
     updatedAt: window._fb.serverTimestamp()
   };
@@ -103,6 +138,9 @@ async function cleanupClaimedImport(importDoc, uid) {
     await updateDoc(doc(db, COLLECTION, importDoc.id), {
       status: 'claimed',
       claimedBy: uid,
+      claimedByUid: uid,
+      claimedByEmail: currentUser?.email || '',
+      claimedAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
   }
@@ -298,6 +336,26 @@ function fdSignIn() {
 }
 
 /* ── Sign Out ── */
+async function fdGetGoogleContactsAccessToken() {
+  if (!isAdmin) {
+    throw new Error('Only admins can sync Google Contacts.');
+  }
+
+  const { auth, GoogleAuthProvider, signInWithPopup } = window._fb;
+  const provider = new GoogleAuthProvider();
+  provider.addScope(GOOGLE_CONTACTS_SCOPE);
+  provider.setCustomParameters({ prompt: 'consent' });
+
+  const result = await signInWithPopup(auth, provider);
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+
+  if (!credential?.accessToken) {
+    throw new Error('Google did not return a Contacts access token.');
+  }
+
+  return credential.accessToken;
+}
+
 function fdSignOut() {
   const { auth, signOut } = window._fb;
   signOut(auth);
@@ -503,6 +561,32 @@ function buildCardHTML(member) {
     ? `<div class="fd-card-preferred" style="background:#f1f3f4; color:#5f6368; border: 1px solid #dadce0;">Photo Tags Only</div>` 
     : '';
 
+  const claimStatus = getFamilyRecordClaimStatus(member);
+  const claimText = {
+    claimed: 'Claimed',
+    pending: 'Pending',
+    unclaimed: 'Unclaimed'
+  }[claimStatus] || claimStatus;
+  const claimDetail = claimStatus === 'claimed'
+    ? `Claimed${member.claimedByEmail ? ` by ${member.claimedByEmail}` : member.email ? ` by ${member.email}` : ''}`
+    : claimStatus === 'pending'
+      ? 'Waiting for admin approval'
+      : member.syncSource === 'googleContacts'
+        ? 'Unclaimed - synced from Google Contacts'
+        : 'Unclaimed directory card';
+  const syncBadge = member.syncSource === 'googleContacts'
+    ? '<span class="fd-card-claim-badge synced">Google Contacts</span>'
+    : '';
+  const adminClaimBadges = isAdmin
+    ? `<div class="fd-card-claim-badges" title="${claimDetail}">
+        <span class="fd-card-claim-badge ${claimStatus}">${claimText}</span>
+        ${syncBadge}
+      </div>`
+    : '';
+  const syncNote = isAdmin && member.syncSource === 'googleContacts'
+    ? '<div class="fd-card-sync-note">Family label sync</div>'
+    : '';
+
   const adminBadge = showAdmin
     ? `<button class="fd-admin-btn" style="position:absolute;top:10px;left:10px;font-size:.65rem;padding:4px 8px" onclick="openAdminEdit('${member.id}')">Edit</button>` : '';
 
@@ -512,8 +596,10 @@ function buildCardHTML(member) {
       ${adminBadge}
       <img class="fd-card-photo" src="${photo}" alt="${member.displayName}" onerror="this.src='${defaultAvatar(member.displayName)}'">
       <h3 class="fd-card-name">${member.displayName || 'Family Member'}</h3>
+      ${adminClaimBadges}
       <div class="fd-card-info">${infoRows}</div>
       ${tagBadge}
+      ${syncNote}
     </div>`;
 }
 
@@ -552,6 +638,7 @@ window.saveProfile = saveProfile;
 window.adminApprove = adminApprove;
 window.adminDelete = adminDelete;
 window.adminUpdateProfile = adminUpdateProfile;
+window.fdGetGoogleContactsAccessToken = fdGetGoogleContactsAccessToken;
 window.buildCardHTML = buildCardHTML;
 window.buildBirthdayCardHTML = buildBirthdayCardHTML;
 window.normalizeBirthday = normalizeBirthday;
@@ -560,6 +647,11 @@ window.daysUntilBirthday = daysUntilBirthday;
 window.formatBirthday = formatBirthday;
 window.calcAge = calcAge;
 window.defaultAvatar = defaultAvatar;
+window.getFamilyRecordClaimStatus = getFamilyRecordClaimStatus;
+window.isClaimedFamilyRecord = isClaimedFamilyRecord;
+window.isImportedFamilyRecord = isImportedFamilyRecord;
+window.normalizeEmail = normalizeEmail;
+window.normalizePhone = normalizePhone;
 window.currentUser = null;
 window.currentProfile = null;
 window.isAdmin = false;
