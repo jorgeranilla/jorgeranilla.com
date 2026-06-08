@@ -1,0 +1,62 @@
+[
+  {
+    "id": "tshirt-01",
+    "name": "Signature Tee — Black",
+    "category": "shirts",
+    "price": 35,
+    "badge": "New",
+    "sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+    "description": "Our flagship tee. Heavyweight 100% organic cotton, pre-shrunk. Minimal branding, maximum statement. Designed to last.",
+    "details": ["100% Organic Cotton — 220 GSM", "Pre-shrunk, relaxed fit", "Screen printed in small batches", "Machine wash cold, tumble dry low"],
+    "image": "images/tshirt-01.png",
+    "images": ["images/tshirt-01.png"]
+  },
+  {
+    "id": "hoodie-01",
+    "name": "Oversized Hoodie — Black",
+    "category": "hoodies",
+    "price": 75,
+    "badge": "Bestseller",
+    "sizes": ["S", "M", "L", "XL", "XXL"],
+    "description": "Drop-shoulder silhouette. Heavyweight fleece interior. The kind of hoodie you never want to take off.",
+    "details": ["80% Cotton / 20% Polyester — 380 GSM", "Oversized drop-shoulder fit", "Kangaroo pocket, ribbed cuffs", "Machine wash cold, hang dry"],
+    "image": "images/hoodie-01.png",
+    "images": ["images/hoodie-01.png"]
+  },
+  {
+    "id": "cap-01",
+    "name": "Structured Cap — Black",
+    "category": "hats",
+    "price": 30,
+    "badge": "",
+    "sizes": ["One Size"],
+    "description": "6-panel structured cap. Tonal embroidery. Adjustable strap. Clean, everyday carry.",
+    "details": ["100% Cotton twill", "6-panel structured fit", "Tonal embroidered logo", "Adjustable buckle strap"],
+    "image": "images/cap-01.png",
+    "images": ["images/cap-01.png"]
+  },
+  {
+    "id": "tote-01",
+    "name": "Canvas Tote — Black",
+    "category": "accessories",
+    "price": 25,
+    "badge": "",
+    "sizes": ["One Size"],
+    "description": "Heavy canvas. Double-stitched straps. Holds everything. Looks clean doing it.",
+    "details": ["12oz Cotton canvas", "Double-stitched shoulder straps", "Interior zip pocket", "Dimensions: 15\" x 16\" x 4\""],
+    "image": "images/tote-01.png",
+    "images": ["images/tote-01.png"]
+  },
+  {
+    "id": "stickers-01",
+    "name": "Sticker Pack Vol.1",
+    "category": "prints",
+    "price": 12,
+    "badge": "Limited",
+    "sizes": ["Pack of 5"],
+    "description": "Five original designs. Waterproof vinyl. Stick them anywhere — laptop, water bottle, your face.",
+    "details": ["5 original designs per pack", "Weatherproof vinyl sticker", "Die-cut precision edges", "3\" average diameter"],
+    "image": "images/stickers-01.png",
+    "images": ["images/stickers-01.png"]
+  }
+]

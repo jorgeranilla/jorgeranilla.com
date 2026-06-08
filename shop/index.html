@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloomsai Co. — by Jorge Ranilla</title>
+  <meta name="description" content="Bloomsai Co. is inspired by growth, roots, and the connections we build with people and places throughout our lives." />
+  <link rel="canonical" href="https://jorgeranilla.com/shop/" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Preconnect for Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+
+  <!-- Announcement Bar -->
+  <div class="announcement-bar" id="announcement-bar">
+    Made for the Journey &nbsp;·&nbsp; Free shipping on orders over $75
+  </div>
+
+  <!-- Header -->
+  <header class="shop-header">
+    <div class="container header-inner">
+      <a href="index.html" class="header-brand" aria-label="Bloomsai Co. Home">
+        <span class="brand-name">Bloomsai Co.</span>
+        <span class="brand-sub">by Jorge Ranilla</span>
+      </a>
+
+      <nav class="header-nav" aria-label="Shop navigation">
+        <a href="index.html" class="active" id="nav-all">All</a>
+        <a href="index.html?cat=shirts" id="nav-shirts">Shirts</a>
+        <a href="index.html?cat=hoodies" id="nav-hoodies">Hoodies</a>
+        <a href="index.html?cat=hats" id="nav-hats">Hats</a>
+        <a href="index.html?cat=accessories" id="nav-accessories">Accessories</a>
+        <a href="index.html?cat=prints" id="nav-prints">Prints</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="../index.html" class="back-link" title="Back to jorgeranilla.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+          Main Site
+        </a>
+        <a href="cart.html" class="btn-icon" id="cart-btn" aria-label="Cart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <span class="cart-badge" id="cart-badge" aria-label="Cart items">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="shop-hero" aria-label="Shop hero">
+    <div class="hero-content">
+      <div class="hero-label">Made for the Journey</div>
+      <h1 class="hero-title">
+        Wear<br />
+        <em>something</em><br />
+        real.
+      </h1>
+      <p class="hero-desc">
+        Inspired by growth, roots, and the connections we build with people and places throughout our lives.
+      </p>
+      <div class="hero-ctas">
+        <a href="#products" class="btn-primary" id="hero-shop-btn">Shop All</a>
+        <a href="index.html?cat=shirts" class="btn-outline" id="hero-shirts-btn">New Arrivals</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="images/hero.png" alt="Jorge Ranilla Shop — New Collection" />
+    </div>
+  </section>
+
+  <!-- Filter Bar -->
+  <section class="category-section" id="products">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">All Products</h2>
+        <a href="#products" class="section-link" id="results-count">5 Items</a>
+      </div>
+      <div class="filter-bar" id="filter-bar" role="group" aria-label="Filter by category">
+        <button class="filter-btn active" data-cat="all" id="filter-all">All</button>
+        <button class="filter-btn" data-cat="shirts" id="filter-shirts">Shirts</button>
+        <button class="filter-btn" data-cat="hoodies" id="filter-hoodies">Hoodies</button>
+        <button class="filter-btn" data-cat="hats" id="filter-hats">Hats</button>
+        <button class="filter-btn" data-cat="accessories" id="filter-accessories">Accessories</button>
+        <button class="filter-btn" data-cat="prints" id="filter-prints">Prints</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Grid -->
+  <main class="products-section">
+    <div class="container">
+      <div class="product-grid" id="product-grid" aria-label="Products">
+        <!-- Populated by script.js -->
+        <div style="padding:60px 0;color:var(--ink-muted);font-size:14px;">Loading products…</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="shop-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="header-brand">
+            <span class="brand-name">Bloomsai Co.</span>
+            <span class="brand-sub">by Jorge Ranilla</span>
+          </a>
+          <p>Inspired by growth, roots, and the connections we build with people and places throughout our lives.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="index.html" id="footer-all">All Products</a></li>
+            <li><a href="index.html?cat=shirts" id="footer-shirts">Shirts</a></li>
+            <li><a href="index.html?cat=hoodies" id="footer-hoodies">Hoodies</a></li>
+            <li><a href="index.html?cat=hats" id="footer-hats">Hats</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Info</h4>
+          <ul>
+            <li><a href="#" id="footer-sizing">Size Guide</a></li>
+            <li><a href="#" id="footer-shipping">Shipping & Returns</a></li>
+            <li><a href="#" id="footer-care">Care Instructions</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="https://www.instagram.com/jorgeranilla" target="_blank" rel="noopener" id="footer-instagram">Instagram</a></li>
+            <li><a href="../connect/index.html" id="footer-contact">Contact</a></li>
+            <li><a href="../index.html" id="footer-main-site">Main Site</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 Bloomsai Co. All rights reserved.</span>
+        <span>Made for the Journey.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Handle URL param filters on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const cat = params.get('cat');
+      if (cat) {
+        setTimeout(() => {
+          const btn = document.querySelector(`.filter-btn[data-cat="${cat}"]`);
+          if (btn) btn.click();
+        }, 200);
+      }
+    });
+  </script>
+</body>
+</html>
