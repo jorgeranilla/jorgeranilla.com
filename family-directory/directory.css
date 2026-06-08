@@ -262,38 +262,44 @@
 .fd-card-claim-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
   justify-content: center;
-  margin: 4px 0 12px;
+  margin: 2px 0 12px;
 }
 
 .fd-card-claim-badge {
-  border-radius: 999px;
-  font-size: .62rem;
-  font-weight: 700;
-  letter-spacing: .4px;
-  padding: 4px 8px;
-  text-transform: uppercase;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  padding: 4px 7px;
+  text-transform: none;
 }
 
 .fd-card-claim-badge.claimed {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: #f3faf4;
+  border-color: #d8ecd9;
+  color: #3f7c45;
 }
 
 .fd-card-claim-badge.unclaimed {
-  background: #fff8e1;
-  color: #9a6200;
+  background: #fffaf0;
+  border-color: #f1dfb8;
+  color: #8a6a2d;
 }
 
 .fd-card-claim-badge.pending {
-  background: #fff3e0;
-  color: #c45100;
+  background: #fff6ef;
+  border-color: #f3d6bf;
+  color: #9a5a2d;
 }
 
 .fd-card-claim-badge.synced {
-  background: #e8f0fe;
-  color: #2557a7;
+  background: #f5f8fe;
+  border-color: #dce7f8;
+  color: #4c6f9d;
 }
 
 .fd-card-sync-note {
