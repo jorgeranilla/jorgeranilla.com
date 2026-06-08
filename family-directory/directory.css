@@ -302,11 +302,10 @@
   color: #4c6f9d;
 }
 
-.fd-card-sync-note {
-  color: #8a8f98;
-  font-size: .72rem;
-  font-weight: 500;
-  margin-top: 8px;
+.fd-card-claim-badge.family-label {
+  background: #f7f5fb;
+  border-color: #e4dcf4;
+  color: #6d5895;
 }
 
 .fd-sync-result {

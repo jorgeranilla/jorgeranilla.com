@@ -18,6 +18,7 @@ let app, auth, db, currentUser = null, currentProfile = null;
 let isAdmin = false;
 const COLLECTION = 'familyDirectory';
 const GOOGLE_CONTACTS_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
+const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive';
 
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
@@ -356,6 +357,26 @@ async function fdGetGoogleContactsAccessToken() {
   return credential.accessToken;
 }
 
+async function fdGetGoogleDriveAccessToken() {
+  if (!isAdmin) {
+    throw new Error('Only admins can update Google Drive files.');
+  }
+
+  const { auth, GoogleAuthProvider, signInWithPopup } = window._fb;
+  const provider = new GoogleAuthProvider();
+  provider.addScope(GOOGLE_DRIVE_SCOPE);
+  provider.setCustomParameters({ prompt: 'consent' });
+
+  const result = await signInWithPopup(auth, provider);
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+
+  if (!credential?.accessToken) {
+    throw new Error('Google did not return a Drive access token.');
+  }
+
+  return credential.accessToken;
+}
+
 function fdSignOut() {
   const { auth, signOut } = window._fb;
   signOut(auth);
@@ -577,14 +598,15 @@ function buildCardHTML(member) {
   const syncBadge = member.syncSource === 'googleContacts'
     ? '<span class="fd-card-claim-badge synced">Google Contacts</span>'
     : '';
+  const familyLabelBadge = member.syncSource === 'googleContacts'
+    ? '<span class="fd-card-claim-badge family-label">Family label sync</span>'
+    : '';
   const adminClaimBadges = isAdmin
     ? `<div class="fd-card-claim-badges" title="${claimDetail}">
         <span class="fd-card-claim-badge ${claimStatus}">${claimText}</span>
         ${syncBadge}
+        ${familyLabelBadge}
       </div>`
-    : '';
-  const syncNote = isAdmin && member.syncSource === 'googleContacts'
-    ? '<div class="fd-card-sync-note">Family label sync</div>'
     : '';
 
   const adminBadge = showAdmin
@@ -599,7 +621,6 @@ function buildCardHTML(member) {
       ${adminClaimBadges}
       <div class="fd-card-info">${infoRows}</div>
       ${tagBadge}
-      ${syncNote}
     </div>`;
 }
 
@@ -639,6 +660,7 @@ window.adminApprove = adminApprove;
 window.adminDelete = adminDelete;
 window.adminUpdateProfile = adminUpdateProfile;
 window.fdGetGoogleContactsAccessToken = fdGetGoogleContactsAccessToken;
+window.fdGetGoogleDriveAccessToken = fdGetGoogleDriveAccessToken;
 window.buildCardHTML = buildCardHTML;
 window.buildBirthdayCardHTML = buildBirthdayCardHTML;
 window.normalizeBirthday = normalizeBirthday;

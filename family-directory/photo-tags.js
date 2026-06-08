@@ -301,6 +301,60 @@ function getPhotoTagRenameMessage(file) {
   return `Rename this file in Google Drive before publishing tags: ${file.suggestedName}`;
 }
 
+async function patchGoogleDriveFileName(fileId, name, accessToken) {
+  const response = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?fields=id,name,modifiedTime`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name })
+    }
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error?.message || 'Google Drive rename failed.');
+  }
+
+  return data;
+}
+
+async function refreshPhotoTagRecordAfterDriveRename(file) {
+  const tag = getPhotoTagRecord(file.id);
+  if (!tag) return;
+
+  const payload = {
+    name: file.name,
+    drive: {
+      ...tag.drive,
+      mimeType: file.mimeType,
+      type: file.type,
+      createdTime: file.createdTime,
+      modifiedTime: file.modifiedTime,
+      takenTime: file.takenTime,
+      suggestedName: file.suggestedName,
+      md5Checksum: file.md5Checksum,
+      size: file.size
+    },
+    updatedAt: window._fb.serverTimestamp()
+  };
+
+  await window._fb.setDoc(
+    window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, file.id),
+    payload,
+    { merge: true }
+  );
+
+  photoTagRecords.set(file.id, normalizePhotoTagRecord(file.id, {
+    ...tag,
+    ...payload,
+    updatedAt: tag.updatedAt
+  }));
+}
+
 function normalizePhotoTagRecord(id, data) {
   const people = Array.isArray(data.people) ? data.people : [];
   const peopleAliases = Array.isArray(data.peopleAliases) ? data.peopleAliases : [];
@@ -652,6 +706,9 @@ function renderPhotoTagCard(file) {
   const reviewReason = getPhotoTagReviewReason(file, tag);
   const renameMessage = getPhotoTagRenameMessage(file);
   const publishText = status === 'needs-review' ? 'Approve Tags' : 'Save & Publish';
+  const renameButton = renameMessage && file.suggestedName
+    ? `<button type="button" class="fd-mini-btn rename" onclick="renamePhotoTagFile('${escapePhotoTagHtml(file.id)}')">Rename in Drive</button>`
+    : '';
 
   return `
     <article class="fd-photo-tag-card" data-file-id="${escapePhotoTagHtml(file.id)}">
@@ -688,6 +745,7 @@ function renderPhotoTagCard(file) {
           `).join('')}
         </div>
         <div class="fd-photo-tag-actions">
+          ${renameButton}
           <button type="button" class="fd-mini-btn" onclick="savePhotoTag('${escapePhotoTagHtml(file.id)}')">${escapePhotoTagHtml(publishText)}</button>
           <button type="button" class="fd-mini-btn secondary" onclick="clearPhotoTag('${escapePhotoTagHtml(file.id)}')">Clear</button>
         </div>
@@ -836,6 +894,52 @@ async function savePhotoTag(fileId) {
   }
 }
 
+async function renamePhotoTagFile(fileId) {
+  const file = photoTagFiles.find(item => item.id === fileId);
+  const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"]`);
+
+  if (!file || !card || !file.suggestedName) return;
+
+  if (isPhotoTagStandardName(file)) {
+    fdToast('This file already has the right name.');
+    return;
+  }
+
+  const button = card.querySelector('.fd-mini-btn.rename');
+  const originalText = button?.textContent || '';
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Renaming...';
+  }
+  card.style.opacity = '.65';
+
+  try {
+    const accessToken = await window.fdGetGoogleDriveAccessToken();
+    const renamed = await patchGoogleDriveFileName(file.id, file.suggestedName, accessToken);
+
+    file.name = renamed.name || file.suggestedName;
+    file.modifiedTime = renamed.modifiedTime || file.modifiedTime;
+    photoTagFiles = assignPhotoTagSuggestedNames(photoTagFiles).sort((a, b) => b.name.localeCompare(a.name, undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    }));
+
+    await refreshPhotoTagRecordAfterDriveRename(file);
+
+    fdToast('Google Drive file renamed.');
+    renderPhotoTags();
+  } catch (error) {
+    console.error('Photo rename error:', error);
+    fdToast(error.message || 'Could not rename Google Drive file.');
+    card.style.opacity = '';
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+}
+
 async function clearPhotoTag(fileId) {
   const file = photoTagFiles.find(item => item.id === fileId);
   const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"]`);
@@ -863,6 +967,7 @@ window.handleTagAutocomplete = handleTagAutocomplete;
 window.addTagChip = addTagChip;
 window.removeTagChip = removeTagChip;
 window.savePhotoTag = savePhotoTag;
+window.renamePhotoTagFile = renamePhotoTagFile;
 window.clearPhotoTag = clearPhotoTag;
 
 fdInit();
