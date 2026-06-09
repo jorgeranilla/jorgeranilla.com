@@ -8,8 +8,8 @@
     "sizes": ["XS", "S", "M", "L", "XL", "XXL"],
     "description": "Our flagship tee. Heavyweight 100% organic cotton, pre-shrunk. Minimal branding, maximum statement. Designed to last.",
     "details": ["100% Organic Cotton — 220 GSM", "Pre-shrunk, relaxed fit", "Screen printed in small batches", "Machine wash cold, tumble dry low"],
-    "image": "images/tshirt-01.png",
-    "images": ["images/tshirt-01.png"]
+    "image": "images/tshirt-01-bloomsai.png",
+    "images": ["images/tshirt-01-bloomsai.png"]
   },
   {
     "id": "hoodie-01",
