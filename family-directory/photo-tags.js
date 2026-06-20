@@ -3,9 +3,10 @@ const PHOTO_TAGS_MASTER_FOLDER_ID = '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ';
 const PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const PHOTO_TAGS_DRIVE_PAGE_SIZE = 200;
 const PHOTO_TAGS_CONVERT_ENDPOINT = 'https://us-central1-jorgeranilla-site.cloudfunctions.net/convertFamilyPhotoUpload';
-const PHOTO_TAGS_REPLACE_ACCEPT = 'image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif';
-const PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES = 35 * 1024 * 1024;
-const PHOTO_TAGS_REPLACE_REVIEW_REASON = 'Photo file was replaced from the tag panel. Review and approve the existing tags.';
+const PHOTO_TAGS_IMAGE_REPLACE_ACCEPT = 'image/jpeg,image/png,image/webp,image/heic,image/heif,image/dng,image/x-adobe-dng,image/tiff,.jpg,.jpeg,.png,.webp,.heic,.heif,.dng,.tif,.tiff';
+const PHOTO_TAGS_VIDEO_REPLACE_ACCEPT = 'video/quicktime,video/mp4,video/x-m4v,.mov,.mp4,.m4v';
+const PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES = 31 * 1024 * 1024;
+const PHOTO_TAGS_REPLACE_REVIEW_REASON = 'Media file was replaced from the tag panel. Review and approve the existing tags.';
 const PHOTO_TAGS_CONTENT_FIELDS = ['mimeType', 'type', 'md5Checksum', 'size'];
 const PHOTO_TAGS_STANDARD_NAME_RE = /^(\d{4})\.(\d{2})\.(\d{2})_(\d{4})(\.[a-z0-9]+)$/i;
 const PHOTO_TAGS_STATUS_LABELS = {
@@ -326,34 +327,32 @@ async function patchGoogleDriveFileName(fileId, name, accessToken) {
   return data;
 }
 
-function isPhotoTagHeicFile(file) {
+function isPhotoTagVideoFile(file) {
   const mimeType = String(file?.type || file?.mimeType || '').toLowerCase();
   const fileName = String(file?.name || '').toLowerCase();
-  return mimeType === 'image/heic' ||
-    mimeType === 'image/heif' ||
-    /\.(heic|heif)$/i.test(fileName);
+  return mimeType.startsWith('video/') || /\.(mov|mp4|m4v)$/i.test(fileName);
 }
 
-function isSupportedPhotoReplacement(file) {
+function isPhotoTagImageFile(file) {
+  const mimeType = String(file?.type || file?.mimeType || '').toLowerCase();
+  const fileName = String(file?.name || '').toLowerCase();
+  return mimeType.startsWith('image/') || /\.(jpe?g|png|webp|heic|heif|dng|tiff?)$/i.test(fileName);
+}
+
+function getPhotoTagMediaTypeFromMime(mimeType) {
+  return String(mimeType || '').startsWith('video/') ? 'video' : 'image';
+}
+
+function isSupportedPhotoReplacement(file, expectedType = 'image') {
   if (!file) return false;
 
-  const mimeType = String(file.type || '').toLowerCase();
-  const fileName = String(file.name || '').toLowerCase();
-
-  return ['image/jpeg', 'image/png', 'image/heic', 'image/heif'].includes(mimeType) ||
-    /\.(jpe?g|png|heic|heif)$/i.test(fileName);
-}
-
-function getPhotoTagReplacementMimeType(file) {
-  const mimeType = String(file?.type || '').toLowerCase();
-  const fileName = String(file?.name || '').toLowerCase();
-
-  if (mimeType === 'image/png' || /\.png$/i.test(fileName)) return 'image/png';
-  return 'image/jpeg';
+  return expectedType === 'video'
+    ? isPhotoTagVideoFile(file)
+    : isPhotoTagImageFile(file);
 }
 
 function getPhotoTagExtensionForMime(mimeType) {
-  return String(mimeType || '').toLowerCase() === 'image/png' ? '.png' : '.jpg';
+  return String(mimeType || '').toLowerCase().startsWith('video/') ? '.mp4' : '.jpg';
 }
 
 function replacePhotoTagFileExtension(name, extension) {
@@ -365,15 +364,15 @@ function replacePhotoTagFileExtension(name, extension) {
   return `${baseName}${extension}`;
 }
 
-async function convertPhotoTagUploadToJpeg(file) {
+async function convertPhotoTagUploadMedia(file) {
   const user = window.currentUser;
 
   if (!user || typeof user.getIdToken !== 'function') {
-    throw new Error('Sign in again before converting this photo.');
+    throw new Error('Sign in again before converting this media file.');
   }
 
   const formData = new FormData();
-  formData.append('photo', file, file.name || 'photo.heic');
+  formData.append('media', file, file.name || 'media');
 
   const response = await fetch(PHOTO_TAGS_CONVERT_ENDPOINT, {
     method: 'POST',
@@ -384,7 +383,7 @@ async function convertPhotoTagUploadToJpeg(file) {
   });
 
   if (!response.ok) {
-    let message = 'Could not convert this HEIC photo to JPEG.';
+    let message = 'Could not convert this media file.';
 
     try {
       const data = await response.json();
@@ -397,34 +396,38 @@ async function convertPhotoTagUploadToJpeg(file) {
   }
 
   const blob = await response.blob();
-  const fileName = response.headers.get('X-Output-File-Name') || replacePhotoTagFileExtension(file.name, '.jpg');
-  return new File([blob], fileName, { type: 'image/jpeg' });
+  const mimeType = response.headers.get('X-Output-Mime-Type') || response.headers.get('Content-Type') || 'image/jpeg';
+  const extension = getPhotoTagExtensionForMime(mimeType);
+  const fileName = response.headers.get('X-Output-File-Name') || replacePhotoTagFileExtension(file.name, extension);
+
+  return new File([blob], fileName, { type: mimeType });
 }
 
 async function preparePhotoTagReplacementUpload(selectedFile, driveFile) {
   if (!selectedFile || selectedFile.size <= 0) {
-    throw new Error('Choose a photo file first.');
+    throw new Error('Choose a media file first.');
   }
 
   if (selectedFile.size > PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES) {
-    throw new Error('Choose a photo under 35 MB.');
+    throw new Error('Choose a media file under 31 MB.');
   }
 
-  if (!isSupportedPhotoReplacement(selectedFile)) {
-    throw new Error('Choose a JPEG, PNG, HEIC, or HEIF photo.');
+  const expectedType = driveFile?.type === 'video' ? 'video' : 'image';
+  if (!isSupportedPhotoReplacement(selectedFile, expectedType)) {
+    throw new Error(expectedType === 'video'
+      ? 'Choose a MOV, MP4, or M4V video.'
+      : 'Choose a JPEG, PNG, WebP, HEIC, HEIF, TIFF, or DNG photo.');
   }
 
-  if (isPhotoTagHeicFile(selectedFile)) {
-    const jpegFile = await convertPhotoTagUploadToJpeg(selectedFile);
-    const jpegName = replacePhotoTagFileExtension(driveFile?.name || jpegFile.name, '.jpg');
-    return new File([jpegFile], jpegName, { type: 'image/jpeg' });
+  const convertedFile = await convertPhotoTagUploadMedia(selectedFile);
+  const convertedType = getPhotoTagMediaTypeFromMime(convertedFile.type);
+  if (convertedType !== expectedType) {
+    throw new Error(expectedType === 'video'
+      ? 'Choose a video file to replace this video.'
+      : 'Choose a photo file to replace this photo.');
   }
 
-  const mimeType = getPhotoTagReplacementMimeType(selectedFile);
-  const extension = getPhotoTagExtensionForMime(mimeType);
-  const fileName = replacePhotoTagFileExtension(driveFile?.name || selectedFile.name, extension);
-
-  return new File([selectedFile], fileName, { type: mimeType });
+  return new File([convertedFile], convertedFile.name, { type: convertedFile.type });
 }
 
 function buildDriveMultipartBody(metadata, fileBlob, mimeType) {
@@ -465,7 +468,7 @@ async function patchGoogleDriveFileContent(fileId, preparedFile, accessToken) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error?.message || 'Google Drive photo replacement failed.');
+    throw new Error(data.error?.message || 'Google Drive media replacement failed.');
   }
 
   return data;
@@ -901,9 +904,11 @@ function renderPhotoTagCard(file) {
   const renameButton = renameMessage && file.suggestedName
     ? `<button type="button" class="fd-mini-btn rename" onclick="renamePhotoTagFile('${escapePhotoTagHtml(file.id)}')">Rename in Drive</button>`
     : '';
-  const replaceControl = file.type === 'image'
-    ? `<input type='file' class='fd-replace-input' accept='${PHOTO_TAGS_REPLACE_ACCEPT}' onchange='replacePhotoTagFile(&#039;${escapePhotoTagHtml(file.id)}&#039;, this)'>
-      <button type='button' class='fd-mini-btn replace' onclick='this.previousElementSibling.click()'>Replace Photo</button>`
+  const replaceLabel = file.type === 'video' ? 'Video' : 'Photo';
+  const replaceAccept = file.type === 'video' ? PHOTO_TAGS_VIDEO_REPLACE_ACCEPT : PHOTO_TAGS_IMAGE_REPLACE_ACCEPT;
+  const replaceControl = file.type === 'image' || file.type === 'video'
+    ? `<input type='file' class='fd-replace-input' accept='${replaceAccept}' onchange='replacePhotoTagFile(&#039;${escapePhotoTagHtml(file.id)}&#039;, this)'>
+      <button type='button' class='fd-mini-btn replace' onclick='this.previousElementSibling.click()'>Replace ${replaceLabel}</button>`
     : '';
 
   return `
@@ -1144,19 +1149,19 @@ async function replacePhotoTagFile(fileId, input) {
 
   if (!selectedFile || !file || !card) return;
 
-  if (!isSupportedPhotoReplacement(selectedFile)) {
-    fdToast('Choose a JPEG, PNG, HEIC, or HEIF photo.');
+  if (!isSupportedPhotoReplacement(selectedFile, file.type === 'video' ? 'video' : 'image')) {
+    fdToast(file.type === 'video' ? 'Choose a MOV, MP4, or M4V video.' : 'Choose a JPEG, PNG, WebP, HEIC, HEIF, TIFF, or DNG photo.');
     input.value = '';
     return;
   }
 
   if (selectedFile.size > PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES) {
-    fdToast('Choose a photo under 35 MB.');
+    fdToast('Choose a media file under 31 MB.');
     input.value = '';
     return;
   }
 
-  const confirmed = window.confirm(`Replace ${file.name} with ${selectedFile.name}? Existing tags will be kept but marked for review.`);
+  const confirmed = window.confirm(`Replace ${file.name} with ${selectedFile.name}? The backend will convert/compress it for the website, and existing tags will be kept but marked for review.`);
   if (!confirmed) {
     input.value = '';
     return;
@@ -1168,7 +1173,7 @@ async function replacePhotoTagFile(fileId, input) {
 
   if (button) {
     button.disabled = true;
-    button.textContent = isPhotoTagHeicFile(selectedFile) ? 'Converting...' : 'Replacing...';
+    button.textContent = file.type === 'video' ? 'Compressing...' : 'Converting...';
   }
   card.style.opacity = '.65';
 
@@ -1182,7 +1187,7 @@ async function replacePhotoTagFile(fileId, input) {
 
     file.name = updated.name || preparedFile.name;
     file.mimeType = updated.mimeType || preparedFile.type || 'image/jpeg';
-    file.type = 'image';
+    file.type = getPhotoTagMediaTypeFromMime(file.mimeType);
     file.createdTime = updated.createdTime || file.createdTime;
     file.modifiedTime = updated.modifiedTime || new Date().toISOString();
     file.takenTime = updated.imageMediaMetadata?.time || file.takenTime;
@@ -1196,11 +1201,11 @@ async function replacePhotoTagFile(fileId, input) {
 
     await refreshPhotoTagRecordAfterReplacement(file, hadTags);
 
-    fdToast(hadTags ? 'Photo replaced. Review and approve the tags.' : 'Photo replaced.');
+    fdToast(hadTags ? 'Media replaced. Review and approve the tags.' : 'Media replaced.');
     renderPhotoTags();
   } catch (error) {
-    console.error('Photo replacement error:', error);
-    fdToast(error.message || 'Could not replace this photo.');
+    console.error('Media replacement error:', error);
+    fdToast(error.message || 'Could not replace this media file.');
     card.style.opacity = '';
     if (button) {
       button.disabled = false;
