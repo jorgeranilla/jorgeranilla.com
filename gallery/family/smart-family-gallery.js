@@ -44,6 +44,14 @@
     });
   }
 
+  function compareFilesByCreatedTime(a, b) {
+    const aTime = String(a.createdTime || '');
+    const bTime = String(b.createdTime || '');
+    if (bTime > aTime) return 1;
+    if (bTime < aTime) return -1;
+    return compareFilesByName(a, b);
+  }
+
   function escapeHtml(value) {
     return String(value || '')
       .replace(/&/g, '&amp;')
@@ -168,6 +176,47 @@
     }
   }
 
+  async function loadYoutubeVideos() {
+    try {
+      const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
+      const { getFirestore, collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
+
+      const app = getApps().length ? getApps()[0] : initializeApp(config.firebaseConfig);
+      const db = getFirestore(app);
+      const q = query(
+        collection(db, config.tagCollection),
+        where('source', '==', 'youtube'),
+        where('status', '==', 'approved')
+      );
+      const snapshot = await getDocs(q);
+
+      return snapshot.docs.map(docSnap => {
+        const data = docSnap.data() || {};
+        const videoId = data.youtubeId || '';
+        const approvedIso = data.approvedAt?.toDate?.()?.toISOString?.() || '';
+        return {
+          id: docSnap.id,
+          youtubeId: videoId,
+          youtubeThumbnail: data.youtubeThumbnail || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+          youtubeTitle: data.youtubeTitle || '',
+          name: data.youtubeTitle || videoId || docSnap.id,
+          type: 'video',
+          mimeType: 'video/youtube',
+          source: 'youtube',
+          people: Array.isArray(data.people) ? data.people : [],
+          peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
+          personIds: Array.isArray(data.personIds) ? data.personIds : [],
+          albums: Array.isArray(data.albums) ? data.albums : [],
+          createdTime: approvedIso,
+          modifiedTime: approvedIso
+        };
+      });
+    } catch (err) {
+      console.warn('Could not load YouTube videos from Firestore:', err);
+      return [];
+    }
+  }
+
   function matchesConfiguredGallery(tag) {
     if (!tag) return false;
 
@@ -227,21 +276,27 @@
   }
 
   async function resolveGalleryFiles() {
-    const masterFiles = await fetchDriveFolder(config.masterFolderId);
-    const tags = await loadApprovedTags();
+    const [masterFiles, youtubeVideos] = await Promise.all([
+      fetchDriveFolder(config.masterFolderId),
+      loadYoutubeVideos()
+    ]);
 
     if (config.mode === 'all') {
-      return masterFiles;
+      return [...masterFiles, ...youtubeVideos].sort(compareFilesByCreatedTime);
     }
 
-    const taggedFiles = masterFiles
+    const tags = await loadApprovedTags();
+
+    const taggedDriveFiles = masterFiles
       .filter(file => {
         const tag = tags.get(file.id);
         return isApprovedTagCurrentForFile(file, tag) && matchesConfiguredGallery(tag);
       })
       .map(file => ({ ...file, tags: tags.get(file.id) }));
 
-    return taggedFiles;
+    const filteredYoutubeVideos = youtubeVideos.filter(video => matchesConfiguredGallery(video));
+
+    return [...taggedDriveFiles, ...filteredYoutubeVideos].sort(compareFilesByCreatedTime);
   }
 
   function setLoading(isLoading) {
@@ -381,7 +436,13 @@
 
     counter.textContent = `${lightboxIdx + 1} / ${allFiles.length}`;
 
-    if (file.type === 'video') {
+    if (file.youtubeId) {
+      // YouTube video — embed player
+      img.style.display = 'none';
+      video.style.display = 'block';
+      video.src = `https://www.youtube.com/embed/${encodeURIComponent(file.youtubeId)}?autoplay=1&rel=0`;
+    } else if (file.type === 'video') {
+      // Legacy Drive video — fall back to Drive preview
       img.style.display = 'none';
       video.style.display = 'block';
       video.src = `https://drive.google.com/file/d/${encodeURIComponent(file.id)}/preview`;

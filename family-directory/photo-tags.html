@@ -56,6 +56,7 @@
       border-radius: 18px;
       box-shadow: 0 2px 14px rgba(0,0,0,.05);
       overflow: hidden;
+      position: relative;
       transition: transform .2s, box-shadow .2s;
     }
 
@@ -244,7 +245,8 @@
       border-bottom: none;
     }
 
-    .fd-tag-suggestion-item:hover {
+    .fd-tag-suggestion-item:hover,
+    .fd-tag-suggestion-item.highlighted {
       background: #fdf2f2;
       color: #CD5C5C;
     }
@@ -311,6 +313,18 @@
       color: #12503f;
     }
 
+    .fd-mini-btn.danger {
+      background: #fff5f5;
+      border: 1px solid #fecaca;
+      color: #c0392b;
+    }
+
+    .fd-mini-btn.danger:hover {
+      background: #fee2e2;
+      color: #991b1b;
+      transform: translateY(-1px);
+    }
+
     .fd-replace-input {
       display: none;
     }
@@ -337,19 +351,142 @@
       text-align: center;
     }
 
+    /* ── Card selection checkbox ── */
+    .fd-card-select {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #CD5C5C;
+      z-index: 2;
+    }
+
+    .fd-photo-tag-card.fd-selected {
+      border-color: #CD5C5C;
+      box-shadow: 0 0 0 2px rgba(205, 92, 92, 0.18), 0 8px 28px rgba(0,0,0,.08);
+    }
+
+    /* ── Bulk action bar ── */
+    #fd-bulk-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #2c3e50;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      z-index: 1000;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #fd-bulk-bar.active { transform: translateY(0); }
+
+    .fd-bulk-count {
+      font-family: 'Roboto', sans-serif;
+      font-size: .88rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .fd-bulk-link {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.65);
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-size: .8rem;
+      padding: 0;
+      text-decoration: underline;
+      transition: color .2s;
+    }
+
+    .fd-bulk-link:hover { color: #fff; }
+
+    .fd-bulk-publish-btn {
+      background: #CD5C5C;
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-size: .85rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+
+    .fd-bulk-publish-btn:hover { background: #b84c4c; }
+    .fd-bulk-publish-btn:disabled { cursor: wait; opacity: .65; }
+
+    /* ── YouTube add card ── */
+    .fd-yt-add-card {
+      border: 2px dashed #e9e9e9;
+      background: #fafafa;
+      transition: border-color .2s, background .2s;
+    }
+
+    .fd-yt-add-card:hover {
+      border-color: #f44336;
+      background: #fff;
+      transform: none;
+    }
+
+    .fd-yt-add-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 0;
+      color: #f44336;
+      font-family: 'Roboto', sans-serif;
+      font-size: .86rem;
+      font-weight: 600;
+    }
+
+    .fd-yt-add-header svg {
+      flex-shrink: 0;
+    }
+
+    .fd-yt-preview-thumb {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: block;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      background: #f2f2f2;
+    }
+
+    .fd-yt-preview-title {
+      font-size: .82rem;
+      font-weight: 600;
+      margin: 0 0 12px;
+      color: #2c3e50;
+      line-height: 1.4;
+    }
+
+    .fd-yt-badge {
+      background: #ffebee;
+      border: 1px solid #ffcdd2;
+      border-radius: 999px;
+      color: #c62828;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .4px;
+      padding: 3px 7px;
+      text-transform: uppercase;
+    }
+
     @media (max-width: 640px) {
-      .fd-photo-tag-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .fd-tag-controls {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .fd-filter-pill {
-        text-align: center;
-      }
+      .fd-photo-tag-grid { grid-template-columns: 1fr; }
+      .fd-tag-controls { align-items: stretch; flex-direction: column; }
+      .fd-filter-pill { text-align: center; }
     }
   </style>
 </head>
@@ -497,7 +634,7 @@
     }, 30000);
   </script>
   <script src="directory.js?v=3"></script>
-  <script src="photo-tags.js?v=8"></script>
+  <script src="photo-tags.js?v=9"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>

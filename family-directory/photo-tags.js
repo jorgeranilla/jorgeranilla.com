@@ -51,6 +51,7 @@ let photoTagFiles = [];
 let photoTagRecords = new Map();
 let photoTagFilter = 'all';
 let photoTagSearch = '';
+let photoTagSelected = new Set();
 
 function updatePhotoTagLoading(message) {
   const loading = document.getElementById('fd-photo-tags-loading');
@@ -328,11 +329,22 @@ function parsePhotoTagDateKey(value) {
 }
 
 function getPhotoTagFileExtension(file) {
-  const name = String(file?.name || '');
-  const match = name.match(/\.([a-z0-9]+)$/i);
-  if (match) return `.${match[1].toLowerCase()}`;
   if (file?.type === 'video') return '.mp4';
   return '.jpg';
+}
+
+function parseYoutubeId(input) {
+  const s = String(input || '').trim();
+  let m = s.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  m = s.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  m = s.match(/embed\/([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  m = s.match(/shorts\/([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
+  return null;
 }
 
 function getPhotoTagTakenSortValue(file) {
@@ -991,7 +1003,8 @@ function renderPhotoTags() {
   }
 
   empty.style.display = 'none';
-  grid.innerHTML = visible.map(renderPhotoTagCard).join('');
+  grid.innerHTML = renderYoutubeAddCard() + visible.map(renderPhotoTagCard).join('');
+  renderBulkBar();
 }
 
 function renderPhotoTagCard(file) {
@@ -1019,9 +1032,13 @@ function renderPhotoTagCard(file) {
     ? `<input type='file' class='fd-replace-input' accept='${replaceAccept}' onchange='replacePhotoTagFile(&#039;${escapePhotoTagHtml(file.id)}&#039;, this)'>
       <button type='button' class='fd-mini-btn replace' onclick='this.previousElementSibling.click()'>Replace ${replaceLabel}</button>`
     : '';
+  const isSelected = photoTagSelected.has(file.id);
 
   return `
-    <article class="fd-photo-tag-card" data-file-id="${escapePhotoTagHtml(file.id)}">
+    <article class="fd-photo-tag-card${isSelected ? ' fd-selected' : ''}" data-file-id="${escapePhotoTagHtml(file.id)}">
+      <input type="checkbox" class="fd-card-select" title="Select photo"
+        ${isSelected ? 'checked' : ''}
+        onchange="toggleCardSelection('${escapePhotoTagHtml(file.id)}', this.checked)">
       <img class="fd-photo-tag-preview" src="${photoTagThumbnail(file)}" alt="${escapePhotoTagHtml(file.name)}" loading="lazy">
       <div class="fd-photo-tag-body">
         <p class="fd-photo-tag-name">${escapePhotoTagHtml(file.name)}</p>
@@ -1034,11 +1051,12 @@ function renderPhotoTagCard(file) {
         ${reviewReason ? `<p class="fd-tag-review-note">${escapePhotoTagHtml(reviewReason)}</p>` : ''}
 
         <div class="fd-tagging-area">
-          <input type="text" 
-            class="fd-tag-search-input" 
-            placeholder="Type name to tag..." 
+          <input type="text"
+            class="fd-tag-search-input"
+            placeholder="Type name or 'name, name2' + Enter"
             oninput="handleTagAutocomplete(this, '${escapePhotoTagHtml(file.id)}')"
-            onfocus="handleTagAutocomplete(this, '${escapePhotoTagHtml(file.id)}')">
+            onfocus="handleTagAutocomplete(this, '${escapePhotoTagHtml(file.id)}')"
+            onkeydown="handleTagAutocompleteKeydown(event, this, '${escapePhotoTagHtml(file.id)}')">
           <div class="fd-tag-suggestions" id="suggestions-${escapePhotoTagHtml(file.id)}"></div>
         </div>
 
@@ -1059,6 +1077,7 @@ function renderPhotoTagCard(file) {
           ${renameButton}
           <button type="button" class="fd-mini-btn" onclick="savePhotoTag('${escapePhotoTagHtml(file.id)}')">${escapePhotoTagHtml(publishText)}</button>
           <button type="button" class="fd-mini-btn secondary" onclick="clearPhotoTag('${escapePhotoTagHtml(file.id)}')">Clear</button>
+          <button type="button" class="fd-mini-btn danger" onclick="trashPhotoTagFile('${escapePhotoTagHtml(file.id)}')">Move to Trash</button>
         </div>
       </div>
     </article>
@@ -1071,31 +1090,39 @@ function handleTagAutocomplete(input, fileId) {
   if (!suggestionsDiv || !chipsWrap) return;
 
   const term = input.value.trim().toLowerCase();
-  
+
+  // Comma present → batch mode on Enter; suppress dropdown
+  if (term.includes(',')) {
+    suggestionsDiv.style.display = 'none';
+    suggestionsDiv.innerHTML = '';
+    return;
+  }
+
   const selectedKeys = Array.from(chipsWrap.querySelectorAll('.fd-person-chip.selected'))
     .map(chip => chip.dataset.personKey);
 
   const matches = photoTagMembers.filter(m => {
     if (selectedKeys.includes(m.tagKey)) return false;
     if (!term) return false;
-
-    const label = (m.displayTagLabel || m.tagLabel).toLowerCase();
-    return label.includes(term);
+    return (m.displayTagLabel || m.tagLabel).toLowerCase().includes(term);
   });
 
   if (matches.length === 0 || !term) {
     suggestionsDiv.style.display = 'none';
     suggestionsDiv.innerHTML = '';
+    suggestionsDiv.dataset.highlightIndex = '-1';
     return;
   }
 
-  suggestionsDiv.innerHTML = matches.slice(0, 8).map(m => `
-    <div class="fd-tag-suggestion-item" 
+  suggestionsDiv.dataset.highlightIndex = '0';
+  suggestionsDiv.innerHTML = matches.slice(0, 8).map((m, i) => `
+    <div class="fd-tag-suggestion-item${i === 0 ? ' highlighted' : ''}"
+         data-index="${i}"
          onclick="addTagChip('${fileId}', '${escapePhotoTagHtml(m.tagKey)}', '${escapePhotoTagHtml(m.displayTagLabel || m.tagLabel)}')">
       ${escapePhotoTagHtml(m.displayTagLabel || m.tagLabel)}
     </div>
   `).join('');
-  
+
   suggestionsDiv.style.display = 'block';
 }
 
@@ -1136,6 +1163,78 @@ document.addEventListener('click', (e) => {
     document.querySelectorAll('.fd-tag-suggestions').forEach(el => el.style.display = 'none');
   }
 });
+
+function handleTagAutocompleteKeydown(event, input, fileId) {
+  const suggestionsDiv = document.getElementById(`suggestions-${fileId}`);
+  const isOpen = suggestionsDiv && suggestionsDiv.style.display !== 'none' && suggestionsDiv.innerHTML.trim();
+  const items = isOpen ? Array.from(suggestionsDiv.querySelectorAll('.fd-tag-suggestion-item')) : [];
+
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    if (input.value.includes(',')) {
+      parseBatchTagInput(input.value, fileId);
+      return;
+    }
+    if (isOpen && items.length > 0) {
+      const idx = Math.max(0, parseInt(suggestionsDiv.dataset.highlightIndex || '0', 10));
+      (items[idx] || items[0]).click();
+    }
+    return;
+  }
+
+  if (event.key === 'Tab' && isOpen && items.length > 0) {
+    event.preventDefault();
+    const idx = Math.max(0, parseInt(suggestionsDiv.dataset.highlightIndex || '0', 10));
+    (items[idx] || items[0]).click();
+    return;
+  }
+
+  if (event.key === 'Escape') {
+    if (suggestionsDiv) suggestionsDiv.style.display = 'none';
+    return;
+  }
+
+  if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && isOpen && items.length > 0) {
+    event.preventDefault();
+    let idx = parseInt(suggestionsDiv.dataset.highlightIndex || '0', 10);
+    idx = event.key === 'ArrowDown'
+      ? Math.min(idx + 1, items.length - 1)
+      : Math.max(idx - 1, 0);
+    suggestionsDiv.dataset.highlightIndex = String(idx);
+    items.forEach((item, i) => item.classList.toggle('highlighted', i === idx));
+  }
+}
+
+function parseBatchTagInput(rawValue, fileId) {
+  const chipsWrap = document.getElementById(`chips-${fileId}`);
+  const input = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"] .fd-tag-search-input`);
+  const suggestionsDiv = document.getElementById(`suggestions-${fileId}`);
+  if (!chipsWrap) return;
+
+  const selectedKeys = Array.from(chipsWrap.querySelectorAll('.fd-person-chip.selected'))
+    .map(chip => chip.dataset.personKey);
+
+  String(rawValue || '').split(',').map(t => t.trim().toLowerCase()).filter(Boolean).forEach(token => {
+    const match = photoTagMembers.find(m => {
+      if (selectedKeys.includes(m.tagKey)) return false;
+      return (m.displayTagLabel || m.tagLabel).toLowerCase().includes(token);
+    });
+    if (match && !chipsWrap.querySelector(`[data-person-key="${CSS.escape(match.tagKey)}"]`)) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'fd-person-chip selected';
+      btn.dataset.fileId = fileId;
+      btn.dataset.personKey = match.tagKey;
+      btn.textContent = match.displayTagLabel || match.tagLabel;
+      btn.onclick = function() { removeTagChip(this); };
+      chipsWrap.appendChild(btn);
+      selectedKeys.push(match.tagKey);
+    }
+  });
+
+  if (input) { input.value = ''; input.focus(); }
+  if (suggestionsDiv) suggestionsDiv.style.display = 'none';
+}
 
 async function savePhotoTag(fileId) {
   const file = photoTagFiles.find(item => item.id === fileId);
@@ -1348,13 +1447,377 @@ async function clearPhotoTag(fileId) {
   }
 }
 
+async function trashPhotoTagFile(fileId) {
+  const file = photoTagFiles.find(item => item.id === fileId);
+  if (!file) return;
+
+  if (!window.confirm(`Move "${file.name}" to Drive Trash?\n\nTags will also be removed. You can restore the file from Google Drive Trash within 30 days.`)) return;
+
+  const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"]`);
+  if (card) card.style.opacity = '.65';
+
+  try {
+    const accessToken = await window.fdGetGoogleDriveAccessToken();
+    const response = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?fields=id`,
+      {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trashed: true })
+      }
+    );
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error?.message || 'Could not move file to Drive Trash.');
+    }
+
+    if (photoTagRecords.has(fileId)) {
+      await window._fb.deleteDoc(window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, fileId));
+      photoTagRecords.delete(fileId);
+    }
+
+    photoTagFiles = photoTagFiles.filter(f => f.id !== fileId);
+    photoTagSelected.delete(fileId);
+    fdToast(`"${file.name}" moved to Drive Trash.`);
+    renderPhotoTags();
+  } catch (error) {
+    console.error('Trash photo error:', error);
+    fdToast(error.message || 'Could not move file to Drive Trash.');
+    if (card) card.style.opacity = '';
+  }
+}
+
+function toggleCardSelection(fileId, checked) {
+  if (checked) {
+    photoTagSelected.add(fileId);
+  } else {
+    photoTagSelected.delete(fileId);
+  }
+  const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"]`);
+  if (card) card.classList.toggle('fd-selected', checked);
+  renderBulkBar();
+}
+
+function selectAllVisible() {
+  getVisiblePhotoTagFiles().forEach(file => photoTagSelected.add(file.id));
+  renderPhotoTags();
+}
+
+function clearSelection() {
+  photoTagSelected.clear();
+  renderPhotoTags();
+}
+
+function renderBulkBar() {
+  let bar = document.getElementById('fd-bulk-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'fd-bulk-bar';
+    document.body.appendChild(bar);
+  }
+
+  const count = photoTagSelected.size;
+  if (count === 0) {
+    bar.classList.remove('active');
+    bar.innerHTML = '';
+    return;
+  }
+
+  bar.innerHTML = `
+    <span class="fd-bulk-count">${count} photo${count !== 1 ? 's' : ''} selected</span>
+    <button type="button" class="fd-bulk-link" onclick="selectAllVisible()">Select all visible</button>
+    <button type="button" class="fd-bulk-link" onclick="clearSelection()">Clear selection</button>
+    <button type="button" class="fd-bulk-publish-btn" id="fd-bulk-publish-btn" onclick="publishSelected()">Publish Selected</button>
+  `;
+  bar.classList.add('active');
+}
+
+function updateBulkBarProgress(label) {
+  const btn = document.getElementById('fd-bulk-publish-btn');
+  if (!btn) return;
+  if (label) {
+    btn.textContent = label;
+    btn.disabled = true;
+  } else {
+    btn.textContent = 'Publish Selected';
+    btn.disabled = false;
+  }
+}
+
+async function publishSelected() {
+  if (photoTagSelected.size === 0) return;
+
+  const publishBtn = document.getElementById('fd-bulk-publish-btn');
+  if (publishBtn) { publishBtn.disabled = true; publishBtn.textContent = 'Starting…'; }
+
+  // Gather qualifying files: selected + at least one chip tagged
+  const qualifying = [];
+  for (const fileId of photoTagSelected) {
+    const file = photoTagFiles.find(f => f.id === fileId);
+    const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"]`);
+    if (!file || !card) continue;
+    const selectedPeople = Array.from(card.querySelectorAll('.fd-person-chip.selected'))
+      .map(chip => chip.dataset.personKey).filter(Boolean);
+    if (selectedPeople.length > 0) qualifying.push({ file, selectedPeople });
+  }
+
+  if (qualifying.length === 0) {
+    fdToast('No selected photos have people tagged.');
+    updateBulkBarProgress(null);
+    return;
+  }
+
+  // Step 1: Rename files that need it first
+  const needsRename = qualifying.filter(({ file }) =>
+    getPhotoTagRenameMessage(file) && file.suggestedName && !isPhotoTagStandardName(file)
+  );
+
+  if (needsRename.length > 0) {
+    updateBulkBarProgress(`Renaming… (0/${needsRename.length})`);
+    try {
+      const accessToken = await window.fdGetGoogleDriveAccessToken();
+      let done = 0;
+      for (const { file } of needsRename) {
+        try {
+          const result = await patchGoogleDriveFileName(file.id, file.suggestedName, accessToken);
+          file.name = result.name || file.suggestedName;
+          file.modifiedTime = result.modifiedTime || file.modifiedTime;
+        } catch (err) {
+          console.warn(`Rename failed for ${file.name}:`, err);
+        }
+        done++;
+        updateBulkBarProgress(`Renaming… (${done}/${needsRename.length})`);
+      }
+      photoTagFiles = assignPhotoTagSuggestedNames(photoTagFiles).sort((a, b) =>
+        b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' })
+      );
+    } catch (tokenErr) {
+      fdToast(tokenErr.message || 'Could not get Drive access to rename files.');
+      updateBulkBarProgress(null);
+      return;
+    }
+  }
+
+  // Step 2: Publish tags to Firestore
+  let published = 0;
+  let failed = 0;
+
+  for (const { file, selectedPeople } of qualifying) {
+    updateBulkBarProgress(`Publishing… (${published}/${qualifying.length})`);
+    const selectedMembers = selectedPeople
+      .map(key => photoTagMembers.find(m => m.tagKey === key))
+      .filter(Boolean);
+
+    const payload = {
+      driveFileId: file.id,
+      driveFolderId: PHOTO_TAGS_MASTER_FOLDER_ID,
+      name: file.name,
+      mimeType: file.mimeType,
+      type: file.type,
+      people: selectedPeople,
+      peopleAliases: selectedMembers.map(m => m.personSlug),
+      peopleLabels: selectedMembers.map(m => m.tagLabel),
+      personIds: selectedMembers.map(m => m.id),
+      albums: ['family'],
+      source: 'manual',
+      status: 'approved',
+      reviewReason: null,
+      drive: {
+        mimeType: file.mimeType,
+        type: file.type,
+        createdTime: file.createdTime,
+        modifiedTime: file.modifiedTime,
+        takenTime: file.takenTime,
+        suggestedName: file.suggestedName,
+        md5Checksum: file.md5Checksum,
+        size: file.size
+      },
+      approvedAt: window._fb.serverTimestamp(),
+      updatedAt: window._fb.serverTimestamp()
+    };
+    if (!photoTagRecords.has(file.id)) payload.createdAt = window._fb.serverTimestamp();
+
+    try {
+      await window._fb.setDoc(
+        window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, file.id),
+        payload,
+        { merge: true }
+      );
+      photoTagRecords.set(file.id, normalizePhotoTagRecord(file.id, payload));
+      published++;
+    } catch (err) {
+      console.error(`Publish failed for ${file.name}:`, err);
+      failed++;
+    }
+  }
+
+  photoTagSelected.clear();
+  const msg = failed > 0
+    ? `${published} published, ${failed} failed.`
+    : `${published} photo${published !== 1 ? 's' : ''} published.`;
+  fdToast(msg);
+  renderPhotoTags();
+}
+
+function renderYoutubeAddCard() {
+  return `
+    <article class="fd-photo-tag-card fd-yt-add-card" id="fd-yt-add-card">
+      <div class="fd-yt-add-header">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#f44336" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-2.75 12.38 12.38 0 0 0-8.71 3.19A12.26 12.26 0 0 0 3.5 16.3a11.93 11.93 0 0 0 .28 2.55A4.83 4.83 0 0 1 6.56 22h10.88a4.83 4.83 0 0 1 2.78-3.15A12.27 12.27 0 0 0 22 10.8a12.16 12.16 0 0 0-2.41-4.11zM10 15V9l5 3-5 3z"/></svg>
+        Add YouTube Video
+      </div>
+      <div class="fd-photo-tag-body">
+        <div class="fd-tagging-area" style="margin-top:8px">
+          <input type="url"
+            id="fd-yt-url-input"
+            class="fd-tag-search-input"
+            placeholder="Paste YouTube URL or video ID..."
+            oninput="handleYoutubeUrlInput(this)">
+        </div>
+        <div id="fd-yt-preview" style="display:none">
+          <img id="fd-yt-preview-thumb" class="fd-yt-preview-thumb" src="" alt="YouTube thumbnail">
+          <p id="fd-yt-preview-title" class="fd-yt-preview-title"></p>
+        </div>
+        <div class="fd-person-chip-wrap" id="chips-yt-new" aria-label="People in this video"></div>
+        <div class="fd-tagging-area">
+          <input type="text"
+            class="fd-tag-search-input"
+            placeholder="Tag people..."
+            oninput="handleTagAutocomplete(this, 'yt-new')"
+            onfocus="handleTagAutocomplete(this, 'yt-new')"
+            onkeydown="handleTagAutocompleteKeydown(event, this, 'yt-new')">
+          <div class="fd-tag-suggestions" id="suggestions-yt-new"></div>
+        </div>
+        <div class="fd-photo-tag-actions">
+          <button type="button" class="fd-mini-btn" id="fd-yt-save-btn" onclick="submitYoutubeVideo()" disabled>Save &amp; Publish</button>
+          <button type="button" class="fd-mini-btn secondary" onclick="clearYoutubeCard()">Clear</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function handleYoutubeUrlInput(input) {
+  const videoId = parseYoutubeId(input.value);
+  const preview = document.getElementById('fd-yt-preview');
+  const previewThumb = document.getElementById('fd-yt-preview-thumb');
+  const previewTitle = document.getElementById('fd-yt-preview-title');
+  const saveBtn = document.getElementById('fd-yt-save-btn');
+
+  if (!videoId) {
+    if (preview) preview.style.display = 'none';
+    if (saveBtn) saveBtn.disabled = true;
+    return;
+  }
+
+  if (previewThumb) previewThumb.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+  if (previewTitle) previewTitle.textContent = `Video ID: ${videoId}`;
+  if (preview) preview.style.display = 'block';
+  if (saveBtn) saveBtn.disabled = false;
+
+  fetchYoutubeTitle(videoId).then(title => {
+    if (title && previewTitle) previewTitle.textContent = title;
+  }).catch(() => {});
+}
+
+async function fetchYoutubeTitle(videoId) {
+  const url = `https://www.youtube.com/oembed?url=${encodeURIComponent('https://www.youtube.com/watch?v=' + videoId)}&format=json`;
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.title || null;
+}
+
+async function submitYoutubeVideo() {
+  const urlInput = document.getElementById('fd-yt-url-input');
+  const saveBtn = document.getElementById('fd-yt-save-btn');
+  const chipsWrap = document.getElementById('chips-yt-new');
+  const previewTitle = document.getElementById('fd-yt-preview-title');
+  const previewThumb = document.getElementById('fd-yt-preview-thumb');
+
+  const videoId = parseYoutubeId(urlInput?.value);
+  if (!videoId) return fdToast('Please enter a valid YouTube URL.');
+
+  const docId = `yt_${videoId}`;
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+
+  const selectedChips = Array.from(chipsWrap?.querySelectorAll('.fd-person-chip.selected') || []);
+  const selectedPeople = selectedChips.map(chip => chip.dataset.personKey).filter(Boolean);
+  const selectedMembers = selectedPeople.map(key => photoTagMembers.find(m => m.tagKey === key)).filter(Boolean);
+
+  const title = previewTitle?.textContent || '';
+  const thumbnail = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+  const payload = {
+    youtubeId: videoId,
+    youtubeThumbnail: thumbnail,
+    youtubeTitle: title,
+    type: 'video',
+    mimeType: 'video/youtube',
+    source: 'youtube',
+    people: selectedPeople,
+    peopleAliases: selectedMembers.map(m => m.personSlug),
+    peopleLabels: selectedMembers.map(m => m.tagLabel),
+    personIds: selectedMembers.map(m => m.id),
+    albums: ['family'],
+    status: 'approved',
+    reviewReason: null,
+    approvedAt: window._fb.serverTimestamp(),
+    updatedAt: window._fb.serverTimestamp(),
+    createdAt: window._fb.serverTimestamp()
+  };
+
+  try {
+    await window._fb.setDoc(
+      window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, docId),
+      payload,
+      { merge: true }
+    );
+    photoTagRecords.set(docId, normalizePhotoTagRecord(docId, payload));
+    fdToast('YouTube video saved and published.');
+    clearYoutubeCard();
+  } catch (err) {
+    console.error('YouTube save error:', err);
+    fdToast(err.message || 'Could not save YouTube video.');
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save & Publish'; }
+  }
+}
+
+function clearYoutubeCard() {
+  const urlInput = document.getElementById('fd-yt-url-input');
+  const preview = document.getElementById('fd-yt-preview');
+  const chipsWrap = document.getElementById('chips-yt-new');
+  const saveBtn = document.getElementById('fd-yt-save-btn');
+
+  if (urlInput) urlInput.value = '';
+  if (preview) preview.style.display = 'none';
+  if (chipsWrap) chipsWrap.innerHTML = '';
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Save & Publish'; }
+
+  document.querySelectorAll('#fd-yt-add-card .fd-tag-suggestions').forEach(el => {
+    el.style.display = 'none';
+    el.innerHTML = '';
+  });
+}
+
 window.handleTagAutocomplete = handleTagAutocomplete;
+window.handleTagAutocompleteKeydown = handleTagAutocompleteKeydown;
+window.parseBatchTagInput = parseBatchTagInput;
 window.addTagChip = addTagChip;
 window.removeTagChip = removeTagChip;
 window.savePhotoTag = savePhotoTag;
 window.renamePhotoTagFile = renamePhotoTagFile;
 window.replacePhotoTagFile = replacePhotoTagFile;
 window.clearPhotoTag = clearPhotoTag;
+window.trashPhotoTagFile = trashPhotoTagFile;
+window.toggleCardSelection = toggleCardSelection;
+window.selectAllVisible = selectAllVisible;
+window.clearSelection = clearSelection;
+window.publishSelected = publishSelected;
+window.handleYoutubeUrlInput = handleYoutubeUrlInput;
+window.submitYoutubeVideo = submitYoutubeVideo;
+window.clearYoutubeCard = clearYoutubeCard;
 
 if (typeof fdInit === 'function') {
   fdInit().catch(showPhotoTagStartupError);
