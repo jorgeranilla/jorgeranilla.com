@@ -834,6 +834,40 @@ function getPhotoTagRecord(fileId) {
   return photoTagRecords.get(fileId) || null;
 }
 
+function isYoutubePhotoTagRecord(tag) {
+  return Boolean(tag && tag.source === 'youtube' && tag.youtubeId);
+}
+
+function getPhotoTagYoutubeVideos() {
+  return Array.from(photoTagRecords.values())
+    .filter(isYoutubePhotoTagRecord)
+    .sort((a, b) => String(b.updatedAt?.seconds || b.approvedAt?.seconds || 0).localeCompare(String(a.updatedAt?.seconds || a.approvedAt?.seconds || 0)));
+}
+
+function getYoutubeVideoTagStatus(video) {
+  if (!hasSavedTagPeople(video)) return 'untagged';
+  if (hasUnresolvedTagPeople(video)) return 'needs-review';
+  return video.status || 'approved';
+}
+
+function getVisiblePhotoTagYoutubeVideos() {
+  return getPhotoTagYoutubeVideos().filter(video => {
+    const tagged = hasSavedTagPeople(video);
+    const status = getYoutubeVideoTagStatus(video);
+
+    if (photoTagFilter === 'untagged' && tagged) return false;
+    if (photoTagFilter === 'tagged' && !tagged) return false;
+    if (photoTagFilter === 'approved' && status !== 'approved') return false;
+    if (photoTagFilter === 'needs-review' && status !== 'needs-review') return false;
+    if (photoTagFilter === 'needs-rename') return false;
+
+    if (!photoTagSearch) return true;
+
+    const labels = video.peopleLabels?.join(' ') || video.people?.map(getPhotoTagLabel).join(' ') || '';
+    return `${video.youtubeTitle || ''} ${video.youtubeId || ''} ${labels}`.toLowerCase().includes(photoTagSearch);
+  });
+}
+
 function isPhotoTagged(file) {
   const tag = getPhotoTagRecord(file.id);
   return hasSavedTagPeople(tag);
@@ -969,19 +1003,23 @@ function renderPhotoTags() {
   if (!grid || !empty || !summary) return;
 
   const visible = getVisiblePhotoTagFiles();
+  const visibleVideos = getVisiblePhotoTagYoutubeVideos();
+  const youtubeVideos = getPhotoTagYoutubeVideos();
   const taggedCount = photoTagFiles.filter(isPhotoTagged).length;
   const untaggedCount = photoTagFiles.length - taggedCount;
   const needsReviewCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'needs-review').length;
   const approvedCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'approved').length;
   const needsRenameCount = photoTagFiles.filter(file => getPhotoTagRenameMessage(file)).length;
+  const videoApprovedCount = youtubeVideos.filter(video => getYoutubeVideoTagStatus(video) === 'approved').length;
+  const videoNeedsReviewCount = youtubeVideos.filter(video => getYoutubeVideoTagStatus(video) === 'needs-review').length;
+  const videoUntaggedCount = youtubeVideos.filter(video => getYoutubeVideoTagStatus(video) === 'untagged').length;
+  const totalVisible = visible.length + visibleVideos.length;
 
-  summary.textContent = `${photoTagFiles.length} photos in Family folder · ${taggedCount} tagged · ${untaggedCount} untagged`;
+  summary.textContent = `${photoTagFiles.length} photos + ${youtubeVideos.length} YouTube videos - ${approvedCount + videoApprovedCount} approved - ${needsReviewCount + videoNeedsReviewCount} need retag - ${needsRenameCount} need rename - ${untaggedCount + videoUntaggedCount} untagged`;
 
-  summary.textContent = `${photoTagFiles.length} photos in Family folder - ${approvedCount} approved - ${needsReviewCount} need retag - ${needsRenameCount} need rename - ${untaggedCount} untagged`;
+  grid.innerHTML = renderYoutubeAddCard() + visibleVideos.map(renderYoutubeVideoCard).join('') + visible.map(renderPhotoTagCard).join('');
 
-  grid.innerHTML = renderYoutubeAddCard() + visible.map(renderPhotoTagCard).join('');
-
-  if (visible.length === 0) {
+  if (totalVisible === 0) {
     empty.style.display = 'block';
     renderBulkBar();
     return;
@@ -1060,6 +1098,76 @@ function renderPhotoTagCard(file) {
           <button type="button" class="fd-mini-btn" onclick="savePhotoTag('${escapePhotoTagHtml(file.id)}')">${escapePhotoTagHtml(publishText)}</button>
           <button type="button" class="fd-mini-btn secondary" onclick="clearPhotoTag('${escapePhotoTagHtml(file.id)}')">Clear</button>
           <button type="button" class="fd-mini-btn danger" onclick="trashPhotoTagFile('${escapePhotoTagHtml(file.id)}')">Move to Trash</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderYoutubeVideoCard(video) {
+  const recordId = video.id;
+  const selectedPeople = new Set(video.people || []);
+  const selectedMembersList = photoTagMembers.filter(member => isMemberSelectedForTag(video, member));
+  const labels = selectedMembersList.length
+    ? selectedMembersList.map(member => member.displayTagLabel || member.tagLabel).join(', ')
+    : video.peopleLabels?.length
+      ? video.peopleLabels.join(', ')
+      : selectedPeople.size
+        ? Array.from(selectedPeople).map(getPhotoTagLabel).join(', ')
+        : 'No people assigned yet';
+  const status = getYoutubeVideoTagStatus(video);
+  const statusText = PHOTO_TAGS_STATUS_LABELS[status] || status;
+  const youtubeId = video.youtubeId || '';
+  const thumbnail = video.youtubeThumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg`;
+  const title = video.youtubeTitle || `Video ID: ${youtubeId}`;
+
+  return `
+    <article class="fd-photo-tag-card fd-youtube-video-card" data-file-id="${escapePhotoTagHtml(recordId)}">
+      <img class="fd-photo-tag-preview" src="${escapePhotoTagHtml(thumbnail)}" alt="${escapePhotoTagHtml(title)}" loading="lazy">
+      <div class="fd-photo-tag-body">
+        <p class="fd-photo-tag-name">${escapePhotoTagHtml(title)}</p>
+        <div class="fd-photo-tag-meta">
+          <span class="fd-tag-status ${escapePhotoTagHtml(status)}">${escapePhotoTagHtml(statusText)}</span>
+          <span class="fd-tag-status untagged">YouTube video</span>
+        </div>
+        <p class="fd-tag-summary">${escapePhotoTagHtml(labels)}</p>
+
+        <div class="fd-tagging-area">
+          <input type="text"
+            class="fd-tag-search-input fd-youtube-id-input"
+            value="${escapePhotoTagHtml(youtubeId)}"
+            placeholder="YouTube URL or video ID"
+            oninput="handleExistingYoutubeUrlInput(this, '${escapePhotoTagHtml(recordId)}')">
+        </div>
+        <div class="fd-yt-existing-preview">
+          <img class="fd-yt-preview-thumb fd-yt-existing-preview-thumb" src="${escapePhotoTagHtml(thumbnail)}" alt="YouTube thumbnail">
+          <p class="fd-yt-preview-title fd-yt-existing-preview-title">${escapePhotoTagHtml(title)}</p>
+        </div>
+
+        <div class="fd-person-chip-wrap" id="chips-${escapePhotoTagHtml(recordId)}" aria-label="People in this video">
+          ${selectedMembersList.map(member => `
+            <button
+              type="button"
+              class="fd-person-chip selected"
+              data-file-id="${escapePhotoTagHtml(recordId)}"
+              data-person-key="${escapePhotoTagHtml(member.tagKey)}"
+              onclick="removeTagChip(this)">
+              ${escapePhotoTagHtml(member.displayTagLabel || member.tagLabel)}
+            </button>
+          `).join('')}
+        </div>
+        <div class="fd-tagging-area">
+          <input type="text"
+            class="fd-tag-search-input fd-person-tag-input"
+            placeholder="Tag people..."
+            oninput="handleTagAutocomplete(this, '${escapePhotoTagHtml(recordId)}')"
+            onfocus="handleTagAutocomplete(this, '${escapePhotoTagHtml(recordId)}')"
+            onkeydown="handleTagAutocompleteKeydown(event, this, '${escapePhotoTagHtml(recordId)}')">
+          <div class="fd-tag-suggestions" id="suggestions-${escapePhotoTagHtml(recordId)}"></div>
+        </div>
+        <div class="fd-photo-tag-actions">
+          <button type="button" class="fd-mini-btn" onclick="saveYoutubeVideoTags('${escapePhotoTagHtml(recordId)}')">Save &amp; Publish</button>
+          <button type="button" class="fd-mini-btn danger" onclick="removeYoutubeVideo('${escapePhotoTagHtml(recordId)}')">Remove Video</button>
         </div>
       </div>
     </article>
@@ -1655,7 +1763,6 @@ async function publishSelected() {
           const result = await patchGoogleDriveFileName(file.id, file.suggestedName, accessToken);
           file.name = result.name || file.suggestedName;
           file.modifiedTime = result.modifiedTime || file.modifiedTime;
-          await refreshPhotoTagRecordAfterDriveRename(file);
         } catch (err) {
           console.warn(`Rename failed for ${file.name}:`, err);
         }
@@ -1863,10 +1970,142 @@ async function submitYoutubeVideo() {
     photoTagRecords.set(docId, normalizePhotoTagRecord(docId, payload));
     fdToast('YouTube video saved and published.');
     clearYoutubeCard();
+    renderPhotoTags();
   } catch (err) {
     console.error('YouTube save error:', err);
     fdToast(err.message || 'Could not save YouTube video.');
     if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save & Publish'; }
+  }
+}
+
+function handleExistingYoutubeUrlInput(input, recordId) {
+  const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(recordId)}"]`);
+  const videoId = parseYoutubeId(input.value);
+  const previewThumb = card?.querySelector('.fd-yt-existing-preview-thumb');
+  const previewTitle = card?.querySelector('.fd-yt-existing-preview-title');
+
+  if (!previewTitle) return;
+
+  if (!videoId) {
+    previewTitle.textContent = 'Enter a valid YouTube URL or video ID.';
+    previewTitle.dataset.youtubeTitle = '';
+    return;
+  }
+
+  if (previewThumb) previewThumb.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+  previewTitle.textContent = `Video ID: ${videoId}`;
+  previewTitle.dataset.youtubeTitle = '';
+
+  fetchYoutubeTitle(videoId).then(title => {
+    if (title && previewTitle) {
+      previewTitle.textContent = title;
+      previewTitle.dataset.youtubeTitle = title;
+    }
+  }).catch(() => {});
+}
+
+async function saveYoutubeVideoTags(recordId) {
+  const video = getPhotoTagRecord(recordId);
+  const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(recordId)}"]`);
+  if (!video || !card || !isYoutubePhotoTagRecord(video)) return;
+
+  const idInput = card.querySelector('.fd-youtube-id-input');
+  const selectedChips = Array.from(card.querySelectorAll('.fd-person-chip.selected'));
+  const selectedPeople = selectedChips.map(chip => chip.dataset.personKey).filter(Boolean);
+  const youtubeId = parseYoutubeId(idInput?.value || video.youtubeId);
+
+  if (!youtubeId) {
+    fdToast('Enter a valid YouTube URL or video ID.');
+    return;
+  }
+
+  if (selectedPeople.length === 0) {
+    fdToast('Select at least one person before publishing the YouTube video.');
+    return;
+  }
+
+  const button = card.querySelector('.fd-mini-btn:not(.danger)');
+  const originalText = button?.textContent || '';
+  const selectedMembers = selectedPeople.map(key => photoTagMembers.find(member => member.tagKey === key)).filter(Boolean);
+  const previewTitle = card.querySelector('.fd-yt-existing-preview-title');
+  let title = previewTitle?.dataset.youtubeTitle || previewTitle?.textContent || video.youtubeTitle || '';
+
+  if (!title || title.startsWith('Video ID:') || youtubeId !== video.youtubeId) {
+    title = await fetchYoutubeTitle(youtubeId).catch(() => null) || `Video ID: ${youtubeId}`;
+  }
+
+  const newDocId = `yt_${youtubeId}`;
+  const thumbnail = `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
+  const payload = {
+    youtubeId,
+    youtubeThumbnail: thumbnail,
+    youtubeTitle: title,
+    type: 'video',
+    mimeType: 'video/youtube',
+    source: 'youtube',
+    people: selectedPeople,
+    peopleAliases: selectedMembers.map(member => member.personSlug),
+    peopleLabels: selectedMembers.map(member => member.tagLabel),
+    personIds: selectedMembers.map(member => member.id),
+    albums: ['family'],
+    status: 'approved',
+    reviewReason: null,
+    approvedAt: window._fb.serverTimestamp(),
+    updatedAt: window._fb.serverTimestamp(),
+    createdAt: video.createdAt || window._fb.serverTimestamp()
+  };
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Saving...';
+  }
+  card.style.opacity = '.65';
+
+  try {
+    await window._fb.setDoc(
+      window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, newDocId),
+      payload,
+      { merge: true }
+    );
+
+    if (newDocId !== recordId) {
+      await window._fb.deleteDoc(window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, recordId));
+      photoTagRecords.delete(recordId);
+    }
+
+    photoTagRecords.set(newDocId, normalizePhotoTagRecord(newDocId, payload));
+    fdToast(newDocId === recordId ? 'YouTube video tags published.' : 'YouTube video replaced and published.');
+    renderPhotoTags();
+  } catch (error) {
+    console.error('YouTube video update error:', error);
+    fdToast(error.message || 'Could not save YouTube video.');
+    card.style.opacity = '';
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+}
+
+async function removeYoutubeVideo(recordId) {
+  const video = getPhotoTagRecord(recordId);
+  if (!video || !isYoutubePhotoTagRecord(video)) return;
+
+  const title = video.youtubeTitle || video.youtubeId || 'this YouTube video';
+  if (!window.confirm(`Remove "${title}" from the website?\n\nThis deletes the Photo Tags record only. It will not delete anything from YouTube.`)) return;
+
+  const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(recordId)}"]`);
+  if (card) card.style.opacity = '.65';
+
+  try {
+    await window._fb.deleteDoc(window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, recordId));
+    photoTagRecords.delete(recordId);
+    fdToast('YouTube video removed from the website.');
+    renderPhotoTags();
+  } catch (error) {
+    console.error('YouTube video remove error:', error);
+    fdToast(error.message || 'Could not remove YouTube video.');
+    if (card) card.style.opacity = '';
   }
 }
 
@@ -1903,6 +2142,9 @@ window.renameSelected = renameSelected;
 window.clearSelection = clearSelection;
 window.publishSelected = publishSelected;
 window.toggleYoutubeAddCard = toggleYoutubeAddCard;
+window.handleExistingYoutubeUrlInput = handleExistingYoutubeUrlInput;
+window.saveYoutubeVideoTags = saveYoutubeVideoTags;
+window.removeYoutubeVideo = removeYoutubeVideo;
 window.handleYoutubeUrlInput = handleYoutubeUrlInput;
 window.submitYoutubeVideo = submitYoutubeVideo;
 window.clearYoutubeCard = clearYoutubeCard;
