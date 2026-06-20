@@ -21,6 +21,10 @@ const COLLECTION = 'familyDirectory';
 const FD_AUTH_TIMEOUT_MS = 25000;
 const GOOGLE_CONTACTS_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
 const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive';
+const GOOGLE_DRIVE_TOKEN_TTL_MS = 50 * 60 * 1000;
+let fdGoogleDriveAccessToken = '';
+let fdGoogleDriveAccessTokenExpiresAt = 0;
+let fdGoogleDriveAccessTokenUid = '';
 
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
@@ -290,6 +294,7 @@ async function handleAuthState(user) {
 
   try {
     if (!user) {
+      fdClearGoogleDriveAccessToken();
       currentUser = null;
       currentProfile = null;
       isAdmin = false;
@@ -301,6 +306,7 @@ async function handleAuthState(user) {
       return;
     }
 
+    if (currentUser?.uid && currentUser.uid !== user.uid) fdClearGoogleDriveAccessToken();
     currentUser = user;
     fdSetLoadingMessage('Loading your family profile...');
     fdStartAuthWatchdog('Still loading your family profile. Refresh the page if this keeps spinning.');
@@ -440,27 +446,43 @@ async function fdGetGoogleContactsAccessToken() {
   return credential.accessToken;
 }
 
-async function fdGetGoogleDriveAccessToken() {
+function fdClearGoogleDriveAccessToken() {
+  fdGoogleDriveAccessToken = '';
+  fdGoogleDriveAccessTokenExpiresAt = 0;
+  fdGoogleDriveAccessTokenUid = '';
+}
+
+async function fdGetGoogleDriveAccessToken({ forceRefresh = false } = {}) {
   if (!isAdmin) {
     throw new Error('Only admins can update Google Drive files.');
   }
 
-  const { auth, GoogleAuthProvider, signInWithPopup } = window._fb;
+  const uid = auth?.currentUser?.uid || currentUser?.uid || '';
+  const now = Date.now();
+  if (!forceRefresh && fdGoogleDriveAccessToken && fdGoogleDriveAccessTokenUid === uid && now < fdGoogleDriveAccessTokenExpiresAt) {
+    return fdGoogleDriveAccessToken;
+  }
+
+  const { auth: fbAuth, GoogleAuthProvider, signInWithPopup } = window._fb;
   const provider = new GoogleAuthProvider();
   provider.addScope(GOOGLE_DRIVE_SCOPE);
-  provider.setCustomParameters({ prompt: 'consent' });
 
-  const result = await signInWithPopup(auth, provider);
+  const result = await signInWithPopup(fbAuth, provider);
   const credential = GoogleAuthProvider.credentialFromResult(result);
 
   if (!credential?.accessToken) {
+    fdClearGoogleDriveAccessToken();
     throw new Error('Google did not return a Drive access token.');
   }
 
-  return credential.accessToken;
+  fdGoogleDriveAccessToken = credential.accessToken;
+  fdGoogleDriveAccessTokenUid = uid;
+  fdGoogleDriveAccessTokenExpiresAt = Date.now() + GOOGLE_DRIVE_TOKEN_TTL_MS;
+  return fdGoogleDriveAccessToken;
 }
 
 function fdSignOut() {
+  fdClearGoogleDriveAccessToken();
   const { auth, signOut } = window._fb;
   signOut(auth);
 }
@@ -745,6 +767,7 @@ window.adminDelete = adminDelete;
 window.adminUpdateProfile = adminUpdateProfile;
 window.fdGetGoogleContactsAccessToken = fdGetGoogleContactsAccessToken;
 window.fdGetGoogleDriveAccessToken = fdGetGoogleDriveAccessToken;
+window.fdClearGoogleDriveAccessToken = fdClearGoogleDriveAccessToken;
 window.buildCardHTML = buildCardHTML;
 window.buildBirthdayCardHTML = buildBirthdayCardHTML;
 window.normalizeBirthday = normalizeBirthday;
