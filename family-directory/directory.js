@@ -16,7 +16,9 @@ const firebaseConfig = {
 /* ── Globals ── */
 let app, auth, db, currentUser = null, currentProfile = null;
 let isAdmin = false;
+let fdAuthWatchdog = null;
 const COLLECTION = 'familyDirectory';
+const FD_AUTH_TIMEOUT_MS = 25000;
 const GOOGLE_CONTACTS_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
 const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive';
 
@@ -182,80 +184,159 @@ async function syncGoogleIdentity(user, profileRef, profileData) {
 }
 
 /* ── Init ── */
-async function fdInit() {
-  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
-  const { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider }
-    = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js');
-  const { getFirestore, collection, doc, documentId, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp }
-    = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
+function fdClearAuthWatchdog() {
+  if (fdAuthWatchdog) {
+    clearTimeout(fdAuthWatchdog);
+    fdAuthWatchdog = null;
+  }
 
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-
-  // Store imports globally for use
-  window._fb = {
-    auth, db, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
-    collection, doc, documentId, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
-    query, where, orderBy, serverTimestamp
-  };
-
-  // Auth state listener
-  onAuthStateChanged(auth, handleAuthState);
+  if (window.fdPhotoTagsStartupTimer) {
+    clearTimeout(window.fdPhotoTagsStartupTimer);
+    window.fdPhotoTagsStartupTimer = null;
+  }
 }
 
-/* ── Auth State Handler ── */
+function fdSetLoadingMessage(message) {
+  const loadingEl = document.getElementById('fd-loading');
+  const label = loadingEl?.querySelector('[data-fd-loading-message]') || loadingEl?.querySelector('span');
+  if (label) label.textContent = message;
+}
+
+function fdStartAuthWatchdog(detail) {
+  fdClearAuthWatchdog();
+  fdAuthWatchdog = setTimeout(() => {
+    fdShowLoadError('This is taking longer than expected.', detail || 'Refresh the page and try again.');
+  }, FD_AUTH_TIMEOUT_MS);
+}
+
+function fdShowLoadError(title = 'Could not load the family directory.', detail = 'Refresh the page and try again.') {
+  fdClearAuthWatchdog();
+
+  const loadingEl = document.getElementById('fd-loading');
+  const authGate = document.getElementById('fd-auth-gate');
+  const pendingEl = document.getElementById('fd-pending');
+  const appEl = document.getElementById('fd-app');
+
+  if (authGate) authGate.style.display = 'none';
+  if (pendingEl) pendingEl.style.display = 'none';
+  if (appEl) appEl.classList.remove('active');
+  if (!loadingEl) return;
+
+  loadingEl.style.display = 'flex';
+  loadingEl.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'fd-auth-card';
+
+  const label = document.createElement('p');
+  label.className = 'fd-auth-label';
+  label.textContent = 'Load Error';
+
+  const heading = document.createElement('h1');
+  heading.className = 'fd-auth-title';
+  heading.textContent = title;
+
+  const body = document.createElement('p');
+  body.className = 'fd-auth-sub';
+  body.textContent = detail;
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'fd-google-btn';
+  button.textContent = 'Refresh Page';
+  button.addEventListener('click', () => window.location.reload());
+
+  card.append(label, heading, body, button);
+  loadingEl.appendChild(card);
+}
+
+async function fdInit() {
+  fdSetLoadingMessage('Checking sign-in...');
+  fdStartAuthWatchdog('Still checking your sign-in. Refresh the page if this keeps spinning.');
+
+  try {
+    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
+    const { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider }
+      = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js');
+    const { getFirestore, collection, doc, documentId, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp }
+      = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
+
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+
+    window._fb = {
+      auth, db, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
+      collection, doc, documentId, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
+      query, where, orderBy, serverTimestamp
+    };
+
+    onAuthStateChanged(auth, handleAuthState, error => {
+      console.error('Auth state error:', error);
+      fdShowLoadError('Could not check sign-in status.', error.message || 'Refresh the page and try again.');
+    });
+  } catch (error) {
+    console.error('Family directory startup error:', error);
+    fdShowLoadError('Could not start the family directory.', error.message || 'Refresh the page and try again.');
+    throw error;
+  }
+}
+
 async function handleAuthState(user) {
   const loadingEl = document.getElementById('fd-loading');
   const authGate = document.getElementById('fd-auth-gate');
   const appEl = document.getElementById('fd-app');
   const pendingEl = document.getElementById('fd-pending');
 
-  if (!user) {
-    currentUser = null;
-    currentProfile = null;
-    isAdmin = false;
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (authGate) authGate.style.display = 'flex';
-    if (appEl) appEl.classList.remove('active');
-    if (pendingEl) pendingEl.style.display = 'none';
-    return;
-  }
-
-  currentUser = user;
-  if (loadingEl) loadingEl.style.display = 'flex';
-  if (authGate) authGate.style.display = 'none';
-
-  // Fetch user profile from Firestore
-  const { doc, getDoc } = window._fb;
-  const profileRef = doc(db, COLLECTION, user.uid);
-  const profileSnap = await getDoc(profileRef);
-
-  if (profileSnap.exists()) {
-    currentProfile = { id: profileSnap.id, ...profileSnap.data() };
-    const claimedProfile = await autoClaimExistingImport(user, profileRef, currentProfile);
-    if (claimedProfile) currentProfile = claimedProfile;
-    currentProfile = await syncGoogleIdentity(user, profileRef, currentProfile);
-    isAdmin = currentProfile.role === 'admin';
-
-    if (currentProfile.status !== 'approved' && !isAdmin) {
-      // Pending approval
+  try {
+    if (!user) {
+      currentUser = null;
+      currentProfile = null;
+      isAdmin = false;
+      fdClearAuthWatchdog();
       if (loadingEl) loadingEl.style.display = 'none';
-      if (pendingEl) {
-        pendingEl.style.display = 'flex';
-        const nameEl = pendingEl.querySelector('.fd-pending-name');
-        if (nameEl) nameEl.textContent = user.displayName || user.email;
-      }
+      if (authGate) authGate.style.display = 'flex';
+      if (appEl) appEl.classList.remove('active');
+      if (pendingEl) pendingEl.style.display = 'none';
       return;
     }
 
-    // Approved - show app
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (appEl) appEl.classList.add('active');
-    updateNavUser();
-    if (typeof onPageReady === 'function') onPageReady();
-  } else {
-    // First-time user — check for existing imported record to claim
+    currentUser = user;
+    fdSetLoadingMessage('Loading your family profile...');
+    fdStartAuthWatchdog('Still loading your family profile. Refresh the page if this keeps spinning.');
+    if (loadingEl) loadingEl.style.display = 'flex';
+    if (authGate) authGate.style.display = 'none';
+
+    const { doc, getDoc } = window._fb;
+    const profileRef = doc(db, COLLECTION, user.uid);
+    const profileSnap = await getDoc(profileRef);
+
+    if (profileSnap.exists()) {
+      currentProfile = { id: profileSnap.id, ...profileSnap.data() };
+      const claimedProfile = await autoClaimExistingImport(user, profileRef, currentProfile);
+      if (claimedProfile) currentProfile = claimedProfile;
+      currentProfile = await syncGoogleIdentity(user, profileRef, currentProfile);
+      isAdmin = currentProfile.role === 'admin';
+
+      if (currentProfile.status !== 'approved' && !isAdmin) {
+        fdClearAuthWatchdog();
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (pendingEl) {
+          pendingEl.style.display = 'flex';
+          const nameEl = pendingEl.querySelector('.fd-pending-name');
+          if (nameEl) nameEl.textContent = user.displayName || user.email;
+        }
+        return;
+      }
+
+      fdClearAuthWatchdog();
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (appEl) appEl.classList.add('active');
+      updateNavUser();
+      if (typeof onPageReady === 'function') onPageReady();
+      return;
+    }
+
     const { setDoc, serverTimestamp } = window._fb;
     let claimedProfile = null;
     const normalizedUserEmail = normalizeEmail(user.email);
@@ -269,7 +350,7 @@ async function handleAuthState(user) {
           await setDoc(profileRef, claimedData);
           await cleanupClaimedImport(importDoc, user.uid);
           claimedProfile = { id: user.uid, ...claimedData };
-          console.log(`✅ Claimed imported profile "${importDoc.data().displayName}" → ${user.uid}`);
+          console.log(`Claimed imported profile "${importDoc.data().displayName}" -> ${user.uid}`);
         }
       } catch (err) {
         console.warn('Could not search for imported records:', err);
@@ -277,56 +358,58 @@ async function handleAuthState(user) {
     }
 
     if (claimedProfile) {
-      // Successfully claimed an imported profile — go straight in
       currentProfile = claimedProfile;
       isAdmin = currentProfile.role === 'admin';
 
+      fdClearAuthWatchdog();
       if (loadingEl) loadingEl.style.display = 'none';
       if (appEl) appEl.classList.add('active');
       updateNavUser();
-      fdToast('Welcome! Your profile has been linked. 🎉');
+      fdToast('Welcome! Your profile has been linked.');
       if (typeof onPageReady === 'function') onPageReady();
-    } else {
-      // No imported match found — create fresh pending profile
-      const newProfile = {
-        uid: user.uid,
-        displayName: user.displayName || '',
-        email: user.email || '',
-        emailLower: normalizeEmail(user.email),
-        photoURL: user.photoURL || '',
-        phone: '',
-        address: '',
-        city: '',
-        country: '',
-        birthday: '',
-        preferredContact: 'email',
-        role: 'member',
-        status: 'pending',
-        privacy: {
-          showPhone: true,
-          showEmail: true,
-          showAddress: false,
-          showBirthday: true,
-          showAge: false
-        },
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      };
-
-      await setDoc(profileRef, newProfile);
-      currentProfile = { id: user.uid, ...newProfile };
-
-      if (loadingEl) loadingEl.style.display = 'none';
-      if (pendingEl) {
-        pendingEl.style.display = 'flex';
-        const nameEl = pendingEl.querySelector('.fd-pending-name');
-        if (nameEl) nameEl.textContent = user.displayName || user.email;
-      }
+      return;
     }
+
+    const newProfile = {
+      uid: user.uid,
+      displayName: user.displayName || '',
+      email: user.email || '',
+      emailLower: normalizeEmail(user.email),
+      photoURL: user.photoURL || '',
+      phone: '',
+      address: '',
+      city: '',
+      country: '',
+      birthday: '',
+      preferredContact: 'email',
+      role: 'member',
+      status: 'pending',
+      privacy: {
+        showPhone: true,
+        showEmail: true,
+        showAddress: false,
+        showBirthday: true,
+        showAge: false
+      },
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+
+    await setDoc(profileRef, newProfile);
+    currentProfile = { id: user.uid, ...newProfile };
+
+    fdClearAuthWatchdog();
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (pendingEl) {
+      pendingEl.style.display = 'flex';
+      const nameEl = pendingEl.querySelector('.fd-pending-name');
+      if (nameEl) nameEl.textContent = user.displayName || user.email;
+    }
+  } catch (error) {
+    console.error('Family directory load error:', error);
+    fdShowLoadError('Could not load the family directory.', error.message || 'Refresh the page and try again.');
   }
 }
-
-/* ── Sign In ── */
 function fdSignIn() {
   const { auth, GoogleAuthProvider, signInWithPopup } = window._fb;
   const provider = new GoogleAuthProvider();
@@ -653,6 +736,7 @@ window.fdInit = fdInit;
 window.fdSignIn = fdSignIn;
 window.fdSignOut = fdSignOut;
 window.fdToast = fdToast;
+window.fdShowLoadError = fdShowLoadError;
 window.fetchApprovedMembers = fetchApprovedMembers;
 window.fetchAllMembers = fetchAllMembers;
 window.saveProfile = saveProfile;

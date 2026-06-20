@@ -2,6 +2,7 @@ const PHOTO_TAGS_DRIVE_API_KEY = 'AIzaSyCadJTGnwhASQ-kj7p4AnGFAwXIIFChoSs';
 const PHOTO_TAGS_MASTER_FOLDER_ID = '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ';
 const PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const PHOTO_TAGS_DRIVE_PAGE_SIZE = 200;
+const PHOTO_TAGS_REQUEST_TIMEOUT_MS = 30000;
 const PHOTO_TAGS_CONVERT_ENDPOINT = 'https://us-central1-jorgeranilla-site.cloudfunctions.net/convertFamilyPhotoUpload';
 const PHOTO_TAGS_IMAGE_REPLACE_ACCEPT = 'image/jpeg,image/png,image/webp,image/heic,image/heif,image/dng,image/x-adobe-dng,image/tiff,.jpg,.jpeg,.png,.webp,.heic,.heif,.dng,.tif,.tiff';
 const PHOTO_TAGS_VIDEO_REPLACE_ACCEPT = 'video/quicktime,video/mp4,video/x-m4v,.mov,.mp4,.m4v';
@@ -51,6 +52,92 @@ let photoTagRecords = new Map();
 let photoTagFilter = 'all';
 let photoTagSearch = '';
 
+function updatePhotoTagLoading(message) {
+  const loading = document.getElementById('fd-photo-tags-loading');
+  const summary = document.getElementById('fd-photo-tag-summary');
+  const label = loading?.querySelector('span');
+
+  if (label) label.textContent = message;
+  if (summary) summary.textContent = message;
+}
+
+function formatPhotoTagLoadError(error) {
+  if (error?.name === 'AbortError') {
+    return 'The Drive request took too long. Refresh the page and try again.';
+  }
+
+  return error?.message || 'Could not load photos or tags right now.';
+}
+
+function withPhotoTagTimeout(promise, message, timeoutMs = PHOTO_TAGS_REQUEST_TIMEOUT_MS) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+async function fetchPhotoTagJson(url, timeoutMessage) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), PHOTO_TAGS_REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch (error) {
+      if (response.ok) throw error;
+    }
+
+    return { response, data };
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error(timeoutMessage || 'The request took too long.');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function showPhotoTagStartupError(error) {
+  console.error('Photo tag startup error:', error);
+  const detail = error?.message || 'Refresh the page and try again.';
+
+  if (typeof window.fdShowLoadError === 'function') {
+    window.fdShowLoadError('Could not start photo tags.', detail);
+    return;
+  }
+
+  const loading = document.getElementById('fd-loading');
+  if (!loading) return;
+
+  loading.style.display = 'flex';
+  loading.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'fd-auth-card';
+
+  const title = document.createElement('h1');
+  title.className = 'fd-auth-title';
+  title.textContent = 'Could not start photo tags.';
+
+  const body = document.createElement('p');
+  body.className = 'fd-auth-sub';
+  body.textContent = detail;
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'fd-google-btn';
+  button.textContent = 'Refresh Page';
+  button.addEventListener('click', () => window.location.reload());
+
+  card.append(title, body, button);
+  loading.appendChild(card);
+}
 function onPageReady() {
   if (!window.isAdmin) {
     const restricted = document.getElementById('fd-photo-tags-restricted');
@@ -69,13 +156,16 @@ function onPageReady() {
 async function initPhotoTagger() {
   bindPhotoTagFilters();
   bindPhotoTagSearch();
+  updatePhotoTagLoading('Loading family members, saved tags, and Drive photos...');
 
   try {
     await Promise.all([
-      loadPhotoTagMembers(),
-      loadPhotoTagRecords(),
-      loadPhotoTagFiles()
+      withPhotoTagTimeout(loadPhotoTagMembers(), 'Loading family members took too long.'),
+      withPhotoTagTimeout(loadPhotoTagRecords(), 'Loading saved photo tags took too long.'),
+      withPhotoTagTimeout(loadPhotoTagFiles(), 'Loading Drive photos took too long.', 120000)
     ]);
+
+    updatePhotoTagLoading('Preparing photo tags...');
 
     try {
       await syncRenamedPhotoTagMetadata();
@@ -89,9 +179,18 @@ async function initPhotoTagger() {
     console.error('Photo tag load error:', error);
     const loading = document.getElementById('fd-photo-tags-loading');
     const summary = document.getElementById('fd-photo-tag-summary');
+    const grid = document.getElementById('fd-photo-tag-grid');
+    const empty = document.getElementById('fd-photo-tags-empty');
+    const message = formatPhotoTagLoadError(error);
 
     if (loading) loading.style.display = 'none';
-    if (summary) summary.textContent = 'Could not load photos or tags right now.';
+    if (summary) summary.textContent = message;
+    if (grid) grid.innerHTML = '';
+    if (empty) {
+      empty.style.display = 'block';
+      const emptyText = empty.querySelector('p');
+      if (emptyText) emptyText.textContent = message;
+    }
   }
 }
 
@@ -153,8 +252,12 @@ async function loadPhotoTagRecords() {
 async function loadPhotoTagFiles() {
   const files = [];
   let pageToken = '';
+  let page = 0;
+
+  updatePhotoTagLoading('Loading Drive photos...');
 
   do {
+    page += 1;
     const q = encodeURIComponent(
       `'${PHOTO_TAGS_MASTER_FOLDER_ID}' in parents and ` +
       `(mimeType contains 'image/' or mimeType contains 'video/') and ` +
@@ -172,8 +275,12 @@ async function loadPhotoTagFiles() {
       params.push(`pageToken=${encodeURIComponent(pageToken)}`);
     }
 
-    const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params.join('&')}`);
-    const data = await response.json();
+    updatePhotoTagLoading(`Loading Drive photos... ${files.length} found`);
+
+    const { response, data } = await fetchPhotoTagJson(
+      `https://www.googleapis.com/drive/v3/files?${params.join('&')}`,
+      `Drive page ${page} took too long.`
+    );
 
     if (!response.ok || !data.files) {
       throw new Error(data.error?.message || 'Drive API error');
@@ -191,9 +298,11 @@ async function loadPhotoTagFiles() {
       size: file.size || ''
     })));
 
+    updatePhotoTagLoading(`Loading Drive photos... ${files.length} found`);
     pageToken = data.nextPageToken || '';
   } while (pageToken);
 
+  updatePhotoTagLoading(`Preparing ${files.length} Drive photos...`);
   photoTagFiles = assignPhotoTagSuggestedNames(files).sort((a, b) => b.name.localeCompare(a.name, undefined, {
     numeric: true,
     sensitivity: 'base'
@@ -1247,4 +1356,8 @@ window.renamePhotoTagFile = renamePhotoTagFile;
 window.replacePhotoTagFile = replacePhotoTagFile;
 window.clearPhotoTag = clearPhotoTag;
 
-fdInit();
+if (typeof fdInit === 'function') {
+  fdInit().catch(showPhotoTagStartupError);
+} else {
+  showPhotoTagStartupError(new Error('Family directory script did not load.'));
+}

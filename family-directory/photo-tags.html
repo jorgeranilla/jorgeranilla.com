@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -364,7 +364,7 @@
 
   <div class="fd-loading" id="fd-loading">
     <div class="fd-spinner"></div>
-    <span>Loading...</span>
+    <span data-fd-loading-message>Loading...</span>
   </div>
 
   <div class="fd-auth-gate" id="fd-auth-gate" style="display:none;">
@@ -464,8 +464,40 @@
     </div>
   </div>
 
-  <script src="directory.js?v=2"></script>
-  <script src="photo-tags.js?v=7"></script>
+  <script>
+    window.fdPhotoTagsStartupTimer = window.setTimeout(function () {
+      var loading = document.getElementById('fd-loading');
+      if (!loading || loading.style.display === 'none') return;
+
+      loading.innerHTML = '';
+
+      var card = document.createElement('div');
+      card.className = 'fd-auth-card';
+
+      var label = document.createElement('p');
+      label.className = 'fd-auth-label';
+      label.textContent = 'Load Error';
+
+      var title = document.createElement('h1');
+      title.className = 'fd-auth-title';
+      title.textContent = 'Photo Tags took too long to start.';
+
+      var body = document.createElement('p');
+      body.className = 'fd-auth-sub';
+      body.textContent = 'Refresh the page and try again. If it repeats, check the browser console for the first red error.';
+
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'fd-google-btn';
+      button.textContent = 'Refresh Page';
+      button.addEventListener('click', function () { window.location.reload(); });
+
+      card.append(label, title, body, button);
+      loading.appendChild(card);
+    }, 30000);
+  </script>
+  <script src="directory.js?v=3"></script>
+  <script src="photo-tags.js?v=8"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>
