@@ -251,6 +251,7 @@
 
     .fd-photo-tag-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       margin-top: 14px;
     }
@@ -268,6 +269,7 @@
       font-size: .78rem;
       font-weight: 600;
       justify-content: center;
+      min-width: 112px;
       padding: 10px 12px;
       transition: all .2s;
     }
@@ -296,6 +298,21 @@
     .fd-mini-btn.rename:hover {
       background: #e8f2ff;
       color: #163f65;
+    }
+
+    .fd-mini-btn.replace {
+      background: #eef7f4;
+      border: 1px solid #cbe9dc;
+      color: #1d6b57;
+    }
+
+    .fd-mini-btn.replace:hover {
+      background: #dff1ea;
+      color: #12503f;
+    }
+
+    .fd-replace-input {
+      display: none;
     }
 
     .fd-mini-btn:disabled {
@@ -448,7 +465,7 @@
   </div>
 
   <script src="directory.js?v=2"></script>
-  <script src="photo-tags.js?v=5"></script>
+  <script src="photo-tags.js?v=6"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>

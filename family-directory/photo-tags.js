@@ -2,6 +2,10 @@ const PHOTO_TAGS_DRIVE_API_KEY = 'AIzaSyCadJTGnwhASQ-kj7p4AnGFAwXIIFChoSs';
 const PHOTO_TAGS_MASTER_FOLDER_ID = '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ';
 const PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const PHOTO_TAGS_DRIVE_PAGE_SIZE = 200;
+const PHOTO_TAGS_CONVERT_ENDPOINT = 'https://us-central1-jorgeranilla-site.cloudfunctions.net/convertFamilyPhotoUpload';
+const PHOTO_TAGS_REPLACE_ACCEPT = 'image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif';
+const PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES = 35 * 1024 * 1024;
+const PHOTO_TAGS_REPLACE_REVIEW_REASON = 'Photo file was replaced from the tag panel. Review and approve the existing tags.';
 const PHOTO_TAGS_CONTENT_FIELDS = ['mimeType', 'type', 'md5Checksum', 'size'];
 const PHOTO_TAGS_STANDARD_NAME_RE = /^(\d{4})\.(\d{2})\.(\d{2})_(\d{4})(\.[a-z0-9]+)$/i;
 const PHOTO_TAGS_STATUS_LABELS = {
@@ -322,6 +326,192 @@ async function patchGoogleDriveFileName(fileId, name, accessToken) {
   return data;
 }
 
+function isPhotoTagHeicFile(file) {
+  const mimeType = String(file?.type || file?.mimeType || '').toLowerCase();
+  const fileName = String(file?.name || '').toLowerCase();
+  return mimeType === 'image/heic' ||
+    mimeType === 'image/heif' ||
+    /\.(heic|heif)$/i.test(fileName);
+}
+
+function isSupportedPhotoReplacement(file) {
+  if (!file) return false;
+
+  const mimeType = String(file.type || '').toLowerCase();
+  const fileName = String(file.name || '').toLowerCase();
+
+  return ['image/jpeg', 'image/png', 'image/heic', 'image/heif'].includes(mimeType) ||
+    /\.(jpe?g|png|heic|heif)$/i.test(fileName);
+}
+
+function getPhotoTagReplacementMimeType(file) {
+  const mimeType = String(file?.type || '').toLowerCase();
+  const fileName = String(file?.name || '').toLowerCase();
+
+  if (mimeType === 'image/png' || /\.png$/i.test(fileName)) return 'image/png';
+  return 'image/jpeg';
+}
+
+function getPhotoTagExtensionForMime(mimeType) {
+  return String(mimeType || '').toLowerCase() === 'image/png' ? '.png' : '.jpg';
+}
+
+function replacePhotoTagFileExtension(name, extension) {
+  const baseName = String(name || 'photo')
+    .replace(/[\\/]+/g, '-')
+    .replace(/\.[a-z0-9]+$/i, '')
+    .trim() || 'photo';
+
+  return `${baseName}${extension}`;
+}
+
+async function convertPhotoTagUploadToJpeg(file) {
+  const user = window.currentUser;
+
+  if (!user || typeof user.getIdToken !== 'function') {
+    throw new Error('Sign in again before converting this photo.');
+  }
+
+  const formData = new FormData();
+  formData.append('photo', file, file.name || 'photo.heic');
+
+  const response = await fetch(PHOTO_TAGS_CONVERT_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${await user.getIdToken(true)}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    let message = 'Could not convert this HEIC photo to JPEG.';
+
+    try {
+      const data = await response.json();
+      message = data.error || message;
+    } catch (error) {
+      console.warn('Could not read conversion error response:', error);
+    }
+
+    throw new Error(message);
+  }
+
+  const blob = await response.blob();
+  const fileName = response.headers.get('X-Output-File-Name') || replacePhotoTagFileExtension(file.name, '.jpg');
+  return new File([blob], fileName, { type: 'image/jpeg' });
+}
+
+async function preparePhotoTagReplacementUpload(selectedFile, driveFile) {
+  if (!selectedFile || selectedFile.size <= 0) {
+    throw new Error('Choose a photo file first.');
+  }
+
+  if (selectedFile.size > PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES) {
+    throw new Error('Choose a photo under 35 MB.');
+  }
+
+  if (!isSupportedPhotoReplacement(selectedFile)) {
+    throw new Error('Choose a JPEG, PNG, HEIC, or HEIF photo.');
+  }
+
+  if (isPhotoTagHeicFile(selectedFile)) {
+    const jpegFile = await convertPhotoTagUploadToJpeg(selectedFile);
+    const jpegName = replacePhotoTagFileExtension(driveFile?.name || jpegFile.name, '.jpg');
+    return new File([jpegFile], jpegName, { type: 'image/jpeg' });
+  }
+
+  const mimeType = getPhotoTagReplacementMimeType(selectedFile);
+  const extension = getPhotoTagExtensionForMime(mimeType);
+  const fileName = replacePhotoTagFileExtension(driveFile?.name || selectedFile.name, extension);
+
+  return new File([selectedFile], fileName, { type: mimeType });
+}
+
+function buildDriveMultipartBody(metadata, fileBlob, mimeType) {
+  const boundary = `photo_tag_boundary_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  const body = new Blob([
+    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n`,
+    JSON.stringify(metadata),
+    `\r\n--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`,
+    fileBlob,
+    `\r\n--${boundary}--`
+  ], { type: `multipart/related; boundary=${boundary}` });
+
+  return {
+    body,
+    contentType: `multipart/related; boundary=${boundary}`
+  };
+}
+
+async function patchGoogleDriveFileContent(fileId, preparedFile, accessToken) {
+  const mimeType = preparedFile.type || 'image/jpeg';
+  const fields = 'id,name,mimeType,createdTime,modifiedTime,md5Checksum,size,imageMediaMetadata(time)';
+  const multipart = buildDriveMultipartBody({
+    name: preparedFile.name,
+    mimeType
+  }, preparedFile, mimeType);
+
+  const response = await fetch(
+    `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(fileId)}?uploadType=multipart&fields=${encodeURIComponent(fields)}`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': multipart.contentType
+      },
+      body: multipart.body
+    }
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error?.message || 'Google Drive photo replacement failed.');
+  }
+
+  return data;
+}
+
+async function refreshPhotoTagRecordAfterReplacement(file, hadTags) {
+  const tag = getPhotoTagRecord(file.id);
+  if (!tag && !hadTags) return;
+
+  const payload = {
+    name: file.name,
+    mimeType: file.mimeType,
+    type: file.type,
+    drive: {
+      ...(tag?.drive || {}),
+      mimeType: file.mimeType,
+      type: file.type,
+      createdTime: file.createdTime,
+      modifiedTime: file.modifiedTime,
+      takenTime: file.takenTime,
+      suggestedName: file.suggestedName,
+      md5Checksum: file.md5Checksum,
+      size: file.size
+    },
+    updatedAt: window._fb.serverTimestamp()
+  };
+
+  if (hadTags) {
+    payload.status = 'needs-review';
+    payload.reviewReason = PHOTO_TAGS_REPLACE_REVIEW_REASON;
+    payload.reviewCheckedAt = window._fb.serverTimestamp();
+  }
+
+  await window._fb.setDoc(
+    window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, file.id),
+    payload,
+    { merge: true }
+  );
+
+  photoTagRecords.set(file.id, normalizePhotoTagRecord(file.id, {
+    ...(tag || {}),
+    ...payload,
+    updatedAt: tag?.updatedAt
+  }));
+}
+
 async function refreshPhotoTagRecordAfterDriveRename(file) {
   const tag = getPhotoTagRecord(file.id);
   if (!tag) return;
@@ -423,7 +613,9 @@ function escapePhotoTagHtml(value) {
 }
 
 function photoTagThumbnail(file, size = 600) {
-  return `https://drive.google.com/thumbnail?id=${encodeURIComponent(file.id)}&sz=w${size}`;
+  const version = file.modifiedTime || file.md5Checksum || '';
+  const cacheBust = version ? `&v=${encodeURIComponent(version)}` : '';
+  return `https://drive.google.com/thumbnail?id=${encodeURIComponent(file.id)}&sz=w${size}${cacheBust}`;
 }
 
 function getPhotoTagLabel(slug) {
@@ -709,6 +901,10 @@ function renderPhotoTagCard(file) {
   const renameButton = renameMessage && file.suggestedName
     ? `<button type="button" class="fd-mini-btn rename" onclick="renamePhotoTagFile('${escapePhotoTagHtml(file.id)}')">Rename in Drive</button>`
     : '';
+  const replaceControl = file.type === 'image'
+    ? `<input type='file' class='fd-replace-input' accept='${PHOTO_TAGS_REPLACE_ACCEPT}' onchange='replacePhotoTagFile(&#039;${escapePhotoTagHtml(file.id)}&#039;, this)'>
+      <button type='button' class='fd-mini-btn replace' onclick='this.previousElementSibling.click()'>Replace Photo</button>`
+    : '';
 
   return `
     <article class="fd-photo-tag-card" data-file-id="${escapePhotoTagHtml(file.id)}">
@@ -745,6 +941,7 @@ function renderPhotoTagCard(file) {
           `).join('')}
         </div>
         <div class="fd-photo-tag-actions">
+          ${replaceControl}
           ${renameButton}
           <button type="button" class="fd-mini-btn" onclick="savePhotoTag('${escapePhotoTagHtml(file.id)}')">${escapePhotoTagHtml(publishText)}</button>
           <button type="button" class="fd-mini-btn secondary" onclick="clearPhotoTag('${escapePhotoTagHtml(file.id)}')">Clear</button>
@@ -940,6 +1137,80 @@ async function renamePhotoTagFile(fileId) {
   }
 }
 
+async function replacePhotoTagFile(fileId, input) {
+  const selectedFile = input?.files?.[0];
+  const file = photoTagFiles.find(item => item.id === fileId);
+  const card = document.querySelector(`.fd-photo-tag-card[data-file-id='${CSS.escape(fileId)}']`);
+
+  if (!selectedFile || !file || !card) return;
+
+  if (!isSupportedPhotoReplacement(selectedFile)) {
+    fdToast('Choose a JPEG, PNG, HEIC, or HEIF photo.');
+    input.value = '';
+    return;
+  }
+
+  if (selectedFile.size > PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES) {
+    fdToast('Choose a photo under 35 MB.');
+    input.value = '';
+    return;
+  }
+
+  const confirmed = window.confirm(`Replace ${file.name} with ${selectedFile.name}? Existing tags will be kept but marked for review.`);
+  if (!confirmed) {
+    input.value = '';
+    return;
+  }
+
+  const button = card.querySelector('.fd-mini-btn.replace');
+  const originalText = button?.textContent || '';
+  const hadTags = hasSavedTagPeople(getPhotoTagRecord(file.id));
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = isPhotoTagHeicFile(selectedFile) ? 'Converting...' : 'Replacing...';
+  }
+  card.style.opacity = '.65';
+
+  try {
+    const preparedFile = await preparePhotoTagReplacementUpload(selectedFile, file);
+
+    if (button) button.textContent = 'Uploading...';
+
+    const accessToken = await window.fdGetGoogleDriveAccessToken();
+    const updated = await patchGoogleDriveFileContent(file.id, preparedFile, accessToken);
+
+    file.name = updated.name || preparedFile.name;
+    file.mimeType = updated.mimeType || preparedFile.type || 'image/jpeg';
+    file.type = 'image';
+    file.createdTime = updated.createdTime || file.createdTime;
+    file.modifiedTime = updated.modifiedTime || new Date().toISOString();
+    file.takenTime = updated.imageMediaMetadata?.time || file.takenTime;
+    file.md5Checksum = updated.md5Checksum || '';
+    file.size = updated.size || String(preparedFile.size || '');
+
+    photoTagFiles = assignPhotoTagSuggestedNames(photoTagFiles).sort((a, b) => b.name.localeCompare(a.name, undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    }));
+
+    await refreshPhotoTagRecordAfterReplacement(file, hadTags);
+
+    fdToast(hadTags ? 'Photo replaced. Review and approve the tags.' : 'Photo replaced.');
+    renderPhotoTags();
+  } catch (error) {
+    console.error('Photo replacement error:', error);
+    fdToast(error.message || 'Could not replace this photo.');
+    card.style.opacity = '';
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  } finally {
+    if (input) input.value = '';
+  }
+}
+
 async function clearPhotoTag(fileId) {
   const file = photoTagFiles.find(item => item.id === fileId);
   const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"]`);
@@ -968,6 +1239,7 @@ window.addTagChip = addTagChip;
 window.removeTagChip = removeTagChip;
 window.savePhotoTag = savePhotoTag;
 window.renamePhotoTagFile = renamePhotoTagFile;
+window.replacePhotoTagFile = replacePhotoTagFile;
 window.clearPhotoTag = clearPhotoTag;
 
 fdInit();

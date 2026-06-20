@@ -191,3 +191,6 @@ exports.umsteadgroveLeads      = ug.umsteadgroveLeads;
 exports.umsteadgroveUpdateLead = ug.umsteadgroveUpdateLead;
 exports.umsteadgroveDownload   = ug.umsteadgroveDownload;
 exports.umsteadgroveSendUpdate = ug.umsteadgroveSendUpdate;
+
+const familyPhotoTools = require('./familyPhotoTools');
+exports.convertFamilyPhotoUpload = familyPhotoTools.convertFamilyPhotoUpload;

@@ -11,7 +11,6 @@
   const DEFAULTS = {
     driveApiKey: 'AIzaSyCadJTGnwhASQ-kj7p4AnGFAwXIIFChoSs',
     masterFolderId: '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ',
-    legacyFolderId: '',
     mode: 'all',
     personSlug: '',
     personAliases: [],
@@ -58,8 +57,9 @@
     return String(mimeType || '').startsWith('video/') ? 'video' : 'image';
   }
 
-  function driveThumb(fileId, size) {
-    return `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w${size}`;
+  function driveThumb(fileId, size, version = '') {
+    const cacheBust = version ? `&v=${encodeURIComponent(version)}` : '';
+    return `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w${size}${cacheBust}`;
   }
 
   function getDriveFieldValue(source, field) {
@@ -163,7 +163,7 @@
 
       return tags;
     } catch (error) {
-      console.warn('Family photo tags are unavailable; using fallback folder when possible.', error);
+      console.warn('Family photo tags are unavailable; showing no tagged photos for filtered galleries.', error);
       return new Map();
     }
   }
@@ -241,11 +241,7 @@
       })
       .map(file => ({ ...file, tags: tags.get(file.id) }));
 
-    if (taggedFiles.length > 0 || !config.legacyFolderId) {
-      return taggedFiles;
-    }
-
-    return fetchDriveFolder(config.legacyFolderId);
+    return taggedFiles;
   }
 
   function setLoading(isLoading) {
@@ -274,7 +270,7 @@
       label += ` · ${vids} video${vids !== 1 ? 's' : ''}`;
     }
 
-    badge.textContent = label.replace(/\u00C2\u00B7/g, '-');
+    badge.textContent = label;
     badge.style.display = 'inline-block';
   }
 
@@ -297,7 +293,7 @@
 
     slice.forEach((file, localIdx) => {
       const globalIdx = start + localIdx;
-      const thumb = driveThumb(file.id, 600);
+      const thumb = driveThumb(file.id, 600, file.modifiedTime || file.md5Checksum);
       const item = document.createElement('div');
       item.className = `gallery-item${file.type === 'video' ? ' gallery-item--video' : ''}`;
 
@@ -393,7 +389,7 @@
       video.src = '';
       video.style.display = 'none';
       img.style.display = 'block';
-      img.src = driveThumb(file.id, 1600);
+      img.src = driveThumb(file.id, 1600, file.modifiedTime || file.md5Checksum);
       img.alt = file.name || config.photoAlt;
     }
   }
