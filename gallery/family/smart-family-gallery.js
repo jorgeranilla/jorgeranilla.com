@@ -99,7 +99,7 @@
     do {
       const q = encodeURIComponent(
         `'${folderId}' in parents and ` +
-        `(mimeType contains 'image/' or mimeType contains 'video/') and ` +
+        `mimeType contains 'image/' and ` +
         `trashed = false`
       );
 
@@ -210,7 +210,7 @@
           createdTime: approvedIso,
           modifiedTime: approvedIso
         };
-      });
+      }).filter(video => video.youtubeId);
     } catch (err) {
       console.warn('Could not load YouTube videos from Firestore:', err);
       return [];
@@ -348,7 +348,9 @@
 
     slice.forEach((file, localIdx) => {
       const globalIdx = start + localIdx;
-      const thumb = driveThumb(file.id, 600, file.modifiedTime || file.md5Checksum);
+      const thumb = file.youtubeId
+        ? (file.youtubeThumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(file.youtubeId)}/hqdefault.jpg`)
+        : driveThumb(file.id, 600, file.modifiedTime || file.md5Checksum);
       const item = document.createElement('div');
       item.className = `gallery-item${file.type === 'video' ? ' gallery-item--video' : ''}`;
 
@@ -437,22 +439,17 @@
     counter.textContent = `${lightboxIdx + 1} / ${allFiles.length}`;
 
     if (file.youtubeId) {
-      // YouTube video — embed player
       img.style.display = 'none';
       video.style.display = 'block';
       video.src = `https://www.youtube.com/embed/${encodeURIComponent(file.youtubeId)}?autoplay=1&rel=0`;
-    } else if (file.type === 'video') {
-      // Legacy Drive video — fall back to Drive preview
-      img.style.display = 'none';
-      video.style.display = 'block';
-      video.src = `https://drive.google.com/file/d/${encodeURIComponent(file.id)}/preview`;
-    } else {
-      video.src = '';
-      video.style.display = 'none';
-      img.style.display = 'block';
-      img.src = driveThumb(file.id, 1600, file.modifiedTime || file.md5Checksum);
-      img.alt = file.name || config.photoAlt;
+      return;
     }
+
+    video.src = '';
+    video.style.display = 'none';
+    img.style.display = 'block';
+    img.src = driveThumb(file.id, 1600, file.modifiedTime || file.md5Checksum);
+    img.alt = file.name || config.photoAlt;
   }
 
   function shiftLightbox(dir) {

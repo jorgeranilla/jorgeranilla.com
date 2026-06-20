@@ -408,8 +408,8 @@
 
     .fd-bulk-link:hover { color: #fff; }
 
+    .fd-bulk-secondary-btn,
     .fd-bulk-publish-btn {
-      background: #CD5C5C;
       border: none;
       border-radius: 10px;
       color: #fff;
@@ -422,7 +422,16 @@
       white-space: nowrap;
     }
 
+    .fd-bulk-secondary-btn {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+    }
+
+    .fd-bulk-secondary-btn:hover { background: rgba(255,255,255,0.2); }
+
+    .fd-bulk-publish-btn { background: #CD5C5C; }
     .fd-bulk-publish-btn:hover { background: #b84c4c; }
+    .fd-bulk-secondary-btn:disabled,
     .fd-bulk-publish-btn:disabled { cursor: wait; opacity: .65; }
 
     /* ── YouTube add card ── */
@@ -439,6 +448,9 @@
     }
 
     .fd-yt-add-header {
+      background: transparent;
+      border: none;
+      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -447,6 +459,8 @@
       font-family: 'Roboto', sans-serif;
       font-size: .86rem;
       font-weight: 600;
+      text-align: left;
+      width: 100%;
     }
 
     .fd-yt-add-header svg {
@@ -634,7 +648,7 @@
     }, 30000);
   </script>
   <script src="directory.js?v=3"></script>
-  <script src="photo-tags.js?v=9"></script>
+  <script src="photo-tags.js?v=10"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>

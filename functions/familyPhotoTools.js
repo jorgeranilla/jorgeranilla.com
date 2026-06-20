@@ -29,11 +29,7 @@ const IMAGE_MIMES = new Set([
   'image/webp',
   'image/x-adobe-dng',
 ]);
-const VIDEO_MIMES = new Set([
-  'video/mp4',
-  'video/quicktime',
-  'video/x-m4v',
-]);
+
 
 const FUNCTION_OPTS = {
   region: 'us-central1',
@@ -103,13 +99,9 @@ function getMediaKind(mimeType, fileName) {
   const mime = String(mimeType || '').toLowerCase();
   const extension = getExtension(fileName);
 
-  if (VIDEO_MIMES.has(mime) || ['.mov', '.mp4', '.m4v'].includes(extension)) return 'video';
   if (IMAGE_MIMES.has(mime) || ['.dng', '.heic', '.heif', '.jpg', '.jpeg', '.png', '.tif', '.tiff', '.webp'].includes(extension)) return 'image';
 
-  if (mime === 'application/octet-stream') {
-    if (['.mov', '.mp4', '.m4v'].includes(extension)) return 'video';
-    if (['.dng', '.heic', '.heif'].includes(extension)) return 'image';
-  }
+  if (mime === 'application/octet-stream' && ['.dng', '.heic', '.heif'].includes(extension)) return 'image';
 
   return '';
 }
@@ -148,7 +140,7 @@ function parseMultipart(req) {
         return;
       }
 
-      fileName = info.filename || (kind === 'video' ? 'video.mov' : 'photo.jpg');
+      fileName = info.filename || 'photo.jpg';
       fileMime = info.mimeType || 'application/octet-stream';
       fileKind = kind;
 
@@ -254,7 +246,7 @@ async function extractDngJpegWithFfmpeg(parsed) {
 function runFfmpeg(args) {
   return new Promise((resolve, reject) => {
     if (!ffmpegPath) {
-      reject(new Error('Video conversion is unavailable because ffmpeg is not installed.'));
+      reject(new Error('DNG conversion is unavailable because ffmpeg is not installed.'));
       return;
     }
 
@@ -278,119 +270,6 @@ function runFfmpeg(args) {
   });
 }
 
-function parseDurationSeconds(ffmpegOutput) {
-  const match = String(ffmpegOutput || '').match(/Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)/);
-  if (!match) return 0;
-
-  return (Number(match[1]) * 3600) + (Number(match[2]) * 60) + Number(match[3]);
-}
-
-function widthForVideoBitrate(videoKbps) {
-  if (videoKbps < 180) return 480;
-  if (videoKbps < 360) return 640;
-  if (videoKbps < 700) return 960;
-  return 1280;
-}
-
-function createVideoProfiles(durationSeconds) {
-  const profiles = [];
-
-  if (durationSeconds > 0) {
-    const totalKbps = Math.max(96, Math.floor((TARGET_OUTPUT_BYTES * 8 * 0.88) / durationSeconds / 1000));
-    const audioKbps = Math.min(80, Math.max(24, Math.floor(totalKbps * 0.22)));
-    const videoKbps = Math.max(48, totalKbps - audioKbps);
-
-    profiles.push({ width: widthForVideoBitrate(videoKbps), videoKbps, audioKbps });
-    profiles.push({ width: widthForVideoBitrate(Math.floor(videoKbps * 0.75)), videoKbps: Math.max(40, Math.floor(videoKbps * 0.75)), audioKbps: Math.max(24, Math.floor(audioKbps * 0.75)) });
-    profiles.push({ width: 480, videoKbps: Math.max(32, Math.floor(videoKbps * 0.55)), audioKbps: 24 });
-  }
-
-  profiles.push(
-    { width: 1280, crf: 30, audioKbps: 80 },
-    { width: 960, crf: 34, audioKbps: 64 },
-    { width: 720, crf: 37, audioKbps: 48 },
-    { width: 540, crf: 40, audioKbps: 40 },
-    { width: 480, crf: 42, audioKbps: 32 }
-  );
-
-  return profiles;
-}
-
-async function runVideoProfile(inputPath, outputPath, profile) {
-  await fs.rm(outputPath, { force: true });
-
-  const filter = `scale=min(${profile.width}\\,iw):-2`;
-  const args = [
-    '-y',
-    '-i', inputPath,
-    '-map', '0:v:0',
-    '-map', '0:a?',
-    '-vf', filter,
-    '-c:v', 'libx264',
-    '-preset', 'veryfast',
-    '-pix_fmt', 'yuv420p',
-    '-movflags', '+faststart',
-    '-c:a', 'aac',
-    '-b:a', `${profile.audioKbps || 48}k`,
-    '-ac', '2',
-    '-ar', '44100',
-  ];
-
-  if (profile.videoKbps) {
-    args.push('-b:v', `${profile.videoKbps}k`, '-maxrate', `${Math.max(profile.videoKbps, 32)}k`, '-bufsize', `${Math.max(profile.videoKbps * 2, 64)}k`);
-  } else {
-    args.push('-crf', String(profile.crf || 34));
-  }
-
-  args.push(outputPath);
-  await runFfmpeg(args);
-  return fs.readFile(outputPath);
-}
-
-async function convertVideoUpload(parsed) {
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'family-media-'));
-  const inputPath = path.join(tempDir, `${crypto.randomUUID()}${getExtension(parsed.fileName) || '.mov'}`);
-  const outputPath = path.join(tempDir, 'output.mp4');
-  let best = null;
-
-  try {
-    await fs.writeFile(inputPath, parsed.fileBuffer);
-
-    let durationSeconds = 0;
-    try {
-      durationSeconds = parseDurationSeconds(await runFfmpeg(['-i', inputPath]));
-    } catch (error) {
-      durationSeconds = parseDurationSeconds(error.message);
-    }
-
-    for (const profile of createVideoProfiles(durationSeconds)) {
-      const output = await runVideoProfile(inputPath, outputPath, profile);
-      if (!best || output.length < best.length) best = output;
-      if (output.length <= TARGET_OUTPUT_BYTES) {
-        return {
-          buffer: output,
-          fileName: `${baseNameFor(parsed.fileName)}.mp4`,
-          kind: 'video',
-          mimeType: 'video/mp4',
-        };
-      }
-    }
-
-    if (best && best.length <= TARGET_OUTPUT_BYTES) {
-      return {
-        buffer: best,
-        fileName: `${baseNameFor(parsed.fileName)}.mp4`,
-        kind: 'video',
-        mimeType: 'video/mp4',
-      };
-    }
-
-    throw new Error('Could not reduce this video below 4 MB. Try trimming it shorter first.');
-  } finally {
-    await fs.rm(tempDir, { recursive: true, force: true });
-  }
-}
-
 function sendConvertedMedia(res, converted) {
   res.set('Content-Type', converted.mimeType);
   res.set('Content-Disposition', `inline; filename="${converted.fileName}"`);
@@ -409,23 +288,20 @@ exports.convertFamilyPhotoUpload = onRequest(FUNCTION_OPTS, async (req, res) => 
   try {
     parsed = await parseMultipart(req);
   } catch (error) {
-    console.error('Family media parse error:', error);
-    return res.status(400).json({ error: 'Could not read the uploaded media.' });
+    console.error('Family photo parse error:', error);
+    return res.status(400).json({ error: 'Could not read the uploaded photo.' });
   }
 
-  if (parsed.fileTooLarge) return res.status(400).json({ error: 'Upload media under 31 MB.' });
+  if (parsed.fileTooLarge) return res.status(400).json({ error: 'Upload a photo under 31 MB.' });
   if (parsed.invalidFile || !parsed.fileBuffer || !parsed.fileKind) {
-    return res.status(400).json({ error: 'Upload a supported photo or video file.' });
+    return res.status(400).json({ error: 'Upload a supported photo file.' });
   }
 
   try {
-    const converted = parsed.fileKind === 'video'
-      ? await convertVideoUpload(parsed)
-      : await convertImageUpload(parsed);
-
+    const converted = await convertImageUpload(parsed);
     return sendConvertedMedia(res, converted);
   } catch (error) {
-    console.error('Family media conversion error:', error);
-    return res.status(400).json({ error: error.message || 'Could not convert this media file.' });
+    console.error('Family photo conversion error:', error);
+    return res.status(400).json({ error: error.message || 'Could not convert this photo.' });
   }
 });

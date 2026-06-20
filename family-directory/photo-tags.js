@@ -5,9 +5,8 @@ const PHOTO_TAGS_DRIVE_PAGE_SIZE = 200;
 const PHOTO_TAGS_REQUEST_TIMEOUT_MS = 30000;
 const PHOTO_TAGS_CONVERT_ENDPOINT = 'https://us-central1-jorgeranilla-site.cloudfunctions.net/convertFamilyPhotoUpload';
 const PHOTO_TAGS_IMAGE_REPLACE_ACCEPT = 'image/jpeg,image/png,image/webp,image/heic,image/heif,image/dng,image/x-adobe-dng,image/tiff,.jpg,.jpeg,.png,.webp,.heic,.heif,.dng,.tif,.tiff';
-const PHOTO_TAGS_VIDEO_REPLACE_ACCEPT = 'video/quicktime,video/mp4,video/x-m4v,.mov,.mp4,.m4v';
 const PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES = 31 * 1024 * 1024;
-const PHOTO_TAGS_REPLACE_REVIEW_REASON = 'Media file was replaced from the tag panel. Review and approve the existing tags.';
+const PHOTO_TAGS_REPLACE_REVIEW_REASON = 'Photo file was replaced from the tag panel. Review and approve the existing tags.';
 const PHOTO_TAGS_CONTENT_FIELDS = ['mimeType', 'type', 'md5Checksum', 'size'];
 const PHOTO_TAGS_STANDARD_NAME_RE = /^(\d{4})\.(\d{2})\.(\d{2})_(\d{4})(\.[a-z0-9]+)$/i;
 const PHOTO_TAGS_STATUS_LABELS = {
@@ -261,7 +260,7 @@ async function loadPhotoTagFiles() {
     page += 1;
     const q = encodeURIComponent(
       `'${PHOTO_TAGS_MASTER_FOLDER_ID}' in parents and ` +
-      `(mimeType contains 'image/' or mimeType contains 'video/') and ` +
+      `mimeType contains 'image/' and ` +
       `trashed = false`
     );
     const params = [
@@ -291,7 +290,7 @@ async function loadPhotoTagFiles() {
       id: file.id,
       name: file.name,
       mimeType: file.mimeType || '',
-      type: String(file.mimeType || '').startsWith('video/') ? 'video' : 'image',
+      type: 'image',
       createdTime: file.createdTime || '',
       modifiedTime: file.modifiedTime || '',
       takenTime: file.imageMediaMetadata?.time || '',
@@ -329,7 +328,6 @@ function parsePhotoTagDateKey(value) {
 }
 
 function getPhotoTagFileExtension(file) {
-  if (file?.type === 'video') return '.mp4';
   return '.jpg';
 }
 
@@ -448,12 +446,6 @@ async function patchGoogleDriveFileName(fileId, name, accessToken) {
   return data;
 }
 
-function isPhotoTagVideoFile(file) {
-  const mimeType = String(file?.type || file?.mimeType || '').toLowerCase();
-  const fileName = String(file?.name || '').toLowerCase();
-  return mimeType.startsWith('video/') || /\.(mov|mp4|m4v)$/i.test(fileName);
-}
-
 function isPhotoTagImageFile(file) {
   const mimeType = String(file?.type || file?.mimeType || '').toLowerCase();
   const fileName = String(file?.name || '').toLowerCase();
@@ -461,19 +453,15 @@ function isPhotoTagImageFile(file) {
 }
 
 function getPhotoTagMediaTypeFromMime(mimeType) {
-  return String(mimeType || '').startsWith('video/') ? 'video' : 'image';
+  return 'image';
 }
 
-function isSupportedPhotoReplacement(file, expectedType = 'image') {
-  if (!file) return false;
-
-  return expectedType === 'video'
-    ? isPhotoTagVideoFile(file)
-    : isPhotoTagImageFile(file);
+function isSupportedPhotoReplacement(file) {
+  return isPhotoTagImageFile(file);
 }
 
 function getPhotoTagExtensionForMime(mimeType) {
-  return String(mimeType || '').toLowerCase().startsWith('video/') ? '.mp4' : '.jpg';
+  return '.jpg';
 }
 
 function replacePhotoTagFileExtension(name, extension) {
@@ -489,11 +477,11 @@ async function convertPhotoTagUploadMedia(file) {
   const user = window.currentUser;
 
   if (!user || typeof user.getIdToken !== 'function') {
-    throw new Error('Sign in again before converting this media file.');
+    throw new Error('Sign in again before converting this photo.');
   }
 
   const formData = new FormData();
-  formData.append('media', file, file.name || 'media');
+  formData.append('media', file, file.name || 'photo');
 
   const response = await fetch(PHOTO_TAGS_CONVERT_ENDPOINT, {
     method: 'POST',
@@ -504,7 +492,7 @@ async function convertPhotoTagUploadMedia(file) {
   });
 
   if (!response.ok) {
-    let message = 'Could not convert this media file.';
+    let message = 'Could not convert this photo.';
 
     try {
       const data = await response.json();
@@ -526,26 +514,21 @@ async function convertPhotoTagUploadMedia(file) {
 
 async function preparePhotoTagReplacementUpload(selectedFile, driveFile) {
   if (!selectedFile || selectedFile.size <= 0) {
-    throw new Error('Choose a media file first.');
+    throw new Error('Choose a photo first.');
   }
 
   if (selectedFile.size > PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES) {
-    throw new Error('Choose a media file under 31 MB.');
+    throw new Error('Choose a photo under 31 MB.');
   }
 
-  const expectedType = driveFile?.type === 'video' ? 'video' : 'image';
-  if (!isSupportedPhotoReplacement(selectedFile, expectedType)) {
-    throw new Error(expectedType === 'video'
-      ? 'Choose a MOV, MP4, or M4V video.'
-      : 'Choose a JPEG, PNG, WebP, HEIC, HEIF, TIFF, or DNG photo.');
+  if (!isSupportedPhotoReplacement(selectedFile)) {
+    throw new Error('Choose a JPEG, PNG, WebP, HEIC, HEIF, TIFF, or DNG photo.');
   }
 
   const convertedFile = await convertPhotoTagUploadMedia(selectedFile);
   const convertedType = getPhotoTagMediaTypeFromMime(convertedFile.type);
-  if (convertedType !== expectedType) {
-    throw new Error(expectedType === 'video'
-      ? 'Choose a video file to replace this video.'
-      : 'Choose a photo file to replace this photo.');
+  if (convertedType !== 'image') {
+    throw new Error('Choose a photo file to replace this photo.');
   }
 
   return new File([convertedFile], convertedFile.name, { type: convertedFile.type });
@@ -996,14 +979,15 @@ function renderPhotoTags() {
 
   summary.textContent = `${photoTagFiles.length} photos in Family folder - ${approvedCount} approved - ${needsReviewCount} need retag - ${needsRenameCount} need rename - ${untaggedCount} untagged`;
 
+  grid.innerHTML = renderYoutubeAddCard() + visible.map(renderPhotoTagCard).join('');
+
   if (visible.length === 0) {
-    grid.innerHTML = '';
     empty.style.display = 'block';
+    renderBulkBar();
     return;
   }
 
   empty.style.display = 'none';
-  grid.innerHTML = renderYoutubeAddCard() + visible.map(renderPhotoTagCard).join('');
   renderBulkBar();
 }
 
@@ -1026,11 +1010,9 @@ function renderPhotoTagCard(file) {
   const renameButton = renameMessage && file.suggestedName
     ? `<button type="button" class="fd-mini-btn rename" onclick="renamePhotoTagFile('${escapePhotoTagHtml(file.id)}')">Rename in Drive</button>`
     : '';
-  const replaceLabel = file.type === 'video' ? 'Video' : 'Photo';
-  const replaceAccept = file.type === 'video' ? PHOTO_TAGS_VIDEO_REPLACE_ACCEPT : PHOTO_TAGS_IMAGE_REPLACE_ACCEPT;
-  const replaceControl = file.type === 'image' || file.type === 'video'
-    ? `<input type='file' class='fd-replace-input' accept='${replaceAccept}' onchange='replacePhotoTagFile(&#039;${escapePhotoTagHtml(file.id)}&#039;, this)'>
-      <button type='button' class='fd-mini-btn replace' onclick='this.previousElementSibling.click()'>Replace ${replaceLabel}</button>`
+  const replaceControl = file.type === 'image'
+    ? `<input type='file' class='fd-replace-input' accept='${PHOTO_TAGS_IMAGE_REPLACE_ACCEPT}' onchange='replacePhotoTagFile(&#039;${escapePhotoTagHtml(file.id)}&#039;, this)'>
+      <button type='button' class='fd-mini-btn replace' onclick='this.previousElementSibling.click()'>Replace Photo</button>`
     : '';
   const isSelected = photoTagSelected.has(file.id);
 
@@ -1052,7 +1034,7 @@ function renderPhotoTagCard(file) {
 
         <div class="fd-tagging-area">
           <input type="text"
-            class="fd-tag-search-input"
+            class="fd-tag-search-input fd-person-tag-input"
             placeholder="Type name or 'name, name2' + Enter"
             oninput="handleTagAutocomplete(this, '${escapePhotoTagHtml(file.id)}')"
             onfocus="handleTagAutocomplete(this, '${escapePhotoTagHtml(file.id)}')"
@@ -1089,14 +1071,12 @@ function handleTagAutocomplete(input, fileId) {
   const chipsWrap = document.getElementById(`chips-${fileId}`);
   if (!suggestionsDiv || !chipsWrap) return;
 
-  const term = input.value.trim().toLowerCase();
-
-  // Comma present → batch mode on Enter; suppress dropdown
-  if (term.includes(',')) {
-    suggestionsDiv.style.display = 'none';
-    suggestionsDiv.innerHTML = '';
+  if (input.value.includes(',')) {
+    parseBatchTagInput(input.value, fileId, true);
     return;
   }
+
+  const term = input.value.trim().toLowerCase();
 
   const selectedKeys = Array.from(chipsWrap.querySelectorAll('.fd-person-chip.selected'))
     .map(chip => chip.dataset.personKey);
@@ -1128,7 +1108,7 @@ function handleTagAutocomplete(input, fileId) {
 
 function addTagChip(fileId, tagKey, displayLabel) {
   const chipsWrap = document.getElementById(`chips-${fileId}`);
-  const input = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"] .fd-tag-search-input`);
+  const input = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"] .fd-person-tag-input`);
   const suggestionsDiv = document.getElementById(`suggestions-${fileId}`);
   
   if (!chipsWrap) return;
@@ -1205,20 +1185,47 @@ function handleTagAutocompleteKeydown(event, input, fileId) {
   }
 }
 
-function parseBatchTagInput(rawValue, fileId) {
+function normalizePhotoTagToken(value) {
+  return String(value || '')
+    .replace(/[-_]+/g, ' ')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+}
+
+function getPhotoTagMemberBatchValues(member) {
+  return [
+    member.displayTagLabel,
+    member.tagLabel,
+    member.personSlug,
+    member.tagKey,
+    member.id
+  ].filter(Boolean).map(normalizePhotoTagToken);
+}
+
+function findPhotoTagMemberForBatchToken(token, selectedKeys) {
+  const normalized = normalizePhotoTagToken(token);
+  if (!normalized) return null;
+
+  const candidates = photoTagMembers.filter(member => !selectedKeys.includes(member.tagKey));
+  return candidates.find(member => getPhotoTagMemberBatchValues(member).some(value => value === normalized))
+    || candidates.find(member => getPhotoTagMemberBatchValues(member).some(value => value.includes(normalized)));
+}
+
+function parseBatchTagInput(rawValue, fileId, keepLastPartial = false) {
   const chipsWrap = document.getElementById(`chips-${fileId}`);
-  const input = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"] .fd-tag-search-input`);
+  const input = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"] .fd-person-tag-input`);
   const suggestionsDiv = document.getElementById(`suggestions-${fileId}`);
   if (!chipsWrap) return;
 
+  const value = String(rawValue || '');
+  const parts = value.split(',');
+  const trailing = keepLastPartial && !value.endsWith(',') ? parts.pop() : '';
   const selectedKeys = Array.from(chipsWrap.querySelectorAll('.fd-person-chip.selected'))
     .map(chip => chip.dataset.personKey);
 
-  String(rawValue || '').split(',').map(t => t.trim().toLowerCase()).filter(Boolean).forEach(token => {
-    const match = photoTagMembers.find(m => {
-      if (selectedKeys.includes(m.tagKey)) return false;
-      return (m.displayTagLabel || m.tagLabel).toLowerCase().includes(token);
-    });
+  parts.map(t => t.trim()).filter(Boolean).forEach(token => {
+    const match = findPhotoTagMemberForBatchToken(token, selectedKeys);
     if (match && !chipsWrap.querySelector(`[data-person-key="${CSS.escape(match.tagKey)}"]`)) {
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -1232,7 +1239,10 @@ function parseBatchTagInput(rawValue, fileId) {
     }
   });
 
-  if (input) { input.value = ''; input.focus(); }
+  if (input) {
+    input.value = keepLastPartial ? trailing.trimStart() : '';
+    input.focus();
+  }
   if (suggestionsDiv) suggestionsDiv.style.display = 'none';
 }
 
@@ -1357,14 +1367,14 @@ async function replacePhotoTagFile(fileId, input) {
 
   if (!selectedFile || !file || !card) return;
 
-  if (!isSupportedPhotoReplacement(selectedFile, file.type === 'video' ? 'video' : 'image')) {
-    fdToast(file.type === 'video' ? 'Choose a MOV, MP4, or M4V video.' : 'Choose a JPEG, PNG, WebP, HEIC, HEIF, TIFF, or DNG photo.');
+  if (!isSupportedPhotoReplacement(selectedFile)) {
+    fdToast('Choose a JPEG, PNG, WebP, HEIC, HEIF, TIFF, or DNG photo.');
     input.value = '';
     return;
   }
 
   if (selectedFile.size > PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES) {
-    fdToast('Choose a media file under 31 MB.');
+    fdToast('Choose a photo under 31 MB.');
     input.value = '';
     return;
   }
@@ -1381,7 +1391,7 @@ async function replacePhotoTagFile(fileId, input) {
 
   if (button) {
     button.disabled = true;
-    button.textContent = file.type === 'video' ? 'Compressing...' : 'Converting...';
+    button.textContent = 'Converting...';
   }
   card.style.opacity = '.65';
 
@@ -1409,11 +1419,11 @@ async function replacePhotoTagFile(fileId, input) {
 
     await refreshPhotoTagRecordAfterReplacement(file, hadTags);
 
-    fdToast(hadTags ? 'Media replaced. Review and approve the tags.' : 'Media replaced.');
+    fdToast(hadTags ? 'Photo replaced. Review and approve the tags.' : 'Photo replaced.');
     renderPhotoTags();
   } catch (error) {
-    console.error('Media replacement error:', error);
-    fdToast(error.message || 'Could not replace this media file.');
+    console.error('Photo replacement error:', error);
+    fdToast(error.message || 'Could not replace this photo.');
     card.style.opacity = '';
     if (button) {
       button.disabled = false;
@@ -1528,7 +1538,8 @@ function renderBulkBar() {
     <span class="fd-bulk-count">${count} photo${count !== 1 ? 's' : ''} selected</span>
     <button type="button" class="fd-bulk-link" onclick="selectAllVisible()">Select all visible</button>
     <button type="button" class="fd-bulk-link" onclick="clearSelection()">Clear selection</button>
-    <button type="button" class="fd-bulk-publish-btn" id="fd-bulk-publish-btn" onclick="publishSelected()">Publish Selected</button>
+    <button type="button" class="fd-bulk-secondary-btn" id="fd-bulk-rename-btn" onclick="renameSelected()">Rename Selected</button>
+    <button type="button" class="fd-bulk-publish-btn" id="fd-bulk-publish-btn" onclick="publishSelected()">Save &amp; Publish Selected</button>
   `;
   bar.classList.add('active');
 }
@@ -1540,16 +1551,80 @@ function updateBulkBarProgress(label) {
     btn.textContent = label;
     btn.disabled = true;
   } else {
-    btn.textContent = 'Publish Selected';
+    btn.textContent = 'Save & Publish Selected';
     btn.disabled = false;
   }
 }
 
+
+function updateBulkRenameProgress(label) {
+  const btn = document.getElementById('fd-bulk-rename-btn');
+  if (!btn) return;
+  if (label) {
+    btn.textContent = label;
+    btn.disabled = true;
+  } else {
+    btn.textContent = 'Rename Selected';
+    btn.disabled = false;
+  }
+}
+
+function getSelectedPhotoTagFiles() {
+  return Array.from(photoTagSelected)
+    .map(fileId => photoTagFiles.find(file => file.id === fileId))
+    .filter(Boolean);
+}
+
+function getPhotoTagFilesNeedingRename(files) {
+  return files.filter(file => getPhotoTagRenameMessage(file) && file.suggestedName && !isPhotoTagStandardName(file));
+}
+
+async function renameSelected() {
+  const needsRename = getPhotoTagFilesNeedingRename(getSelectedPhotoTagFiles());
+  if (needsRename.length === 0) {
+    fdToast('No selected photos need Drive rename.');
+    return;
+  }
+
+  updateBulkRenameProgress(`Renaming... (0/${needsRename.length})`);
+
+  try {
+    const accessToken = await window.fdGetGoogleDriveAccessToken();
+    let renamed = 0;
+    let failed = 0;
+
+    for (const file of needsRename) {
+      try {
+        const result = await patchGoogleDriveFileName(file.id, file.suggestedName, accessToken);
+        file.name = result.name || file.suggestedName;
+        file.modifiedTime = result.modifiedTime || file.modifiedTime;
+        await refreshPhotoTagRecordAfterDriveRename(file);
+        renamed++;
+      } catch (error) {
+        console.warn(`Rename failed for ${file.name}:`, error);
+        failed++;
+      }
+      updateBulkRenameProgress(`Renaming... (${renamed + failed}/${needsRename.length})`);
+    }
+
+    photoTagFiles = assignPhotoTagSuggestedNames(photoTagFiles).sort((a, b) =>
+      b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' })
+    );
+
+    fdToast(failed > 0
+      ? `${renamed} renamed, ${failed} failed.`
+      : `${renamed} photo${renamed !== 1 ? 's' : ''} renamed in Drive.`);
+    renderPhotoTags();
+  } catch (error) {
+    fdToast(error.message || 'Could not get Drive access to rename files.');
+    updateBulkRenameProgress(null);
+  }
+}
 async function publishSelected() {
   if (photoTagSelected.size === 0) return;
 
   const publishBtn = document.getElementById('fd-bulk-publish-btn');
-  if (publishBtn) { publishBtn.disabled = true; publishBtn.textContent = 'Starting…'; }
+  if (publishBtn) { publishBtn.disabled = true; publishBtn.textContent = 'Starting...'; }
 
   // Gather qualifying files: selected + at least one chip tagged
   const qualifying = [];
@@ -1568,26 +1643,24 @@ async function publishSelected() {
     return;
   }
 
-  // Step 1: Rename files that need it first
-  const needsRename = qualifying.filter(({ file }) =>
-    getPhotoTagRenameMessage(file) && file.suggestedName && !isPhotoTagStandardName(file)
-  );
+  const needsRename = getPhotoTagFilesNeedingRename(qualifying.map(item => item.file));
 
   if (needsRename.length > 0) {
-    updateBulkBarProgress(`Renaming… (0/${needsRename.length})`);
+    updateBulkBarProgress(`Renaming... (0/${needsRename.length})`);
     try {
       const accessToken = await window.fdGetGoogleDriveAccessToken();
       let done = 0;
-      for (const { file } of needsRename) {
+      for (const file of needsRename) {
         try {
           const result = await patchGoogleDriveFileName(file.id, file.suggestedName, accessToken);
           file.name = result.name || file.suggestedName;
           file.modifiedTime = result.modifiedTime || file.modifiedTime;
+          await refreshPhotoTagRecordAfterDriveRename(file);
         } catch (err) {
           console.warn(`Rename failed for ${file.name}:`, err);
         }
         done++;
-        updateBulkBarProgress(`Renaming… (${done}/${needsRename.length})`);
+        updateBulkBarProgress(`Renaming... (${done}/${needsRename.length})`);
       }
       photoTagFiles = assignPhotoTagSuggestedNames(photoTagFiles).sort((a, b) =>
         b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' })
@@ -1604,7 +1677,7 @@ async function publishSelected() {
   let failed = 0;
 
   for (const { file, selectedPeople } of qualifying) {
-    updateBulkBarProgress(`Publishing… (${published}/${qualifying.length})`);
+    updateBulkBarProgress(`Publishing... (${published}/${qualifying.length})`);
     const selectedMembers = selectedPeople
       .map(key => photoTagMembers.find(m => m.tagKey === key))
       .filter(Boolean);
@@ -1662,12 +1735,12 @@ async function publishSelected() {
 
 function renderYoutubeAddCard() {
   return `
-    <article class="fd-photo-tag-card fd-yt-add-card" id="fd-yt-add-card">
-      <div class="fd-yt-add-header">
+    <article class="fd-photo-tag-card fd-yt-add-card" id="fd-yt-add-card" data-file-id="yt-new">
+      <button type="button" class="fd-yt-add-header" aria-expanded="false" aria-controls="fd-yt-add-body" onclick="toggleYoutubeAddCard(this)">
         <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#f44336" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-2.75 12.38 12.38 0 0 0-8.71 3.19A12.26 12.26 0 0 0 3.5 16.3a11.93 11.93 0 0 0 .28 2.55A4.83 4.83 0 0 1 6.56 22h10.88a4.83 4.83 0 0 1 2.78-3.15A12.27 12.27 0 0 0 22 10.8a12.16 12.16 0 0 0-2.41-4.11zM10 15V9l5 3-5 3z"/></svg>
         Add YouTube Video
-      </div>
-      <div class="fd-photo-tag-body">
+      </button>
+      <div class="fd-photo-tag-body" id="fd-yt-add-body" style="display:none">
         <div class="fd-tagging-area" style="margin-top:8px">
           <input type="url"
             id="fd-yt-url-input"
@@ -1682,7 +1755,7 @@ function renderYoutubeAddCard() {
         <div class="fd-person-chip-wrap" id="chips-yt-new" aria-label="People in this video"></div>
         <div class="fd-tagging-area">
           <input type="text"
-            class="fd-tag-search-input"
+            class="fd-tag-search-input fd-person-tag-input"
             placeholder="Tag people..."
             oninput="handleTagAutocomplete(this, 'yt-new')"
             onfocus="handleTagAutocomplete(this, 'yt-new')"
@@ -1698,6 +1771,14 @@ function renderYoutubeAddCard() {
   `;
 }
 
+function toggleYoutubeAddCard(toggle) {
+  const body = document.getElementById('fd-yt-add-body');
+  if (!body) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  const button = toggle || document.querySelector('#fd-yt-add-card .fd-yt-add-header');
+  if (button) button.setAttribute('aria-expanded', String(!isOpen));
+}
 function handleYoutubeUrlInput(input) {
   const videoId = parseYoutubeId(input.value);
   const preview = document.getElementById('fd-yt-preview');
@@ -1740,10 +1821,15 @@ async function submitYoutubeVideo() {
   if (!videoId) return fdToast('Please enter a valid YouTube URL.');
 
   const docId = `yt_${videoId}`;
-  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
 
   const selectedChips = Array.from(chipsWrap?.querySelectorAll('.fd-person-chip.selected') || []);
   const selectedPeople = selectedChips.map(chip => chip.dataset.personKey).filter(Boolean);
+  if (selectedPeople.length === 0) {
+    fdToast('Select at least one person before publishing the YouTube video.');
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save & Publish'; }
+    return;
+  }
   const selectedMembers = selectedPeople.map(key => photoTagMembers.find(m => m.tagKey === key)).filter(Boolean);
 
   const title = previewTitle?.textContent || '';
@@ -1813,8 +1899,10 @@ window.clearPhotoTag = clearPhotoTag;
 window.trashPhotoTagFile = trashPhotoTagFile;
 window.toggleCardSelection = toggleCardSelection;
 window.selectAllVisible = selectAllVisible;
+window.renameSelected = renameSelected;
 window.clearSelection = clearSelection;
 window.publishSelected = publishSelected;
+window.toggleYoutubeAddCard = toggleYoutubeAddCard;
 window.handleYoutubeUrlInput = handleYoutubeUrlInput;
 window.submitYoutubeVideo = submitYoutubeVideo;
 window.clearYoutubeCard = clearYoutubeCard;
