@@ -45,5 +45,6 @@ foreach ($file in $htmlFiles) {
 
 # Write to search-index.json
 $json = $pages | ConvertTo-Json -Depth 4
-[System.IO.File]::WriteAllText("$root\search-index.json", $json, [System.Text.Encoding]::UTF8)
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+[System.IO.File]::WriteAllText("$root\search-index.json", $json, $utf8NoBom)
 Write-Host "`nDone. $($pages.Count) pages indexed -> search-index.json"

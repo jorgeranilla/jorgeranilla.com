@@ -112,6 +112,11 @@
       color: #b26a00;
     }
 
+    .fd-tag-status.draft {
+      background: #e8f1ff;
+      color: #1d4ed8;
+    }
+
     .fd-tag-status.needs-review {
       background: #fff3e0;
       color: #c45100;
@@ -611,9 +616,10 @@
             <button class="fd-filter-pill" data-filter="tagged">Tagged</button>
             <button class="fd-filter-pill" data-filter="approved">Approved</button>
             <button class="fd-filter-pill" data-filter="needs-review">Needs Retag</button>
+            <button class="fd-filter-pill" data-filter="draft">Drafts</button>
             <button class="fd-filter-pill" data-filter="needs-rename">Needs Rename</button>
             <button class="fd-filter-pill" data-filter="duplicates">Duplicates</button>
-            <button class="fd-filter-pill" type="button" onclick="cleanMissingDriveRecords()">Clean Missing Records</button>
+            <button class="fd-filter-pill" type="button" onclick="cleanMissingDriveRecords()">Clean / Sync Records</button>
           </div>
           <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading selected folder photos...</p>
         </div>
@@ -666,7 +672,7 @@
     }, 30000);
   </script>
   <script src="directory.js?v=4"></script>
-  <script src="photo-tags.js?v=14"></script>
+  <script src="photo-tags.js?v=16"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>
