@@ -16,9 +16,13 @@ const TARGET_OUTPUT_MEGABYTES = 3;
 const TARGET_OUTPUT_BYTES = TARGET_OUTPUT_MEGABYTES * 1024 * 1024;
 const MAX_UPLOAD_BYTES = 31 * 1024 * 1024;
 const MAX_WEB_IMAGE_WIDTH = 3840;
-const HIGH_QUALITY_JPEG_QUALITIES = [96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82];
-const FALLBACK_JPEG_QUALITIES = [80, 78, 76, 74, 72, 70, 68, 66, 64, 62, 60];
-const WEB_IMAGE_WIDTHS = [3840, 3200, 2800, 2400, 2200, 2000, 1800, 1600, 1440, 1280, 1080, 960, 720];
+const MIN_WEB_IMAGE_WIDTH = 1600;
+const JPEG_QUALITY_TIERS = [
+  [96, 95, 94, 93, 92, 91, 90, 89, 88],
+  [87, 86, 85, 84, 83, 82],
+  [80, 78, 76]
+];
+const WEB_IMAGE_WIDTHS = [3840, 3200, 2800, 2400, 2200, 2000, 1800, 1600];
 const ALLOWED_ORIGINS = new Set([
   'https://jorgeranilla.com',
   'https://www.jorgeranilla.com',
@@ -186,7 +190,11 @@ function parseMultipart(req) {
 
 function getImageWidthCandidates(metadata, includeOriginal) {
   const originalWidth = Number(metadata?.width) || 0;
-  const resizedWidths = WEB_IMAGE_WIDTHS.filter(width => !originalWidth || width < originalWidth);
+  const minWidth = originalWidth > 0 ? Math.min(originalWidth, MIN_WEB_IMAGE_WIDTH) : MIN_WEB_IMAGE_WIDTH;
+  const resizedWidths = WEB_IMAGE_WIDTHS.filter(width => {
+    if (originalWidth && width >= originalWidth) return false;
+    return width >= minWidth;
+  });
   const widths = includeOriginal ? [0, ...resizedWidths] : resizedWidths;
   return [...new Set(widths)];
 }
@@ -200,9 +208,9 @@ async function renderJpegCandidate(fileBuffer, width, quality) {
   return image.jpeg({ quality, mozjpeg: true }).toBuffer();
 }
 
-async function tryJpegCandidates(fileBuffer, widths, qualities) {
-  for (const quality of qualities) {
-    for (const width of widths) {
+async function tryJpegCandidateTier(fileBuffer, widths, qualities) {
+  for (const width of widths) {
+    for (const quality of qualities) {
       const output = await renderJpegCandidate(fileBuffer, width, quality);
 
       if (output.length <= TARGET_OUTPUT_BYTES) {
@@ -221,28 +229,13 @@ async function buildJpegUnderTarget(fileBuffer, sourceName, sourceMime) {
 
   const metadata = await sharp(fileBuffer, { limitInputPixels: 80000000 }).metadata();
   const originalWidth = Number(metadata?.width) || 0;
-  const allowFullSizeDownToQuality82 = originalWidth > 0 && originalWidth <= MAX_WEB_IMAGE_WIDTH;
+  const includeOriginal = originalWidth > 0 && originalWidth <= MAX_WEB_IMAGE_WIDTH;
+  const widths = getImageWidthCandidates(metadata, includeOriginal);
 
-  const originalQualityFloor = allowFullSizeDownToQuality82
-    ? HIGH_QUALITY_JPEG_QUALITIES
-    : HIGH_QUALITY_JPEG_QUALITIES.filter(quality => quality >= 90);
-
-  const original = await tryJpegCandidates(fileBuffer, [0], originalQualityFloor);
-  if (original) return original;
-
-  const highQualityResized = await tryJpegCandidates(
-    fileBuffer,
-    getImageWidthCandidates(metadata, false),
-    HIGH_QUALITY_JPEG_QUALITIES
-  );
-  if (highQualityResized) return highQualityResized;
-
-  const fallback = await tryJpegCandidates(
-    fileBuffer,
-    getImageWidthCandidates(metadata, allowFullSizeDownToQuality82),
-    FALLBACK_JPEG_QUALITIES
-  );
-  if (fallback) return fallback;
+  for (const qualities of JPEG_QUALITY_TIERS) {
+    const output = await tryJpegCandidateTier(fileBuffer, widths, qualities);
+    if (output) return output;
+  }
 
   const sourceType = isDngFile(sourceName, sourceMime) ? 'DNG' : 'image';
   throw new Error(`Could not reduce this ${sourceType} below ${TARGET_OUTPUT_MEGABYTES} MB without losing too much detail.`);
