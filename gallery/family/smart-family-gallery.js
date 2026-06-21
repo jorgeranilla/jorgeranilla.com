@@ -502,9 +502,16 @@
     });
 
     if (pagination && indicator && prevBtn && nextBtn) {
+      prevBtn.innerHTML = '&lsaquo;';
+      nextBtn.innerHTML = '&rsaquo;';
+      prevBtn.setAttribute('aria-label', 'Previous page');
+      nextBtn.setAttribute('aria-label', 'Next page');
+      prevBtn.title = 'Previous page';
+      nextBtn.title = 'Next page';
+
       if (totalPages > 1) {
         pagination.style.display = 'flex';
-        indicator.textContent = `Page ${page + 1} of ${totalPages}`;
+        indicator.textContent = `${page + 1} / ${totalPages}`;
         renderPageNumbers(page, totalPages, pagination, nextBtn);
         prevBtn.disabled = page === 0;
         nextBtn.disabled = page >= totalPages - 1;

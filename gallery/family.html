@@ -19,93 +19,10 @@
   <meta name="twitter:title" content="Jorge Ranilla | Family Gallery">
   <meta name="twitter:description" content="Capturing the joy of being together — family moments, milestones, and memories.">
   <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
-  <link rel="stylesheet" href="family/family-gallery.css">
+  <link rel="stylesheet" href="family/family-gallery.css?v=2">
 
   <style>
-    /* ── Family gallery overrides ── */
-
-    /* Video play button overlay */
-    .gallery-item--video {
-      background: #1a1a1a;
-    }
-
-    .gallery-item--video img {
-      opacity: 0.75;
-    }
-
-    .video-play-btn {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-    }
-
-    .video-play-btn svg {
-      width: 56px;
-      height: 56px;
-      background: rgba(0,0,0,0.55);
-      border-radius: 50%;
-      padding: 12px;
-      transition: transform 0.2s ease;
-    }
-
-    .gallery-item--video:hover .video-play-btn svg {
-      transform: scale(1.15);
-    }
-
-    /* Lightbox video iframe */
-    #lightboxVideo {
-      display: none;
-      width: 90vw;
-      max-width: 960px;
-      height: 60vh;
-      border: none;
-      border-radius: 6px;
-    }
-
-    /* ── Pagination ── */
-    .gallery-pagination {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 1.5rem;
-      margin: 2rem 0 3rem;
-      flex-wrap: wrap;
-    }
-
-    .page-btn {
-      background: #2c3e50;
-      color: #fff;
-      border: none;
-      padding: 0.6rem 1.4rem;
-      border-radius: 6px;
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.2s ease;
-    }
-
-    .page-btn:hover:not(:disabled) {
-      background: #CD5C5C;
-      transform: translateY(-2px);
-    }
-
-    .page-btn:disabled {
-      opacity: 0.35;
-      cursor: default;
-    }
-
-    .page-indicator {
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.9rem;
-      color: #666;
-      letter-spacing: 0.3px;
-    }
-
-    /* spinner color override for family gallery */
+/* spinner color override for family gallery */
     .spinner {
       border-color: #e0e0e0;
       border-top-color: #2c3e50;
@@ -149,9 +66,9 @@
 
       <!-- Pagination -->
       <div class="gallery-pagination" id="gallery-pagination">
-        <button class="page-btn" id="page-prev" onclick="changePage(-1)">← Previous</button>
-        <span class="page-indicator" id="page-indicator">Page 1 of 1</span>
-        <button class="page-btn" id="page-next" onclick="changePage(1)">Next →</button>
+        <button class="page-btn" id="page-prev" onclick="changePage(-1)" aria-label="Previous page" title="Previous page">&lsaquo;</button>
+        <span class="page-indicator" id="page-indicator">1 / 1</span>
+        <button class="page-btn" id="page-next" onclick="changePage(1)" aria-label="Next page" title="Next page">&rsaquo;</button>
       </div>
 
     </div>
@@ -171,7 +88,7 @@
 
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
-  <script src="family/smart-family-gallery.js?v=11"></script>
+  <script src="family/smart-family-gallery.js?v=12"></script>
   <script>
     JRFamilyGallery.start({
       mode: 'all',

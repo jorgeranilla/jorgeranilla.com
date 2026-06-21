@@ -7,7 +7,7 @@
   <title>Photo Album | Jorge Ranilla</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../style.css">
-  <link rel="stylesheet" href="../family/family-gallery.css">
+  <link rel="stylesheet" href="../family/family-gallery.css?v=2">
   <link rel="icon" type="image/png" href="../../images/jr-logo.png">
   <meta name="robots" content="noindex, nofollow">
   <meta property="og:type" content="website">
@@ -48,35 +48,7 @@
       border: none;
       border-radius: 6px;
     }
-    .gallery-pagination {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 1.5rem;
-      margin: 2rem 0 3rem;
-      flex-wrap: wrap;
-    }
-    .page-btn {
-      background: #2c3e50;
-      color: #fff;
-      border: none;
-      padding: 0.6rem 1.4rem;
-      border-radius: 6px;
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.2s ease;
-    }
-    .page-btn:hover:not(:disabled) { background: #CD5C5C; transform: translateY(-2px); }
-    .page-btn:disabled { opacity: 0.35; cursor: default; }
-    .page-indicator {
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.9rem;
-      color: #666;
-      letter-spacing: 0.3px;
-    }
-  </style>
+</style>
 </head>
 
 <body data-title="Photo Album" data-section="Gallery">
@@ -110,9 +82,9 @@
       <div class="gallery-grid" id="gallery"></div>
 
       <div class="gallery-pagination" id="gallery-pagination">
-        <button class="page-btn" id="page-prev" onclick="changePage(-1)">Previous</button>
-        <span class="page-indicator" id="page-indicator">Page 1 of 1</span>
-        <button class="page-btn" id="page-next" onclick="changePage(1)">Next</button>
+        <button class="page-btn" id="page-prev" onclick="changePage(-1)" aria-label="Previous page" title="Previous page">&lsaquo;</button>
+        <span class="page-indicator" id="page-indicator">1 / 1</span>
+        <button class="page-btn" id="page-next" onclick="changePage(1)" aria-label="Next page" title="Next page">&rsaquo;</button>
       </div>
 
       <div class="back-link-container">
@@ -134,7 +106,7 @@
 
   <script src="../../script.js"></script>
   <script src="../../search-dynamic.js"></script>
-  <script src="../family/smart-family-gallery.js?v=11"></script>
+  <script src="../family/smart-family-gallery.js?v=12"></script>
   <script>
     const PEOPLE_FOLDER_ID = '1cGKKik8MCXTWG6Ulc3z3rXIFwVSXcb8K';
     const params = new URLSearchParams(window.location.search);
