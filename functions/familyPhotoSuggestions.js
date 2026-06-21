@@ -202,7 +202,7 @@ function sanitizeSuggestionBody(body = {}) {
 
 function normalizeTagOption(docSnap) {
   const data = docSnap.data() || {};
-  if (data.status !== 'approved' || data.status === 'claimed') return null;
+  if (data.status !== 'approved') return null;
 
   const tagLabel = cleanString(data.displayName || data.email || docSnap.id, 120);
   const rawPersonSlug = makeSlug(tagLabel || docSnap.id);

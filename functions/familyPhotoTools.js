@@ -1,13 +1,24 @@
 const { onRequest } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
 const busboy = require('busboy');
-const sharp = require('sharp');
-const ffmpegPath = require('ffmpeg-static');
 const crypto = require('crypto');
 const fs = require('fs/promises');
 const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
+
+// Lazy-load native modules so Firebase CLI code analysis succeeds
+// even when node_modules aren't fully installed locally.
+let _sharp = null;
+let _ffmpegPath = null;
+function getSharp() {
+  if (!_sharp) _sharp = require('sharp');
+  return _sharp;
+}
+function getFfmpegPath() {
+  if (_ffmpegPath === null) _ffmpegPath = require('ffmpeg-static');
+  return _ffmpegPath;
+}
 
 if (!admin.apps.length) admin.initializeApp();
 
@@ -200,6 +211,7 @@ function getImageWidthCandidates(metadata, includeOriginal) {
 }
 
 async function renderJpegCandidate(fileBuffer, width, quality) {
+  const sharp = getSharp();
   let image = sharp(fileBuffer, { limitInputPixels: 80000000 }).rotate();
   if (width > 0) {
     image = image.resize({ width, withoutEnlargement: true });
@@ -227,6 +239,7 @@ async function buildJpegUnderTarget(fileBuffer, sourceName, sourceMime) {
     return fileBuffer;
   }
 
+  const sharp = getSharp();
   const metadata = await sharp(fileBuffer, { limitInputPixels: 80000000 }).metadata();
   const originalWidth = Number(metadata?.width) || 0;
   const includeOriginal = originalWidth > 0 && originalWidth <= MAX_WEB_IMAGE_WIDTH;
@@ -285,6 +298,7 @@ async function extractDngJpegWithFfmpeg(parsed) {
 
 function runFfmpeg(args) {
   return new Promise((resolve, reject) => {
+    const ffmpegPath = getFfmpegPath();
     if (!ffmpegPath) {
       reject(new Error('DNG conversion is unavailable because ffmpeg is not installed.'));
       return;
