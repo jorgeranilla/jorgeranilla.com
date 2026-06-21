@@ -42,6 +42,7 @@
   let publicTagOptions = [];
   let publicTagOptionsLoaded = false;
   let publicTagOptionsLoading = null;
+  let publicTagOptionsError = '';
   let activeSuggestionFile = null;
   let activeSuggestionKeys = new Set();
 
@@ -144,19 +145,6 @@
       ...(Array.isArray(tag.peopleLabels) ? tag.peopleLabels : []),
       ...(Array.isArray(tag.otherPeopleLabels) ? tag.otherPeopleLabels : [])
     ]);
-  }
-
-  function renderGalleryTagStrip(file) {
-    const labels = getApprovedTagLabels(file);
-    if (labels.length === 0) return '';
-
-    const visible = labels.slice(0, 3);
-    const more = labels.length > visible.length ? `<span class="gallery-tag-chip gallery-tag-chip--more">+${labels.length - visible.length}</span>` : '';
-    return `
-      <div class="gallery-tag-strip" aria-label="Approved tags">
-        ${visible.map(label => `<span class="gallery-tag-chip">${escapeHtml(label)}</span>`).join('')}
-        ${more}
-      </div>`;
   }
 
   function getType(mimeType) {
@@ -477,6 +465,7 @@
     if (publicTagOptionsLoaded) return publicTagOptions;
     if (publicTagOptionsLoading) return publicTagOptionsLoading;
 
+    publicTagOptionsError = '';
     publicTagOptionsLoading = fetch(config.publicTagOptionsEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -491,7 +480,7 @@
         return publicTagOptions;
       })
       .catch(error => {
-        publicTagOptionsLoaded = true;
+        publicTagOptionsError = error.message || 'Could not load the family name list.';
         publicTagOptions = [];
         throw error;
       })
@@ -575,7 +564,10 @@
       .slice(0, 8);
 
     if (matches.length === 0) {
-      results.innerHTML = `<p class="tag-suggest-empty">${publicTagOptions.length ? 'No matching names.' : 'The directory list is unavailable. You can use Other names.'}</p>`;
+      const emptyText = publicTagOptions.length
+        ? 'No matching names.'
+        : (publicTagOptionsError || 'Start typing a name, or use Other names.');
+      results.innerHTML = `<p class="tag-suggest-empty">${escapeHtml(emptyText)}</p>`;
       return;
     }
 
@@ -667,7 +659,7 @@
       await loadPublicTagOptions();
       setSuggestionMessage('');
     } catch (error) {
-      setSuggestionMessage(error.message || 'Could not load the directory list. You can still use Other names.', true);
+      setSuggestionMessage('The family name list is not available yet. You can still submit with Other names.', true);
     }
 
     renderSuggestionOptions();
@@ -746,36 +738,28 @@
     }
   }
 
-  function ensureLightboxTagPanel() {
+  function ensureLightboxSuggestControl() {
     const lb = document.getElementById('lightbox');
     if (!lb) return null;
 
-    let panel = document.getElementById('lightboxTagPanel');
-    if (!panel) {
-      panel = document.createElement('div');
-      panel.id = 'lightboxTagPanel';
-      panel.className = 'lightbox-tag-panel';
-      lb.appendChild(panel);
+    let control = document.getElementById('lightboxSuggestControl');
+    if (!control) {
+      control = document.createElement('div');
+      control.id = 'lightboxSuggestControl';
+      control.className = 'lightbox-suggest-control';
+      lb.appendChild(control);
     }
 
-    return panel;
+    return control;
   }
 
-  function renderLightboxTagPanel(file) {
-    const panel = ensureLightboxTagPanel();
-    if (!panel || !file) return;
+  function renderLightboxSuggestControl(file) {
+    const control = ensureLightboxSuggestControl();
+    if (!control || !file) return;
 
-    const labels = getApprovedTagLabels(file);
-    const tags = labels.length
-      ? labels.map(label => `<span class="lightbox-tag-chip">${escapeHtml(label)}</span>`).join('')
-      : '<span class="lightbox-tag-empty">No approved tags yet</span>';
+    control.innerHTML = '<button type="button" class="lightbox-suggest-btn" id="lightboxSuggestTags">Suggest tags</button>';
 
-    panel.innerHTML = `
-      <div class="lightbox-tag-list" aria-label="Approved tags">${tags}</div>
-      <button type="button" class="lightbox-suggest-btn" id="lightboxSuggestTags">Suggest tags</button>
-    `;
-
-    const button = panel.querySelector('#lightboxSuggestTags');
+    const button = control.querySelector('#lightboxSuggestTags');
     if (button) button.addEventListener('click', event => {
       event.stopPropagation();
       openSuggestionModal(file);
@@ -908,17 +892,15 @@
         : driveThumb(file.id, GRID_THUMB_SIZE, file.modifiedTime || file.md5Checksum);
       const item = document.createElement('div');
       item.className = `gallery-item${file.type === 'video' ? ' gallery-item--video' : ''}`;
-      const tagStrip = renderGalleryTagStrip(file);
 
       if (file.type === 'video') {
         item.innerHTML = `
           <img src="${thumb}" alt="${escapeHtml(config.videoAlt)}" loading="lazy">
           <div class="video-play-btn" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path fill="white" d="M8 5v14l11-7z"/></svg>
-          </div>
-          ${tagStrip}`;
+          </div>`;
       } else {
-        item.innerHTML = `<img src="${thumb}" alt="${escapeHtml(config.photoAlt)}" loading="lazy">${tagStrip}`;
+        item.innerHTML = `<img src="${thumb}" alt="${escapeHtml(config.photoAlt)}" loading="lazy">`;
       }
 
       item.addEventListener('click', () => openLightbox(globalIdx));
@@ -1009,7 +991,7 @@
       img.style.display = 'none';
       video.style.display = 'block';
       video.src = `https://www.youtube.com/embed/${encodeURIComponent(file.youtubeId)}?autoplay=1&rel=0`;
-      renderLightboxTagPanel(file);
+      renderLightboxSuggestControl(file);
       return;
     }
 
@@ -1018,7 +1000,7 @@
     img.style.display = 'block';
     img.src = driveThumb(file.id, LIGHTBOX_THUMB_SIZE, file.modifiedTime || file.md5Checksum);
     img.alt = file.name || config.photoAlt;
-    renderLightboxTagPanel(file);
+    renderLightboxSuggestControl(file);
   }
 
   function shiftLightbox(dir) {
