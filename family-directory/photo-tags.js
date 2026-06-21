@@ -184,6 +184,7 @@ async function fetchPhotoTagJson(url, timeoutMessage) {
 }
 
 function showPhotoTagStartupError(error) {
+  clearPhotoTagsStartupTimer();
   console.error('Photo tag startup error:', error);
   const detail = error?.message || 'Refresh the page and try again.';
 
@@ -218,6 +219,14 @@ function showPhotoTagStartupError(error) {
   card.append(title, body, button);
   loading.appendChild(card);
 }
+
+function clearPhotoTagsStartupTimer() {
+  if (window.fdPhotoTagsStartupTimer) {
+    clearTimeout(window.fdPhotoTagsStartupTimer);
+    window.fdPhotoTagsStartupTimer = null;
+  }
+}
+
 function getPhotoTagSourceConfig(source = photoTagSource) {
   return PHOTO_TAGS_SOURCES[source] || PHOTO_TAGS_SOURCES.family;
 }
@@ -249,6 +258,8 @@ function isPhotoTagCurrentAlbum(tag) {
 }
 
 function onPageReady() {
+  clearPhotoTagsStartupTimer();
+
   if (!window.isAdmin) {
     const restricted = document.getElementById('fd-photo-tags-restricted');
     const admin = document.getElementById('fd-photo-tags-admin');

@@ -671,7 +671,7 @@
   </style>
 </head>
 
-<body data-title="Photo Tags" data-section="Family">
+<body data-title="Photo Tags" data-section="Family Directory">
   <div id="social-rail-placeholder"></div>
   <div id="header-placeholder"></div>
 
@@ -801,15 +801,15 @@
 
       var label = document.createElement('p');
       label.className = 'fd-auth-label';
-      label.textContent = 'Load Error';
+      label.textContent = 'Still Loading';
 
       var title = document.createElement('h1');
       title.className = 'fd-auth-title';
-      title.textContent = 'Photo Tags took too long to start.';
+      title.textContent = 'Photo Tags is still loading.';
 
       var body = document.createElement('p');
       body.className = 'fd-auth-sub';
-      body.textContent = 'Refresh the page and try again. If it repeats, check the browser console for the first red error.';
+      body.textContent = 'This can take longer when Drive has many photos. Leave this tab open, or refresh if it stays here for a few minutes.';
 
       var button = document.createElement('button');
       button.type = 'button';
@@ -819,11 +819,11 @@
 
       card.append(label, title, body, button);
       loading.appendChild(card);
-    }, 30000);
+    }, 120000);
   </script>
   <script src="directory.js?v=5"></script>
-  <script src="photo-tags.js?v=21"></script>
-  <script src="../script.js"></script>
+  <script src="photo-tags.js?v=22"></script>
+  <script src="../script.js?v=2"></script>
   <script src="../search-dynamic.js"></script>
 </body>
 
