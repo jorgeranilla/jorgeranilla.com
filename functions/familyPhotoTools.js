@@ -12,8 +12,13 @@ const { spawn } = require('child_process');
 if (!admin.apps.length) admin.initializeApp();
 
 const FAMILY_DIRECTORY_COLLECTION = 'familyDirectory';
-const TARGET_OUTPUT_BYTES = 4 * 1024 * 1024;
+const TARGET_OUTPUT_MEGABYTES = 3;
+const TARGET_OUTPUT_BYTES = TARGET_OUTPUT_MEGABYTES * 1024 * 1024;
 const MAX_UPLOAD_BYTES = 31 * 1024 * 1024;
+const MAX_WEB_IMAGE_WIDTH = 3840;
+const HIGH_QUALITY_JPEG_QUALITIES = [96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82];
+const FALLBACK_JPEG_QUALITIES = [80, 78, 76, 74, 72, 70, 68, 66, 64, 62, 60];
+const WEB_IMAGE_WIDTHS = [3840, 3200, 2800, 2400, 2200, 2000, 1800, 1600, 1440, 1280, 1080, 960, 720];
 const ALLOWED_ORIGINS = new Set([
   'https://jorgeranilla.com',
   'https://www.jorgeranilla.com',
@@ -116,6 +121,11 @@ function isHeifFile(fileName, mimeType) {
   return mime === 'image/heic' || mime === 'image/heif' || /\.(heic|heif)$/i.test(String(fileName || ''));
 }
 
+function isJpegFile(fileName, mimeType) {
+  const mime = String(mimeType || '').toLowerCase();
+  return mime === 'image/jpeg' || mime === 'image/jpg' || /\.(jpe?g)$/i.test(String(fileName || ''));
+}
+
 function parseMultipart(req) {
   return new Promise((resolve, reject) => {
     const bb = busboy({ headers: req.headers, limits: { fileSize: MAX_UPLOAD_BYTES } });
@@ -174,20 +184,26 @@ function parseMultipart(req) {
   });
 }
 
-async function buildJpegUnderTarget(fileBuffer, sourceName, sourceMime) {
-  const widths = [0, 3840, 3200, 2800, 2400, 2200, 2000, 1800, 1600, 1440, 1280, 1080, 960, 720];
-  const qualities = [96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 78, 76, 74, 72, 70, 68, 66, 64, 62, 60, 58, 56, 54, 52, 50, 48, 46, 44, 42, 40, 38, 36, 34, 32];
-  let smallest = null;
+function getImageWidthCandidates(metadata, includeOriginal) {
+  const originalWidth = Number(metadata?.width) || 0;
+  const resizedWidths = WEB_IMAGE_WIDTHS.filter(width => !originalWidth || width < originalWidth);
+  const widths = includeOriginal ? [0, ...resizedWidths] : resizedWidths;
+  return [...new Set(widths)];
+}
 
-  for (const width of widths) {
-    for (const quality of qualities) {
-      let image = sharp(fileBuffer, { limitInputPixels: 80000000 }).rotate();
-      if (width > 0) {
-        image = image.resize({ width, withoutEnlargement: true });
-      }
+async function renderJpegCandidate(fileBuffer, width, quality) {
+  let image = sharp(fileBuffer, { limitInputPixels: 80000000 }).rotate();
+  if (width > 0) {
+    image = image.resize({ width, withoutEnlargement: true });
+  }
 
-      const output = await image.jpeg({ quality, mozjpeg: true }).toBuffer();
-      if (!smallest || output.length < smallest.length) smallest = output;
+  return image.jpeg({ quality, mozjpeg: true }).toBuffer();
+}
+
+async function tryJpegCandidates(fileBuffer, widths, qualities) {
+  for (const quality of qualities) {
+    for (const width of widths) {
+      const output = await renderJpegCandidate(fileBuffer, width, quality);
 
       if (output.length <= TARGET_OUTPUT_BYTES) {
         return output;
@@ -195,10 +211,41 @@ async function buildJpegUnderTarget(fileBuffer, sourceName, sourceMime) {
     }
   }
 
-  if (smallest && smallest.length <= TARGET_OUTPUT_BYTES) return smallest;
+  return null;
+}
+
+async function buildJpegUnderTarget(fileBuffer, sourceName, sourceMime) {
+  if (isJpegFile(sourceName, sourceMime) && fileBuffer.length <= TARGET_OUTPUT_BYTES) {
+    return fileBuffer;
+  }
+
+  const metadata = await sharp(fileBuffer, { limitInputPixels: 80000000 }).metadata();
+  const originalWidth = Number(metadata?.width) || 0;
+  const allowFullSizeDownToQuality82 = originalWidth > 0 && originalWidth <= MAX_WEB_IMAGE_WIDTH;
+
+  const originalQualityFloor = allowFullSizeDownToQuality82
+    ? HIGH_QUALITY_JPEG_QUALITIES
+    : HIGH_QUALITY_JPEG_QUALITIES.filter(quality => quality >= 90);
+
+  const original = await tryJpegCandidates(fileBuffer, [0], originalQualityFloor);
+  if (original) return original;
+
+  const highQualityResized = await tryJpegCandidates(
+    fileBuffer,
+    getImageWidthCandidates(metadata, false),
+    HIGH_QUALITY_JPEG_QUALITIES
+  );
+  if (highQualityResized) return highQualityResized;
+
+  const fallback = await tryJpegCandidates(
+    fileBuffer,
+    getImageWidthCandidates(metadata, allowFullSizeDownToQuality82),
+    FALLBACK_JPEG_QUALITIES
+  );
+  if (fallback) return fallback;
 
   const sourceType = isDngFile(sourceName, sourceMime) ? 'DNG' : 'image';
-  throw new Error(`Could not reduce this ${sourceType} below 4 MB without losing too much detail.`);
+  throw new Error(`Could not reduce this ${sourceType} below ${TARGET_OUTPUT_MEGABYTES} MB without losing too much detail.`);
 }
 
 async function convertImageUpload(parsed) {
