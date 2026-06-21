@@ -801,15 +801,15 @@
 
       var label = document.createElement('p');
       label.className = 'fd-auth-label';
-      label.textContent = 'Still Loading';
+      label.textContent = 'Startup Check';
 
       var title = document.createElement('h1');
       title.className = 'fd-auth-title';
-      title.textContent = 'Photo Tags is still loading.';
+      title.textContent = 'Photo Tags has not started yet.';
 
       var body = document.createElement('p');
       body.className = 'fd-auth-sub';
-      body.textContent = 'This can take longer when Drive has many photos. Leave this tab open, or refresh if it stays here for a few minutes.';
+      body.textContent = 'Refresh once to clear cached files. If this returns, check the browser console for the first red error; the photo list has not started loading yet.';
 
       var button = document.createElement('button');
       button.type = 'button';
@@ -819,11 +819,11 @@
 
       card.append(label, title, body, button);
       loading.appendChild(card);
-    }, 120000);
+    }, 45000);
   </script>
   <script src="directory.js?v=5"></script>
-  <script src="photo-tags.js?v=22"></script>
-  <script src="../script.js?v=2"></script>
+  <script src="photo-tags.js?v=23"></script>
+  <script src="../script.js?v=3"></script>
   <script src="../search-dynamic.js"></script>
 </body>
 

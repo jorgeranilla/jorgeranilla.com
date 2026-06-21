@@ -112,6 +112,8 @@ let photoTagSearch = '';
 let photoTagSelected = new Set();
 let photoTagDrafts = loadPhotoTagDrafts();
 let photoTagDuplicateCache = null;
+let photoTagBindingsReady = false;
+let photoTagLoadRun = 0;
 
 function updatePhotoTagLoading(message) {
   const loading = document.getElementById('fd-photo-tags-loading');
@@ -128,6 +130,25 @@ function formatPhotoTagLoadError(error) {
   }
 
   return error?.message || 'Could not load photos or tags right now.';
+}
+
+function showPhotoTagLoadError(error) {
+  const message = formatPhotoTagLoadError(error);
+  const loading = document.getElementById('fd-photo-tags-loading');
+  const summary = document.getElementById('fd-photo-tag-summary');
+  const grid = document.getElementById('fd-photo-tag-grid');
+  const empty = document.getElementById('fd-photo-tags-empty');
+
+  if (loading) loading.style.display = 'none';
+  if (summary) summary.textContent = message;
+  if (grid) {
+    grid.innerHTML = '<button type="button" class="fd-mini-btn secondary" style="max-width:180px;margin:0 auto" onclick="reloadPhotoTagData(true)">Retry loading</button>';
+  }
+  if (empty) {
+    empty.style.display = 'block';
+    const emptyText = empty.querySelector('p');
+    if (emptyText) emptyText.textContent = message;
+  }
 }
 
 function withPhotoTagTimeout(promise, message, timeoutMs = PHOTO_TAGS_REQUEST_TIMEOUT_MS) {
@@ -271,18 +292,25 @@ function onPageReady() {
   const admin = document.getElementById('fd-photo-tags-admin');
   if (admin) admin.style.display = 'block';
 
-  initPhotoTagger();
+  initPhotoTagger().catch(showPhotoTagStartupError);
 }
 
 async function initPhotoTagger() {
-  bindPhotoTagSources();
-  bindPhotoTagFilters();
-  bindPhotoTagSearch();
+  if (!photoTagBindingsReady) {
+    bindPhotoTagSources();
+    bindPhotoTagFilters();
+    bindPhotoTagSearch();
+    photoTagBindingsReady = true;
+  }
+
   updatePhotoTagSourceControls();
   await reloadPhotoTagData(true);
 }
 
 async function reloadPhotoTagData(loadRecords = false) {
+  const loadRun = ++photoTagLoadRun;
+  const shouldLoadRecords = loadRecords || !(photoTagRecords instanceof Map) || photoTagRecords.size === 0;
+
   photoTagDuplicateCache = null;
   updatePhotoTagLoading(`Loading ${getPhotoTagFolderLabel()} photos...`);
 
@@ -294,33 +322,48 @@ async function reloadPhotoTagData(loadRecords = false) {
   if (empty) empty.style.display = 'none';
 
   try {
-    await Promise.all([
+    const [members, records, files] = await Promise.all([
       withPhotoTagTimeout(loadPhotoTagMembers(), `Loading ${getPhotoTagSourceLabel()} tag list took too long.`),
-      loadRecords ? withPhotoTagTimeout(loadPhotoTagRecords(), 'Loading saved photo tags took too long.') : Promise.resolve(),
-      loadRecords ? withPhotoTagTimeout(loadPhotoTagSuggestions(), 'Loading public tag suggestions took too long.') : Promise.resolve(),
+      shouldLoadRecords ? withPhotoTagTimeout(loadPhotoTagRecords(), 'Loading saved photo tags took too long.') : Promise.resolve(photoTagRecords),
       withPhotoTagTimeout(loadPhotoTagFiles(), `Loading ${getPhotoTagFolderLabel()} photos took too long.`, 120000)
     ]);
+
+    if (loadRun !== photoTagLoadRun) return;
+
+    photoTagMembers = members;
+    photoTagRecords = records instanceof Map ? records : new Map();
+    photoTagFiles = files;
 
     updatePhotoTagLoading('Preparing photo tags...');
     reconcilePhotoTagFilesWithSavedNames();
 
     renderPhotoTags();
-  } catch (error) {
-    console.error('Photo tag load error:', error);
-    const loading = document.getElementById('fd-photo-tags-loading');
-    const summary = document.getElementById('fd-photo-tag-summary');
-    const grid = document.getElementById('fd-photo-tag-grid');
-    const empty = document.getElementById('fd-photo-tags-empty');
-    const message = formatPhotoTagLoadError(error);
 
-    if (loading) loading.style.display = 'none';
-    if (summary) summary.textContent = message;
-    if (grid) grid.innerHTML = '';
-    if (empty) {
-      empty.style.display = 'block';
-      const emptyText = empty.querySelector('p');
-      if (emptyText) emptyText.textContent = message;
+    if (shouldLoadRecords) {
+      loadPhotoTagSuggestionsInBackground(loadRun);
     }
+  } catch (error) {
+    if (loadRun !== photoTagLoadRun) return;
+    console.error('Photo tag load error:', error);
+    showPhotoTagLoadError(error);
+  }
+}
+
+async function loadPhotoTagSuggestionsInBackground(loadRun) {
+  try {
+    const suggestions = await withPhotoTagTimeout(
+      loadPhotoTagSuggestions(),
+      'Loading public tag suggestions took too long.'
+    );
+
+    if (loadRun !== photoTagLoadRun) return;
+    photoTagSuggestions = suggestions;
+    renderPhotoTags();
+  } catch (error) {
+    if (loadRun !== photoTagLoadRun) return;
+    console.warn('Photo tag suggestions load warning:', error);
+    photoTagSuggestions = [];
+    renderPhotoTags();
   }
 }
 
@@ -421,19 +464,21 @@ async function loadPhotoTagMembers() {
     };
   }));
 
-  photoTagMembers = disambiguateDuplicateMemberLabels(tagMembers
+  return disambiguateDuplicateMemberLabels(tagMembers
     .filter(member => member.tagKey && member.personSlug)
     .sort((a, b) => a.tagLabel.localeCompare(b.tagLabel, undefined, { sensitivity: 'base' })));
 }
 async function loadPhotoTagRecords() {
   const { collection, getDocs } = window._fb;
   const snapshot = await getDocs(collection(window._fb.db, PHOTO_TAGS_COLLECTION));
+  const records = new Map();
 
-  photoTagRecords = new Map();
   snapshot.docs.forEach(docSnap => {
     const data = docSnap.data() || {};
-    photoTagRecords.set(docSnap.id, normalizePhotoTagRecord(docSnap.id, data));
+    records.set(docSnap.id, normalizePhotoTagRecord(docSnap.id, data));
   });
+
+  return records;
 }
 
 function normalizePhotoTagSuggestion(docSnap) {
@@ -457,7 +502,7 @@ async function loadPhotoTagSuggestions() {
     where('status', '==', 'pending')
   );
   const snapshot = await getDocs(q);
-  photoTagSuggestions = snapshot.docs.map(normalizePhotoTagSuggestion);
+  return snapshot.docs.map(normalizePhotoTagSuggestion);
 }
 
 async function loadPhotoTagFiles() {
@@ -514,7 +559,7 @@ async function loadPhotoTagFiles() {
   } while (pageToken);
 
   updatePhotoTagLoading(`Preparing ${files.length} Drive photos...`);
-  photoTagFiles = sortPhotoTagFiles(assignPhotoTagSuggestedNames(files));
+  return sortPhotoTagFiles(assignPhotoTagSuggestedNames(files));
 }
 
 function parsePhotoTagDateKey(value) {
@@ -3255,6 +3300,7 @@ window.handleYoutubeUrlInput = handleYoutubeUrlInput;
 window.submitYoutubeVideo = submitYoutubeVideo;
 window.clearYoutubeCard = clearYoutubeCard;
 window.cleanMissingDriveRecords = cleanMissingDriveRecords;
+window.reloadPhotoTagData = reloadPhotoTagData;
 window.approvePhotoTagSuggestion = approvePhotoTagSuggestion;
 window.rejectPhotoTagSuggestion = rejectPhotoTagSuggestion;
 
