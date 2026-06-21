@@ -26,6 +26,8 @@
     fallbackNotice: ''
   };
   const TAG_CONTENT_FIELDS = ['mimeType', 'type', 'md5Checksum', 'size'];
+  const GRID_THUMB_SIZE = 600;
+  const LIGHTBOX_THUMB_SIZE = 2400;
 
   let config = {};
   let allFiles = [];
@@ -352,7 +354,7 @@
       const globalIdx = start + localIdx;
       const thumb = file.youtubeId
         ? (file.youtubeThumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(file.youtubeId)}/hqdefault.jpg`)
-        : driveThumb(file.id, 600, file.modifiedTime || file.md5Checksum);
+        : driveThumb(file.id, GRID_THUMB_SIZE, file.modifiedTime || file.md5Checksum);
       const item = document.createElement('div');
       item.className = `gallery-item${file.type === 'video' ? ' gallery-item--video' : ''}`;
 
@@ -450,7 +452,7 @@
     video.src = '';
     video.style.display = 'none';
     img.style.display = 'block';
-    img.src = driveThumb(file.id, 1600, file.modifiedTime || file.md5Checksum);
+    img.src = driveThumb(file.id, LIGHTBOX_THUMB_SIZE, file.modifiedTime || file.md5Checksum);
     img.alt = file.name || config.photoAlt;
   }
 
