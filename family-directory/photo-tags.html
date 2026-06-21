@@ -11,6 +11,14 @@
   <link rel="icon" type="image/png" href="../images/jr-logo.png">
   <meta name="robots" content="noindex, nofollow">
   <style>
+    body[data-title="Photo Tags"] #whatsappContainer,
+    body[data-title="Photo Tags"] .whatsapp-container,
+    body[data-title="Photo Tags"] #backToTop,
+    body[data-title="Photo Tags"] .back-to-top {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
     .fd-tag-toolbar {
       display: grid;
       gap: 12px;
@@ -752,7 +760,7 @@
     }, 30000);
   </script>
   <script src="directory.js?v=4"></script>
-  <script src="photo-tags.js?v=17"></script>
+  <script src="photo-tags.js?v=18"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>

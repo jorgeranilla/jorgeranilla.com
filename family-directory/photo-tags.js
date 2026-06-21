@@ -1733,8 +1733,8 @@ function renderPhotoTagCard(file) {
           ${replaceControl}
           ${renameButton}
           <button type="button" class="fd-mini-btn" onclick="savePhotoTag('${escapePhotoTagHtml(file.id)}')">${escapePhotoTagHtml(publishText)}</button>
-          <button type="button" class="fd-mini-btn secondary" onclick="clearPhotoTag('${escapePhotoTagHtml(file.id)}')">Clear</button>
-          <button type="button" class="fd-mini-btn danger" onclick="trashPhotoTagFile('${escapePhotoTagHtml(file.id)}')">Move to Trash</button>
+          <button type="button" class="fd-mini-btn secondary" onclick="clearPhotoTag('${escapePhotoTagHtml(file.id)}')">Clear Tags</button>
+          <button type="button" class="fd-mini-btn danger" onclick="trashPhotoTagFile('${escapePhotoTagHtml(file.id)}')">Move Photo to Trash</button>
         </div>
       </div>
     </article>
@@ -2226,20 +2226,30 @@ async function clearPhotoTag(fileId) {
 
   if (!file || !card) return;
 
+  const hasSavedTags = photoTagRecords.has(file.id);
+  const hasDraftTags = getPhotoTagDraftPeople(file.id) !== null;
+
+  if (!hasSavedTags && !hasDraftTags) {
+    fdToast('No tags or draft to clear. Photo was not deleted from Drive.');
+    return;
+  }
+
+  if (!window.confirm(`Clear tags for "${file.name}"?\n\nThis only removes the saved tags or draft for this photo. The Google Drive photo will not be deleted.`)) return;
+
   card.style.opacity = '.65';
 
   try {
-    if (photoTagRecords.has(file.id)) {
+    if (hasSavedTags) {
       await window._fb.deleteDoc(window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, file.id));
       photoTagRecords.delete(file.id);
     }
     clearPhotoTagDraft(file.id);
 
-    fdToast('Photo tags cleared.');
+    fdToast('Tags cleared. Photo was not deleted from Drive.');
     renderPhotoTags();
   } catch (error) {
     console.error('Photo tag clear error:', error);
-    fdToast('Could not clear photo tags.');
+    fdToast('Could not clear photo tags. Photo was not deleted from Drive.');
     card.style.opacity = '';
   }
 }
