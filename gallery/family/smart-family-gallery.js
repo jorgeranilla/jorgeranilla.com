@@ -221,6 +221,8 @@
     if (!tag) return false;
 
     if (config.mode === 'person') {
+      if (config.albumSlug && !(tag.albums || []).includes(config.albumSlug)) return false;
+
       const PERSON_ALIAS_MAP = {
         'luis-fernando': ['luis-fernando-astocondor'],
         'fernando-javier': ['fernando-pallete', 'fernando-javier-pallete'],

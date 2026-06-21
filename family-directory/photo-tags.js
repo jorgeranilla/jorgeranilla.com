@@ -1,5 +1,31 @@
 const PHOTO_TAGS_DRIVE_API_KEY = 'AIzaSyCadJTGnwhASQ-kj7p4AnGFAwXIIFChoSs';
-const PHOTO_TAGS_MASTER_FOLDER_ID = '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ';
+const PHOTO_TAGS_FAMILY_FOLDER_ID = '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ';
+const PHOTO_TAGS_PEOPLE_FOLDER_ID = '1cGKKik8MCXTWG6Ulc3z3rXIFwVSXcb8K';
+const PHOTO_TAGS_SOURCES = {
+  family: {
+    label: 'Family',
+    folderLabel: 'Family folder',
+    albumSlug: 'family',
+    folderId: PHOTO_TAGS_FAMILY_FOLDER_ID,
+    includeDirectoryMembers: true,
+    profiles: []
+  },
+  people: {
+    label: 'People',
+    folderLabel: 'People folder',
+    albumSlug: 'people',
+    folderId: PHOTO_TAGS_PEOPLE_FOLDER_ID,
+    includeDirectoryMembers: false,
+    profiles: [
+      {
+        id: 'patricia-malca',
+        name: 'Patricia Malca',
+        slug: 'patricia-malca',
+        aliases: ['patty']
+      }
+    ]
+  }
+};
 const PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const PHOTO_TAGS_DRIVE_PAGE_SIZE = 200;
 const PHOTO_TAGS_REQUEST_TIMEOUT_MS = 30000;
@@ -45,9 +71,16 @@ const PHOTO_TAG_CANONICAL_SLUGS = {
   'sylvia-ines': 'sylvia-astocondor',
   'sylvia-ines-astocondor': 'sylvia-astocondor',
   'sylvia-astocondor-salazar': 'sylvia-astocondor',
-  'alyssa': 'alyssa-ranilla'
+  'alyssa': 'alyssa-ranilla',
+  'patty': 'patricia-malca'
 };
 
+function getInitialPhotoTagSource() {
+  const source = new URLSearchParams(window.location.search).get('source') || 'family';
+  return PHOTO_TAGS_SOURCES[source] ? source : 'family';
+}
+
+let photoTagSource = getInitialPhotoTagSource();
 let photoTagMembers = [];
 let photoTagFiles = [];
 let photoTagRecords = new Map();
@@ -142,6 +175,36 @@ function showPhotoTagStartupError(error) {
   card.append(title, body, button);
   loading.appendChild(card);
 }
+function getPhotoTagSourceConfig(source = photoTagSource) {
+  return PHOTO_TAGS_SOURCES[source] || PHOTO_TAGS_SOURCES.family;
+}
+
+function getPhotoTagFolderId() {
+  return getPhotoTagSourceConfig().folderId;
+}
+
+function getPhotoTagAlbumSlug() {
+  return getPhotoTagSourceConfig().albumSlug;
+}
+
+function getPhotoTagFolderLabel() {
+  return getPhotoTagSourceConfig().folderLabel;
+}
+
+function getPhotoTagSourceLabel() {
+  return getPhotoTagSourceConfig().label;
+}
+
+function getPhotoTagYoutubeDocId(videoId) {
+  const album = getPhotoTagAlbumSlug();
+  return album === 'family' ? `yt_${videoId}` : `yt_${album}_${videoId}`;
+}
+
+function isPhotoTagCurrentAlbum(tag) {
+  const albums = Array.isArray(tag?.albums) ? tag.albums : ['family'];
+  return albums.includes(getPhotoTagAlbumSlug());
+}
+
 function onPageReady() {
   if (!window.isAdmin) {
     const restricted = document.getElementById('fd-photo-tags-restricted');
@@ -158,15 +221,29 @@ function onPageReady() {
 }
 
 async function initPhotoTagger() {
+  bindPhotoTagSources();
   bindPhotoTagFilters();
   bindPhotoTagSearch();
-  updatePhotoTagLoading('Loading family members, saved tags, and Drive photos...');
+  updatePhotoTagSourceControls();
+  await reloadPhotoTagData(true);
+}
+
+async function reloadPhotoTagData(loadRecords = false) {
+  photoTagDuplicateCache = null;
+  updatePhotoTagLoading(`Loading ${getPhotoTagFolderLabel()} photos...`);
+
+  const loading = document.getElementById('fd-photo-tags-loading');
+  const grid = document.getElementById('fd-photo-tag-grid');
+  const empty = document.getElementById('fd-photo-tags-empty');
+  if (loading) loading.style.display = 'flex';
+  if (grid) grid.innerHTML = '';
+  if (empty) empty.style.display = 'none';
 
   try {
     await Promise.all([
-      withPhotoTagTimeout(loadPhotoTagMembers(), 'Loading family members took too long.'),
-      withPhotoTagTimeout(loadPhotoTagRecords(), 'Loading saved photo tags took too long.'),
-      withPhotoTagTimeout(loadPhotoTagFiles(), 'Loading Drive photos took too long.', 120000)
+      withPhotoTagTimeout(loadPhotoTagMembers(), `Loading ${getPhotoTagSourceLabel()} tag list took too long.`),
+      loadRecords ? withPhotoTagTimeout(loadPhotoTagRecords(), 'Loading saved photo tags took too long.') : Promise.resolve(),
+      withPhotoTagTimeout(loadPhotoTagFiles(), `Loading ${getPhotoTagFolderLabel()} photos took too long.`, 120000)
     ]);
 
     updatePhotoTagLoading('Preparing photo tags...');
@@ -199,10 +276,53 @@ async function initPhotoTagger() {
   }
 }
 
+function bindPhotoTagSources() {
+  document.querySelectorAll('[data-photo-source]').forEach(button => {
+    button.addEventListener('click', () => switchPhotoTagSource(button.dataset.photoSource || 'family'));
+  });
+}
+
+function updatePhotoTagSourceControls() {
+  document.querySelectorAll('[data-photo-source]').forEach(button => {
+    button.classList.toggle('active', button.dataset.photoSource === photoTagSource);
+  });
+
+  const subtitle = document.getElementById('fd-photo-tags-subtitle');
+  if (subtitle) {
+    subtitle.textContent = `Assign ${getPhotoTagFolderLabel()} photos to the people who appear in them`;
+  }
+}
+
+async function switchPhotoTagSource(source) {
+  if (!PHOTO_TAGS_SOURCES[source] || source === photoTagSource) return;
+
+  photoTagSource = source;
+  photoTagSelected.clear();
+  photoTagFilter = 'all';
+  photoTagSearch = '';
+
+  const input = document.getElementById('fd-photo-search');
+  if (input) input.value = '';
+
+  document.querySelectorAll('.fd-filter-pill[data-filter]').forEach(button => {
+    button.classList.toggle('active', button.dataset.filter === 'all');
+  });
+
+  const url = new URL(window.location.href);
+  if (source === 'family') {
+    url.searchParams.delete('source');
+  } else {
+    url.searchParams.set('source', source);
+  }
+  window.history.replaceState({}, '', url);
+
+  updatePhotoTagSourceControls();
+  await reloadPhotoTagData(false);
+}
 function bindPhotoTagFilters() {
-  document.querySelectorAll('.fd-filter-pill').forEach(button => {
+  document.querySelectorAll('.fd-filter-pill[data-filter]').forEach(button => {
     button.addEventListener('click', () => {
-      document.querySelectorAll('.fd-filter-pill').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.fd-filter-pill[data-filter]').forEach(item => item.classList.remove('active'));
       button.classList.add('active');
       photoTagFilter = button.dataset.filter || 'all';
       renderPhotoTags();
@@ -221,28 +341,54 @@ function bindPhotoTagSearch() {
 }
 
 async function loadPhotoTagMembers() {
-  const members = await fetchAllMembers();
-  const approved = members
-    .filter(member => member.status === 'approved' && member.status !== 'claimed')
-    .map(member => {
-      const rawPersonSlug = makePhotoTagSlug(member.displayName || member.email || member.id);
-      const personSlug = canonicalPhotoTagSlug(rawPersonSlug);
+  const config = getPhotoTagSourceConfig();
+  const tagMembers = [];
 
-      return {
-        ...member,
-        rawPersonSlug,
-        personSlug,
-        alternatePersonSlugs: rawPersonSlug && rawPersonSlug !== personSlug ? [rawPersonSlug] : [],
-        tagKey: `member:${member.id}`,
-        tagLabel: member.displayName || member.email || member.id
-      };
-    })
+  if (config.includeDirectoryMembers) {
+    const members = await fetchAllMembers();
+    tagMembers.push(...members
+      .filter(member => member.status === 'approved' && member.status !== 'claimed')
+      .map(member => {
+        const rawPersonSlug = makePhotoTagSlug(member.displayName || member.email || member.id);
+        const personSlug = canonicalPhotoTagSlug(rawPersonSlug);
+
+        return {
+          ...member,
+          rawPersonSlug,
+          personSlug,
+          alternatePersonSlugs: rawPersonSlug && rawPersonSlug !== personSlug ? [rawPersonSlug] : [],
+          tagKey: `member:${member.id}`,
+          tagLabel: member.displayName || member.email || member.id
+        };
+      })
+      .filter(member => member.tagKey && member.personSlug));
+  }
+
+  tagMembers.push(...(config.profiles || []).map(profile => {
+    const rawPersonSlug = makePhotoTagSlug(profile.slug || profile.name || profile.id);
+    const personSlug = canonicalPhotoTagSlug(rawPersonSlug);
+    const alternatePersonSlugs = (profile.aliases || [])
+      .map(alias => canonicalPhotoTagSlug(alias))
+      .filter(alias => alias && alias !== personSlug);
+
+    return {
+      id: profile.id || personSlug,
+      status: 'approved',
+      displayName: profile.name,
+      rawPersonSlug,
+      personSlug,
+      alternatePersonSlugs,
+      tagKey: `people:${personSlug}`,
+      tagLabel: profile.name,
+      displayTagLabel: profile.name,
+      source: 'people'
+    };
+  }));
+
+  photoTagMembers = disambiguateDuplicateMemberLabels(tagMembers
     .filter(member => member.tagKey && member.personSlug)
-    .sort((a, b) => a.tagLabel.localeCompare(b.tagLabel, undefined, { sensitivity: 'base' }));
-
-  photoTagMembers = disambiguateDuplicateMemberLabels(approved);
+    .sort((a, b) => a.tagLabel.localeCompare(b.tagLabel, undefined, { sensitivity: 'base' })));
 }
-
 async function loadPhotoTagRecords() {
   const { collection, getDocs } = window._fb;
   const snapshot = await getDocs(collection(window._fb.db, PHOTO_TAGS_COLLECTION));
@@ -259,12 +405,12 @@ async function loadPhotoTagFiles() {
   let pageToken = '';
   let page = 0;
 
-  updatePhotoTagLoading('Loading Drive photos...');
+  updatePhotoTagLoading(`Loading ${getPhotoTagFolderLabel()} photos...`);
 
   do {
     page += 1;
     const q = encodeURIComponent(
-      `'${PHOTO_TAGS_MASTER_FOLDER_ID}' in parents and ` +
+      `'${getPhotoTagFolderId()}' in parents and ` +
       `mimeType contains 'image/' and ` +
       `trashed = false`
     );
@@ -280,7 +426,7 @@ async function loadPhotoTagFiles() {
       params.push(`pageToken=${encodeURIComponent(pageToken)}`);
     }
 
-    updatePhotoTagLoading(`Loading Drive photos... ${files.length} found`);
+    updatePhotoTagLoading(`Loading ${getPhotoTagFolderLabel()} photos... ${files.length} found`);
 
     const { response, data } = await fetchPhotoTagJson(
       `https://www.googleapis.com/drive/v3/files?${params.join('&')}`,
@@ -303,7 +449,7 @@ async function loadPhotoTagFiles() {
       size: file.size || ''
     })));
 
-    updatePhotoTagLoading(`Loading Drive photos... ${files.length} found`);
+    updatePhotoTagLoading(`Loading ${getPhotoTagFolderLabel()} photos... ${files.length} found`);
     pageToken = data.nextPageToken || '';
   } while (pageToken);
 
@@ -889,7 +1035,7 @@ function isYoutubePhotoTagRecord(tag) {
 
 function getPhotoTagYoutubeVideos() {
   return Array.from(photoTagRecords.values())
-    .filter(isYoutubePhotoTagRecord)
+    .filter(tag => isYoutubePhotoTagRecord(tag) && isPhotoTagCurrentAlbum(tag))
     .sort((a, b) => String(b.updatedAt?.seconds || b.approvedAt?.seconds || 0).localeCompare(String(a.updatedAt?.seconds || a.approvedAt?.seconds || 0)));
 }
 
@@ -925,6 +1071,7 @@ function getPhotoTagDriveRecordId(tag) {
 function getMissingDrivePhotoTagRecords() {
   const currentDriveIds = new Set(photoTagFiles.map(file => file.id));
   return Array.from(photoTagRecords.values()).filter(tag => {
+    if (!isPhotoTagCurrentAlbum(tag)) return false;
     const driveId = getPhotoTagDriveRecordId(tag);
     return Boolean(driveId && !currentDriveIds.has(driveId));
   });
@@ -1593,7 +1740,7 @@ async function savePhotoTag(fileId) {
 
   const payload = {
     driveFileId: file.id,
-    driveFolderId: PHOTO_TAGS_MASTER_FOLDER_ID,
+    driveFolderId: getPhotoTagFolderId(),
     name: file.name,
     mimeType: file.mimeType,
     type: file.type,
@@ -1601,7 +1748,7 @@ async function savePhotoTag(fileId) {
     peopleAliases: selectedMembers.map(member => member.personSlug),
     peopleLabels: selectedMembers.map(member => member.tagLabel),
     personIds: selectedMembers.map(member => member.id),
-    albums: ['family'],
+    albums: [getPhotoTagAlbumSlug()],
     source: 'manual',
     status: 'approved',
     reviewReason: null,
@@ -2026,7 +2173,7 @@ async function publishSelected() {
 
     const payload = {
       driveFileId: file.id,
-      driveFolderId: PHOTO_TAGS_MASTER_FOLDER_ID,
+      driveFolderId: getPhotoTagFolderId(),
       name: file.name,
       mimeType: file.mimeType,
       type: file.type,
@@ -2034,7 +2181,7 @@ async function publishSelected() {
       peopleAliases: selectedMembers.map(m => m.personSlug),
       peopleLabels: selectedMembers.map(m => m.tagLabel),
       personIds: selectedMembers.map(m => m.id),
-      albums: ['family'],
+      albums: [getPhotoTagAlbumSlug()],
       source: 'manual',
       status: 'approved',
       reviewReason: null,
@@ -2168,7 +2315,7 @@ async function submitYoutubeVideo() {
   const videoId = parseYoutubeId(urlInput?.value);
   if (!videoId) return fdToast('Please enter a valid YouTube URL.');
 
-  const docId = `yt_${videoId}`;
+  const docId = getPhotoTagYoutubeDocId(videoId);
   if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
 
   const selectedChips = Array.from(chipsWrap?.querySelectorAll('.fd-person-chip.selected') || []);
@@ -2194,7 +2341,7 @@ async function submitYoutubeVideo() {
     peopleAliases: selectedMembers.map(m => m.personSlug),
     peopleLabels: selectedMembers.map(m => m.tagLabel),
     personIds: selectedMembers.map(m => m.id),
-    albums: ['family'],
+    albums: [getPhotoTagAlbumSlug()],
     status: 'approved',
     reviewReason: null,
     approvedAt: window._fb.serverTimestamp(),
@@ -2275,7 +2422,7 @@ async function saveYoutubeVideoTags(recordId) {
     title = await fetchYoutubeTitle(youtubeId).catch(() => null) || `Video ID: ${youtubeId}`;
   }
 
-  const newDocId = `yt_${youtubeId}`;
+  const newDocId = getPhotoTagYoutubeDocId(youtubeId);
   const thumbnail = `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
   const payload = {
     youtubeId,
@@ -2288,7 +2435,7 @@ async function saveYoutubeVideoTags(recordId) {
     peopleAliases: selectedMembers.map(member => member.personSlug),
     peopleLabels: selectedMembers.map(member => member.tagLabel),
     personIds: selectedMembers.map(member => member.id),
-    albums: ['family'],
+    albums: [getPhotoTagAlbumSlug()],
     status: 'approved',
     reviewReason: null,
     approvedAt: window._fb.serverTimestamp(),
@@ -2364,7 +2511,7 @@ async function cleanMissingDriveRecords() {
     .join('\n');
   const more = missingRecords.length > 6 ? `\n...and ${missingRecords.length - 6} more` : '';
   const confirmed = window.confirm(
-    `Delete ${missingRecords.length} Firestore photo tag record${missingRecords.length !== 1 ? 's' : ''} whose Drive photo is no longer in the Family folder?\n\n${examples}${more}\n\nThis does not delete any Google Drive or YouTube files.`
+    `Delete ${missingRecords.length} Firestore photo tag record${missingRecords.length !== 1 ? 's' : ''} whose Drive photo is no longer in the ${getPhotoTagFolderLabel()}?\n\n${examples}${more}\n\nThis does not delete any Google Drive or YouTube files.`
   );
 
   if (!confirmed) return;

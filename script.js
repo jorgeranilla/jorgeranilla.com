@@ -543,6 +543,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const path = window.location.pathname.split("/").pop() || "index.html";
     const file = decodeURIComponent(path).toLowerCase();
+    const normalizedPath = window.location.pathname.replace(/\\/g, "/").toLowerCase();
+    const hierarchyKey = normalizedPath.includes("/gallery/people/") && file === "person.html" ? "people-person.html" : file;
 
     // Page Hierarchy Map - defines full breadcrumb path for each page
     const PAGE_HIERARCHY = {
@@ -668,8 +670,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Check if we have hierarchy data for this page
-    if (PAGE_HIERARCHY[file]) {
-      const hierarchy = PAGE_HIERARCHY[file];
+    if (PAGE_HIERARCHY[hierarchyKey]) {
+      const hierarchy = PAGE_HIERARCHY[hierarchyKey];
       let breadcrumbHTML = homeLink;
 
       // Build breadcrumb from hierarchy

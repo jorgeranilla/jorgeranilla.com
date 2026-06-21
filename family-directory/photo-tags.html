@@ -588,7 +588,7 @@
 
     <div class="fd-page">
       <h2 class="fd-page-title">Photo Tags</h2>
-      <p class="fd-page-sub">Assign Family folder photos to the people who appear in them</p>
+      <p class="fd-page-sub" id="fd-photo-tags-subtitle">Assign Family folder photos to the people who appear in them</p>
 
       <div id="fd-photo-tags-restricted" class="fd-restricted-card" style="display:none">
         <h3 class="fd-modal-title" style="margin-bottom:8px">Admin Access Only</h3>
@@ -597,6 +597,10 @@
 
       <div id="fd-photo-tags-admin" style="display:none">
         <div class="fd-tag-toolbar">
+          <div class="fd-tag-controls" aria-label="Photo source">
+            <button class="fd-filter-pill active" type="button" data-photo-source="family">Family folder</button>
+            <button class="fd-filter-pill" type="button" data-photo-source="people">People folder</button>
+          </div>
           <div class="fd-search-wrap" style="margin-bottom:0">
             <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             <input type="text" class="fd-search" id="fd-photo-search" placeholder="Search photos or people...">
@@ -611,7 +615,7 @@
             <button class="fd-filter-pill" data-filter="duplicates">Duplicates</button>
             <button class="fd-filter-pill" type="button" onclick="cleanMissingDriveRecords()">Clean Missing Records</button>
           </div>
-          <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading Family folder photos...</p>
+          <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading selected folder photos...</p>
         </div>
 
         <div class="fd-loading" id="fd-photo-tags-loading">
