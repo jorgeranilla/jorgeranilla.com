@@ -28,6 +28,8 @@
   const TAG_CONTENT_FIELDS = ['mimeType', 'type', 'md5Checksum', 'size'];
   const GRID_THUMB_SIZE = 600;
   const LIGHTBOX_THUMB_SIZE = 2400;
+  const MAX_DIRECT_PAGE_BUTTONS = 10;
+  const PAGE_BUTTON_WINDOW = 2;
 
   let config = {};
   let allFiles = [];
@@ -46,11 +48,61 @@
     });
   }
 
-  function compareFilesByCreatedTime(a, b) {
-    const aTime = String(a.createdTime || '');
-    const bTime = String(b.createdTime || '');
-    if (bTime > aTime) return 1;
-    if (bTime < aTime) return -1;
+  function toGalleryDateMs(year, month, day, hour = 0, minute = 0, second = 0) {
+    const y = Number(year);
+    const m = Number(month);
+    const d = Number(day);
+    const h = Number(hour || 0);
+    const min = Number(minute || 0);
+    const s = Number(second || 0);
+
+    if (!y || m < 1 || m > 12 || d < 1 || d > 31 || h < 0 || h > 23 || min < 0 || min > 59 || s < 0 || s > 59) {
+      return 0;
+    }
+
+    const ms = Date.UTC(y, m - 1, d, h, min, s);
+    const date = new Date(ms);
+    if (date.getUTCFullYear() !== y || date.getUTCMonth() !== m - 1 || date.getUTCDate() !== d) {
+      return 0;
+    }
+
+    return ms;
+  }
+
+  function parseGalleryFilenameDateMs(value) {
+    const match = String(value || '').match(/(?:^|[^\d])(\d{4})[.\-_](\d{2})[.\-_](\d{2})(?:[^\d]*(\d{2})[.\-:]?(\d{2}))?/);
+    if (!match) return 0;
+
+    return toGalleryDateMs(match[1], match[2], match[3], match[4] || 0, match[5] || 0);
+  }
+
+  function parseGalleryMetadataDateMs(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return 0;
+
+    const exif = raw.match(/^(\d{4})[:.-](\d{2})[:.-](\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+    if (exif) {
+      return toGalleryDateMs(exif[1], exif[2], exif[3], exif[4] || 0, exif[5] || 0, exif[6] || 0);
+    }
+
+    const parsed = Date.parse(raw);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function getGallerySortMs(file) {
+    const curatedNameDate = parseGalleryFilenameDateMs(file.name || file.youtubeTitle || '');
+    if (curatedNameDate) return curatedNameDate;
+
+    return parseGalleryMetadataDateMs(file.takenTime) ||
+      parseGalleryMetadataDateMs(file.createdTime) ||
+      parseGalleryMetadataDateMs(file.modifiedTime) ||
+      0;
+  }
+
+  function compareFilesByGalleryDate(a, b) {
+    const aTime = getGallerySortMs(a);
+    const bTime = getGallerySortMs(b);
+    if (aTime !== bTime) return bTime - aTime;
     return compareFilesByName(a, b);
   }
 
@@ -108,7 +160,7 @@
       const params = [
         `q=${q}`,
         `key=${encodeURIComponent(config.driveApiKey)}`,
-        'fields=nextPageToken,files(id,name,mimeType,createdTime,modifiedTime,md5Checksum,size)',
+        'fields=nextPageToken,files(id,name,mimeType,createdTime,modifiedTime,md5Checksum,size,imageMediaMetadata(time))',
         'orderBy=createdTime desc',
         `pageSize=${encodeURIComponent(config.drivePageSize)}`
       ];
@@ -131,6 +183,7 @@
         mimeType: file.mimeType,
         createdTime: file.createdTime || '',
         modifiedTime: file.modifiedTime || '',
+        takenTime: file.imageMediaMetadata?.time || '',
         md5Checksum: file.md5Checksum || '',
         size: file.size || ''
       })));
@@ -138,7 +191,7 @@
       pageToken = data.nextPageToken || '';
     } while (pageToken);
 
-    return files.sort(compareFilesByName);
+    return files;
   }
 
   async function loadApprovedTags() {
@@ -196,6 +249,8 @@
         const data = docSnap.data() || {};
         const videoId = data.youtubeId || '';
         const approvedIso = data.approvedAt?.toDate?.()?.toISOString?.() || '';
+        const createdIso = data.createdAt?.toDate?.()?.toISOString?.() || '';
+        const updatedIso = data.updatedAt?.toDate?.()?.toISOString?.() || '';
         return {
           id: docSnap.id,
           youtubeId: videoId,
@@ -209,8 +264,9 @@
           peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
           personIds: Array.isArray(data.personIds) ? data.personIds : [],
           albums: Array.isArray(data.albums) ? data.albums : [],
-          createdTime: approvedIso,
-          modifiedTime: approvedIso
+          createdTime: approvedIso || createdIso || updatedIso,
+          modifiedTime: updatedIso || approvedIso || createdIso,
+          takenTime: data.takenTime || data.videoDate || ''
         };
       }).filter(video => video.youtubeId);
     } catch (err) {
@@ -286,7 +342,7 @@
     ]);
 
     if (config.mode === 'all') {
-      return [...masterFiles, ...youtubeVideos].sort(compareFilesByCreatedTime);
+      return [...masterFiles, ...youtubeVideos].sort(compareFilesByGalleryDate);
     }
 
     const tags = await loadApprovedTags();
@@ -300,7 +356,7 @@
 
     const filteredYoutubeVideos = youtubeVideos.filter(video => matchesConfiguredGallery(video));
 
-    return [...taggedDriveFiles, ...filteredYoutubeVideos].sort(compareFilesByCreatedTime);
+    return [...taggedDriveFiles, ...filteredYoutubeVideos].sort(compareFilesByGalleryDate);
   }
 
   function setLoading(isLoading) {
@@ -331,6 +387,79 @@
 
     badge.textContent = label;
     badge.style.display = 'inline-block';
+  }
+
+  function getPaginationItems(currentPageIndex, totalPages) {
+    if (totalPages <= MAX_DIRECT_PAGE_BUTTONS) {
+      return Array.from({ length: totalPages }, (_, index) => index);
+    }
+
+    const pages = new Set([0, totalPages - 1]);
+    const start = Math.max(1, currentPageIndex - PAGE_BUTTON_WINDOW);
+    const end = Math.min(totalPages - 2, currentPageIndex + PAGE_BUTTON_WINDOW);
+
+    for (let index = start; index <= end; index += 1) {
+      pages.add(index);
+    }
+
+    if (currentPageIndex <= PAGE_BUTTON_WINDOW + 2) {
+      for (let index = 1; index <= Math.min(totalPages - 2, MAX_DIRECT_PAGE_BUTTONS - 2); index += 1) {
+        pages.add(index);
+      }
+    }
+
+    if (currentPageIndex >= totalPages - PAGE_BUTTON_WINDOW - 3) {
+      for (let index = Math.max(1, totalPages - MAX_DIRECT_PAGE_BUTTONS + 1); index < totalPages - 1; index += 1) {
+        pages.add(index);
+      }
+    }
+
+    const sorted = Array.from(pages).sort((a, b) => a - b);
+    const items = [];
+
+    sorted.forEach((pageIndex, index) => {
+      if (index > 0 && pageIndex - sorted[index - 1] > 1) {
+        items.push('ellipsis');
+      }
+      items.push(pageIndex);
+    });
+
+    return items;
+  }
+
+  function ensurePageNumbersContainer(pagination, nextBtn) {
+    let pageNumbers = document.getElementById('page-numbers');
+    if (!pageNumbers) {
+      pageNumbers = document.createElement('div');
+      pageNumbers.id = 'page-numbers';
+      pageNumbers.className = 'page-numbers';
+      pagination.insertBefore(pageNumbers, nextBtn);
+    }
+    return pageNumbers;
+  }
+
+  function renderPageNumbers(page, totalPages, pagination, nextBtn) {
+    const pageNumbers = ensurePageNumbersContainer(pagination, nextBtn);
+    pageNumbers.innerHTML = '';
+
+    getPaginationItems(page, totalPages).forEach(item => {
+      if (item === 'ellipsis') {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'page-ellipsis';
+        ellipsis.textContent = '...';
+        pageNumbers.appendChild(ellipsis);
+        return;
+      }
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'page-number-btn';
+      button.textContent = String(item + 1);
+      button.disabled = item === page;
+      if (item === page) button.setAttribute('aria-current', 'page');
+      button.addEventListener('click', () => renderPage(item));
+      pageNumbers.appendChild(button);
+    });
   }
 
   function renderPage(page) {
@@ -376,10 +505,13 @@
       if (totalPages > 1) {
         pagination.style.display = 'flex';
         indicator.textContent = `Page ${page + 1} of ${totalPages}`;
+        renderPageNumbers(page, totalPages, pagination, nextBtn);
         prevBtn.disabled = page === 0;
         nextBtn.disabled = page >= totalPages - 1;
       } else {
         pagination.style.display = 'none';
+        const pageNumbers = document.getElementById('page-numbers');
+        if (pageNumbers) pageNumbers.innerHTML = '';
       }
     }
 
