@@ -636,6 +636,9 @@
     // No longer shown in modal — tags are shown in the lightbox tag bar instead
   }
 
+  function isSuggestionModalOpen() {
+    return Boolean(document.getElementById('tagSuggestionModal')?.classList.contains('active'));
+  }
   function closeSuggestionModal() {
     const modal = document.getElementById('tagSuggestionModal');
     if (modal) modal.classList.remove('active');
@@ -976,6 +979,10 @@
     });
     document.addEventListener('keydown', event => {
       if (!lb.classList.contains('active')) return;
+      if (isSuggestionModalOpen()) {
+        if (event.key === 'Escape') closeSuggestionModal();
+        return;
+      }
       if (event.key === 'Escape') closeLightbox();
       if (event.key === 'ArrowRight') shiftLightbox(1);
       if (event.key === 'ArrowLeft') shiftLightbox(-1);
@@ -1022,6 +1029,8 @@
   }
 
   function shiftLightbox(dir) {
+    if (isSuggestionModalOpen()) return;
+
     const next = lightboxIdx + dir;
 
     if (next < 0 || next >= allFiles.length) return;
@@ -1031,6 +1040,8 @@
   }
 
   function closeLightbox() {
+    closeSuggestionModal();
+
     const lb = document.getElementById('lightbox');
     const video = document.getElementById('lightboxVideo');
 

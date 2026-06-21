@@ -34,6 +34,7 @@ const PHOTO_TAGS_SOURCES = {
 };
 const PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const PHOTO_TAG_SUGGESTIONS_COLLECTION = 'familyPhotoTagSuggestions';
+const FAMILY_DIRECTORY_COLLECTION = 'familyDirectory';
 const PHOTO_TAGS_DRIVE_PAGE_SIZE = 200;
 const PHOTO_TAGS_REQUEST_TIMEOUT_MS = 30000;
 const PHOTO_TAGS_CONVERT_ENDPOINT = 'https://us-central1-jorgeranilla-site.cloudfunctions.net/convertFamilyPhotoUpload';
@@ -391,20 +392,8 @@ async function loadPhotoTagMembers() {
     const members = await fetchAllMembers();
     tagMembers.push(...members
       .filter(member => member.status === 'approved' && member.status !== 'claimed')
-      .map(member => {
-        const rawPersonSlug = makePhotoTagSlug(member.displayName || member.email || member.id);
-        const personSlug = canonicalPhotoTagSlug(rawPersonSlug);
-
-        return {
-          ...member,
-          rawPersonSlug,
-          personSlug,
-          alternatePersonSlugs: rawPersonSlug && rawPersonSlug !== personSlug ? [rawPersonSlug] : [],
-          tagKey: `member:${member.id}`,
-          tagLabel: member.displayName || member.email || member.id
-        };
-      })
-      .filter(member => member.tagKey && member.personSlug));
+      .map(normalizeDirectoryMemberForPhotoTag)
+      .filter(Boolean));
   }
 
   tagMembers.push(...(config.profiles || []).map(profile => {
@@ -964,6 +953,24 @@ function canonicalPhotoTagSlug(value) {
   return PHOTO_TAG_CANONICAL_SLUGS[slug] || slug;
 }
 
+function normalizeDirectoryMemberForPhotoTag(member = {}) {
+  const id = String(member.id || member.uid || '').trim();
+  const tagLabel = String(member.displayName || member.email || id).trim();
+  const rawPersonSlug = makePhotoTagSlug(tagLabel || id);
+  const personSlug = canonicalPhotoTagSlug(rawPersonSlug);
+
+  if (!id || !tagLabel || !personSlug) return null;
+
+  return {
+    ...member,
+    id,
+    rawPersonSlug,
+    personSlug,
+    alternatePersonSlugs: rawPersonSlug && rawPersonSlug !== personSlug ? [rawPersonSlug] : [],
+    tagKey: `member:${id}`,
+    tagLabel
+  };
+}
 function disambiguateDuplicateMemberLabels(members) {
   const counts = new Map();
 
@@ -1324,18 +1331,160 @@ function getPhotoTagMemberOrSuggestionPerson(key, suggestion) {
   };
 }
 
-function getMergedPhotoTagPeopleForSuggestion(tag, suggestion) {
+function getPhotoTagMemberByKey(tagKey) {
+  return photoTagMembers.find(member => member.tagKey === tagKey) || null;
+}
+
+function getPhotoTagMemberIdFromKey(tagKey) {
+  const value = String(tagKey || '').trim();
+  return value.startsWith('member:') ? value.slice('member:'.length) : '';
+}
+
+function sortPhotoTagMembersByLabel(members) {
+  return members.sort((a, b) => a.tagLabel.localeCompare(b.tagLabel, undefined, { sensitivity: 'base' }));
+}
+
+function findPhotoTagMemberByName(name) {
+  const normalized = normalizePhotoTagToken(name);
+  if (!normalized) return null;
+
+  return photoTagMembers.find(member => normalizePhotoTagToken(member.tagLabel) === normalized)
+    || photoTagMembers.find(member => normalizePhotoTagToken(member.displayName) === normalized)
+    || null;
+}
+
+function makePhotoTagOnlyMemberId(name) {
+  const slug = makePhotoTagSlug(name) || 'person';
+  const suffix = Math.random().toString(36).slice(2, 7);
+  return `manual_phototag_${slug}_${Date.now()}_${suffix}`;
+}
+
+function buildPhotoTagOnlyMemberPayload(name, id) {
+  return {
+    uid: id,
+    displayName: name,
+    email: '',
+    emailLower: '',
+    phone: '',
+    city: '',
+    country: '',
+    photoURL: '',
+    birthday: '',
+    address: '',
+    preferredContact: 'email',
+    role: 'member',
+    status: 'approved',
+    privacy: {
+      showPhone: false,
+      showEmail: false,
+      showAddress: false,
+      showBirthday: false,
+      showAge: false
+    },
+    isPhotoTagOnly: true,
+    createdFromPhotoTagSuggestion: true,
+    syncSource: 'photoTagSuggestion',
+    createdAt: window._fb.serverTimestamp(),
+    updatedAt: window._fb.serverTimestamp()
+  };
+}
+
+async function ensurePhotoTagOnlyMemberForName(name, preferredId = '') {
+  const displayName = String(name || '').trim();
+  if (!displayName) return null;
+
+  const existingByName = findPhotoTagMemberByName(displayName);
+  if (existingByName) return existingByName;
+
+  const { doc, getDoc, setDoc } = window._fb;
+  const id = String(preferredId || '').trim() || makePhotoTagOnlyMemberId(displayName);
+  const ref = doc(window._fb.db, FAMILY_DIRECTORY_COLLECTION, id);
+  const existingSnap = await getDoc(ref).catch(() => null);
+
+  if (existingSnap?.exists?.()) {
+    const existingMember = normalizeDirectoryMemberForPhotoTag({ id, ...existingSnap.data() });
+    if (existingMember) {
+      photoTagMembers = disambiguateDuplicateMemberLabels(sortPhotoTagMembersByLabel([
+        ...photoTagMembers.filter(member => member.id !== existingMember.id),
+        existingMember
+      ]));
+      return getPhotoTagMemberByKey(existingMember.tagKey) || existingMember;
+    }
+  }
+
+  const payload = buildPhotoTagOnlyMemberPayload(displayName, id);
+  await setDoc(ref, payload, { merge: true });
+
+  const createdMember = normalizeDirectoryMemberForPhotoTag({ id, ...payload });
+  if (!createdMember) return null;
+
+  photoTagMembers = disambiguateDuplicateMemberLabels(sortPhotoTagMembersByLabel([
+    ...photoTagMembers.filter(member => member.id !== createdMember.id),
+    createdMember
+  ]));
+
+  return getPhotoTagMemberByKey(createdMember.tagKey) || createdMember;
+}
+
+async function resolvePhotoTagSuggestionMembers(suggestion) {
+  const resolved = new Map();
+  const addMember = member => {
+    if (member?.tagKey) resolved.set(member.tagKey, member);
+  };
+
+  const selectedPeople = Array.isArray(suggestion?.selectedPeople) ? suggestion.selectedPeople : [];
+  const peopleKeys = Array.isArray(suggestion?.peopleKeys) ? suggestion.peopleKeys : [];
+
+  for (const key of peopleKeys) {
+    const person = getSuggestionPersonByKey(suggestion, key);
+    let member = getPhotoTagMemberByKey(key);
+
+    if (!member && person?.tagLabel) {
+      member = findPhotoTagMemberByName(person.tagLabel)
+        || await ensurePhotoTagOnlyMemberForName(person.tagLabel, person.personId || person.id || getPhotoTagMemberIdFromKey(key));
+    }
+
+    addMember(member);
+  }
+
+  for (const person of selectedPeople) {
+    const key = String(person?.tagKey || '').trim();
+    if (key && resolved.has(key)) continue;
+
+    let member = getPhotoTagMemberByKey(key);
+    if (!member && person?.tagLabel) {
+      member = findPhotoTagMemberByName(person.tagLabel)
+        || await ensurePhotoTagOnlyMemberForName(person.tagLabel, person.personId || person.id || getPhotoTagMemberIdFromKey(key));
+    }
+
+    addMember(member);
+  }
+
+  const resolvedLabels = new Set(Array.from(resolved.values()).map(member => normalizePhotoTagToken(member.tagLabel)));
+
+  for (const name of uniquePhotoTagLabels(suggestion?.otherNames || [])) {
+    const normalized = normalizePhotoTagToken(name);
+    if (!normalized || resolvedLabels.has(normalized)) continue;
+
+    const member = findPhotoTagMemberByName(name) || await ensurePhotoTagOnlyMemberForName(name);
+    addMember(member);
+    if (member?.tagLabel) resolvedLabels.add(normalizePhotoTagToken(member.tagLabel));
+  }
+
+  return Array.from(resolved.values());
+}
+
+function getMergedPhotoTagPeopleForSuggestion(tag, resolvedMembers) {
   return normalizePhotoTagPeopleKeys([
     ...getSavedPhotoTagPeopleKeys(tag),
-    ...(Array.isArray(suggestion.peopleKeys) ? suggestion.peopleKeys : [])
+    ...(resolvedMembers || []).map(member => member.tagKey)
   ]);
 }
 
-function getMergedOtherPeopleLabels(tag, suggestion) {
-  return uniquePhotoTagLabels([
-    ...(Array.isArray(tag?.otherPeopleLabels) ? tag.otherPeopleLabels : []),
-    ...(Array.isArray(suggestion?.otherNames) ? suggestion.otherNames : [])
-  ]);
+function getRemainingOtherPeopleLabelsAfterSuggestion(tag, resolvedMembers) {
+  const resolvedLabels = new Set((resolvedMembers || []).map(member => normalizePhotoTagToken(member.tagLabel)));
+  return uniquePhotoTagLabels(Array.isArray(tag?.otherPeopleLabels) ? tag.otherPeopleLabels : [])
+    .filter(label => !resolvedLabels.has(normalizePhotoTagToken(label)));
 }
 
 function getPhotoTagDisplayLabels(tag, selectedMembersList = []) {
@@ -1418,14 +1567,16 @@ async function approvePhotoTagSuggestion(suggestionId) {
   if (!suggestion || !target) return fdToast('Could not find the photo or video for this suggestion.');
 
   const tag = getPhotoTagRecord(target.id) || target;
-  const mergedPeople = getMergedPhotoTagPeopleForSuggestion(tag, suggestion);
-  const otherPeopleLabels = getMergedOtherPeopleLabels(tag, suggestion);
-
-  if (mergedPeople.length === 0 && otherPeopleLabels.length === 0) {
-    return fdToast('This suggestion has no names to approve.');
-  }
 
   try {
+    const resolvedMembers = await resolvePhotoTagSuggestionMembers(suggestion);
+    const mergedPeople = getMergedPhotoTagPeopleForSuggestion(tag, resolvedMembers);
+    const otherPeopleLabels = getRemainingOtherPeopleLabelsAfterSuggestion(tag, resolvedMembers);
+
+    if (mergedPeople.length === 0 && otherPeopleLabels.length === 0) {
+      return fdToast('This suggestion has no names to approve.');
+    }
+
     if (isYoutubePhotoTagRecord(target)) {
       await writeYoutubeTagRecordFromSuggestion(target, mergedPeople, otherPeopleLabels, suggestion);
     } else {
@@ -1433,7 +1584,7 @@ async function approvePhotoTagSuggestion(suggestionId) {
     }
 
     await markPhotoTagSuggestionReviewed(suggestionId, 'approved');
-    fdToast('Suggestion approved and published.');
+    fdToast('Suggestion approved and published. New names were added as Photo Tags Only people.');
     renderPhotoTags();
   } catch (error) {
     console.error('Suggestion approve error:', error);
@@ -1534,43 +1685,9 @@ function getPhotoTagStatus(file) {
   return tag.status || 'approved';
 }
 async function syncComputedPhotoTagStatuses() {
-  const updates = [];
-
-  photoTagFiles.forEach(file => {
-    const tag = getPhotoTagRecord(file.id);
-    if (!hasSavedTagPeople(tag)) return;
-
-    const computedStatus = getPhotoTagStatus(file);
-    const storedStatus = tag._storedStatus || '';
-
-    if (computedStatus !== 'needs-review' || storedStatus === 'needs-review') return;
-
-    const reviewReason = getPhotoTagReviewReason(file, tag) || 'Review these tags before publishing.';
-
-    updates.push(
-      window._fb.setDoc(
-        window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, file.id),
-        {
-          status: 'needs-review',
-          reviewReason,
-          reviewCheckedAt: window._fb.serverTimestamp()
-        },
-        { merge: true }
-      ).then(() => {
-        photoTagRecords.set(file.id, normalizePhotoTagRecord(file.id, {
-          ...tag,
-          status: 'needs-review',
-          reviewReason
-        }));
-      })
-    );
-  });
-
-  if (updates.length > 0) {
-    await Promise.all(updates);
-  }
+  // Keep computed review states UI-only. Persisting needs-review during load/navigation
+  // creates avoidable Firestore writes; admins publish the final status explicitly.
 }
-
 async function syncRenamedPhotoTagMetadata() {
   const updates = [];
 

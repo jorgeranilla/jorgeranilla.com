@@ -18,6 +18,7 @@ let app, auth, db, currentUser = null, currentProfile = null;
 let isAdmin = false;
 let fdAuthWatchdog = null;
 const COLLECTION = 'familyDirectory';
+const PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const FD_AUTH_TIMEOUT_MS = 25000;
 const GOOGLE_CONTACTS_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
 const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive';
@@ -262,7 +263,7 @@ async function fdInit() {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
     const { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider }
       = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js');
-    const { getFirestore, collection, doc, documentId, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp }
+    const { getFirestore, collection, doc, documentId, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp, writeBatch }
       = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
 
     app = initializeApp(firebaseConfig);
@@ -272,7 +273,7 @@ async function fdInit() {
     window._fb = {
       auth, db, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
       collection, doc, documentId, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
-      query, where, orderBy, serverTimestamp
+      query, where, orderBy, serverTimestamp, writeBatch
     };
 
     onAuthStateChanged(auth, handleAuthState, error => {
@@ -550,13 +551,121 @@ async function adminDelete(uid) {
 /* ── Admin: Update Any Profile ── */
 async function adminUpdateProfile(uid, data) {
   if (!isAdmin) return;
-  const { doc, updateDoc, serverTimestamp } = window._fb;
+  const { doc, getDoc, updateDoc, serverTimestamp } = window._fb;
+  const ref = doc(db, COLLECTION, uid);
+  const beforeSnap = await getDoc(ref).catch(() => null);
+  const beforeData = beforeSnap?.exists?.() ? beforeSnap.data() : {};
+  const beforeName = String(beforeData.displayName || '').trim();
   const payload = { ...data };
   if ('email' in payload) payload.emailLower = normalizeEmail(payload.email);
-  await updateDoc(doc(db, COLLECTION, uid), { ...payload, updatedAt: serverTimestamp() });
+
+  await updateDoc(ref, { ...payload, updatedAt: serverTimestamp() });
+
+  const afterName = String(payload.displayName || beforeName).trim();
+  if ('displayName' in payload && afterName && afterName !== beforeName) {
+    try {
+      await syncPhotoTagLabelsForDirectoryMember(uid, { ...beforeData, ...payload, id: uid });
+    } catch (error) {
+      console.warn('Could not sync renamed member photo tags:', error);
+      fdToast('Profile updated, but photo tag labels could not be synced automatically.');
+    }
+  }
 }
 
 /* ── Toast ── */
+function makeDirectoryPhotoTagSlug(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function updatePhotoTagMemberArrays(tag, uid, displayName) {
+  const memberKey = `member:${uid}`;
+  const personSlug = makeDirectoryPhotoTagSlug(displayName || uid);
+  const people = Array.isArray(tag.people) ? [...tag.people] : [];
+  const peopleLabels = Array.isArray(tag.peopleLabels) ? [...tag.peopleLabels] : [];
+  const peopleAliases = Array.isArray(tag.peopleAliases) ? [...tag.peopleAliases] : [];
+  const personIds = Array.isArray(tag.personIds) ? [...tag.personIds] : [];
+  let index = people.indexOf(memberKey);
+  let changed = false;
+
+  if (index < 0 && personIds.includes(uid)) {
+    people.push(memberKey);
+    index = people.length - 1;
+    changed = true;
+  }
+
+  if (index < 0) return null;
+
+  if (!personIds.includes(uid)) {
+    personIds.push(uid);
+    changed = true;
+  }
+
+  while (peopleLabels.length <= index) peopleLabels.push('');
+  while (peopleAliases.length <= index) peopleAliases.push('');
+
+  if (peopleLabels[index] !== displayName) {
+    peopleLabels[index] = displayName;
+    changed = true;
+  }
+
+  if (personSlug && peopleAliases[index] !== personSlug) {
+    peopleAliases[index] = personSlug;
+    changed = true;
+  }
+
+  return changed ? { people, peopleLabels, peopleAliases, personIds } : null;
+}
+
+async function syncPhotoTagLabelsForDirectoryMember(uid, profileData = {}) {
+  if (!isAdmin || !uid) return 0;
+
+  const displayName = String(profileData.displayName || '').trim();
+  if (!displayName) return 0;
+
+  const { collection, query, where, getDocs, writeBatch, serverTimestamp } = window._fb;
+  const memberKey = `member:${uid}`;
+  const tagDocs = new Map();
+  const tagsRef = collection(db, PHOTO_TAGS_COLLECTION);
+  const queries = [
+    query(tagsRef, where('people', 'array-contains', memberKey)),
+    query(tagsRef, where('personIds', 'array-contains', uid))
+  ];
+
+  for (const tagQuery of queries) {
+    const snapshot = await getDocs(tagQuery);
+    snapshot.docs.forEach(docSnap => tagDocs.set(docSnap.id, docSnap));
+  }
+
+  let batch = writeBatch(db);
+  let batchCount = 0;
+  let updated = 0;
+
+  for (const docSnap of tagDocs.values()) {
+    const update = updatePhotoTagMemberArrays(docSnap.data() || {}, uid, displayName);
+    if (!update) continue;
+
+    batch.update(docSnap.ref, {
+      ...update,
+      updatedAt: serverTimestamp()
+    });
+    batchCount++;
+    updated++;
+
+    if (batchCount >= 450) {
+      await batch.commit();
+      batch = writeBatch(db);
+      batchCount = 0;
+    }
+  }
+
+  if (batchCount > 0) await batch.commit();
+  return updated;
+}
 function fdToast(msg) {
   let toast = document.getElementById('fd-toast');
   if (!toast) {
