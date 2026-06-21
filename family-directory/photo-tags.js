@@ -52,6 +52,16 @@ const PHOTO_TAGS_STATUS_LABELS = {
   'needs-review': 'Needs Retag',
   untagged: 'Untagged'
 };
+const PHOTO_TAGS_FILTER_LABELS = {
+  all: 'All',
+  untagged: 'Untagged',
+  tagged: 'Tagged',
+  approved: 'Approved',
+  'needs-review': 'Needs Retag',
+  draft: 'Drafts',
+  'needs-rename': 'Needs Rename',
+  duplicates: 'Duplicates'
+};
 const PHOTO_TAG_CANONICAL_SLUGS = {
   'luis-fernando': 'luis-fernando-astocondor',
   'fernando-astocondor': 'luis-fernando-astocondor',
@@ -1077,6 +1087,7 @@ function getPhotoTagChipPeople(fileId) {
 function updatePhotoTagDraftFromChips(fileId) {
   setPhotoTagDraftPeople(fileId, getPhotoTagChipPeople(fileId));
   renderBulkBar();
+  renderPhotoTagSummary();
 }
 
 function getDirtyPhotoTagDraftFiles() {
@@ -1507,6 +1518,69 @@ function getPhotoTagDuplicateCount() {
   return ids.size;
 }
 
+function formatPhotoTagCount(count, singular, plural = `${singular}s`) {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function getPhotoTagFilterLabel() {
+  return PHOTO_TAGS_FILTER_LABELS[photoTagFilter] || 'Current filter';
+}
+
+function getPhotoTagVisibleSummary(visiblePhotoCount, visibleVideoCount, totalPhotoCount) {
+  const filterLabel = getPhotoTagFilterLabel();
+  const context = photoTagSearch
+    ? 'matching search'
+    : photoTagFilter === 'all'
+      ? 'in this folder'
+      : `in ${filterLabel}`;
+  const totalNote = (photoTagFilter !== 'all' || photoTagSearch) && totalPhotoCount !== visiblePhotoCount
+    ? ` (${totalPhotoCount} total)`
+    : '';
+  const videoText = visibleVideoCount > 0 ? ` + ${formatPhotoTagCount(visibleVideoCount, 'YouTube video')}` : '';
+
+  return `${formatPhotoTagCount(visiblePhotoCount, 'photo')} ${context}${totalNote}${videoText}`;
+}
+
+function renderPhotoTagSummary(visible = getVisiblePhotoTagFiles(), visibleVideos = getVisiblePhotoTagYoutubeVideos()) {
+  const summary = document.getElementById('fd-photo-tag-summary');
+  if (!summary) return;
+
+  const youtubeVideos = getPhotoTagYoutubeVideos();
+  const taggedCount = photoTagFiles.filter(isPhotoTagged).length;
+  const untaggedCount = Math.max(0, photoTagFiles.length - taggedCount);
+  const needsReviewCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'needs-review').length;
+  const approvedCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'approved').length;
+  const needsRenameCount = photoTagFiles.filter(file => getPhotoTagRenameMessage(file)).length;
+  const duplicateCount = getPhotoTagDuplicateCount();
+  const draftCount = getPhotoTagDraftCount();
+  const selectedCount = photoTagSelected.size;
+
+  const chips = [
+    { label: 'Working on', value: getPhotoTagVisibleSummary(visible.length, visibleVideos.length, photoTagFiles.length), variant: 'primary' },
+    { label: 'Photos left', value: formatPhotoTagCount(untaggedCount, 'photo'), variant: untaggedCount > 0 ? 'warn' : 'done' },
+    { label: 'Drafts ready', value: formatPhotoTagCount(draftCount, 'photo'), variant: draftCount > 0 ? 'info' : 'muted' },
+    { label: 'Needs retag', value: formatPhotoTagCount(needsReviewCount, 'photo'), variant: needsReviewCount > 0 ? 'warn' : 'muted' },
+    { label: 'Needs rename', value: formatPhotoTagCount(needsRenameCount, 'photo'), variant: needsRenameCount > 0 ? 'warn' : 'muted' },
+    { label: 'Duplicates', value: formatPhotoTagCount(duplicateCount, 'photo'), variant: duplicateCount > 0 ? 'danger' : 'muted' },
+    { label: 'Approved', value: `${approvedCount}/${photoTagFiles.length} photos`, variant: 'done' }
+  ];
+
+  if (selectedCount > 0) {
+    chips.splice(1, 0, { label: 'Selected', value: formatPhotoTagCount(selectedCount, 'photo'), variant: 'info' });
+  }
+
+  if (youtubeVideos.length > 0) {
+    chips.push({ label: 'YouTube', value: formatPhotoTagCount(youtubeVideos.length, 'video'), variant: 'muted' });
+  }
+
+  summary.innerHTML = chips.map(chip => `
+    <span class="fd-summary-chip fd-summary-chip--${chip.variant}">
+      <span class="fd-summary-chip-label">${escapePhotoTagHtml(chip.label)}</span>
+      <strong>${escapePhotoTagHtml(chip.value)}</strong>
+    </span>
+  `).join('');
+}
+
 function getPhotoTagNewestDuplicateName(files) {
   return files
     .filter(file => getPhotoTagDriveRecencyMs(file))
@@ -1573,20 +1647,9 @@ function renderPhotoTags() {
 
   const visible = getVisiblePhotoTagFiles();
   const visibleVideos = getVisiblePhotoTagYoutubeVideos();
-  const youtubeVideos = getPhotoTagYoutubeVideos();
-  const taggedCount = photoTagFiles.filter(isPhotoTagged).length;
-  const untaggedCount = photoTagFiles.length - taggedCount;
-  const needsReviewCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'needs-review').length;
-  const approvedCount = photoTagFiles.filter(file => getPhotoTagStatus(file) === 'approved').length;
-  const needsRenameCount = photoTagFiles.filter(file => getPhotoTagRenameMessage(file)).length;
-  const duplicateCount = getPhotoTagDuplicateCount();
-  const draftCount = getPhotoTagDraftCount();
-  const videoApprovedCount = youtubeVideos.filter(video => getYoutubeVideoTagStatus(video) === 'approved').length;
-  const videoNeedsReviewCount = youtubeVideos.filter(video => getYoutubeVideoTagStatus(video) === 'needs-review').length;
-  const videoUntaggedCount = youtubeVideos.filter(video => getYoutubeVideoTagStatus(video) === 'untagged').length;
   const totalVisible = visible.length + visibleVideos.length;
 
-  summary.textContent = `${photoTagFiles.length} photos + ${youtubeVideos.length} YouTube videos - ${approvedCount + videoApprovedCount} approved - ${needsReviewCount + videoNeedsReviewCount} need retag - ${needsRenameCount} need rename - ${duplicateCount} possible duplicates - ${draftCount} drafts - ${untaggedCount + videoUntaggedCount} untagged`;
+  renderPhotoTagSummary(visible, visibleVideos);
 
   grid.innerHTML = renderYoutubeAddCard() + visibleVideos.map(renderYoutubeVideoCard).join('') + visible.map(renderPhotoTagCard).join('');
 
@@ -2232,6 +2295,7 @@ function toggleCardSelection(fileId, checked) {
   const card = document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"]`);
   if (card) card.classList.toggle('fd-selected', checked);
   renderBulkBar();
+  renderPhotoTagSummary();
 }
 
 function selectAllVisible() {
