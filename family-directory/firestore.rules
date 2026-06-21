@@ -102,6 +102,23 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+
+    match /familyPhotoTagSuggestions/{suggestionId} {
+
+      function isAdmin() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
+          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.role == 'admin'
+          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
+      }
+
+      allow read, update, delete: if isAdmin();
+      allow create: if false;
+    }
+
+    match /familyPhotoTagSuggestionRateLimits/{rateLimitId} {
+      allow read, write: if false;
+    }
     match /{document=**} {
       // Do not allow any other reads/writes unless other rules exist
       // (This won't override existing rules for other collections)

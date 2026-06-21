@@ -431,3 +431,344 @@
     order: 4;
   }
 }
+/* Approved Tags + Public Suggestions */
+.gallery-tag-strip {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.gallery-tag-chip {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2c3e50;
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.38rem 0.55rem;
+}
+
+.gallery-tag-chip--more {
+  background: rgba(44, 62, 80, 0.88);
+  color: #fff;
+}
+
+.lightbox-tag-panel {
+  position: absolute;
+  left: 50%;
+  bottom: 72px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: min(760px, calc(100% - 2rem));
+  z-index: 10001;
+  pointer-events: none;
+}
+
+.lightbox-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.lightbox-tag-chip,
+.lightbox-tag-empty {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #2c3e50;
+  border-radius: 999px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.45rem 0.72rem;
+}
+
+.lightbox-tag-empty {
+  color: #6f7782;
+}
+
+.lightbox-suggest-btn {
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 999px;
+  background: #fff;
+  color: #2c3e50;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-height: 34px;
+  padding: 0.48rem 0.9rem;
+  pointer-events: auto;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.lightbox-suggest-btn:hover {
+  background: #CD5C5C;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.tag-suggest-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(18, 24, 31, 0.58);
+}
+
+.tag-suggest-modal.active {
+  display: flex;
+}
+
+.tag-suggest-dialog {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  padding: 1.35rem;
+}
+
+.tag-suggest-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: #f5f6f7;
+  border-radius: 50%;
+  color: #2c3e50;
+  cursor: pointer;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.tag-suggest-kicker {
+  color: #CD5C5C;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 2.5rem 0.3rem 0;
+  text-transform: uppercase;
+}
+
+.tag-suggest-dialog h3 {
+  color: #2c3e50;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+  margin: 0 2.5rem 0.35rem 0;
+}
+
+.tag-suggest-copy,
+.tag-suggest-limit,
+.tag-suggest-message {
+  color: #66707b;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  margin: 0 0 1rem;
+}
+
+.tag-suggest-approved {
+  background: #f8fafb;
+  border: 1px solid #edf0f2;
+  border-radius: 8px;
+  color: #687380;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+}
+
+.tag-suggest-approved span {
+  display: block;
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 0.45rem;
+}
+
+.tag-suggest-approved div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tag-suggest-approved em {
+  background: #fff;
+  border: 1px solid #e6eaee;
+  border-radius: 999px;
+  color: #2c3e50;
+  font-style: normal;
+  padding: 0.28rem 0.52rem;
+}
+
+.tag-suggest-field {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 0.9rem;
+}
+
+.tag-suggest-field label {
+  color: #2c3e50;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.tag-suggest-field input,
+.tag-suggest-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dde2e6;
+  border-radius: 8px;
+  color: #2c3e50;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  padding: 0.72rem 0.8rem;
+}
+
+.tag-suggest-field input:focus,
+.tag-suggest-field textarea:focus {
+  border-color: #CD5C5C;
+  box-shadow: 0 0 0 3px rgba(205, 92, 92, 0.12);
+  outline: none;
+}
+
+.tag-suggest-results {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.tag-suggest-option,
+.tag-suggest-chip {
+  border: 1px solid #e6eaee;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.84rem;
+}
+
+.tag-suggest-option {
+  background: #fff;
+  color: #2c3e50;
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+}
+
+.tag-suggest-option:hover {
+  background: #fff7f7;
+  border-color: rgba(205, 92, 92, 0.38);
+  color: #CD5C5C;
+}
+
+.tag-suggest-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.tag-suggest-chip {
+  background: #2c3e50;
+  border-color: #2c3e50;
+  color: #fff;
+  padding: 0.45rem 0.65rem;
+}
+
+.tag-suggest-empty {
+  color: #8a929b;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.tag-suggest-message {
+  min-height: 1.3em;
+}
+
+.tag-suggest-message.is-error {
+  color: #b3261e;
+}
+
+.tag-suggest-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+
+.tag-suggest-secondary,
+.tag-suggest-submit {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0.68rem 1rem;
+}
+
+.tag-suggest-secondary {
+  background: #f3f4f6;
+  color: #596371;
+}
+
+.tag-suggest-submit {
+  background: #2c3e50;
+  color: #fff;
+}
+
+.tag-suggest-submit:hover:not(:disabled) {
+  background: #CD5C5C;
+}
+
+.tag-suggest-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 640px) {
+  .lightbox-tag-panel {
+    bottom: 74px;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .tag-suggest-actions {
+    flex-direction: column-reverse;
+  }
+
+  .tag-suggest-secondary,
+  .tag-suggest-submit {
+    width: 100%;
+  }
+}

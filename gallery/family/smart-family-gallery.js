@@ -19,6 +19,9 @@
     drivePageSize: 200,
     tagCollection: 'familyPhotoTags',
     firebaseConfig: DEFAULT_FIREBASE_CONFIG,
+    publicTagOptionsEndpoint: 'https://us-central1-jorgeranilla-site.cloudfunctions.net/familyPhotoTagOptions',
+    tagSuggestionEndpoint: 'https://us-central1-jorgeranilla-site.cloudfunctions.net/submitFamilyPhotoTagSuggestion',
+    suggestionLimitPerBrowserPerDay: 20,
     emptyText: 'No photos yet - check back soon!',
     errorText: "Couldn't load photos right now. Please try refreshing the page.",
     photoAlt: 'Family photo',
@@ -36,6 +39,11 @@
   let currentPage = 0;
   let lightboxIdx = 0;
   let lightboxReady = false;
+  let publicTagOptions = [];
+  let publicTagOptionsLoaded = false;
+  let publicTagOptionsLoading = null;
+  let activeSuggestionFile = null;
+  let activeSuggestionKeys = new Set();
 
   function mergeConfig(nextConfig) {
     config = { ...DEFAULTS, ...(nextConfig || {}) };
@@ -113,6 +121,42 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  }
+
+  function uniqueLabels(values) {
+    const seen = new Set();
+    const labels = [];
+
+    (values || []).forEach(value => {
+      const label = String(value || '').trim();
+      const key = label.toLowerCase();
+      if (!label || seen.has(key)) return;
+      seen.add(key);
+      labels.push(label);
+    });
+
+    return labels;
+  }
+
+  function getApprovedTagLabels(file) {
+    const tag = file?.tags || file || {};
+    return uniqueLabels([
+      ...(Array.isArray(tag.peopleLabels) ? tag.peopleLabels : []),
+      ...(Array.isArray(tag.otherPeopleLabels) ? tag.otherPeopleLabels : [])
+    ]);
+  }
+
+  function renderGalleryTagStrip(file) {
+    const labels = getApprovedTagLabels(file);
+    if (labels.length === 0) return '';
+
+    const visible = labels.slice(0, 3);
+    const more = labels.length > visible.length ? `<span class="gallery-tag-chip gallery-tag-chip--more">+${labels.length - visible.length}</span>` : '';
+    return `
+      <div class="gallery-tag-strip" aria-label="Approved tags">
+        ${visible.map(label => `<span class="gallery-tag-chip">${escapeHtml(label)}</span>`).join('')}
+        ${more}
+      </div>`;
   }
 
   function getType(mimeType) {
@@ -195,8 +239,6 @@
   }
 
   async function loadApprovedTags() {
-    if (config.mode === 'all') return new Map();
-
     try {
       const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
       const { getFirestore, collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
@@ -218,6 +260,8 @@
           people: Array.isArray(data.people) ? data.people : [],
           peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
           personIds: Array.isArray(data.personIds) ? data.personIds : [],
+          peopleLabels: Array.isArray(data.peopleLabels) ? data.peopleLabels : [],
+          otherPeopleLabels: Array.isArray(data.otherPeopleLabels) ? data.otherPeopleLabels : [],
           albums: Array.isArray(data.albums) ? data.albums : [],
           drive: data.drive && typeof data.drive === 'object' ? data.drive : {},
           status: data.status || ''
@@ -263,6 +307,8 @@
           people: Array.isArray(data.people) ? data.people : [],
           peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
           personIds: Array.isArray(data.personIds) ? data.personIds : [],
+          peopleLabels: Array.isArray(data.peopleLabels) ? data.peopleLabels : [],
+          otherPeopleLabels: Array.isArray(data.otherPeopleLabels) ? data.otherPeopleLabels : [],
           albums: Array.isArray(data.albums) ? data.albums : [],
           createdTime: approvedIso || createdIso || updatedIso,
           modifiedTime: updatedIso || approvedIso || createdIso,
@@ -336,29 +382,405 @@
   }
 
   async function resolveGalleryFiles() {
-    const [masterFiles, youtubeVideos] = await Promise.all([
+    const [masterFiles, youtubeVideos, tags] = await Promise.all([
       fetchDriveFolder(config.masterFolderId),
-      loadYoutubeVideos()
+      loadYoutubeVideos(),
+      loadApprovedTags()
     ]);
 
+    const masterFilesWithTags = masterFiles.map(file => {
+      const tag = tags.get(file.id);
+      return isApprovedTagCurrentForFile(file, tag) ? { ...file, tags: tag } : file;
+    });
+
     if (config.mode === 'all') {
-      return [...masterFiles, ...youtubeVideos].sort(compareFilesByGalleryDate);
+      return [...masterFilesWithTags, ...youtubeVideos].sort(compareFilesByGalleryDate);
     }
 
-    const tags = await loadApprovedTags();
-
-    const taggedDriveFiles = masterFiles
-      .filter(file => {
-        const tag = tags.get(file.id);
-        return isApprovedTagCurrentForFile(file, tag) && matchesConfiguredGallery(tag);
-      })
-      .map(file => ({ ...file, tags: tags.get(file.id) }));
+    const taggedDriveFiles = masterFilesWithTags
+      .filter(file => file.tags && matchesConfiguredGallery(file.tags));
 
     const filteredYoutubeVideos = youtubeVideos.filter(video => matchesConfiguredGallery(video));
 
     return [...taggedDriveFiles, ...filteredYoutubeVideos].sort(compareFilesByGalleryDate);
   }
 
+  function getSuggestionDayKey() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function makeBrowserSuggestionId() {
+    if (window.crypto?.randomUUID) {
+      return window.crypto.randomUUID().replace(/[^a-zA-Z0-9_-]/g, '');
+    }
+
+    const bytes = new Uint8Array(18);
+    if (window.crypto?.getRandomValues) {
+      window.crypto.getRandomValues(bytes);
+      return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 18)}`;
+  }
+
+  function readSuggestionUsage() {
+    const key = 'jrFamilyTagSuggestions:v1';
+    const day = getSuggestionDayKey();
+    let usage = {};
+
+    try {
+      usage = JSON.parse(window.localStorage?.getItem(key) || '{}') || {};
+    } catch (error) {
+      usage = {};
+    }
+
+    if (!usage.browserId) usage.browserId = makeBrowserSuggestionId();
+    if (usage.day !== day) {
+      usage.day = day;
+      usage.count = 0;
+    }
+
+    usage.count = Math.max(0, Number(usage.count || 0));
+
+    try {
+      window.localStorage?.setItem(key, JSON.stringify(usage));
+    } catch (error) {}
+
+    return usage;
+  }
+
+  function writeSuggestionUsage(usage) {
+    try {
+      window.localStorage?.setItem('jrFamilyTagSuggestions:v1', JSON.stringify(usage));
+    } catch (error) {}
+  }
+
+  function getSuggestionRemaining() {
+    const usage = readSuggestionUsage();
+    return Math.max(0, Number(config.suggestionLimitPerBrowserPerDay || 20) - usage.count);
+  }
+
+  function recordSuggestionSubmission(remaining) {
+    const usage = readSuggestionUsage();
+    const limit = Number(config.suggestionLimitPerBrowserPerDay || 20);
+
+    if (Number.isFinite(Number(remaining))) {
+      usage.count = Math.max(0, limit - Number(remaining));
+    } else {
+      usage.count = Math.min(limit, usage.count + 1);
+    }
+
+    writeSuggestionUsage(usage);
+  }
+
+  async function loadPublicTagOptions() {
+    if (publicTagOptionsLoaded) return publicTagOptions;
+    if (publicTagOptionsLoading) return publicTagOptionsLoading;
+
+    publicTagOptionsLoading = fetch(config.publicTagOptionsEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    })
+      .then(async response => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Could not load the family tag list.');
+        publicTagOptions = Array.isArray(data.options) ? data.options : [];
+        if (data.limitPerBrowserPerDay) config.suggestionLimitPerBrowserPerDay = data.limitPerBrowserPerDay;
+        publicTagOptionsLoaded = true;
+        return publicTagOptions;
+      })
+      .catch(error => {
+        publicTagOptionsLoaded = true;
+        publicTagOptions = [];
+        throw error;
+      })
+      .finally(() => {
+        publicTagOptionsLoading = null;
+      });
+
+    return publicTagOptionsLoading;
+  }
+
+  function ensureSuggestionModal() {
+    let modal = document.getElementById('tagSuggestionModal');
+    if (modal) return modal;
+
+    modal = document.createElement('div');
+    modal.id = 'tagSuggestionModal';
+    modal.className = 'tag-suggest-modal';
+    modal.innerHTML = `
+      <div class="tag-suggest-dialog" role="dialog" aria-modal="true" aria-labelledby="tagSuggestTitle">
+        <button type="button" class="tag-suggest-close" id="tagSuggestClose" aria-label="Close">&times;</button>
+        <p class="tag-suggest-kicker">Pending admin review</p>
+        <h3 id="tagSuggestTitle">Suggest People</h3>
+        <p class="tag-suggest-copy">Suggestions are saved for review and will only appear publicly after approval.</p>
+        <div class="tag-suggest-approved" id="tagSuggestApproved"></div>
+        <div class="tag-suggest-field">
+          <label for="tagSuggestSearch">Family directory</label>
+          <input type="text" id="tagSuggestSearch" autocomplete="off" placeholder="Search a name...">
+          <div class="tag-suggest-results" id="tagSuggestResults"></div>
+        </div>
+        <div class="tag-suggest-selected" id="tagSuggestSelected"></div>
+        <div class="tag-suggest-field">
+          <label for="tagSuggestOther">Other names</label>
+          <textarea id="tagSuggestOther" rows="2" placeholder="Name not listed? Add it here."></textarea>
+        </div>
+        <p class="tag-suggest-limit" id="tagSuggestLimit"></p>
+        <p class="tag-suggest-message" id="tagSuggestMessage" role="status"></p>
+        <div class="tag-suggest-actions">
+          <button type="button" class="tag-suggest-secondary" id="tagSuggestCancel">Cancel</button>
+          <button type="button" class="tag-suggest-submit" id="tagSuggestSubmit">Submit Suggestion</button>
+        </div>
+      </div>`;
+
+    document.body.appendChild(modal);
+    modal.addEventListener('click', event => {
+      if (event.target === modal) closeSuggestionModal();
+    });
+    modal.querySelector('#tagSuggestClose').addEventListener('click', closeSuggestionModal);
+    modal.querySelector('#tagSuggestCancel').addEventListener('click', closeSuggestionModal);
+    modal.querySelector('#tagSuggestSubmit').addEventListener('click', submitTagSuggestion);
+    modal.querySelector('#tagSuggestSearch').addEventListener('input', renderSuggestionOptions);
+
+    return modal;
+  }
+
+  function setSuggestionMessage(message, isError = false) {
+    const messageEl = document.getElementById('tagSuggestMessage');
+    if (!messageEl) return;
+    messageEl.textContent = message || '';
+    messageEl.classList.toggle('is-error', Boolean(isError));
+  }
+
+  function updateSuggestionLimitText() {
+    const limitEl = document.getElementById('tagSuggestLimit');
+    const submit = document.getElementById('tagSuggestSubmit');
+    if (!limitEl || !submit) return;
+
+    const remaining = getSuggestionRemaining();
+    limitEl.textContent = `${remaining} suggestion${remaining === 1 ? '' : 's'} left from this browser today.`;
+    submit.disabled = remaining <= 0;
+  }
+
+  function renderSuggestionOptions() {
+    const results = document.getElementById('tagSuggestResults');
+    const search = document.getElementById('tagSuggestSearch');
+    if (!results || !search) return;
+
+    const term = search.value.trim().toLowerCase();
+    const matches = publicTagOptions
+      .filter(option => !activeSuggestionKeys.has(option.tagKey))
+      .filter(option => !term || String(option.tagLabel || '').toLowerCase().includes(term))
+      .slice(0, 8);
+
+    if (matches.length === 0) {
+      results.innerHTML = `<p class="tag-suggest-empty">${publicTagOptions.length ? 'No matching names.' : 'The directory list is unavailable. You can use Other names.'}</p>`;
+      return;
+    }
+
+    results.innerHTML = matches.map(option => `
+      <button type="button" class="tag-suggest-option" data-tag-key="${escapeHtml(option.tagKey)}">
+        ${escapeHtml(option.tagLabel)}
+      </button>
+    `).join('');
+
+    results.querySelectorAll('.tag-suggest-option').forEach(button => {
+      button.addEventListener('click', () => {
+        activeSuggestionKeys.add(button.dataset.tagKey);
+        search.value = '';
+        renderSelectedSuggestionPeople();
+        renderSuggestionOptions();
+      });
+    });
+  }
+
+  function renderSelectedSuggestionPeople() {
+    const selected = document.getElementById('tagSuggestSelected');
+    if (!selected) return;
+
+    const items = Array.from(activeSuggestionKeys)
+      .map(key => publicTagOptions.find(option => option.tagKey === key))
+      .filter(Boolean);
+
+    if (items.length === 0) {
+      selected.innerHTML = '';
+      return;
+    }
+
+    selected.innerHTML = items.map(option => `
+      <button type="button" class="tag-suggest-chip" data-tag-key="${escapeHtml(option.tagKey)}">
+        ${escapeHtml(option.tagLabel)} <span aria-hidden="true">&times;</span>
+      </button>
+    `).join('');
+
+    selected.querySelectorAll('.tag-suggest-chip').forEach(button => {
+      button.addEventListener('click', () => {
+        activeSuggestionKeys.delete(button.dataset.tagKey);
+        renderSelectedSuggestionPeople();
+        renderSuggestionOptions();
+      });
+    });
+  }
+
+  function parseOtherSuggestionNames(value) {
+    return uniqueLabels(String(value || '')
+      .split(/[,\n]/)
+      .map(name => name.trim())
+      .filter(Boolean))
+      .slice(0, 10);
+  }
+
+  function renderApprovedTagsInModal(file) {
+    const approved = document.getElementById('tagSuggestApproved');
+    if (!approved) return;
+
+    const labels = getApprovedTagLabels(file);
+    approved.innerHTML = labels.length
+      ? `<span>Approved tags</span><div>${labels.map(label => `<em>${escapeHtml(label)}</em>`).join('')}</div>`
+      : '<span>No approved tags yet</span>';
+  }
+
+  function closeSuggestionModal() {
+    const modal = document.getElementById('tagSuggestionModal');
+    if (modal) modal.classList.remove('active');
+    activeSuggestionFile = null;
+    activeSuggestionKeys = new Set();
+  }
+
+  async function openSuggestionModal(file) {
+    activeSuggestionFile = file;
+    activeSuggestionKeys = new Set();
+    const modal = ensureSuggestionModal();
+    const search = modal.querySelector('#tagSuggestSearch');
+    const other = modal.querySelector('#tagSuggestOther');
+    if (search) search.value = '';
+    if (other) other.value = '';
+
+    renderApprovedTagsInModal(file);
+    renderSelectedSuggestionPeople();
+    updateSuggestionLimitText();
+    setSuggestionMessage('Loading family names...');
+    modal.classList.add('active');
+
+    try {
+      await loadPublicTagOptions();
+      setSuggestionMessage('');
+    } catch (error) {
+      setSuggestionMessage(error.message || 'Could not load the directory list. You can still use Other names.', true);
+    }
+
+    renderSuggestionOptions();
+  }
+
+  function buildSuggestionTarget(file) {
+    return {
+      id: file.id,
+      type: file.type === 'video' ? 'video' : 'image',
+      source: file.youtubeId ? 'youtube' : 'drive',
+      name: file.name || file.youtubeTitle || '',
+      youtubeId: file.youtubeId || '',
+      albumSlug: config.albumSlug || '',
+      galleryMode: config.mode || 'all',
+      pageUrl: window.location.href.split('#')[0]
+    };
+  }
+
+  async function submitTagSuggestion() {
+    const submit = document.getElementById('tagSuggestSubmit');
+    const other = document.getElementById('tagSuggestOther');
+    if (!activeSuggestionFile || !submit) return;
+
+    if (getSuggestionRemaining() <= 0) {
+      setSuggestionMessage('This browser has reached today\'s suggestion limit.', true);
+      return;
+    }
+
+    const selectedPeople = Array.from(activeSuggestionKeys)
+      .map(key => publicTagOptions.find(option => option.tagKey === key))
+      .filter(Boolean)
+      .map(option => ({
+        tagKey: option.tagKey,
+        tagLabel: option.tagLabel,
+        personSlug: option.personSlug,
+        personId: option.personId || option.id
+      }));
+    const otherNames = parseOtherSuggestionNames(other?.value || '');
+
+    if (selectedPeople.length === 0 && otherNames.length === 0) {
+      setSuggestionMessage('Choose a family name or add an Other name before submitting.', true);
+      return;
+    }
+
+    const usage = readSuggestionUsage();
+    submit.disabled = true;
+    submit.textContent = 'Submitting...';
+    setSuggestionMessage('');
+
+    try {
+      const response = await fetch(config.tagSuggestionEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          browserId: usage.browserId,
+          target: buildSuggestionTarget(activeSuggestionFile),
+          selectedPeople,
+          otherNames
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Could not submit this suggestion.');
+
+      recordSuggestionSubmission(data.remaining);
+      activeSuggestionKeys = new Set();
+      if (other) other.value = '';
+      renderSelectedSuggestionPeople();
+      renderSuggestionOptions();
+      updateSuggestionLimitText();
+      setSuggestionMessage('Thank you. Your tag suggestion was sent for review and will appear only if approved by the family admin.');
+    } catch (error) {
+      setSuggestionMessage(error.message || 'Could not submit this suggestion.', true);
+    } finally {
+      submit.textContent = 'Submit Suggestion';
+      submit.disabled = getSuggestionRemaining() <= 0;
+    }
+  }
+
+  function ensureLightboxTagPanel() {
+    const lb = document.getElementById('lightbox');
+    if (!lb) return null;
+
+    let panel = document.getElementById('lightboxTagPanel');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'lightboxTagPanel';
+      panel.className = 'lightbox-tag-panel';
+      lb.appendChild(panel);
+    }
+
+    return panel;
+  }
+
+  function renderLightboxTagPanel(file) {
+    const panel = ensureLightboxTagPanel();
+    if (!panel || !file) return;
+
+    const labels = getApprovedTagLabels(file);
+    const tags = labels.length
+      ? labels.map(label => `<span class="lightbox-tag-chip">${escapeHtml(label)}</span>`).join('')
+      : '<span class="lightbox-tag-empty">No approved tags yet</span>';
+
+    panel.innerHTML = `
+      <div class="lightbox-tag-list" aria-label="Approved tags">${tags}</div>
+      <button type="button" class="lightbox-suggest-btn" id="lightboxSuggestTags">Suggest tags</button>
+    `;
+
+    const button = panel.querySelector('#lightboxSuggestTags');
+    if (button) button.addEventListener('click', event => {
+      event.stopPropagation();
+      openSuggestionModal(file);
+    });
+  }
   function setLoading(isLoading) {
     const loading = document.getElementById('gallery-loading');
     if (loading) loading.style.display = isLoading ? 'flex' : 'none';
@@ -486,15 +908,17 @@
         : driveThumb(file.id, GRID_THUMB_SIZE, file.modifiedTime || file.md5Checksum);
       const item = document.createElement('div');
       item.className = `gallery-item${file.type === 'video' ? ' gallery-item--video' : ''}`;
+      const tagStrip = renderGalleryTagStrip(file);
 
       if (file.type === 'video') {
         item.innerHTML = `
           <img src="${thumb}" alt="${escapeHtml(config.videoAlt)}" loading="lazy">
           <div class="video-play-btn" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path fill="white" d="M8 5v14l11-7z"/></svg>
-          </div>`;
+          </div>
+          ${tagStrip}`;
       } else {
-        item.innerHTML = `<img src="${thumb}" alt="${escapeHtml(config.photoAlt)}" loading="lazy">`;
+        item.innerHTML = `<img src="${thumb}" alt="${escapeHtml(config.photoAlt)}" loading="lazy">${tagStrip}`;
       }
 
       item.addEventListener('click', () => openLightbox(globalIdx));
@@ -585,6 +1009,7 @@
       img.style.display = 'none';
       video.style.display = 'block';
       video.src = `https://www.youtube.com/embed/${encodeURIComponent(file.youtubeId)}?autoplay=1&rel=0`;
+      renderLightboxTagPanel(file);
       return;
     }
 
@@ -593,6 +1018,7 @@
     img.style.display = 'block';
     img.src = driveThumb(file.id, LIGHTBOX_THUMB_SIZE, file.modifiedTime || file.md5Checksum);
     img.alt = file.name || config.photoAlt;
+    renderLightboxTagPanel(file);
   }
 
   function shiftLightbox(dir) {

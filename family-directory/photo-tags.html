@@ -276,6 +276,67 @@
       color: #CD5C5C;
     }
 
+
+    .fd-suggestion-panel {
+      background: #f8fbff;
+      border: 1px solid #dbeafe;
+      border-radius: 10px;
+      display: grid;
+      gap: 10px;
+      margin: 12px 0;
+      padding: 12px;
+    }
+
+    .fd-suggestion-title {
+      color: #24517a;
+      font-family: 'Roboto', sans-serif;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    .fd-suggestion-item {
+      background: #fff;
+      border: 1px solid #e7eef8;
+      border-radius: 8px;
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .fd-suggestion-item p {
+      color: #2c3e50;
+      font-family: 'Roboto', sans-serif;
+      font-size: .86rem;
+      font-weight: 600;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .fd-suggestion-item span {
+      color: #8a94a3;
+      font-family: 'Roboto', sans-serif;
+      font-size: .72rem;
+    }
+
+    .fd-suggestion-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .fd-mini-btn.suggestion {
+      background: #eaf7f0;
+      border: 1px solid #c7ead8;
+      color: #17613f;
+    }
+
+    .fd-mini-btn.suggestion:hover {
+      background: #d8f0e4;
+      color: #0f4a2f;
+    }
     .fd-photo-tag-actions {
       display: flex;
       flex-wrap: wrap;
@@ -707,6 +768,7 @@
             <button class="fd-filter-pill" data-filter="draft">Drafts</button>
             <button class="fd-filter-pill" data-filter="needs-rename">Needs Rename</button>
             <button class="fd-filter-pill" data-filter="duplicates">Duplicates</button>
+            <button class="fd-filter-pill" data-filter="suggestions">Suggestions</button>
             <button class="fd-filter-pill" type="button" onclick="cleanMissingDriveRecords()">Clean / Sync Records</button>
           </div>
           <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading selected folder photos...</p>
@@ -760,7 +822,7 @@
     }, 30000);
   </script>
   <script src="directory.js?v=4"></script>
-  <script src="photo-tags.js?v=18"></script>
+  <script src="photo-tags.js?v=19"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>
