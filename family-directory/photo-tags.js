@@ -293,13 +293,6 @@ async function reloadPhotoTagData(loadRecords = false) {
     updatePhotoTagLoading('Preparing photo tags...');
     reconcilePhotoTagFilesWithSavedNames();
 
-    try {
-      await syncRenamedPhotoTagMetadata();
-      await syncComputedPhotoTagStatuses();
-    } catch (syncError) {
-      console.warn('Could not sync stale photo tag statuses:', syncError);
-    }
-
     renderPhotoTags();
   } catch (error) {
     console.error('Photo tag load error:', error);
@@ -1684,44 +1677,6 @@ function getPhotoTagStatus(file) {
 
   return tag.status || 'approved';
 }
-async function syncComputedPhotoTagStatuses() {
-  // Keep computed review states UI-only. Persisting needs-review during load/navigation
-  // creates avoidable Firestore writes; admins publish the final status explicitly.
-}
-async function syncRenamedPhotoTagMetadata() {
-  const updates = [];
-
-  photoTagFiles.forEach(file => {
-    const tag = getPhotoTagRecord(file.id);
-    if (!hasSavedTagPeople(tag)) return;
-    if (tag.status !== 'approved') return;
-    if (hasUnresolvedTagPeople(tag)) return;
-    if (getChangedDriveFields(file, tag).length > 0) return;
-    if (shouldTrustSavedPhotoTagName(file, tag)) return;
-    if (!tag.name || !file.name || tag.name === file.name) return;
-
-    const payload = buildPhotoTagDriveMetadataUpdate(file, tag);
-
-    updates.push(
-      window._fb.setDoc(
-        window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, file.id),
-        payload,
-        { merge: true }
-      ).then(() => {
-        photoTagRecords.set(file.id, normalizePhotoTagRecord(file.id, {
-          ...tag,
-          ...payload,
-          updatedAt: tag.updatedAt
-        }));
-      })
-    );
-  });
-
-  if (updates.length > 0) {
-    await Promise.all(updates);
-  }
-}
-
 function normalizePhotoTagDuplicateName(value) {
   return String(value || '').trim().toLowerCase();
 }
