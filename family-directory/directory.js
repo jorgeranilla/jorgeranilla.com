@@ -18,7 +18,7 @@ let app, auth, db, currentUser = null, currentProfile = null;
 let isAdmin = false;
 let fdAuthWatchdog = null;
 const COLLECTION = 'familyDirectory';
-const PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
+const FD_PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const FD_AUTH_TIMEOUT_MS = 25000;
 const GOOGLE_CONTACTS_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
 const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive';
@@ -630,7 +630,7 @@ async function syncPhotoTagLabelsForDirectoryMember(uid, profileData = {}) {
   const { collection, query, where, getDocs, writeBatch, serverTimestamp } = window._fb;
   const memberKey = `member:${uid}`;
   const tagDocs = new Map();
-  const tagsRef = collection(db, PHOTO_TAGS_COLLECTION);
+  const tagsRef = collection(db, FD_PHOTO_TAGS_COLLECTION);
   const queries = [
     query(tagsRef, where('people', 'array-contains', memberKey)),
     query(tagsRef, where('personIds', 'array-contains', uid))
