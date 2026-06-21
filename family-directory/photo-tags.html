@@ -122,6 +122,18 @@
       color: #888;
     }
 
+    .fd-tag-duplicate-note {
+      background: #fff5f5;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      color: #991b1b;
+      font-size: .76rem;
+      font-weight: 500;
+      line-height: 1.45;
+      margin: 0 0 12px;
+      padding: 9px 10px;
+    }
+
     .fd-tag-review-note {
       background: #fff9f0;
       border: 1px solid #ffe1b8;
@@ -596,6 +608,8 @@
             <button class="fd-filter-pill" data-filter="approved">Approved</button>
             <button class="fd-filter-pill" data-filter="needs-review">Needs Retag</button>
             <button class="fd-filter-pill" data-filter="needs-rename">Needs Rename</button>
+            <button class="fd-filter-pill" data-filter="duplicates">Duplicates</button>
+            <button class="fd-filter-pill" type="button" onclick="cleanMissingDriveRecords()">Clean Missing Records</button>
           </div>
           <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading Family folder photos...</p>
         </div>
@@ -648,7 +662,7 @@
     }, 30000);
   </script>
   <script src="directory.js?v=4"></script>
-  <script src="photo-tags.js?v=10"></script>
+  <script src="photo-tags.js?v=14"></script>
   <script src="../script.js"></script>
   <script src="../search-dynamic.js"></script>
 </body>
