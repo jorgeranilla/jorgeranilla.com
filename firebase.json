@@ -8,7 +8,16 @@
   "hosting": {
     "public": ".",
     "cleanUrls": true,
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "functions/**", "umsteadgrove/**"],
+    "ignore": [
+      "firebase.json",
+      "deploy-*.bat",
+      "firepit-log.txt",
+      "**/*.ps1",
+      "**/.*",
+      "**/node_modules/**",
+      "functions/**",
+      "umsteadgrove/**"
+    ],
     "rewrites": [],
     "headers": []
   },
