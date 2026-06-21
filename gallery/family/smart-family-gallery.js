@@ -500,26 +500,27 @@
     modal.className = 'tag-suggest-modal';
     modal.innerHTML = `
       <div class="tag-suggest-dialog" role="dialog" aria-modal="true" aria-labelledby="tagSuggestTitle">
-        <button type="button" class="tag-suggest-close" id="tagSuggestClose" aria-label="Close">&times;</button>
-        <p class="tag-suggest-kicker">Pending admin review</p>
-        <h3 id="tagSuggestTitle">Suggest People</h3>
-        <p class="tag-suggest-copy">Suggestions are saved for review and will only appear publicly after approval.</p>
-        <div class="tag-suggest-approved" id="tagSuggestApproved"></div>
-        <div class="tag-suggest-field">
-          <label for="tagSuggestSearch">Family directory</label>
-          <input type="text" id="tagSuggestSearch" autocomplete="off" placeholder="Search a name...">
-          <div class="tag-suggest-results" id="tagSuggestResults"></div>
+        <div class="tag-suggest-header">
+          <h3 id="tagSuggestTitle">Who\'s in this photo?</h3>
+          <button type="button" class="tag-suggest-close" id="tagSuggestClose" aria-label="Close">&times;</button>
         </div>
+        <div class="tag-suggest-search-wrap">
+          <svg class="tag-suggest-search-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="tagSuggestSearch" autocomplete="off" placeholder="Type a name to search...">
+        </div>
+        <div class="tag-suggest-results" id="tagSuggestResults" style="display:none"></div>
         <div class="tag-suggest-selected" id="tagSuggestSelected"></div>
-        <div class="tag-suggest-field">
-          <label for="tagSuggestOther">Other names</label>
-          <textarea id="tagSuggestOther" rows="2" placeholder="Name not listed? Add it here."></textarea>
-        </div>
-        <p class="tag-suggest-limit" id="tagSuggestLimit"></p>
-        <p class="tag-suggest-message" id="tagSuggestMessage" role="status"></p>
-        <div class="tag-suggest-actions">
-          <button type="button" class="tag-suggest-secondary" id="tagSuggestCancel">Cancel</button>
-          <button type="button" class="tag-suggest-submit" id="tagSuggestSubmit">Submit Suggestion</button>
+        <details class="tag-suggest-other-wrap">
+          <summary>Name not in the directory?</summary>
+          <textarea id="tagSuggestOther" rows="2" placeholder="Add free-text names here, separated by commas."></textarea>
+        </details>
+        <div class="tag-suggest-footer">
+          <p class="tag-suggest-limit" id="tagSuggestLimit"></p>
+          <p class="tag-suggest-message" id="tagSuggestMessage" role="status"></p>
+          <div class="tag-suggest-actions">
+            <button type="button" class="tag-suggest-secondary" id="tagSuggestCancel">Cancel</button>
+            <button type="button" class="tag-suggest-submit" id="tagSuggestSubmit">Submit</button>
+          </div>
         </div>
       </div>`;
 
@@ -558,15 +559,23 @@
     if (!results || !search) return;
 
     const term = search.value.trim().toLowerCase();
+
+    // Only show results when user has typed something
+    if (!term) {
+      results.innerHTML = '';
+      results.style.display = 'none';
+      return;
+    }
+
+    results.style.display = 'grid';
+
     const matches = publicTagOptions
       .filter(option => !activeSuggestionKeys.has(option.tagKey))
-      .filter(option => !term || String(option.tagLabel || '').toLowerCase().includes(term))
-      .slice(0, 8);
+      .filter(option => String(option.tagLabel || '').toLowerCase().includes(term))
+      .slice(0, 6);
 
     if (matches.length === 0) {
-      const emptyText = publicTagOptions.length
-        ? 'No matching names.'
-        : (publicTagOptionsError || 'Start typing a name, or use Other names.');
+      const emptyText = publicTagOptionsError || 'No matching names.';
       results.innerHTML = `<p class="tag-suggest-empty">${escapeHtml(emptyText)}</p>`;
       return;
     }
@@ -624,13 +633,7 @@
   }
 
   function renderApprovedTagsInModal(file) {
-    const approved = document.getElementById('tagSuggestApproved');
-    if (!approved) return;
-
-    const labels = getApprovedTagLabels(file);
-    approved.innerHTML = labels.length
-      ? `<span>Approved tags</span><div>${labels.map(label => `<em>${escapeHtml(label)}</em>`).join('')}</div>`
-      : '<span>No approved tags yet</span>';
+    // No longer shown in modal — tags are shown in the lightbox tag bar instead
   }
 
   function closeSuggestionModal() {
@@ -646,23 +649,21 @@
     const modal = ensureSuggestionModal();
     const search = modal.querySelector('#tagSuggestSearch');
     const other = modal.querySelector('#tagSuggestOther');
+    const results = modal.querySelector('#tagSuggestResults');
     if (search) search.value = '';
     if (other) other.value = '';
+    if (results) { results.innerHTML = ''; results.style.display = 'none'; }
 
-    renderApprovedTagsInModal(file);
     renderSelectedSuggestionPeople();
     updateSuggestionLimitText();
-    setSuggestionMessage('Loading family names...');
+    setSuggestionMessage('');
     modal.classList.add('active');
 
-    try {
-      await loadPublicTagOptions();
-      setSuggestionMessage('');
-    } catch (error) {
-      setSuggestionMessage('The family name list is not available yet. You can still submit with Other names.', true);
-    }
+    // Focus the search input after a short delay for mobile
+    setTimeout(() => search && search.focus(), 80);
 
-    renderSuggestionOptions();
+    // Preload tag options in background (no loading message cluttering UI)
+    loadPublicTagOptions().catch(() => {});
   }
 
   function buildSuggestionTarget(file) {
@@ -738,32 +739,49 @@
     }
   }
 
-  function ensureLightboxSuggestControl() {
+  function ensureLightboxTagBar() {
     const lb = document.getElementById('lightbox');
     if (!lb) return null;
 
-    let control = document.getElementById('lightboxSuggestControl');
-    if (!control) {
-      control = document.createElement('div');
-      control.id = 'lightboxSuggestControl';
-      control.className = 'lightbox-suggest-control';
-      lb.appendChild(control);
+    let bar = document.getElementById('lightboxTagBar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'lightboxTagBar';
+      bar.className = 'lightbox-tag-bar';
+      bar.innerHTML = `
+        <div class="lightbox-tag-names" id="lightboxTagNames"></div>
+        <button type="button" class="lightbox-suggest-btn" id="lightboxSuggestTags">
+          <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 8H8v-.57c0-1.33 2.67-2 4-2s4 .67 4 2V14z"/></svg>
+          Suggest tags
+        </button>`;
+      lb.appendChild(bar);
+
+      bar.querySelector('#lightboxSuggestTags').addEventListener('click', event => {
+        event.stopPropagation();
+        if (activeSuggestionFile) openSuggestionModal(activeSuggestionFile);
+      });
     }
 
-    return control;
+    return bar;
   }
 
   function renderLightboxSuggestControl(file) {
-    const control = ensureLightboxSuggestControl();
-    if (!control || !file) return;
+    activeSuggestionFile = file;
+    const bar = ensureLightboxTagBar();
+    if (!bar) return;
 
-    control.innerHTML = '<button type="button" class="lightbox-suggest-btn" id="lightboxSuggestTags">Suggest tags</button>';
+    const namesEl = bar.querySelector('#lightboxTagNames');
+    if (!namesEl) return;
 
-    const button = control.querySelector('#lightboxSuggestTags');
-    if (button) button.addEventListener('click', event => {
-      event.stopPropagation();
-      openSuggestionModal(file);
-    });
+    const labels = getApprovedTagLabels(file);
+    if (labels.length) {
+      namesEl.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        ${labels.map(l => `<span>${escapeHtml(l)}</span>`).join('')}`;
+      namesEl.style.display = 'flex';
+    } else {
+      namesEl.innerHTML = '';
+      namesEl.style.display = 'none';
+    }
   }
   function setLoading(isLoading) {
     const loading = document.getElementById('gallery-loading');
