@@ -3,98 +3,93 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ─── Family Directory ───
-    match /familyDirectory/{userId} {
-
-      // Helper: Check if the requesting user is an approved admin
-      function isAdmin() {
-        return request.auth != null
-          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
-          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.role == 'admin'
-          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
-      }
-
-      // Helper: Check if the requesting user is an approved member
-      function isApprovedMember() {
-        return request.auth != null
-          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
-          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
-      }
-
-      // Helper: Check if user is the document owner
-      function isOwner() {
-        return request.auth != null && request.auth.uid == userId;
-      }
-
-      // Helper: Check if this is an imported/manual record (not a real user account)
-      function isImportedRecord() {
-        return userId.matches('import_.*')
-          || userId.matches('manual_.*')
-          || resource.data.uid.matches('import_.*')
-          || resource.data.uid.matches('manual_.*');
-      }
-
-      // READ:
-      // - Admins can read all profiles
-      // - Approved members can read directory profiles; the UI filters visible approved entries
-      // - Users can always read their own profile (to check status)
-      // - Authenticated users can read imported records (for claim matching by email)
-      allow read: if isAdmin()
-                  || isApprovedMember()
-                  || isOwner()
-                  || (request.auth != null && isImportedRecord());
-
-      // CREATE:
-      // - Users can create their own profile (first-time registration as pending)
-      // - Users can create their own profile as approved IF claiming an import (has claimedFrom)
-      // - Admins can create profiles (add member manually)
-      allow create: if (isOwner() && request.resource.data.status == 'pending')
-                    || (isOwner() && request.resource.data.status == 'approved'
-                        && request.resource.data.claimedFrom is string)
-                    || isAdmin();
-
-      // UPDATE:
-      // - Users can update only their own profile
-      //   BUT cannot change: role, status, uid, createdAt
-      //   EXCEPT when claiming an imported/manual profile, pending can become approved
-      // - Admins can update any profile
-      allow update: if isAdmin()
-                    || (isOwner()
-                        && request.resource.data.role == resource.data.role
-                        && request.resource.data.uid == resource.data.uid
-                        && (
-                          request.resource.data.status == resource.data.status
-                          || (
-                            resource.data.status == 'pending'
-                            && request.resource.data.status == 'approved'
-                            && request.resource.data.claimedFrom is string
-                          )
-                        ));
-
-      // DELETE:
-      // - Admins can delete profiles
-      // - Authenticated users can delete imported records (for claim cleanup)
-      allow delete: if isAdmin()
-                    || (request.auth != null && isImportedRecord());
+    function signedIn() {
+      return request.auth != null;
     }
 
-    // ─── Block everything else ───
-    // --- Family Photo Tags ---
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
+        && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.role == 'admin'
+        && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
+    }
+
+    function isApprovedMember() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
+        && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
+    }
+
+    function isImportedRecord(userId) {
+      return userId.matches('import_.*')
+        || userId.matches('manual_.*')
+        || (resource.data.uid is string && resource.data.uid.matches('import_.*'))
+        || (resource.data.uid is string && resource.data.uid.matches('manual_.*'));
+    }
+
+    function isOwnProfile(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    match /familyDirectory/{userId} {
+      allow read: if isAdmin()
+                  || isApprovedMember()
+                  || isOwnProfile(userId)
+                  || (signedIn() && isImportedRecord(userId));
+
+      allow create: if isAdmin()
+                    || (
+                      isOwnProfile(userId)
+                      && request.resource.data.uid == userId
+                      && request.resource.data.role == 'member'
+                      && request.resource.data.status == 'pending'
+                    );
+
+      allow update: if isAdmin()
+                    || (
+                      isOwnProfile(userId)
+                      && resource.data.status == 'pending'
+                      && request.resource.data.uid == resource.data.uid
+                      && request.resource.data.role == resource.data.role
+                      && request.resource.data.status == resource.data.status
+                    );
+
+      allow delete: if isAdmin();
+    }
+
+    match /familyMemberRequests/{requestId} {
+      function isOwnRequest() {
+        return signedIn() && resource.data.memberId == request.auth.uid;
+      }
+
+      function isAllowedRequestType() {
+        return request.resource.data.type in ['profile_update', 'photo_add', 'photo_remove'];
+      }
+
+      function isCreatingOwnPendingRequest() {
+        return isApprovedMember()
+          && request.resource.data.memberId == request.auth.uid
+          && request.resource.data.status == 'pending'
+          && isAllowedRequestType()
+          && request.resource.data.payload is map
+          && request.resource.data.keys().hasOnly([
+            'type',
+            'status',
+            'memberId',
+            'memberName',
+            'memberEmail',
+            'payload',
+            'createdAt',
+            'updatedAt'
+          ]);
+      }
+
+      allow read: if isAdmin() || isOwnRequest();
+      allow create: if isCreatingOwnPendingRequest();
+      allow update, delete: if isAdmin();
+    }
+
     match /familyPhotoTags/{photoId} {
-
-      function isAdmin() {
-        return request.auth != null
-          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
-          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.role == 'admin'
-          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
-      }
-
-      function isApprovedMember() {
-        return request.auth != null
-          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
-          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
-      }
-
       allow read: if resource.data.status == 'approved'
                   || isApprovedMember()
                   || isAdmin();
@@ -102,16 +97,7 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
-
     match /familyPhotoTagSuggestions/{suggestionId} {
-
-      function isAdmin() {
-        return request.auth != null
-          && exists(/databases/$(database)/documents/familyDirectory/$(request.auth.uid))
-          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.role == 'admin'
-          && get(/databases/$(database)/documents/familyDirectory/$(request.auth.uid)).data.status == 'approved';
-      }
-
       allow read, update, delete: if isAdmin();
       allow create: if false;
     }
@@ -119,9 +105,8 @@ service cloud.firestore {
     match /familyPhotoTagSuggestionRateLimits/{rateLimitId} {
       allow read, write: if false;
     }
+
     match /{document=**} {
-      // Do not allow any other reads/writes unless other rules exist
-      // (This won't override existing rules for other collections)
       allow read, write: if false;
     }
   }

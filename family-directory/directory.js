@@ -19,6 +19,7 @@ let isAdmin = false;
 let fdAuthWatchdog = null;
 const COLLECTION = 'familyDirectory';
 const FD_PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
+const FD_MEMBER_REQUESTS_COLLECTION = 'familyMemberRequests';
 const FD_CLAIM_PROFILE_ENDPOINT = 'https://us-central1-jorgeranilla-site.cloudfunctions.net/claimFamilyProfileByEmail';
 const FD_AUTH_TIMEOUT_MS = 25000;
 const GOOGLE_CONTACTS_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
@@ -197,6 +198,8 @@ async function fdClaimFamilyProfileByEmail(user) {
 }
 
 async function syncGoogleIdentity(user, profileRef, profileData) {
+  if (profileData?.status === 'approved' && profileData?.role !== 'admin') return profileData;
+
   const { updateDoc, serverTimestamp } = window._fb;
   const updates = {};
 
@@ -548,18 +551,373 @@ async function fetchAllMembers() {
     .sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
 }
 
-/* ── Save Own Profile ── */
-async function saveProfile(data) {
-  if (!currentUser) return;
-  const { doc, updateDoc, serverTimestamp } = window._fb;
-  const ref = doc(db, COLLECTION, currentUser.uid);
-  const payload = { ...data };
-  if ('email' in payload) payload.emailLower = normalizeEmail(payload.email);
-  await updateDoc(ref, { ...payload, updatedAt: serverTimestamp() });
-  // Update local
-  Object.assign(currentProfile, payload);
+/* Member Change Requests */
+const FD_PROFILE_REQUEST_FIELDS = [
+  'displayName',
+  'phone',
+  'email',
+  'address',
+  'city',
+  'country',
+  'birthday',
+  'photoURL',
+  'preferredContact',
+  'privacy'
+];
+
+function fdCleanRequestString(value, maxLength = 600) {
+  return String(value || '')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength);
 }
 
+function fdSanitizeProfilePayload(data = {}) {
+  const payload = {};
+
+  FD_PROFILE_REQUEST_FIELDS.forEach(field => {
+    if (!(field in data)) return;
+
+    if (field === 'privacy') {
+      const privacy = data.privacy || {};
+      payload.privacy = {
+        showPhone: privacy.showPhone !== false,
+        showEmail: privacy.showEmail !== false,
+        showAddress: privacy.showAddress === true,
+        showBirthday: privacy.showBirthday !== false,
+        showAge: privacy.showAge === true
+      };
+      return;
+    }
+
+    payload[field] = fdCleanRequestString(data[field], field === 'photoURL' ? 250000 : 600);
+  });
+
+  if ('email' in payload) payload.emailLower = normalizeEmail(payload.email);
+  return payload;
+}
+
+function fdSanitizePhotoRequestPayload(data = {}) {
+  const url = fdCleanRequestString(data.url, 1200);
+  const title = fdCleanRequestString(data.title, 180);
+  const notes = fdCleanRequestString(data.notes || data.reason, 1000);
+  const mediaType = fdCleanRequestString(data.mediaType || 'photo', 30).toLowerCase();
+
+  return {
+    mediaType: ['photo', 'video'].includes(mediaType) ? mediaType : 'photo',
+    url,
+    title,
+    notes,
+    reason: notes,
+    photoId: fdCleanRequestString(data.photoId, 240),
+    photoName: fdCleanRequestString(data.photoName, 240),
+    thumbnailUrl: fdCleanRequestString(data.thumbnailUrl, 1200),
+    mediaSource: fdCleanRequestString(data.mediaSource, 40)
+  };
+}
+
+function fdRequestTimestampMs(value) {
+  if (!value) return 0;
+  if (typeof value.toMillis === 'function') return value.toMillis();
+  if (typeof value.toDate === 'function') return value.toDate().getTime();
+  if (typeof value.seconds === 'number') return value.seconds * 1000;
+  const parsed = new Date(value).getTime();
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+async function submitFamilyMemberRequest(type, payload = {}) {
+  if (!currentUser || !currentProfile) throw new Error('Sign in before submitting a request.');
+
+  const allowedTypes = ['profile_update', 'photo_add', 'photo_remove'];
+  if (!allowedTypes.includes(type)) throw new Error('Unsupported request type.');
+
+  const { collection, doc, setDoc, serverTimestamp } = window._fb;
+  const requestRef = doc(collection(db, FD_MEMBER_REQUESTS_COLLECTION));
+  const cleanPayload = type === 'profile_update'
+    ? fdSanitizeProfilePayload(payload)
+    : fdSanitizePhotoRequestPayload(payload);
+
+  await setDoc(requestRef, {
+    type,
+    status: 'pending',
+    memberId: currentUser.uid,
+    memberName: currentProfile.displayName || currentUser.displayName || '',
+    memberEmail: currentProfile.email || currentUser.email || '',
+    payload: cleanPayload,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+
+  return { id: requestRef.id, type, status: 'pending', payload: cleanPayload };
+}
+
+async function fetchMyMemberRequests() {
+  if (!currentUser) return [];
+
+  const { collection, getDocs, query, where } = window._fb;
+  const q = query(collection(db, FD_MEMBER_REQUESTS_COLLECTION), where('memberId', '==', currentUser.uid));
+  const snap = await getDocs(q);
+
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => fdRequestTimestampMs(b.createdAt) - fdRequestTimestampMs(a.createdAt));
+}
+
+async function fetchPendingMemberRequests() {
+  if (!isAdmin) return [];
+
+  const { collection, getDocs, query, where } = window._fb;
+  const q = query(collection(db, FD_MEMBER_REQUESTS_COLLECTION), where('status', '==', 'pending'));
+  const snap = await getDocs(q);
+
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => fdRequestTimestampMs(a.createdAt) - fdRequestTimestampMs(b.createdAt));
+}
+
+async function saveProfile(data) {
+  if (!currentUser) return null;
+  const payload = fdSanitizeProfilePayload(data);
+
+  if (isAdmin || currentProfile?.role === 'admin') {
+    const { doc, updateDoc, serverTimestamp } = window._fb;
+    const ref = doc(db, COLLECTION, currentUser.uid);
+    await updateDoc(ref, { ...payload, updatedAt: serverTimestamp() });
+    Object.assign(currentProfile, payload);
+    return { status: 'saved' };
+  }
+
+  return submitFamilyMemberRequest('profile_update', payload);
+}
+
+async function submitPhotoAddRequest(data) {
+  return submitFamilyMemberRequest('photo_add', data);
+}
+
+async function submitPhotoRemoveRequest(data) {
+  return submitFamilyMemberRequest('photo_remove', data);
+}
+
+function fdParseYoutubeId(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{6,})/i,
+    /^[a-zA-Z0-9_-]{6,}$/
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) return match[1] || match[0];
+  }
+
+  return '';
+}
+
+function fdParseDriveFileId(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+
+  const patterns = [
+    /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i,
+    /[?&]id=([a-zA-Z0-9_-]+)/i,
+    /^([a-zA-Z0-9_-]{20,})$/
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) return match[1] || match[0];
+  }
+
+  return '';
+}
+
+function fdBuildMemberTagData(memberId, memberData = {}) {
+  const displayName = fdCleanRequestString(memberData.displayName || memberData.memberName || memberId, 120);
+  return {
+    people: [`member:${memberId}`],
+    peopleAliases: [makeDirectoryPhotoTagSlug(displayName || memberId)].filter(Boolean),
+    peopleLabels: [displayName].filter(Boolean),
+    personIds: [memberId]
+  };
+}
+
+function fdBuildPhotoAddTagPayload(request, memberData = {}, payload = {}) {
+  const memberId = request.memberId;
+  const memberTags = fdBuildMemberTagData(memberId, { ...memberData, memberName: request.memberName });
+  const youtubeId = fdParseYoutubeId(payload.url);
+  const driveFileId = fdParseDriveFileId(payload.url);
+  const title = fdCleanRequestString(payload.title || payload.photoName, 180);
+  const now = window._fb.serverTimestamp();
+
+  if (youtubeId) {
+    return {
+      docId: `youtube_${youtubeId}`,
+      data: {
+        youtubeId,
+        youtubeThumbnail: `https://i.ytimg.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg`,
+        youtubeTitle: title || `Video ID: ${youtubeId}`,
+        type: 'video',
+        mimeType: 'video/youtube',
+        source: 'youtube',
+        ...memberTags,
+        otherPeopleLabels: [],
+        albums: ['family'],
+        status: 'approved',
+        reviewReason: null,
+        memberRequestId: request.id,
+        approvedAt: now,
+        updatedAt: now,
+        createdAt: now
+      }
+    };
+  }
+
+  if (driveFileId) {
+    return {
+      docId: driveFileId,
+      data: {
+        driveFileId,
+        name: title || driveFileId,
+        type: 'image',
+        source: 'member-request',
+        ...memberTags,
+        otherPeopleLabels: [],
+        albums: ['family'],
+        status: 'approved',
+        reviewReason: null,
+        memberRequestId: request.id,
+        approvedAt: now,
+        updatedAt: now,
+        createdAt: now
+      }
+    };
+  }
+
+  return null;
+}
+
+function fdRemoveMemberFromTagPayload(tag = {}, memberId) {
+  const memberKey = `member:${memberId}`;
+  const people = Array.isArray(tag.people) ? tag.people : [];
+  const peopleAliases = Array.isArray(tag.peopleAliases) ? tag.peopleAliases : [];
+  const peopleLabels = Array.isArray(tag.peopleLabels) ? tag.peopleLabels : [];
+  const personIds = Array.isArray(tag.personIds) ? tag.personIds : [];
+  const removeIndexes = new Set();
+
+  people.forEach((value, index) => {
+    if (value === memberKey) removeIndexes.add(index);
+  });
+  personIds.forEach((value, index) => {
+    if (value === memberId) removeIndexes.add(index);
+  });
+
+  const nextPeople = people.filter((value, index) => value !== memberKey && !removeIndexes.has(index));
+  const nextAliases = peopleAliases.filter((_, index) => !removeIndexes.has(index));
+  const nextLabels = peopleLabels.filter((_, index) => !removeIndexes.has(index));
+  const nextPersonIds = personIds.filter(value => value !== memberId);
+
+  const changed = JSON.stringify(nextPeople) !== JSON.stringify(people) ||
+    JSON.stringify(nextAliases) !== JSON.stringify(peopleAliases) ||
+    JSON.stringify(nextLabels) !== JSON.stringify(peopleLabels) ||
+    JSON.stringify(nextPersonIds) !== JSON.stringify(personIds);
+
+  return changed ? {
+    people: nextPeople,
+    peopleAliases: nextAliases,
+    peopleLabels: nextLabels,
+    personIds: nextPersonIds
+  } : null;
+}
+
+async function approveMemberRequest(requestId, overrides = {}) {
+  if (!isAdmin) throw new Error('Only admins can approve member requests.');
+
+  const { doc, getDoc, setDoc, updateDoc, serverTimestamp } = window._fb;
+  const requestRef = doc(db, FD_MEMBER_REQUESTS_COLLECTION, requestId);
+  const requestSnap = await getDoc(requestRef);
+  if (!requestSnap.exists()) throw new Error('This request no longer exists.');
+
+  const request = { id: requestSnap.id, ...requestSnap.data() };
+  if (request.status !== 'pending') return { status: request.status || 'reviewed' };
+
+  const memberRef = doc(db, COLLECTION, request.memberId);
+  const memberSnap = await getDoc(memberRef);
+  const memberData = memberSnap.exists() ? memberSnap.data() : {};
+  let appliedPayload = null;
+  let publishStatus = 'not_applicable';
+
+  if (request.type === 'profile_update') {
+    appliedPayload = fdSanitizeProfilePayload(overrides.payload || request.payload || {});
+    const beforeName = String(memberData.displayName || '').trim();
+    const afterName = String(appliedPayload.displayName || beforeName).trim();
+
+    await updateDoc(memberRef, { ...appliedPayload, updatedAt: serverTimestamp() });
+
+    if (afterName && afterName !== beforeName) {
+      await syncPhotoTagLabelsForDirectoryMember(request.memberId, { ...memberData, ...appliedPayload, id: request.memberId });
+    }
+  } else if (request.type === 'photo_remove') {
+    const payload = fdSanitizePhotoRequestPayload(request.payload || {});
+    const tagRef = doc(db, FD_PHOTO_TAGS_COLLECTION, payload.photoId);
+    const tagSnap = await getDoc(tagRef);
+
+    if (!tagSnap.exists()) throw new Error('The photo or video tag record was not found.');
+
+    const update = fdRemoveMemberFromTagPayload(tagSnap.data() || {}, request.memberId);
+    if (update) {
+      await updateDoc(tagRef, {
+        ...update,
+        updatedAt: serverTimestamp(),
+        memberRemovalApprovedAt: serverTimestamp(),
+        memberRemovalApprovedBy: currentUser?.email || currentUser?.uid || ''
+      });
+    }
+    appliedPayload = payload;
+    publishStatus = update ? 'removed_member_tag' : 'already_removed';
+  } else if (request.type === 'photo_add') {
+    const payload = fdSanitizePhotoRequestPayload({ ...(request.payload || {}), ...(overrides.payload || {}) });
+    const tagPayload = fdBuildPhotoAddTagPayload(request, memberData, payload);
+    appliedPayload = payload;
+
+    if (tagPayload) {
+      await setDoc(doc(db, FD_PHOTO_TAGS_COLLECTION, tagPayload.docId), tagPayload.data, { merge: true });
+      publishStatus = tagPayload.data.source === 'youtube' ? 'published_youtube' : 'published_drive_tag';
+    } else {
+      publishStatus = 'approved_manual_followup';
+    }
+  }
+
+  await updateDoc(requestRef, {
+    status: 'approved',
+    appliedPayload,
+    publishStatus,
+    reviewedAt: serverTimestamp(),
+    approvedAt: serverTimestamp(),
+    reviewedBy: currentUser?.email || currentUser?.uid || '',
+    updatedAt: serverTimestamp()
+  });
+
+  return { status: 'approved', publishStatus };
+}
+
+async function rejectMemberRequest(requestId, note = '') {
+  if (!isAdmin) throw new Error('Only admins can reject member requests.');
+
+  const { doc, updateDoc, serverTimestamp } = window._fb;
+  await updateDoc(doc(db, FD_MEMBER_REQUESTS_COLLECTION, requestId), {
+    status: 'rejected',
+    adminNote: fdCleanRequestString(note, 1000),
+    reviewedAt: serverTimestamp(),
+    rejectedAt: serverTimestamp(),
+    reviewedBy: currentUser?.email || currentUser?.uid || '',
+    updatedAt: serverTimestamp()
+  });
+
+  return { status: 'rejected' };
+}
 /* ── Admin: Approve Member ── */
 async function adminApprove(uid) {
   if (!isAdmin) return;
@@ -896,11 +1254,17 @@ window.fdToast = fdToast;
 window.fdShowLoadError = fdShowLoadError;
 window.fdClaimFamilyProfileByEmail = fdClaimFamilyProfileByEmail;
 window.fetchApprovedMembers = fetchApprovedMembers;
+window.fetchMyMemberRequests = fetchMyMemberRequests;
 window.fetchAllMembers = fetchAllMembers;
+window.fetchPendingMemberRequests = fetchPendingMemberRequests;
 window.saveProfile = saveProfile;
+window.submitPhotoAddRequest = submitPhotoAddRequest;
+window.submitPhotoRemoveRequest = submitPhotoRemoveRequest;
 window.adminApprove = adminApprove;
 window.adminDelete = adminDelete;
 window.adminUpdateProfile = adminUpdateProfile;
+window.approveMemberRequest = approveMemberRequest;
+window.rejectMemberRequest = rejectMemberRequest;
 window.fdGetGoogleContactsAccessToken = fdGetGoogleContactsAccessToken;
 window.fdGetGoogleDriveAccessToken = fdGetGoogleDriveAccessToken;
 window.fdClearGoogleDriveAccessToken = fdClearGoogleDriveAccessToken;
