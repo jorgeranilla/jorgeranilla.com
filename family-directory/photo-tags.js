@@ -892,25 +892,44 @@ async function patchGoogleDriveFileContent(fileId, preparedFile, accessToken) {
   return data;
 }
 
+function getPhotoTagFileName(file) {
+  return String(file?.name || '').trim();
+}
+
+function buildPhotoTagFileMetadataFields(file) {
+  const fileName = getPhotoTagFileName(file);
+  return {
+    fileName,
+    displayName: fileName,
+    searchName: fileName.toLowerCase()
+  };
+}
+
+function buildPhotoTagDriveMetadata(file, existingDrive = {}) {
+  return {
+    ...(existingDrive || {}),
+    name: getPhotoTagFileName(file),
+    mimeType: file.mimeType,
+    type: file.type,
+    createdTime: file.createdTime,
+    modifiedTime: file.modifiedTime,
+    takenTime: file.takenTime,
+    suggestedName: file.suggestedName,
+    md5Checksum: file.md5Checksum,
+    size: file.size
+  };
+}
+
 async function refreshPhotoTagRecordAfterReplacement(file, hadTags) {
   const tag = getPhotoTagRecord(file.id);
   if (!tag && !hadTags) return;
 
   const payload = {
+    ...buildPhotoTagFileMetadataFields(file),
     name: file.name,
     mimeType: file.mimeType,
     type: file.type,
-    drive: {
-      ...(tag?.drive || {}),
-      mimeType: file.mimeType,
-      type: file.type,
-      createdTime: file.createdTime,
-      modifiedTime: file.modifiedTime,
-      takenTime: file.takenTime,
-      suggestedName: file.suggestedName,
-      md5Checksum: file.md5Checksum,
-      size: file.size
-    },
+    drive: buildPhotoTagDriveMetadata(file, tag?.drive),
     updatedAt: window._fb.serverTimestamp()
   };
 
@@ -938,18 +957,9 @@ async function refreshPhotoTagRecordAfterDriveRename(file) {
   if (!tag) return;
 
   const payload = {
+    ...buildPhotoTagFileMetadataFields(file),
     name: file.name,
-    drive: {
-      ...tag.drive,
-      mimeType: file.mimeType,
-      type: file.type,
-      createdTime: file.createdTime,
-      modifiedTime: file.modifiedTime,
-      takenTime: file.takenTime,
-      suggestedName: file.suggestedName,
-      md5Checksum: file.md5Checksum,
-      size: file.size
-    },
+    drive: buildPhotoTagDriveMetadata(file, tag.drive),
     updatedAt: window._fb.serverTimestamp()
   };
 
@@ -1342,18 +1352,91 @@ function isPhotoTagSuggestionCurrentSource(suggestion) {
   return albumSlug === getPhotoTagAlbumSlug() || (!target.albumSlug && getPhotoTagAlbumSlug() === 'family');
 }
 
+function getPhotoTagSuggestionPeopleKeys(suggestion) {
+  const selectedPeopleKeys = (Array.isArray(suggestion?.selectedPeople) ? suggestion.selectedPeople : [])
+    .map(person => person?.tagKey)
+    .filter(Boolean);
+
+  return normalizePhotoTagPeopleKeys([
+    ...(Array.isArray(suggestion?.peopleKeys) ? suggestion.peopleKeys : []),
+    ...selectedPeopleKeys
+  ]);
+}
+
+function getPhotoTagSuggestionPeopleLabels(suggestion) {
+  const selectedPeopleLabels = (Array.isArray(suggestion?.selectedPeople) ? suggestion.selectedPeople : [])
+    .map(person => person?.tagLabel)
+    .filter(Boolean);
+
+  return uniquePhotoTagLabels([
+    ...(Array.isArray(suggestion?.peopleLabels) ? suggestion.peopleLabels : []),
+    ...selectedPeopleLabels
+  ]);
+}
+
+function getPhotoTagSuggestionOtherLabels(suggestion) {
+  return uniquePhotoTagLabels(suggestion?.otherNames || []);
+}
+
+function getPhotoTagSuggestionHasNames(suggestion) {
+  return getPhotoTagSuggestionPeopleKeys(suggestion).length > 0 ||
+    getPhotoTagSuggestionPeopleLabels(suggestion).length > 0 ||
+    getPhotoTagSuggestionOtherLabels(suggestion).length > 0;
+}
+
+function getPhotoTagAppliedLabelSet(tag) {
+  const savedMemberLabels = getPhotoTagMembersForKeys(getSavedPhotoTagPeopleKeys(tag))
+    .map(member => member.displayTagLabel || member.tagLabel);
+  const directPeopleLabels = (Array.isArray(tag?.people) ? tag.people : []).map(getPhotoTagLabel);
+
+  return new Set(uniquePhotoTagLabels([
+    ...savedMemberLabels,
+    ...directPeopleLabels,
+    ...(Array.isArray(tag?.peopleLabels) ? tag.peopleLabels : []),
+    ...(Array.isArray(tag?.otherPeopleLabels) ? tag.otherPeopleLabels : [])
+  ]).map(normalizePhotoTagToken));
+}
+
+function isPhotoTagSuggestionAlreadyApplied(suggestion, target) {
+  const tag = isYoutubePhotoTagRecord(target) ? target : getPhotoTagRecord(target?.id);
+  if (!tag) return false;
+
+  const suggestedPeople = getPhotoTagSuggestionPeopleKeys(suggestion);
+  const suggestedPeopleLabels = getPhotoTagSuggestionPeopleLabels(suggestion);
+  const suggestedOtherLabels = getPhotoTagSuggestionOtherLabels(suggestion);
+  if (!getPhotoTagSuggestionHasNames(suggestion)) return false;
+
+  const savedPeople = new Set(getSavedPhotoTagPeopleKeys(tag));
+  const appliedLabels = getPhotoTagAppliedLabelSet(tag);
+  const peopleApplied = suggestedPeople.every(key => {
+    if (savedPeople.has(key)) return true;
+    const person = getPhotoTagMemberOrSuggestionPerson(key, suggestion);
+    return Boolean(person?.tagLabel && appliedLabels.has(normalizePhotoTagToken(person.tagLabel)));
+  });
+  const peopleLabelsApplied = suggestedPeopleLabels.every(label => appliedLabels.has(normalizePhotoTagToken(label)));
+  const otherLabelsApplied = suggestedOtherLabels.every(label => appliedLabels.has(normalizePhotoTagToken(label)));
+
+  return peopleApplied && peopleLabelsApplied && otherLabelsApplied;
+}
+
+function isPhotoTagSuggestionActionable(suggestion) {
+  if (suggestion?.status !== 'pending') return false;
+  if (!isPhotoTagSuggestionCurrentSource(suggestion)) return false;
+  if (!getPhotoTagSuggestionHasNames(suggestion)) return false;
+
+  const target = getPhotoTagTargetForSuggestion(suggestion);
+  return Boolean(target && !isPhotoTagSuggestionAlreadyApplied(suggestion, target));
+}
+
 function getPendingPhotoTagSuggestionsForTarget(targetId) {
   return photoTagSuggestions.filter(suggestion =>
-    suggestion.status === 'pending' &&
     getPhotoTagSuggestionTargetId(suggestion) === targetId &&
-    isPhotoTagSuggestionCurrentSource(suggestion)
+    isPhotoTagSuggestionActionable(suggestion)
   );
 }
 
 function getPendingPhotoTagSuggestionCount() {
-  return photoTagSuggestions.filter(suggestion =>
-    suggestion.status === 'pending' && isPhotoTagSuggestionCurrentSource(suggestion)
-  ).length;
+  return photoTagSuggestions.filter(isPhotoTagSuggestionActionable).length;
 }
 
 function getSuggestionPersonByKey(suggestion, key) {
@@ -1511,6 +1594,15 @@ async function resolvePhotoTagSuggestionMembers(suggestion) {
 
   const resolvedLabels = new Set(Array.from(resolved.values()).map(member => normalizePhotoTagToken(member.tagLabel)));
 
+  for (const name of getPhotoTagSuggestionPeopleLabels(suggestion)) {
+    const normalized = normalizePhotoTagToken(name);
+    if (!normalized || resolvedLabels.has(normalized)) continue;
+
+    const member = findPhotoTagMemberByName(name) || await ensurePhotoTagOnlyMemberForName(name);
+    addMember(member);
+    if (member?.tagLabel) resolvedLabels.add(normalizePhotoTagToken(member.tagLabel));
+  }
+
   for (const name of uniquePhotoTagLabels(suggestion?.otherNames || [])) {
     const normalized = normalizePhotoTagToken(name);
     if (!normalized || resolvedLabels.has(normalized)) continue;
@@ -1578,7 +1670,11 @@ function getPhotoTagSuggestionById(suggestionId) {
 
 function getPhotoTagTargetForSuggestion(suggestion) {
   const targetId = getPhotoTagSuggestionTargetId(suggestion);
-  return photoTagFiles.find(file => file.id === targetId) || getPhotoTagRecord(targetId);
+  const file = photoTagFiles.find(item => item.id === targetId);
+  if (file) return file;
+
+  const record = getPhotoTagRecord(targetId);
+  return isYoutubePhotoTagRecord(record) ? record : null;
 }
 
 async function markPhotoTagSuggestionReviewed(suggestionId, status) {
@@ -1673,20 +1769,11 @@ function getRenamedDrivePhotoTagRecords() {
 
 function buildPhotoTagDriveMetadataUpdate(file, tag = {}) {
   return {
+    ...buildPhotoTagFileMetadataFields(file),
     name: file.name,
     mimeType: file.mimeType,
     type: file.type,
-    drive: {
-      ...(tag.drive || {}),
-      mimeType: file.mimeType,
-      type: file.type,
-      createdTime: file.createdTime,
-      modifiedTime: file.modifiedTime,
-      takenTime: file.takenTime,
-      suggestedName: file.suggestedName,
-      md5Checksum: file.md5Checksum,
-      size: file.size
-    },
+    drive: buildPhotoTagDriveMetadata(file, tag.drive),
     updatedAt: window._fb.serverTimestamp()
   };
 }
@@ -2346,6 +2433,7 @@ function buildPhotoTagPayload(file, selectedPeople, options = {}) {
   return {
     driveFileId: file.id,
     driveFolderId: getPhotoTagFolderId(),
+    ...buildPhotoTagFileMetadataFields(file),
     name: file.name,
     mimeType: file.mimeType,
     type: file.type,
@@ -2358,16 +2446,7 @@ function buildPhotoTagPayload(file, selectedPeople, options = {}) {
     source: 'manual',
     status: 'approved',
     reviewReason: null,
-    drive: {
-      mimeType: file.mimeType,
-      type: file.type,
-      createdTime: file.createdTime,
-      modifiedTime: file.modifiedTime,
-      takenTime: file.takenTime,
-      suggestedName: file.suggestedName,
-      md5Checksum: file.md5Checksum,
-      size: file.size
-    },
+    drive: buildPhotoTagDriveMetadata(file),
     approvedAt: window._fb.serverTimestamp(),
     updatedAt: window._fb.serverTimestamp()
   };

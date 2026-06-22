@@ -27,15 +27,23 @@
 
 /* Loading State */
 .gallery-loading {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 220px;
   text-align: center;
   padding: 4rem 1rem;
   color: #888;
+  width: 100%;
 }
 
 .gallery-loading p {
   font-size: 0.95rem;
-  margin-top: 1rem;
+  margin: 0;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .spinner {
