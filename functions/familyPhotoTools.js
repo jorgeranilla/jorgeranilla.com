@@ -37,7 +37,11 @@ const WEB_IMAGE_WIDTHS = [3840, 3200, 2800, 2400, 2200, 2000, 1800, 1600];
 const ALLOWED_ORIGINS = new Set([
   'https://jorgeranilla.com',
   'https://www.jorgeranilla.com',
+  'https://jorgeranilla-site.web.app',
+  'https://jorgeranilla-site.firebaseapp.com',
+  'null'
 ]);
+const LOCAL_ORIGIN_RE = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
 const IMAGE_MIMES = new Set([
   'image/dng',
   'image/heic',
@@ -62,7 +66,7 @@ const FUNCTION_OPTS = {
 function cors(req, res) {
   const origin = req.get('origin') || '';
 
-  if (ALLOWED_ORIGINS.has(origin)) {
+  if (ALLOWED_ORIGINS.has(origin) || LOCAL_ORIGIN_RE.test(origin)) {
     res.set('Access-Control-Allow-Origin', origin);
     res.set('Vary', 'Origin');
   }

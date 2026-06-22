@@ -797,13 +797,18 @@ async function convertPhotoTagUploadMedia(file) {
   const formData = new FormData();
   formData.append('media', file, file.name || 'photo');
 
-  const response = await fetch(PHOTO_TAGS_CONVERT_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${await user.getIdToken(true)}`
-    },
-    body: formData
-  });
+  let response;
+  try {
+    response = await fetch(PHOTO_TAGS_CONVERT_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${await user.getIdToken(true)}`
+      },
+      body: formData
+    });
+  } catch (error) {
+    throw new Error(`Photo conversion request failed before the server responded. Check that Firebase Functions are deployed and allowed for this site. ${error.message || error}`);
+  }
 
   if (!response.ok) {
     let message = 'Could not convert this photo.';
@@ -872,17 +877,22 @@ async function patchGoogleDriveFileContent(fileId, preparedFile, accessToken) {
     mimeType
   }, preparedFile, mimeType);
 
-  const response = await fetch(
-    `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(fileId)}?uploadType=multipart&fields=${encodeURIComponent(fields)}`,
-    {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': multipart.contentType
-      },
-      body: multipart.body
-    }
-  );
+  let response;
+  try {
+    response = await fetch(
+      `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(fileId)}?uploadType=multipart&fields=${encodeURIComponent(fields)}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': multipart.contentType
+        },
+        body: multipart.body
+      }
+    );
+  } catch (error) {
+    throw new Error(`Google Drive replacement request failed before Drive responded. ${error.message || error}`);
+  }
   const data = await response.json();
 
   if (!response.ok) {
