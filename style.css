@@ -1038,61 +1038,6 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
-.ambient-footer-corner-toggle {
-    position: absolute;
-    left: 82px;
-    top: 16px;
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    color: #555;
-    background: #f0f0f0;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 2;
-    transition: all 0.3s ease;
-}
-
-.ambient-footer-corner-toggle:hover {
-    color: #CD5C5C;
-    background: #e0e0e0;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.ambient-footer-corner-toggle[aria-pressed="true"] {
-    color: #CD5C5C;
-    background: rgba(205, 92, 92, 0.08);
-}
-
-.ambient-footer-corner-toggle.is-unavailable {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
-.ambient-icon {
-    width: 13px;
-    height: 13px;
-    fill: currentColor;
-}
-
-.ambient-footer-corner-toggle .ambient-icon-muted {
-    display: none;
-}
-
-.ambient-footer-corner-toggle[aria-pressed="false"] .ambient-icon-sound {
-    display: none;
-}
-
-.ambient-footer-corner-toggle[aria-pressed="false"] .ambient-icon-muted {
-    display: block;
-}
-
 /* ===============================
    BACK TO TOP BUTTON
 ================================ */
@@ -1342,7 +1287,6 @@ body {
 
     /* Hide Side Social Rail and Footer Controls */
     .social-rail,
-    .ambient-footer-corner-toggle,
     .back-to-top {
         display: none !important;
     }
