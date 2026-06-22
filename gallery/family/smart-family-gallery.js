@@ -33,6 +33,74 @@
   const LIGHTBOX_THUMB_SIZE = 2400;
   const MAX_DIRECT_PAGE_BUTTONS = 10;
   const PAGE_BUTTON_WINDOW = 2;
+  const PUBLIC_BIO_PAGE_SLUGS = new Set([
+    'adriana',
+    'alcira-victoria-lopez',
+    'alessandra',
+    'alyssa-ranilla',
+    'aurora-rondon-perea',
+    'carlota-salazar-mateo',
+    'ernesto',
+    'eugenio-astocondor',
+    'eugenio-astocondor-fuertes',
+    'eugenio-augusto-astocondor',
+    'eugenio-jesus',
+    'fernando-javier',
+    'jorge-luis-ranilla',
+    'jorge-ranilla',
+    'jose-dalicio-lopez',
+    'lorenzo-david',
+    'lucila-dongo-salcedo',
+    'luis-fernando',
+    'luisa-cristina',
+    'maria-alcira-del-carmen-astocondor',
+    'maria-carlota-ruiz',
+    'maria-eugenia-ranilla',
+    'maria-jesus-cateriano',
+    'milagros',
+    'monica-del-carmen',
+    'paola-andrea',
+    'paola-josefina',
+    'sergio-ranilla-ranilla',
+    'sergio-raul-ranilla',
+    'shane-ranilla',
+    'sylvia-ines-astocondor',
+    'victor-andres-ranilla',
+    'victoriano-cateriano'
+  ]);
+  const PUBLIC_BIO_ALIAS_SLUGS = {
+    'adriana-astocondor': 'adriana',
+    'alessandra-briceno': 'alessandra',
+    'alessandra-prietto': 'alessandra',
+    'alyssa': 'alyssa-ranilla',
+    'ernesto-herrera': 'ernesto',
+    'eugenio-astocondor-salazar': 'eugenio-astocondor',
+    'eugenio-augusto': 'eugenio-augusto-astocondor',
+    'eugenio-augusto-astocondor-salazar-lopez': 'eugenio-augusto-astocondor',
+    'fernando-pallete': 'fernando-javier',
+    'fernando-javier-pallete': 'fernando-javier',
+    'jorge': 'jorge-ranilla',
+    'jorge-luis': 'jorge-luis-ranilla',
+    'jorge-ranilla-cateriano': 'jorge-luis-ranilla',
+    'lorenzo-lu': 'lorenzo-david',
+    'lorenzo-david-lu': 'lorenzo-david',
+    'luis-fernando-astocondor': 'luis-fernando',
+    'luisa-astocondor': 'luisa-cristina',
+    'maria': 'maria-eugenia-ranilla',
+    'maria-ranilla': 'maria-eugenia-ranilla',
+    'maria-eugenia': 'maria-eugenia-ranilla',
+    'milagros-herrera': 'milagros',
+    'monica-astocondor': 'monica-del-carmen',
+    'paola-pallete': 'paola-andrea',
+    'paola-ranilla': 'paola-josefina',
+    'shane': 'shane-ranilla',
+    'sylvia-astocondor': 'sylvia-ines-astocondor',
+    'sylvia-astocondor-salazar': 'sylvia-ines-astocondor',
+    'sylvia-ines': 'sylvia-ines-astocondor',
+    'victor': 'victor-andres-ranilla',
+    'victor-ranilla': 'victor-andres-ranilla',
+    'victor-andres': 'victor-andres-ranilla'
+  };
 
   let config = {};
   let allFiles = [];
@@ -124,27 +192,99 @@
       .replace(/'/g, '&#039;');
   }
 
-  function uniqueLabels(values) {
-    const seen = new Set();
-    const labels = [];
+  function makeSlug(value) {
+    return String(value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
 
-    (values || []).forEach(value => {
-      const label = String(value || '').trim();
+  function cleanTagKeySlug(value) {
+    return String(value || '')
+      .replace(/^(member|people):/i, '')
+      .trim();
+  }
+
+  function resolvePublicBioSlug(candidates) {
+    for (const candidate of candidates || []) {
+      const rawSlug = makeSlug(cleanTagKeySlug(candidate));
+      if (!rawSlug) continue;
+
+      const mappedSlug = PUBLIC_BIO_ALIAS_SLUGS[rawSlug] || rawSlug;
+      if (PUBLIC_BIO_PAGE_SLUGS.has(mappedSlug)) return mappedSlug;
+      if (PUBLIC_BIO_PAGE_SLUGS.has(rawSlug)) return rawSlug;
+    }
+
+    return '';
+  }
+
+  function getPublicBioBasePath() {
+    const path = String(window.location?.pathname || '').replace(/\\/g, '/');
+    return path.includes('/gallery/family/') || path.includes('/gallery/people/')
+      ? '../../family/'
+      : '../family/';
+  }
+
+  function getPublicBioHref(candidates) {
+    const slug = resolvePublicBioSlug(candidates);
+    return slug ? `${getPublicBioBasePath()}${slug}.html` : '';
+  }
+
+  function labelFromTagValue(value) {
+    const slug = makeSlug(cleanTagKeySlug(value));
+    if (!slug) return '';
+
+    return slug
+      .split('-')
+      .filter(Boolean)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  }
+
+  function uniqueTagEntries(entries) {
+    const seen = new Set();
+    const out = [];
+
+    (entries || []).forEach(entry => {
+      const label = String(entry?.label || '').trim();
       const key = label.toLowerCase();
       if (!label || seen.has(key)) return;
       seen.add(key);
-      labels.push(label);
+      out.push({ label, href: entry.href || '' });
     });
 
-    return labels;
+    return out;
   }
 
-  function getApprovedTagLabels(file) {
+  function getApprovedTagEntries(file) {
     const tag = file?.tags || file || {};
-    return uniqueLabels([
-      ...(Array.isArray(tag.peopleLabels) ? tag.peopleLabels : []),
-      ...(Array.isArray(tag.otherPeopleLabels) ? tag.otherPeopleLabels : [])
-    ]);
+    const people = Array.isArray(tag.people) ? tag.people : [];
+    const aliases = Array.isArray(tag.peopleAliases) ? tag.peopleAliases : [];
+    const personIds = Array.isArray(tag.personIds) ? tag.personIds : [];
+    const labels = Array.isArray(tag.peopleLabels) ? tag.peopleLabels : [];
+    const entries = [];
+    const count = Math.max(people.length, aliases.length, personIds.length, labels.length);
+
+    for (let index = 0; index < count; index += 1) {
+      const label = String(labels[index] || labelFromTagValue(aliases[index]) || labelFromTagValue(people[index]) || personIds[index] || '').trim();
+      entries.push({
+        label,
+        href: getPublicBioHref([
+          labels[index],
+          aliases[index],
+          people[index],
+          personIds[index]
+        ])
+      });
+    }
+
+    (Array.isArray(tag.otherPeopleLabels) ? tag.otherPeopleLabels : []).forEach(label => {
+      entries.push({ label: String(label || '').trim(), href: '' });
+    });
+
+    return uniqueTagEntries(entries);
   }
 
   function getType(mimeType) {
@@ -776,10 +916,17 @@
     const namesEl = bar.querySelector('#lightboxTagNames');
     if (!namesEl) return;
 
-    const labels = getApprovedTagLabels(file);
-    if (labels.length) {
+    const entries = getApprovedTagEntries(file);
+    if (entries.length) {
       namesEl.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-        ${labels.map(l => `<span>${escapeHtml(l)}</span>`).join('')}`;
+        ${entries.map((entry, index) => {
+          const separator = index > 0 ? '<span class="lightbox-tag-separator" aria-hidden="true">&middot;</span>' : '';
+          const label = escapeHtml(entry.label);
+          const person = entry.href
+            ? `<a class="lightbox-tag-person lightbox-tag-link" href="${escapeHtml(entry.href)}" title="View ${label}'s bio page">${label}</a>`
+            : `<span class="lightbox-tag-person">${label}</span>`;
+          return `${separator}${person}`;
+        }).join('')}`;
       namesEl.style.display = 'flex';
     } else {
       namesEl.innerHTML = '';

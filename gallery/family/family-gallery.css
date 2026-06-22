@@ -181,6 +181,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-sizing: border-box;
+  padding: 4.5rem 5.5rem 4.75rem;
   animation: fadeIn 0.3s ease;
 }
 
@@ -191,8 +195,8 @@
 
 .lightbox-content {
   position: relative;
-  max-width: 90%;
-  max-height: 90%;
+  max-width: 100%;
+  max-height: calc(100vh - 190px);
   animation: zoomIn 0.3s ease;
 }
 
@@ -203,7 +207,7 @@
 
 .lightbox-content img {
   max-width: 100%;
-  max-height: 90vh;
+  max-height: calc(100vh - 190px);
   object-fit: contain;
   image-orientation: from-image;
   border-radius: 4px;
@@ -441,10 +445,8 @@
 }
 /* ── Lightbox Tag Bar ─────────────────────────────────────────── */
 .lightbox-tag-bar {
-  position: absolute;
-  bottom: 56px; /* sits above the counter */
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
+  transform: none;
   z-index: 10001;
   display: flex;
   align-items: center;
@@ -455,7 +457,7 @@
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 999px;
   padding: 0.42rem 0.55rem 0.42rem 0.72rem;
-  max-width: calc(100vw - 120px);
+  max-width: min(920px, calc(100vw - 120px));
   pointer-events: auto;
 }
 
@@ -476,14 +478,28 @@
   margin-right: 0.1rem;
 }
 
-.lightbox-tag-names span {
+.lightbox-tag-person {
+  color: rgba(255,255,255,0.84);
   white-space: nowrap;
 }
 
-.lightbox-tag-names span + span::before {
-  content: '·';
-  margin-right: 0.32rem;
-  opacity: 0.5;
+.lightbox-tag-link {
+  border-bottom: 1px solid rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.92);
+  text-decoration: none;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.lightbox-tag-link:hover,
+.lightbox-tag-link:focus-visible {
+  border-color: rgba(244,160,184,0.85);
+  color: #fff;
+  outline: none;
+}
+
+.lightbox-tag-separator {
+  color: rgba(255,255,255,0.45);
+  margin: 0 -0.1rem;
 }
 
 .lightbox-suggest-btn {
@@ -825,8 +841,15 @@
     text-align: center;
   }
 
+  .lightbox.active {
+    padding: 4rem 1rem 4.75rem;
+  }
+
+  .lightbox-content img {
+    max-height: calc(100vh - 180px);
+  }
+
   .lightbox-tag-bar {
-    bottom: 48px;
     max-width: calc(100vw - 2rem);
   }
 }
