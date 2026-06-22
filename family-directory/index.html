@@ -231,7 +231,7 @@
     </div>
   </div>
 
-  <script src="directory.js?v=3"></script>
+  <script src="directory.js?v=4"></script>
   <script>
     let allMembers = [];
 
@@ -514,6 +514,15 @@
       return String(item?.[key] || '').trim();
     }
 
+    function cleanGoogleContactDisplayName(value) {
+      return String(value || '')
+        .normalize('NFC')
+        .replace(/[\u200D\uFE0E\uFE0F]/g, '')
+        .replace(/[\u{1F1E6}-\u{1F1FF}\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
     function normalizeNameKey(value) {
       return String(value || '')
         .toLowerCase()
@@ -533,7 +542,7 @@
       return {
         resourceName: person.resourceName || '',
         etag: person.etag || '',
-        displayName: googlePrimaryValue(person.names, 'displayName'),
+        displayName: cleanGoogleContactDisplayName(googlePrimaryValue(person.names, 'displayName')),
         email: googlePrimaryValue(person.emailAddresses),
         phone: googlePrimaryValue(person.phoneNumbers),
         birthday: googleContactDateToBirthday(Array.isArray(person.birthdays) ? person.birthdays[0] : null),
@@ -593,21 +602,23 @@
       const nameKey = normalizeNameKey(contact.displayName);
       const available = allMembers.filter(member => !usedMemberIds.has(member.id));
 
-      let match = available.find(member => member.googleContactResourceName === contact.resourceName);
+      let match = available.find(member => member.googleContactResourceName === contact.resourceName && member.isPhotoTagOnly !== true);
       if (match) return match;
 
+      const syncableMembers = available.filter(member => member.isPhotoTagOnly !== true);
+
       if (email) {
-        match = available.find(member => normalizeEmail(member.email) === email);
+        match = syncableMembers.find(member => normalizeEmail(member.email) === email);
         if (match) return match;
       }
 
       if (phone.length >= 7) {
-        match = available.find(member => normalizePhone(member.phone).endsWith(phone.slice(-7)));
+        match = syncableMembers.find(member => normalizePhone(member.phone).endsWith(phone.slice(-7)));
         if (match) return match;
       }
 
       if (nameKey) {
-        const nameMatches = available.filter(member => normalizeNameKey(member.displayName) === nameKey);
+        const nameMatches = syncableMembers.filter(member => normalizeNameKey(member.displayName) === nameKey);
         if (nameMatches.length === 1) return nameMatches[0];
       }
 
@@ -622,39 +633,84 @@
       return `import_google_${safeId || Date.now()}`;
     }
 
+    function sameGoogleSyncArray(left, right) {
+      const a = Array.isArray(left) ? left.map(String) : [];
+      const b = Array.isArray(right) ? right.map(String) : [];
+      return a.length === b.length && a.every((value, index) => value === b[index]);
+    }
+
+    function setGoogleSyncValue(payload, field, value, existingMember) {
+      const cleanValue = String(value || '').trim();
+      if (!cleanValue) return;
+      if (!existingMember || String(existingMember[field] || '').trim() !== cleanValue) {
+        payload[field] = cleanValue;
+      }
+    }
+
     function buildGoogleContactProfilePayload(contact, existingMember, id) {
       const { serverTimestamp } = window._fb;
+      const isExisting = Boolean(existingMember);
+      const payload = {
+        uid: existingMember?.uid || id
+      };
 
-      return {
-        uid: existingMember?.uid || id,
-        displayName: contact.displayName || '',
-        email: contact.email || '',
-        emailLower: normalizeEmail(contact.email),
-        phone: contact.phone || '',
-        birthday: contact.birthday || '',
-        address: contact.address || '',
-        city: contact.city || '',
-        country: contact.country || '',
-        photoURL: existingMember?.photoURL || '',
-        preferredContact: contact.email ? 'email' : (contact.phone ? 'phone' : 'email'),
-        role: existingMember?.role || 'member',
-        status: existingMember?.status || 'approved',
-        privacy: existingMember?.privacy || {
+      setGoogleSyncValue(payload, 'displayName', contact.displayName, existingMember);
+      setGoogleSyncValue(payload, 'email', contact.email, existingMember);
+      setGoogleSyncValue(payload, 'phone', contact.phone, existingMember);
+      setGoogleSyncValue(payload, 'birthday', contact.birthday, existingMember);
+      setGoogleSyncValue(payload, 'address', contact.address, existingMember);
+      setGoogleSyncValue(payload, 'city', contact.city, existingMember);
+      setGoogleSyncValue(payload, 'country', contact.country, existingMember);
+
+      if (payload.email || (!isExisting && contact.email)) {
+        payload.emailLower = normalizeEmail(payload.email || contact.email);
+      } else if (isExisting && existingMember.email && !existingMember.emailLower) {
+        payload.emailLower = normalizeEmail(existingMember.email);
+      }
+
+      if (!isExisting) {
+        payload.photoURL = '';
+        payload.preferredContact = contact.email ? 'email' : (contact.phone ? 'phone' : 'email');
+        payload.role = 'member';
+        payload.status = 'approved';
+        payload.privacy = {
           showPhone: true,
           showEmail: true,
           showAddress: true,
           showBirthday: true,
           showAge: true
-        },
-        isPhotoTagOnly: existingMember?.isPhotoTagOnly === true,
-        syncSource: 'googleContacts',
-        syncProtectedAfterClaim: true,
-        googleContactResourceName: contact.resourceName,
-        googleContactEtag: contact.etag,
-        googleContactLabels: contact.labels,
-        googleContactLastSyncedAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      };
+        };
+        payload.isPhotoTagOnly = false;
+      } else {
+        if (!existingMember.role) payload.role = 'member';
+        if (!existingMember.status) payload.status = 'approved';
+        if (!existingMember.privacy) {
+          payload.privacy = {
+            showPhone: true,
+            showEmail: true,
+            showAddress: true,
+            showBirthday: true,
+            showAge: true
+          };
+        }
+        if (!existingMember.preferredContact && (contact.email || contact.phone)) {
+          payload.preferredContact = contact.email ? 'email' : 'phone';
+        }
+      }
+
+      if (existingMember?.syncSource !== 'googleContacts') payload.syncSource = 'googleContacts';
+      if (existingMember?.syncProtectedAfterClaim !== true) payload.syncProtectedAfterClaim = true;
+      if (existingMember?.googleContactResourceName !== contact.resourceName) payload.googleContactResourceName = contact.resourceName;
+      if (existingMember?.googleContactEtag !== contact.etag) payload.googleContactEtag = contact.etag;
+      if (!sameGoogleSyncArray(existingMember?.googleContactLabels, contact.labels)) payload.googleContactLabels = contact.labels;
+
+      const changedKeys = Object.keys(payload).filter(key => key !== 'uid');
+      if (!isExisting || changedKeys.length > 0) {
+        payload.googleContactLastSyncedAt = serverTimestamp();
+        payload.updatedAt = serverTimestamp();
+      }
+
+      return payload;
     }
 
     async function syncGoogleFamilyContacts() {
@@ -665,6 +721,8 @@
       const usedMemberIds = new Set();
       let created = 0;
       let updated = 0;
+      let unchanged = 0;
+      let tagLabelsSynced = 0;
       let skippedClaimed = 0;
       let failed = 0;
 
@@ -679,7 +737,7 @@
         const contacts = await fetchGoogleFamilyContacts(accessToken);
         const { doc, setDoc, serverTimestamp } = window._fb;
 
-        showGoogleSyncResult(`Found ${contacts.length} Google Contacts with the Family label. Syncing unclaimed cards...`);
+        showGoogleSyncResult(`Found ${contacts.length} Google Contacts with the Family label. Syncing safe profile changes...`);
 
         for (const contact of contacts) {
           const existingMember = findMemberForGoogleContact(contact, usedMemberIds);
@@ -695,15 +753,22 @@
 
           const id = existingMember?.id || googleContactImportId(contact);
           const payload = buildGoogleContactProfilePayload(contact, existingMember, id);
+          const changedKeys = Object.keys(payload).filter(key => key !== 'uid');
 
           if (!existingMember) {
             payload.createdAt = serverTimestamp();
+          } else if (changedKeys.length === 0) {
+            unchanged++;
+            continue;
           }
 
           try {
             await setDoc(doc(window._fb.db, 'familyDirectory', id), payload, { merge: true });
             if (existingMember) {
               updated++;
+              if (payload.displayName && typeof syncPhotoTagLabelsForDirectoryMember === 'function') {
+                tagLabelsSynced += await syncPhotoTagLabelsForDirectoryMember(id, { ...existingMember, ...payload, id });
+              }
             } else {
               created++;
             }
@@ -714,7 +779,7 @@
         }
 
         showGoogleSyncResult(
-          `Google Contacts sync complete: ${created} created, ${updated} updated, ${skippedClaimed} claimed skipped${failed ? `, ${failed} failed` : ''}.`
+          `Google Contacts sync complete: ${created} created, ${updated} updated, ${unchanged} unchanged${tagLabelsSynced ? `, ${tagLabelsSynced} photo tag label updates` : ''}, ${skippedClaimed} claimed skipped${failed ? `, ${failed} failed` : ''}.`
         );
         fdToast('Google Contacts sync complete.');
         onPageReady();

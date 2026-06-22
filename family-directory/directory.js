@@ -92,6 +92,7 @@ async function findClaimableProfileByEmail(email) {
       (data.uid && data.uid.startsWith('manual_'));
 
     return isClaimableRecord &&
+      data.isPhotoTagOnly !== true &&
       normalizeEmail(data.email) === normalizedEmail &&
       data.status !== 'claimed';
   }) || null;
@@ -886,6 +887,7 @@ window.formatBirthday = formatBirthday;
 window.calcAge = calcAge;
 window.defaultAvatar = defaultAvatar;
 window.getFamilyRecordClaimStatus = getFamilyRecordClaimStatus;
+window.syncPhotoTagLabelsForDirectoryMember = syncPhotoTagLabelsForDirectoryMember;
 window.isClaimedFamilyRecord = isClaimedFamilyRecord;
 window.isImportedFamilyRecord = isImportedFamilyRecord;
 window.normalizeEmail = normalizeEmail;
