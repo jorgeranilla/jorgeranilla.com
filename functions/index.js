@@ -198,3 +198,6 @@ exports.convertFamilyPhotoUpload = familyPhotoTools.convertFamilyPhotoUpload;
 const familyPhotoSuggestions = require('./familyPhotoSuggestions');
 exports.familyPhotoTagOptions = familyPhotoSuggestions.familyPhotoTagOptions;
 exports.submitFamilyPhotoTagSuggestion = familyPhotoSuggestions.submitFamilyPhotoTagSuggestion;
+
+const familyProfileClaims = require('./familyProfileClaims');
+exports.claimFamilyProfileByEmail = familyProfileClaims.claimFamilyProfileByEmail;

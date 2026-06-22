@@ -19,6 +19,7 @@ let isAdmin = false;
 let fdAuthWatchdog = null;
 const COLLECTION = 'familyDirectory';
 const FD_PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
+const FD_CLAIM_PROFILE_ENDPOINT = 'https://us-central1-jorgeranilla-site.cloudfunctions.net/claimFamilyProfileByEmail';
 const FD_AUTH_TIMEOUT_MS = 25000;
 const GOOGLE_CONTACTS_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
 const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive';
@@ -165,6 +166,34 @@ async function autoClaimExistingImport(user, profileRef, existingData = {}) {
   await setDoc(profileRef, claimedData);
   await cleanupClaimedImport(importDoc, user.uid);
   return { id: user.uid, ...claimedData };
+}
+
+async function fdClaimFamilyProfileByEmail(user) {
+  if (!user || typeof user.getIdToken !== 'function') return null;
+
+  const token = await user.getIdToken();
+  const response = await fetch(FD_CLAIM_PROFILE_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({})
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Could not claim matching family profile.');
+  }
+
+  if (!data.claimed && !data.alreadyClaimed) return null;
+
+  const migrated = Number(data.migratedPhotoTags || 0);
+  if (data.claimed && migrated > 0) {
+    fdToast(`Profile linked and ${migrated} photo tag${migrated === 1 ? '' : 's'} updated.`);
+  }
+
+  return data.profile ? { id: data.profile.id || user.uid, ...data.profile } : null;
 }
 
 async function syncGoogleIdentity(user, profileRef, profileData) {
@@ -321,8 +350,14 @@ async function handleAuthState(user) {
 
     if (profileSnap.exists()) {
       currentProfile = { id: profileSnap.id, ...profileSnap.data() };
-      const claimedProfile = await autoClaimExistingImport(user, profileRef, currentProfile);
-      if (claimedProfile) currentProfile = claimedProfile;
+      if (currentProfile.status !== 'approved') {
+        try {
+          const claimedProfile = await fdClaimFamilyProfileByEmail(user);
+          if (claimedProfile) currentProfile = claimedProfile;
+        } catch (claimErr) {
+          console.warn('Could not auto-claim matching family profile:', claimErr);
+        }
+      }
       currentProfile = await syncGoogleIdentity(user, profileRef, currentProfile);
       isAdmin = currentProfile.role === 'admin';
 
@@ -347,22 +382,12 @@ async function handleAuthState(user) {
 
     const { setDoc, serverTimestamp } = window._fb;
     let claimedProfile = null;
-    const normalizedUserEmail = normalizeEmail(user.email);
 
-    if (normalizedUserEmail) {
-      try {
-        const importDoc = await findClaimableProfileByEmail(user.email);
-        if (importDoc) {
-          const claimedData = mergeClaimedProfileData(user, importDoc);
-          if (!claimedData.createdAt) claimedData.createdAt = serverTimestamp();
-          await setDoc(profileRef, claimedData);
-          await cleanupClaimedImport(importDoc, user.uid);
-          claimedProfile = { id: user.uid, ...claimedData };
-          console.log(`Claimed imported profile "${importDoc.data().displayName}" -> ${user.uid}`);
-        }
-      } catch (err) {
-        console.warn('Could not search for imported records:', err);
-      }
+    try {
+      claimedProfile = await fdClaimFamilyProfileByEmail(user);
+      if (claimedProfile) console.log(`Claimed matching family profile -> ${user.uid}`);
+    } catch (err) {
+      console.warn('Could not auto-claim matching family profile:', err);
     }
 
     if (claimedProfile) {
@@ -869,6 +894,7 @@ window.fdSignIn = fdSignIn;
 window.fdSignOut = fdSignOut;
 window.fdToast = fdToast;
 window.fdShowLoadError = fdShowLoadError;
+window.fdClaimFamilyProfileByEmail = fdClaimFamilyProfileByEmail;
 window.fetchApprovedMembers = fetchApprovedMembers;
 window.fetchAllMembers = fetchAllMembers;
 window.saveProfile = saveProfile;

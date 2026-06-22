@@ -42,8 +42,6 @@ const PHOTO_TAG_CANONICAL_SLUGS = {
   'paola-andres': 'paola-pallete',
   'milagros': 'milagros-herrera',
   'adriana': 'adriana-astocondor',
-  'alessandra': 'alessandra-briceno',
-  'alessandra-prietto': 'alessandra-briceno',
   'paola-josefina': 'paola-ranilla',
   'victor-andres': 'victor-ranilla',
   'victor-andres-ranilla': 'victor-ranilla',
