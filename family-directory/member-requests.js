@@ -1,4 +1,4 @@
-/* Family Directory member request review tools */
+/* Directory Profile member request review tools */
 
 let fdPendingMemberRequests = [];
 

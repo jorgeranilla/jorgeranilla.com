@@ -99,7 +99,7 @@
       </div>
 
       <div class="back-link-container">
-        <a href="../../family/heritage-roots.html" class="back-to-profile" id="album-back-link">&larr; Back to Bio Page</a>
+        <a href="../../family/heritage-roots.html" class="back-to-profile" id="album-back-link">&larr; Back to Page</a>
       </div>
     </div>
   </main>
@@ -115,7 +115,7 @@
     </div>
   </div>
 
-  <script src="../../script.js"></script>
+  <script src="../../script.js?v=5"></script>
   <script src="../../search-dynamic.js"></script>
   <script src="smart-family-gallery.js?v=15"></script>
   <script>
@@ -136,7 +136,7 @@
 
     const backLink = document.getElementById('album-back-link');
     backLink.href = `../../family/${personSlug}.html`;
-    backLink.textContent = `\u2190 Back to ${displayName}'s Bio Page`;
+    backLink.textContent = `\u2190 Back to ${displayName}'s Page`;
 
     JRFamilyGallery.start({
       mode: 'person',

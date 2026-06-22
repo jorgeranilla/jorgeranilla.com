@@ -554,7 +554,7 @@ document.addEventListener("DOMContentLoaded", () => {
       'family-tree.html': ['Family', 'Heritage & Roots', 'Family Tree'],
       'ancestry.html': ['Family', 'Heritage & Roots', 'Ancestry'],
 
-      // Family section - Individual bio pages (under Heritage & Roots)
+      // Family section - Individual pages (under Heritage & Roots)
       'jorge-ranilla.html': ['Family', 'Heritage & Roots', 'Jorge'],
       'shane-ranilla.html': ['Family', 'Heritage & Roots', 'Shane'],
       'alyssa-ranilla.html': ['Family', 'Heritage & Roots', 'Alyssa'],
@@ -563,7 +563,7 @@ document.addEventListener("DOMContentLoaded", () => {
       'jorge-luis-ranilla.html': ['Family', 'Heritage & Roots', 'Jorge Luis'],
       'sylvia-ines-astocondor.html': ['Family', 'Heritage & Roots', 'Sylvia Ines'],
 
-      // Family section - Extended family bio pages
+      // Family section - Extended family pages
       'sergio-raul-ranilla.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Sergio Raul'],
       'maria-jesus-cateriano.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Maria Jesus'],
       'eugenio-astocondor.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Eugenio'],
@@ -588,7 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Family section - Other pages
       'my-story.html': ['Family', 'My Story'],
-      'photo-tags.html': ['Family Directory', 'Photo Tags'],
+      'photo-tags.html': ['Directory Profile', 'Photo Tags'],
 
 
       // Spanish versions - mirror English hierarchy
@@ -642,7 +642,7 @@ document.addEventListener("DOMContentLoaded", () => {
       'Heritage & Roots': `${homePrefix}family/heritage-roots.html`,
       'Extended Family': `${homePrefix}family/extended-family.html`,
       'Travel': `${rootPrefix}archive/gallery/travel.html`,
-      'Family Directory': `${homePrefix}family-directory/index.html`,
+      'Directory Profile': `${homePrefix}family-directory/index.html`,
       'Family': null, // Has submenu items but no dedicated page
       'Gallery': null,
       'Professional': null,
@@ -720,7 +720,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===========================
      Family Bio Album Link
-     - Adds a tagged-photo album link to existing bio pages.
+     - Adds a tagged-photo album link to existing pages.
   =========================== */
   (function injectFamilyBioAlbumLink() {
     if (document.body.getAttribute('data-section') !== 'Family') return;
@@ -776,7 +776,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===========================
      Public Family Bio Claim Prompt
-     - Adds a discreet manage-profile entry point to bio pages.
+     - Adds a discreet manage-profile entry point to pages.
   =========================== */
   (function injectFamilyBioClaimPrompt() {
     const isFamilyBioPath = /\/family\/[^/]+\.html$/i.test(window.location.pathname);
@@ -835,9 +835,9 @@ document.addEventListener("DOMContentLoaded", () => {
           </svg>
         </div>
         <p class="bio-claim-label">Profile Access</p>
-        <h3 id="bio-claim-title">Manage ${escapeHtml(displayName)}'s Bio Page</h3>
+        <h3 id="bio-claim-title">Manage ${escapeHtml(displayName)}'s Page</h3>
         <p class="bio-claim-copy">
-          Sign in with Google to verify your identity. If your email matches this family profile, the profile will link automatically and you can submit bio updates or photo add/remove requests.
+          Sign in with Google to verify your identity. If your email matches this profile, the profile will link automatically and you can submit bio updates or photo add/remove requests.
         </p>
         <p class="bio-claim-note">All submitted changes remain pending until an admin reviews and approves them.</p>
         <div class="bio-claim-actions">

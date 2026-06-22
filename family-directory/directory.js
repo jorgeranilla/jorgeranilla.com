@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   Family Directory – Firebase Logic
+   Directory Profile – Firebase Logic
    Auth · Firestore · RBAC
 ═══════════════════════════════════════════ */
 
@@ -184,7 +184,7 @@ async function fdClaimFamilyProfileByEmail(user) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.error || 'Could not claim matching family profile.');
+    throw new Error(data.error || 'Could not claim matching profile.');
   }
 
   if (!data.claimed && !data.alreadyClaimed) return null;
@@ -247,7 +247,7 @@ function fdStartAuthWatchdog(detail) {
   }, FD_AUTH_TIMEOUT_MS);
 }
 
-function fdShowLoadError(title = 'Could not load the family directory.', detail = 'Refresh the page and try again.') {
+function fdShowLoadError(title = 'Could not load Directory Profile.', detail = 'Refresh the page and try again.') {
   fdClearAuthWatchdog();
 
   const loadingEl = document.getElementById('fd-loading');
@@ -315,7 +315,7 @@ async function fdInit() {
     });
   } catch (error) {
     console.error('Family directory startup error:', error);
-    fdShowLoadError('Could not start the family directory.', error.message || 'Refresh the page and try again.');
+    fdShowLoadError('Could not start Directory Profile.', error.message || 'Refresh the page and try again.');
     throw error;
   }
 }
@@ -342,8 +342,8 @@ async function handleAuthState(user) {
 
     if (currentUser?.uid && currentUser.uid !== user.uid) fdClearGoogleDriveAccessToken();
     currentUser = user;
-    fdSetLoadingMessage('Loading your family profile...');
-    fdStartAuthWatchdog('Still loading your family profile. Refresh the page if this keeps spinning.');
+    fdSetLoadingMessage('Loading your profile...');
+    fdStartAuthWatchdog('Still loading your profile. Refresh the page if this keeps spinning.');
     if (loadingEl) loadingEl.style.display = 'flex';
     if (authGate) authGate.style.display = 'none';
 
@@ -358,7 +358,7 @@ async function handleAuthState(user) {
           const claimedProfile = await fdClaimFamilyProfileByEmail(user);
           if (claimedProfile) currentProfile = claimedProfile;
         } catch (claimErr) {
-          console.warn('Could not auto-claim matching family profile:', claimErr);
+          console.warn('Could not auto-claim matching profile:', claimErr);
         }
       }
       currentProfile = await syncGoogleIdentity(user, profileRef, currentProfile);
@@ -388,9 +388,9 @@ async function handleAuthState(user) {
 
     try {
       claimedProfile = await fdClaimFamilyProfileByEmail(user);
-      if (claimedProfile) console.log(`Claimed matching family profile -> ${user.uid}`);
+      if (claimedProfile) console.log(`Claimed matching profile -> ${user.uid}`);
     } catch (err) {
-      console.warn('Could not auto-claim matching family profile:', err);
+      console.warn('Could not auto-claim matching profile:', err);
     }
 
     if (claimedProfile) {
@@ -443,7 +443,7 @@ async function handleAuthState(user) {
     }
   } catch (error) {
     console.error('Family directory load error:', error);
-    fdShowLoadError('Could not load the family directory.', error.message || 'Refresh the page and try again.');
+    fdShowLoadError('Could not load Directory Profile.', error.message || 'Refresh the page and try again.');
   }
 }
 function fdSignIn() {

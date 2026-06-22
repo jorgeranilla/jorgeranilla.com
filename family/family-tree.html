@@ -540,7 +540,7 @@
             <h2 class="page-title page-title--sm">Ranilla Family Tree</h2>
             <p>
                 Explore my family heritage from the present to the past. Click on grandparents to see their parents, or
-                click on their picture to read their bio page.
+                click on their picture to read their page.
             </p>
         </div>
 
@@ -783,7 +783,7 @@
         </div>
     </main>
 
-    <script src="../script.js?v=4"></script>
+    <script src="../script.js?v=5"></script>
     <script src="../search-dynamic.js"></script>
     <script>
         // Interactive grandparent expansion
@@ -792,7 +792,7 @@
 
             expandableCards.forEach(card => {
                 card.addEventListener('click', function (e) {
-                    // Check if the click was on a link (bio page link)
+                    // Check if the click was on a link (page link)
                     if (e.target.tagName === 'A' || e.target.closest('a')) {
                         // Let the link work normally, don't expand the card
                         return;
@@ -830,7 +830,7 @@
                 });
             });
 
-            // Prevent card expansion when clicking on bio page links
+            // Prevent card expansion when clicking on page links
             document.querySelectorAll('.person-name a').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.stopPropagation(); // Prevent the card click event from firing

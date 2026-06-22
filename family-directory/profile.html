@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Profile | Family Directory | Jorge Ranilla</title>
+  <title>My Profile | Directory Profile | Jorge Ranilla</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="directory.css">
@@ -210,7 +210,7 @@
         <!-- Privacy -->
         <div class="fd-form-section">
           <h3 class="fd-form-section-title">Privacy Preferences</h3>
-          <p style="font-size:.82rem;color:#999;margin:0 0 14px">Choose what other family members can see</p>
+          <p style="font-size:.82rem;color:#999;margin:0 0 14px">Choose what other approved members can see</p>
           <div class="fd-toggle-group">
             <div class="fd-toggle">
               <span class="fd-toggle-label">Show phone number</span>
@@ -272,7 +272,7 @@
     </div>
   </div>
 
-  <script src="directory.js?v=10"></script>
+  <script src="directory.js?v=11"></script>
   <script>
     (function applyProfileClaimContext() {
       const params = new URLSearchParams(window.location.search);
@@ -284,7 +284,7 @@
       const pendingSub = document.querySelector('#fd-pending .fd-auth-sub');
 
       if (authTitle) authTitle.textContent = `Manage ${claimName}'s Profile`;
-      if (authSub) authSub.textContent = 'Sign in with the Google account connected to this family profile. If it matches, the profile will link automatically.';
+      if (authSub) authSub.textContent = 'Sign in with the Google account connected to this profile. If it matches, the profile will link automatically.';
       if (pendingSub) pendingSub.innerHTML = 'Your sign-in was received. An admin will review access before profile tools become available.';
     })();
 
@@ -549,7 +549,7 @@
     fdInit();
   </script>
 
-  <script src="../script.js"></script>
+  <script src="../script.js?v=5"></script>
   <script src="../search-dynamic.js"></script>
 </body>
 </html>

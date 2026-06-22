@@ -873,7 +873,7 @@
       renderSelectedSuggestionPeople();
       renderSuggestionOptions();
       updateSuggestionLimitText();
-      setSuggestionMessage('Thank you. Your tag suggestion was sent for review and will appear only if approved by the family admin.');
+      setSuggestionMessage('Thank you. Your tag suggestion was sent for review and will appear only if approved by the site admin.');
     } catch (error) {
       setSuggestionMessage(error.message || 'Could not submit this suggestion.', true);
     } finally {
@@ -923,7 +923,7 @@
           const separator = index > 0 ? '<span class="lightbox-tag-separator" aria-hidden="true">&middot;</span>' : '';
           const label = escapeHtml(entry.label);
           const person = entry.href
-            ? `<a class="lightbox-tag-person lightbox-tag-link" href="${escapeHtml(entry.href)}" title="View ${label}'s bio page">${label}</a>`
+            ? `<a class="lightbox-tag-person lightbox-tag-link" href="${escapeHtml(entry.href)}" title="View ${label}'s page">${label}</a>`
             : `<span class="lightbox-tag-person">${label}</span>`;
           return `${separator}${person}`;
         }).join('')}`;
