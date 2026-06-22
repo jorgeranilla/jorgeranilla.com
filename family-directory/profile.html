@@ -274,6 +274,20 @@
 
   <script src="directory.js?v=10"></script>
   <script>
+    (function applyProfileClaimContext() {
+      const params = new URLSearchParams(window.location.search);
+      const claimName = (params.get('name') || '').trim();
+      if (!claimName) return;
+
+      const authTitle = document.querySelector('#fd-auth-gate .fd-auth-title');
+      const authSub = document.querySelector('#fd-auth-gate .fd-auth-sub');
+      const pendingSub = document.querySelector('#fd-pending .fd-auth-sub');
+
+      if (authTitle) authTitle.textContent = `Manage ${claimName}'s Profile`;
+      if (authSub) authSub.textContent = 'Sign in with the Google account connected to this family profile. If it matches, the profile will link automatically.';
+      if (pendingSub) pendingSub.innerHTML = 'Your sign-in was received. An admin will review access before profile tools become available.';
+    })();
+
     let fdProfileRequests = [];
     let fdTaggedMedia = [];
 

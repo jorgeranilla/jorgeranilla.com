@@ -767,6 +767,223 @@ body {
 }
 
 /* ===============================
+   Family Bio Management Prompt
+================================ */
+.bio-title-row {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    margin: 30px 0 14px;
+}
+
+.bio-title-row .page-title--sm {
+    margin: 0 !important;
+}
+
+.bio-manage-trigger {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e6e6e6;
+    border-radius: 50%;
+    color: #6f7780;
+    cursor: pointer;
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 34px;
+    justify-content: center;
+    padding: 0;
+    transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    width: 34px;
+}
+
+.bio-manage-trigger:hover,
+.bio-manage-trigger:focus-visible {
+    border-color: rgba(205, 92, 92, 0.45);
+    box-shadow: 0 8px 22px rgba(44, 62, 80, 0.1);
+    color: var(--accent-color);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.bio-manage-trigger svg {
+    fill: currentColor;
+    height: 16px;
+    width: 16px;
+}
+
+.bio-claim-modal {
+    align-items: center;
+    background: rgba(24, 32, 42, 0.46);
+    display: none;
+    inset: 0;
+    justify-content: center;
+    padding: 24px;
+    position: fixed;
+    z-index: 10020;
+}
+
+.bio-claim-modal.active {
+    display: flex;
+}
+
+.bio-claim-dialog {
+    background: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 18px;
+    box-shadow: 0 24px 70px rgba(26, 37, 53, 0.22);
+    max-width: 440px;
+    padding: 34px 34px 30px;
+    position: relative;
+    text-align: center;
+    width: min(100%, 440px);
+}
+
+.bio-claim-close {
+    align-items: center;
+    background: #f6f6f6;
+    border: 1px solid #ececec;
+    border-radius: 50%;
+    color: #777;
+    cursor: pointer;
+    display: flex;
+    font-size: 20px;
+    height: 34px;
+    justify-content: center;
+    line-height: 1;
+    padding: 0 0 2px;
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    transition: background 0.2s ease, color 0.2s ease;
+    width: 34px;
+}
+
+.bio-claim-close:hover,
+.bio-claim-close:focus-visible {
+    background: #eeeeee;
+    color: #2c3e50;
+    outline: none;
+}
+
+.bio-claim-icon {
+    align-items: center;
+    background: #f9eeee;
+    border: 1px solid #efd0d0;
+    border-radius: 50%;
+    color: var(--accent-color);
+    display: flex;
+    height: 58px;
+    justify-content: center;
+    margin: 4px auto 14px;
+    width: 58px;
+}
+
+.bio-claim-icon svg {
+    fill: currentColor;
+    height: 24px;
+    width: 24px;
+}
+
+.bio-claim-label {
+    color: var(--accent-color);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 0 0 8px;
+    text-transform: uppercase;
+}
+
+.bio-claim-dialog h3 {
+    color: #1a2535;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    line-height: 1.25;
+    margin: 0 0 12px;
+}
+
+.bio-claim-copy {
+    color: #666;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    margin: 0;
+}
+
+.bio-claim-note {
+    background: #f8fafc;
+    border: 1px solid #eef1f4;
+    border-radius: 10px;
+    color: #6f7780;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    margin: 18px 0 0;
+    padding: 10px 12px;
+}
+
+.bio-claim-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 22px;
+}
+
+.bio-claim-primary,
+.bio-claim-secondary {
+    align-items: center;
+    border-radius: 7px;
+    display: inline-flex;
+    font-size: 0.84rem;
+    font-weight: 700;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.bio-claim-primary {
+    background: var(--primary-color);
+    color: #ffffff;
+}
+
+.bio-claim-primary:hover {
+    background: #1f2d3a;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.bio-claim-secondary {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #4b5563;
+}
+
+.bio-claim-secondary:hover {
+    border-color: #d0d5dd;
+    color: #2c3e50;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 620px) {
+    .bio-title-row {
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .bio-manage-trigger {
+        height: 32px;
+        margin-top: -2px;
+        width: 32px;
+    }
+
+    .bio-claim-dialog {
+        padding: 30px 22px 24px;
+    }
+
+    .bio-claim-actions {
+        flex-direction: column;
+    }
+}
+/* ===============================
    SEARCH MODAL
 ================================ */
 .search-modal {

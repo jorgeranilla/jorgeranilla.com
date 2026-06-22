@@ -775,6 +775,120 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ===========================
+     Public Family Bio Claim Prompt
+     - Adds a discreet manage-profile entry point to bio pages.
+  =========================== */
+  (function injectFamilyBioClaimPrompt() {
+    const isFamilyBioPath = /\/family\/[^/]+\.html$/i.test(window.location.pathname);
+    if (!isFamilyBioPath || document.body.getAttribute('data-section') !== 'Family') return;
+
+    const file = decodeURIComponent(window.location.pathname.split('/').pop() || '').toLowerCase();
+    const excludedFiles = new Set([
+      'ancestry.html',
+      'baptism.html',
+      'baptism-es.html',
+      'baptism-godfather.html',
+      'baptism-godfather-es.html',
+      'baptism-godmother.html',
+      'baptism-godmother-es.html',
+      'extended-family.html',
+      'family-tree.html',
+      'heritage-roots.html'
+    ]);
+
+    if (!file.endsWith('.html') || excludedFiles.has(file)) return;
+
+    const aboutSection = document.querySelector('.about-section');
+    const titleEl = aboutSection?.querySelector('.page-title');
+    if (!aboutSection || !titleEl || document.querySelector('.bio-manage-trigger')) return;
+
+    const slug = file.replace(/\.html$/i, '').replace(/-es$/i, '');
+    const displayName = (titleEl.textContent || document.body.getAttribute('data-title') || titleFromSlug(slug)).trim();
+    const profileHref = `../family-directory/profile.html?claim=${encodeURIComponent(slug)}&name=${encodeURIComponent(displayName)}`;
+    const albumHref = `../gallery/family/person.html?person=${encodeURIComponent(slug)}&name=${encodeURIComponent(displayName)}`;
+
+    const titleRow = document.createElement('div');
+    titleRow.className = 'bio-title-row';
+    titleEl.parentNode.insertBefore(titleRow, titleEl);
+    titleRow.appendChild(titleEl);
+
+    const editButton = document.createElement('button');
+    editButton.type = 'button';
+    editButton.className = 'bio-manage-trigger';
+    editButton.setAttribute('aria-label', `Manage ${displayName}'s profile`);
+    editButton.setAttribute('title', `Manage ${displayName}'s profile`);
+    editButton.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33h-.5v-.5l8.64-8.64.5.5-8.64 8.64zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+      </svg>`;
+    titleRow.appendChild(editButton);
+
+    const modal = document.createElement('div');
+    modal.className = 'bio-claim-modal';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+      <div class="bio-claim-dialog" role="dialog" aria-modal="true" aria-labelledby="bio-claim-title">
+        <button type="button" class="bio-claim-close" aria-label="Close profile management prompt">&times;</button>
+        <div class="bio-claim-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.33h-.5v-.5l8.64-8.64.5.5-8.64 8.64zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+          </svg>
+        </div>
+        <p class="bio-claim-label">Profile Access</p>
+        <h3 id="bio-claim-title">Manage ${escapeHtml(displayName)}'s Bio Page</h3>
+        <p class="bio-claim-copy">
+          Sign in with Google to verify your identity. If your email matches this family profile, the profile will link automatically and you can submit bio updates or photo add/remove requests.
+        </p>
+        <p class="bio-claim-note">All submitted changes remain pending until an admin reviews and approves them.</p>
+        <div class="bio-claim-actions">
+          <a class="bio-claim-primary" href="${profileHref}">Sign in to manage</a>
+          <a class="bio-claim-secondary" href="${albumHref}">View photo album</a>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+
+    const closeButton = modal.querySelector('.bio-claim-close');
+
+    editButton.addEventListener('click', () => openModal());
+    closeButton?.addEventListener('click', () => closeModal());
+    modal.addEventListener('click', event => {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && modal.classList.contains('active')) closeModal();
+    });
+
+    function openModal() {
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      closeButton?.focus();
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      editButton.focus();
+    }
+
+    function titleFromSlug(value) {
+      return String(value || '')
+        .split('-')
+        .filter(Boolean)
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"]/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;'
+      }[ch]));
+    }
+  })();
+
+  /* ===========================
        Social Rail (desktop hover edge)
     =========================== */
   const rail = document.querySelector(".social-rail");
