@@ -785,37 +785,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ===========================
-     Public Family Bio Claim Prompt
-     - Adds a discreet manage-profile entry point to pages.
+     Public Profile Claim Prompt
+     - Adds a discreet manage-profile entry point to public profile pages.
   =========================== */
-  (function injectFamilyBioClaimPrompt() {
-    const isFamilyBioPath = /\/family\/[^/]+\.html$/i.test(window.location.pathname);
-    if (!isFamilyBioPath || document.body.getAttribute('data-section') !== 'Family') return;
+  (function injectPublicProfileClaimPrompt() {
+    const pathname = window.location.pathname;
+    const section = document.body.getAttribute('data-section') || '';
+    const file = decodeURIComponent(pathname.split('/').pop() || '').toLowerCase();
 
-    const file = decodeURIComponent(window.location.pathname.split('/').pop() || '').toLowerCase();
-    const excludedFiles = new Set([
-      'ancestry.html',
-      'baptism.html',
-      'baptism-es.html',
-      'baptism-godfather.html',
-      'baptism-godfather-es.html',
-      'baptism-godmother.html',
-      'baptism-godmother-es.html',
-      'extended-family.html',
-      'family-tree.html',
-      'heritage-roots.html'
-    ]);
+    const profileConfig = (() => {
+      if (/\/family\/[^/]+\.html$/i.test(pathname) && section === 'Family') {
+        return {
+          source: 'family',
+          albumFolder: 'family',
+          excludedFiles: new Set([
+            'ancestry.html',
+            'baptism.html',
+            'baptism-es.html',
+            'baptism-godfather.html',
+            'baptism-godfather-es.html',
+            'baptism-godmother.html',
+            'baptism-godmother-es.html',
+            'extended-family.html',
+            'family-tree.html',
+            'heritage-roots.html'
+          ])
+        };
+      }
 
-    if (!file.endsWith('.html') || excludedFiles.has(file)) return;
+      if (/\/people\/[^/]+\.html$/i.test(pathname) && section === 'People') {
+        return {
+          source: 'people',
+          albumFolder: 'people',
+          excludedFiles: new Set(['index.html', 'patricia-malca-gallery.html'])
+        };
+      }
+
+      return null;
+    })();
+
+    if (!profileConfig || !file.endsWith('.html') || profileConfig.excludedFiles.has(file)) return;
 
     const aboutSection = document.querySelector('.about-section');
     const titleEl = aboutSection?.querySelector('.page-title');
     if (!aboutSection || !titleEl || document.querySelector('.bio-manage-trigger')) return;
 
-    const slug = file.replace(/\.html$/i, '').replace(/-es$/i, '');
-    const displayName = (titleEl.textContent || document.body.getAttribute('data-title') || titleFromSlug(slug)).trim();
-    const profileHref = `../family-directory/profile.html?claim=${encodeURIComponent(slug)}&name=${encodeURIComponent(displayName)}`;
-    const albumHref = `../gallery/family/person.html?person=${encodeURIComponent(slug)}&name=${encodeURIComponent(displayName)}`;
+    const pageSlug = file.replace(/\.html$/i, '').replace(/-es$/i, '');
+    const claimSlug = profileConfig.source === 'people' ? pageSlug.replace(/-\d+$/i, '') : pageSlug;
+    const displayName = (titleEl.textContent || document.body.getAttribute('data-title') || titleFromSlug(claimSlug)).trim();
+    const existingAlbumLink = aboutSection.querySelector('.bio-album-link[href*="gallery/"]');
+    const fallbackAlbumHref = `../gallery/${profileConfig.albumFolder}/person.html?person=${encodeURIComponent(claimSlug)}&name=${encodeURIComponent(displayName)}`;
+    const albumHref = existingAlbumLink?.getAttribute('href') || fallbackAlbumHref;
+    const profileHref = `../family-directory/profile.html?claim=${encodeURIComponent(claimSlug)}&name=${encodeURIComponent(displayName)}&source=${encodeURIComponent(profileConfig.source)}`;
 
     const titleRow = document.createElement('div');
     titleRow.className = 'bio-title-row';

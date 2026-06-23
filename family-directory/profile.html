@@ -367,16 +367,20 @@
         seen.add(clean);
         candidates.push(clean);
       };
-      const addSlug = slug => {
+      const rawSource = String(params.get('source') || '').toLowerCase();
+      const primaryFolder = rawSource === 'people' ? 'people' : 'family';
+      const fallbackFolder = primaryFolder === 'people' ? 'family' : 'people';
+      const addSlug = (slug, folder = primaryFolder) => {
         const cleanSlug = fdPageSlug(slug);
-        if (cleanSlug) add(`../family/${cleanSlug}.html`);
+        if (cleanSlug) add(`../${folder}/${cleanSlug}.html`);
       };
 
       add(profile.pageSourceUrl);
-      addSlug(params.get('claim'));
-      addSlug(profile.pageSlug);
-      addSlug(profile.displayName);
-      addSlug(params.get('name'));
+      add(params.get('pageSourceUrl'));
+      [params.get('claim'), profile.pageSlug, profile.displayName, params.get('name')].forEach(slug => {
+        addSlug(slug, primaryFolder);
+        addSlug(slug, fallbackFolder);
+      });
       return candidates;
     }
 
@@ -390,7 +394,7 @@
 
       return Array.from(clone.querySelectorAll('p'))
         .filter(p => !p.querySelector('a.heritage-read-more'))
-        .filter(p => !p.querySelector('a[href*="gallery/family"]'))
+        .filter(p => !p.querySelector('a[href*="gallery/family"], a[href*="gallery/people"]'))
         .map(p => p.textContent.replace(/\s+/g, ' ').trim())
         .filter(Boolean)
         .join('\n\n');
