@@ -837,7 +837,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <p class="bio-claim-label">Profile Access</p>
         <h3 id="bio-claim-title">Manage ${escapeHtml(displayName)}'s Page</h3>
         <p class="bio-claim-copy">
-          Sign in with Google to verify your identity. If your email matches this profile, the profile will link automatically and you can submit bio updates or photo add/remove requests.
+          Sign in with Google to verify your identity. If your email matches this profile, the profile will link automatically and you can submit updates to this page or request photo changes.
         </p>
         <p class="bio-claim-note">All submitted changes remain pending until an admin reviews and approves them.</p>
         <div class="bio-claim-actions">
