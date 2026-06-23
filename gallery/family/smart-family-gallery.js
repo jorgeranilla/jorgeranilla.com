@@ -137,7 +137,10 @@
     "sylvia-ines-astocondor": "sylvia-astocondor-salazar-lopez",
     "victor": "victor-ranilla",
     "victor-andres": "victor-ranilla",
-    "victor-andres-ranilla": "victor-ranilla"
+    "victor-andres-ranilla": "victor-ranilla",
+    'maria-carlota-ruiz-guevara': 'carlota-ruiz-guevara',
+    'maria-alcira-del-carmen': 'alcira-astocondor-salazar-lopez',
+    'luis-fernando-astocondor-salazar-lopez': 'fernando-astocondor-salazar-lopez'
   };
 
   let config = {};
@@ -534,7 +537,10 @@
         "oscar-alberto": ["oscar-ranilla-cateriano"],
         "raul-sergio-victor": ["raul-ranilla-cateriano"],
         "sebastian": ["sebastian-astocondor"],
-        "sebastian-martin": ["sebastian-astocondor"]
+        "sebastian-martin": ["sebastian-astocondor"],
+        'maria-carlota-ruiz-guevara': ['carlota-ruiz-guevara'],
+        'maria-alcira-del-carmen': ['alcira-astocondor-salazar-lopez'],
+        'luis-fernando-astocondor-salazar-lopez': ['fernando-astocondor-salazar-lopez']
       };
       const aliases = [config.personSlug, ...config.personAliases].filter(Boolean);
 

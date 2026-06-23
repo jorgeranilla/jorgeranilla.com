@@ -81,7 +81,10 @@ const PHOTO_TAG_CANONICAL_SLUGS = {
   "sebastian-martin": "sebastian-astocondor",
   "alcira-isabel": "alcira-astocondor",
   "patty": "patricia-malca",
-  "lucy": "lucia-mendez"
+  "lucy": "lucia-mendez",
+  'maria-carlota-ruiz-guevara': 'carlota-ruiz-guevara',
+  'maria-alcira-del-carmen': 'alcira-astocondor-salazar-lopez',
+  'luis-fernando-astocondor-salazar-lopez': 'fernando-astocondor-salazar-lopez'
 };
 
 let tagOptionsCache = {

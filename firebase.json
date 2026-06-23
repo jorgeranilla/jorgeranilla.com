@@ -420,6 +420,46 @@
         "source": "/family/sebastian-martin.html",
         "destination": "/family/sebastian-astocondor.html",
         "type": 301
+      },
+      {
+        "source": "/family/maria-carlota-ruiz-guevara",
+        "destination": "/family/carlota-ruiz-guevara.html",
+        "type": 301
+      },
+      {
+        "source": "/family/maria-carlota-ruiz-guevara.html",
+        "destination": "/family/carlota-ruiz-guevara.html",
+        "type": 301
+      },
+      {
+        "source": "/family/eugenio-augusto",
+        "destination": "/family/eugenio-astocondor-salazar-lopez.html",
+        "type": 301
+      },
+      {
+        "source": "/family/eugenio-augusto.html",
+        "destination": "/family/eugenio-astocondor-salazar-lopez.html",
+        "type": 301
+      },
+      {
+        "source": "/family/maria-alcira-del-carmen",
+        "destination": "/family/alcira-astocondor-salazar-lopez.html",
+        "type": 301
+      },
+      {
+        "source": "/family/maria-alcira-del-carmen.html",
+        "destination": "/family/alcira-astocondor-salazar-lopez.html",
+        "type": 301
+      },
+      {
+        "source": "/family/luis-fernando-astocondor-salazar-lopez",
+        "destination": "/family/fernando-astocondor-salazar-lopez.html",
+        "type": 301
+      },
+      {
+        "source": "/family/luis-fernando-astocondor-salazar-lopez.html",
+        "destination": "/family/fernando-astocondor-salazar-lopez.html",
+        "type": 301
       }
     ]
   },
