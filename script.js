@@ -94,18 +94,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Helper function to build section links
     function buildSectionLink(section, file) {
-      if (!section) {
-        return prefix + file;
-      }
-      if (currentSection === section) {
-        // Same section - use relative path (no prefix needed)
-        return file;
-      } else {
-        // Different section or root - use prefix
-        // On root: prefix = "", so returns "family/my-story.html"
-        // On subdirectory: prefix = "../", so returns "../family/my-story.html"
-        return prefix + section + "/" + file;
-      }
+      if (!section) return prefix + file;
+      return prefix + section + "/" + file;
     }
 
     // Detect if current page is Spanish
@@ -555,36 +545,56 @@ document.addEventListener("DOMContentLoaded", () => {
       'ancestry.html': ['Family', 'Heritage & Roots', 'Ancestry'],
 
       // Family section - Individual pages (under Heritage & Roots)
-      'jorge-ranilla.html': ['Family', 'Heritage & Roots', 'Jorge Ranilla'],
-      'shane-ranilla.html': ['Family', 'Heritage & Roots', 'Shane Ranilla'],
-      'alyssa-ranilla.html': ['Family', 'Heritage & Roots', 'Alyssa Ranilla'],
-      'victor-ranilla.html': ['Family', 'Heritage & Roots', 'Victor Ranilla'],
-      'maria-ranilla.html': ['Family', 'Heritage & Roots', 'Maria Ranilla'],
-      'jorge-ranilla-cateriano.html': ['Family', 'Heritage & Roots', 'Jorge Ranilla Cateriano'],
-      'sylvia-astocondor-salazar-lopez.html': ['Family', 'Heritage & Roots', 'Sylvia Astocondor Salazar Lopez'],
+      "alyssa-ranilla.html": ['Family', 'Heritage & Roots', "Alyssa Ranilla"],
+      "jorge-ranilla.html": ['Family', 'Heritage & Roots', "Jorge Ranilla"],
+      "jorge-ranilla-cateriano.html": ['Family', 'Heritage & Roots', "Jorge Ranilla Cateriano"],
+      "maria-ranilla.html": ['Family', 'Heritage & Roots', "Maria Ranilla"],
+      "shane-ranilla.html": ['Family', 'Heritage & Roots', "Shane Ranilla"],
+      "sylvia-astocondor-salazar-lopez.html": ['Family', 'Heritage & Roots', "Sylvia Astocondor Salazar Lopez"],
+      "victor-ranilla.html": ['Family', 'Heritage & Roots', "Victor Ranilla"],
 
       // Family section - Extended family pages
-      'sergio-ranilla-rondon.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Sergio Ranilla Rondon'],
-      'maria-jesus-cateriano-dongo.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Maria Jesus Cateriano Dongo'],
-      'eugenio-astocondor-salazar.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Eugenio Astocondor Salazar'],
-      'alcira-lopez-ruiz.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Alcira Lopez Ruiz'],
-      'eugenio-astocondor-salazar-lopez.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Eugenio Astocondor Salazar Lopez'],
-      'alcira-astocondor-salazar-lopez.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Alcira Astocondor Salazar Lopez'],
-      'carlota-ruiz-guevara.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Carlota Ruiz Guevara'],
-      'victoriano-cateriano.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Victoriano Cateriano'],
-      'lucila-dongo-salcedo.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Lucila Dongo Salcedo'],
-      'luis-fernando-astocondor.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Luis Fernando Astocondor'],
-      'fernando-pallete.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Fernando Pallete'],
-      'lorenzo-lu.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Lorenzo Lu'],
-      'eugenio-astocondor.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Eugenio Astocondor'],
-      'ernesto-herrera.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Ernesto Herrera'],
-      'luisa-astocondor.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Luisa Astocondor'],
-      'monica-astocondor.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Monica Astocondor'],
-      'paola-pallete.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Paola Pallete'],
-      'milagros-herrera.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Milagros Herrera'],
-      'adriana-astocondor.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Adriana Astocondor'],
-      'alessandra-briceno.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Alessandra Briceno'],
-      'paola-ranilla.html': ['Family', 'Heritage & Roots', 'Extended Family', 'Paola Ranilla'],
+      "adriana-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Adriana Astocondor"],
+      "alcira-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Alcira Astocondor"],
+      "alcira-lopez-ruiz.html": ['Family', 'Heritage & Roots', 'Extended Family', "Alcira Lopez Ruiz"],
+      "alessandra-briceno.html": ['Family', 'Heritage & Roots', 'Extended Family', "Alessandra Briceno"],
+      "aurora-rondon-perea.html": ['Family', 'Heritage & Roots', 'Extended Family', "Aurora Rondon Perea"],
+      "carlota-astocondor-salazar-lopez.html": ['Family', 'Heritage & Roots', 'Extended Family', "Carlota Astocondor Salazar Lopez"],
+      "carlota-ruiz-guevara.html": ['Family', 'Heritage & Roots', 'Extended Family', "Carlota Ruiz Guevara"],
+      "carlota-salazar-mateo.html": ['Family', 'Heritage & Roots', 'Extended Family', "Carlota Salazar Mateo"],
+      "carolina-ranilla.html": ['Family', 'Heritage & Roots', 'Extended Family', "Carolina Ranilla"],
+      "ernesto-herrera.html": ['Family', 'Heritage & Roots', 'Extended Family', "Ernesto Herrera"],
+      "eugenio-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Eugenio Astocondor"],
+      "eugenio-astocondor-fuertes.html": ['Family', 'Heritage & Roots', 'Extended Family', "Eugenio Astocondor Fuertes"],
+      "eugenio-astocondor-salazar.html": ['Family', 'Heritage & Roots', 'Extended Family', "Eugenio Astocondor Salazar"],
+      "eugenio-astocondor-salazar-lopez.html": ['Family', 'Heritage & Roots', 'Extended Family', "Eugenio Astocondor Salazar Lopez"],
+      "fatima-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Fatima Astocondor"],
+      "fernando-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Fernando Astocondor"],
+      "fernando-astocondor-salazar-lopez.html": ['Family', 'Heritage & Roots', 'Extended Family', "Fernando Astocondor Salazar Lopez"],
+      "fernando-pallete.html": ['Family', 'Heritage & Roots', 'Extended Family', "Fernando Pallete"],
+      "gabriel-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Gabriel Astocondor"],
+      "hector-briceno.html": ['Family', 'Heritage & Roots', 'Extended Family', "Hector Briceno"],
+      "janet-ranilla-cateriano.html": ['Family', 'Heritage & Roots', 'Extended Family', "Janet Ranilla Cateriano"],
+      "jorge-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Jorge Astocondor"],
+      "jose-dalicio-lopez-lopez.html": ['Family', 'Heritage & Roots', 'Extended Family', "Jose Dalicio Lopez Lopez"],
+      "lorenzo-lu.html": ['Family', 'Heritage & Roots', 'Extended Family', "Lorenzo Lu"],
+      "lucila-dongo-salcedo.html": ['Family', 'Heritage & Roots', 'Extended Family', "Lucila Dongo Salcedo"],
+      "luis-fernando-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Luis Fernando Astocondor"],
+      "luisa-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Luisa Astocondor"],
+      "alcira-astocondor-salazar-lopez.html": ['Family', 'Heritage & Roots', 'Extended Family', "Alcira Astocondor Salazar Lopez"],
+      "maria-jesus-cateriano-dongo.html": ['Family', 'Heritage & Roots', 'Extended Family', "Maria Jesus Cateriano Dongo"],
+      "milagros-herrera.html": ['Family', 'Heritage & Roots', 'Extended Family', "Milagros Herrera"],
+      "monica-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Monica Astocondor"],
+      "oscar-ranilla.html": ['Family', 'Heritage & Roots', 'Extended Family', "Oscar Ranilla"],
+      "oscar-ranilla-cateriano.html": ['Family', 'Heritage & Roots', 'Extended Family', "Oscar Ranilla Cateriano"],
+      "paola-pallete.html": ['Family', 'Heritage & Roots', 'Extended Family', "Paola Pallete"],
+      "paola-ranilla.html": ['Family', 'Heritage & Roots', 'Extended Family', "Paola Ranilla"],
+      "raul-ranilla.html": ['Family', 'Heritage & Roots', 'Extended Family', "Raul Ranilla"],
+      "raul-ranilla-cateriano.html": ['Family', 'Heritage & Roots', 'Extended Family', "Raul Ranilla Cateriano"],
+      "sebastian-astocondor.html": ['Family', 'Heritage & Roots', 'Extended Family', "Sebastian Astocondor"],
+      "sergio-ranilla-ranilla.html": ['Family', 'Heritage & Roots', 'Extended Family', "Sergio Ranilla Ranilla"],
+      "sergio-ranilla-rondon.html": ['Family', 'Heritage & Roots', 'Extended Family', "Sergio Ranilla Rondon"],
+      "victoriano-cateriano.html": ['Family', 'Heritage & Roots', 'Extended Family', "Victoriano Cateriano"],
 
       // Family section - Other pages
       'my-story.html': ['Family', 'My Story'],
