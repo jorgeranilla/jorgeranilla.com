@@ -225,6 +225,25 @@
   font-size: 1.1rem; font-weight: 600;
   color: #2c3e50; margin: 0 0 4px;
 }
+.fd-card-page-link {
+  align-items: center;
+  border: 1px solid #ead6d6;
+  border-radius: 999px;
+  color: #9b4545;
+  display: inline-flex;
+  font-size: .72rem;
+  font-weight: 500;
+  line-height: 1;
+  margin: 2px 0 12px;
+  padding: 6px 10px;
+  text-decoration: none;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.fd-card-page-link:hover {
+  background: #fff5f5;
+  border-color: #CD5C5C;
+  color: #CD5C5C;
+}
 .fd-card-info {
   width: 100%; text-align: left;
   display: flex; flex-direction: column; gap: 8px;

@@ -122,6 +122,9 @@ function mergeClaimedProfileData(user, sourceData = {}, existingData = {}) {
     googleContactEtag: sourceData.googleContactEtag || existingData.googleContactEtag || '',
     googleContactLabels: sourceData.googleContactLabels || existingData.googleContactLabels || [],
     googleContactLastSyncedAt: sourceData.googleContactLastSyncedAt || existingData.googleContactLastSyncedAt || null,
+    pageSlug: sourceData.pageSlug || existingData.pageSlug || '',
+    pageUrl: sourceData.pageUrl || existingData.pageUrl || '',
+    publicProfileName: sourceData.publicProfileName || existingData.publicProfileName || '',
     syncSource: sourceData.syncSource || existingData.syncSource || ''
   };
 }
@@ -146,7 +149,10 @@ function profileResponse(uid, data = {}) {
     isPhotoTagOnly: data.isPhotoTagOnly === true,
     claimedFrom: data.claimedFrom || '',
     claimedByUid: data.claimedByUid || uid,
-    claimedByEmail: data.claimedByEmail || data.email || ''
+    claimedByEmail: data.claimedByEmail || data.email || '',
+    pageSlug: data.pageSlug || '',
+    pageUrl: data.pageUrl || '',
+    publicProfileName: data.publicProfileName || ''
   };
 }
 

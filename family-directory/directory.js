@@ -28,6 +28,157 @@ const GOOGLE_DRIVE_TOKEN_TTL_MS = 50 * 60 * 1000;
 let fdGoogleDriveAccessToken = '';
 let fdGoogleDriveAccessTokenExpiresAt = 0;
 let fdGoogleDriveAccessTokenUid = '';
+const FD_PUBLIC_PROFILE_ROOT = 'https://jorgeranilla.com/family/';
+const FD_PUBLIC_PROFILE_PAGES = Object.freeze([
+  { name: 'Adriana Astocondor', slug: 'adriana-astocondor', aliases: ['adriana'] },
+  { name: 'Alcira Lopez Ruiz', slug: 'alcira-lopez-ruiz', aliases: ['alcira-victoria-lopez'] },
+  { name: 'Alessandra Briceno', slug: 'alessandra-briceno', aliases: ['alessandra'] },
+  { name: 'Alyssa Ranilla', slug: 'alyssa-ranilla', aliases: [] },
+  { name: 'Aurora Rondon Perea', slug: 'aurora-rondon-perea', aliases: [] },
+  { name: 'Carlota Salazar Mateo', slug: 'carlota-salazar-mateo', aliases: [] },
+  { name: 'Ernesto Herrera', slug: 'ernesto-herrera', aliases: ['ernesto'] },
+  { name: 'Eugenio Astocondor Fuertes', slug: 'eugenio-astocondor-fuertes', aliases: [] },
+  { name: 'Eugenio Astocondor Salazar', slug: 'eugenio-astocondor-salazar', aliases: [] },
+  { name: 'Eugenio Astocondor Salazar Lopez', slug: 'eugenio-astocondor-salazar-lopez', aliases: ['eugenio-augusto-astocondor'] },
+  { name: 'Eugenio Astocondor', slug: 'eugenio-astocondor', aliases: ['eugenio-jesus'] },
+  { name: 'Fernando Pallete', slug: 'fernando-pallete', aliases: ['fernando-javier'] },
+  { name: 'Jorge Ranilla Cateriano', slug: 'jorge-ranilla-cateriano', aliases: ['jorge-luis-ranilla'] },
+  { name: 'Jorge Ranilla', slug: 'jorge-ranilla', aliases: [] },
+  { name: 'Jose Dalicio Lopez Lopez', slug: 'jose-dalicio-lopez-lopez', aliases: ['jose-dalicio-lopez'] },
+  { name: 'Lorenzo Lu', slug: 'lorenzo-lu', aliases: ['lorenzo-david'] },
+  { name: 'Lucila Dongo Salcedo', slug: 'lucila-dongo-salcedo', aliases: [] },
+  { name: 'Luis Fernando Astocondor', slug: 'luis-fernando-astocondor', aliases: ['luis-fernando'] },
+  { name: 'Luisa Astocondor', slug: 'luisa-astocondor', aliases: ['luisa-cristina'] },
+  { name: 'Alcira Astocondor Salazar Lopez', slug: 'alcira-astocondor-salazar-lopez', aliases: ['maria-alcira-del-carmen-astocondor'] },
+  { name: 'Carlota Ruiz Guevara', slug: 'carlota-ruiz-guevara', aliases: ['maria-carlota-ruiz'] },
+  { name: 'Maria Ranilla', slug: 'maria-ranilla', aliases: ['maria-eugenia-ranilla'] },
+  { name: 'Maria Jesus Cateriano Dongo', slug: 'maria-jesus-cateriano-dongo', aliases: ['maria-jesus-cateriano'] },
+  { name: 'Milagros Herrera', slug: 'milagros-herrera', aliases: ['milagros'] },
+  { name: 'Monica Astocondor', slug: 'monica-astocondor', aliases: ['monica-del-carmen'] },
+  { name: 'Paola Pallete', slug: 'paola-pallete', aliases: ['paola-andrea'] },
+  { name: 'Paola Ranilla', slug: 'paola-ranilla', aliases: ['paola-josefina'] },
+  { name: 'Sergio Ranilla Ranilla', slug: 'sergio-ranilla-ranilla', aliases: [] },
+  { name: 'Sergio Ranilla Rondon', slug: 'sergio-ranilla-rondon', aliases: ['sergio-raul-ranilla'] },
+  { name: 'Shane Ranilla', slug: 'shane-ranilla', aliases: [] },
+  { name: 'Sylvia Astocondor Salazar Lopez', slug: 'sylvia-astocondor-salazar-lopez', aliases: ['sylvia-ines-astocondor'] },
+  { name: 'Victor Ranilla', slug: 'victor-ranilla', aliases: ['victor-andres-ranilla'] },
+  { name: 'Victoriano Cateriano', slug: 'victoriano-cateriano', aliases: [] }
+]);
+const FD_PUBLIC_PROFILE_SLUGS = new Set(FD_PUBLIC_PROFILE_PAGES.map(profile => profile.slug));
+const FD_PUBLIC_PROFILE_BY_KEY = (() => {
+  const map = new Map();
+  FD_PUBLIC_PROFILE_PAGES.forEach(profile => {
+    [profile.name, profile.slug, ...(profile.aliases || [])].forEach(value => {
+      const key = fdPublicProfileKey(value);
+      if (key && !map.has(key)) map.set(key, profile);
+    });
+  });
+  return map;
+})();
+
+function fdPublicProfileKey(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u200D\uFE0E\uFE0F]/g, '')
+    .replace(/[\u{1F1E6}-\u{1F1FF}\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, '-');
+}
+
+function fdExtractPublicProfileSlug(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  const urlMatch = text.match(/\/family\/([a-z0-9-]+)(?:\.html)?(?:[?#].*)?$/i);
+  if (urlMatch) return urlMatch[1].toLowerCase();
+  return fdPublicProfileKey(text);
+}
+
+function fdPublicProfileUrl(slug) {
+  const cleanSlug = fdExtractPublicProfileSlug(slug);
+  return cleanSlug ? `${FD_PUBLIC_PROFILE_ROOT}${cleanSlug}.html` : '';
+}
+
+function fdPublicProfileHref(slug) {
+  const cleanSlug = fdExtractPublicProfileSlug(slug);
+  return cleanSlug ? `../family/${cleanSlug}.html` : '';
+}
+
+function fdFindPublicProfileBySlug(slug) {
+  const cleanSlug = fdExtractPublicProfileSlug(slug);
+  return FD_PUBLIC_PROFILE_PAGES.find(profile => profile.slug === cleanSlug) || null;
+}
+
+function fdResolvePublicProfile(member = {}) {
+  const nameProfile = FD_PUBLIC_PROFILE_BY_KEY.get(fdPublicProfileKey(member.displayName || member.publicProfileName || member.name));
+  const directSlug = fdExtractPublicProfileSlug(member.pageSlug || member.pageUrl || member.profileSlug || member.publicProfileSlug);
+  const directProfile = fdFindPublicProfileBySlug(directSlug);
+
+  if (nameProfile) return nameProfile;
+  if (directProfile) return directProfile;
+
+  const candidates = [member.id, member.uid, member.claimedFrom, member.googleContactName].filter(Boolean);
+  for (const candidate of candidates) {
+    const profile = FD_PUBLIC_PROFILE_BY_KEY.get(fdPublicProfileKey(candidate));
+    if (profile) return profile;
+  }
+
+  return null;
+}
+
+function fdBuildPublicProfileUpdate(member = {}, existingMember = member) {
+  const profile = fdResolvePublicProfile(member);
+  if (!profile) return {};
+
+  const target = {
+    pageSlug: profile.slug,
+    pageUrl: fdPublicProfileUrl(profile.slug),
+    publicProfileName: profile.name
+  };
+  const updates = {};
+
+  Object.entries(target).forEach(([key, value]) => {
+    if (String(existingMember?.[key] || '') !== value) updates[key] = value;
+  });
+
+  return updates;
+}
+
+async function syncDirectoryPublicProfileLinks(members = []) {
+  if (!isAdmin || !Array.isArray(members) || !window._fb?.writeBatch) return members;
+
+  const { doc, writeBatch, serverTimestamp } = window._fb;
+  const nextMembers = members.map(member => ({ ...member }));
+  let batch = writeBatch(db);
+  let writes = 0;
+  let total = 0;
+
+  for (const member of nextMembers) {
+    const updates = fdBuildPublicProfileUpdate(member, member);
+    if (Object.keys(updates).length === 0) continue;
+
+    Object.assign(member, updates);
+    batch.update(doc(db, COLLECTION, member.id), {
+      ...updates,
+      publicProfileLinkedAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    writes++;
+    total++;
+
+    if (writes >= 450) {
+      await batch.commit();
+      batch = writeBatch(db);
+      writes = 0;
+    }
+  }
+
+  if (writes > 0) await batch.commit();
+  if (total > 0) console.info(`Directory public page links synced for ${total} profile${total === 1 ? '' : 's'}.`);
+  return nextMembers;
+}
 
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
@@ -133,6 +284,9 @@ function mergeClaimedProfileData(user, importDoc, existingData = {}) {
     googleContactEtag: existingData.googleContactEtag || importData.googleContactEtag || '',
     googleContactLabels: existingData.googleContactLabels || importData.googleContactLabels || [],
     googleContactLastSyncedAt: existingData.googleContactLastSyncedAt || importData.googleContactLastSyncedAt || null,
+    pageSlug: existingData.pageSlug || importData.pageSlug || '',
+    pageUrl: existingData.pageUrl || importData.pageUrl || '',
+    publicProfileName: existingData.publicProfileName || importData.publicProfileName || '',
     syncSource: existingData.syncSource || importData.syncSource || '',
     createdAt: existingData.createdAt || importData.createdAt,
     updatedAt: window._fb.serverTimestamp()
@@ -1200,7 +1354,11 @@ function buildCardHTML(member) {
   }
 
   const tagBadge = member.isPhotoTagOnly
-    ? `<div class="fd-card-preferred" style="background:#f1f3f4; color:#5f6368; border: 1px solid #dadce0;">Photo Tags Only</div>` 
+    ? `<div class="fd-card-preferred" style="background:#f1f3f4; color:#5f6368; border: 1px solid #dadce0;">Photo Tags Only</div>`
+    : '';
+  const publicProfile = fdResolvePublicProfile(member);
+  const pageLink = publicProfile
+    ? `<a class="fd-card-page-link" href="${fdPublicProfileHref(publicProfile.slug)}" aria-label="View ${publicProfile.name} public page">View Page</a>`
     : '';
 
   const claimStatus = getFamilyRecordClaimStatus(member);
@@ -1239,6 +1397,7 @@ function buildCardHTML(member) {
       ${adminBadge}
       <img class="fd-card-photo" src="${photo}" alt="${member.displayName}" onerror="this.src='${defaultAvatar(member.displayName)}'">
       <h3 class="fd-card-name">${member.displayName || 'Family Member'}</h3>
+      ${pageLink}
       ${adminClaimBadges}
       <div class="fd-card-info">${infoRows}</div>
       ${tagBadge}
@@ -1291,6 +1450,11 @@ window.rejectMemberRequest = rejectMemberRequest;
 window.fdGetGoogleContactsAccessToken = fdGetGoogleContactsAccessToken;
 window.fdGetGoogleDriveAccessToken = fdGetGoogleDriveAccessToken;
 window.fdClearGoogleDriveAccessToken = fdClearGoogleDriveAccessToken;
+window.fdPublicProfileUrl = fdPublicProfileUrl;
+window.fdPublicProfileHref = fdPublicProfileHref;
+window.fdResolvePublicProfile = fdResolvePublicProfile;
+window.fdBuildPublicProfileUpdate = fdBuildPublicProfileUpdate;
+window.syncDirectoryPublicProfileLinks = syncDirectoryPublicProfileLinks;
 window.buildCardHTML = buildCardHTML;
 window.buildBirthdayCardHTML = buildBirthdayCardHTML;
 window.normalizeBirthday = normalizeBirthday;

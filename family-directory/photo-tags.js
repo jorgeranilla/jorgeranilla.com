@@ -87,9 +87,9 @@ const PHOTO_TAG_CANONICAL_SLUGS = {
   'jorge': 'jorge-ranilla',
   'jorge-luis': 'jorge-ranilla-cateriano',
   'jorge-luis-ranilla': 'jorge-ranilla-cateriano',
-  'sylvia-ines': 'sylvia-astocondor',
-  'sylvia-ines-astocondor': 'sylvia-astocondor',
-  'sylvia-astocondor-salazar': 'sylvia-astocondor',
+  'sylvia-ines': 'sylvia-astocondor-salazar-lopez',
+  'sylvia-ines-astocondor': 'sylvia-astocondor-salazar-lopez',
+  'sylvia-astocondor-salazar': 'sylvia-astocondor-salazar-lopez',
   'alyssa': 'alyssa-ranilla',
   'patty': 'patricia-malca',
   'lucy': 'lucia-mendez'
