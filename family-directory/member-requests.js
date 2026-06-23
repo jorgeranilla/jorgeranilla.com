@@ -23,7 +23,7 @@ function fdIndexRequestDate(value) {
 function fdMemberRequestTypeLabel(type) {
   return {
     profile_update: 'Profile Update',
-    photo_add: 'Add Photo or Video',
+    photo_add: 'Add Photo',
     photo_remove: 'Remove Photo Tag'
   }[type] || 'Member Request';
 }
@@ -66,6 +66,7 @@ function fdProfileRequestInput(request, field, label, type = 'text') {
 function renderProfileRequestEditor(request) {
   const payload = request.payload || {};
   const privacy = payload.privacy || {};
+  const pageSource = payload.pageSourceUrl ? `<p style="font-size:.76rem;color:#8a8f98;margin:6px 0 0">Source: ${fdIndexEscape(payload.pageSourceUrl)}</p>` : '';
   const photoNotice = payload.photoURL
     ? '<p style="font-size:.78rem;color:#6b7280;margin:6px 0 0">A profile photo update is included in this request.</p>'
     : '';
@@ -87,6 +88,12 @@ function renderProfileRequestEditor(request) {
           `).join('')}
         </select>
       </div>
+    </div>
+    <div class="fd-field" style="margin-top:12px">
+      <label for="${fdRequestInputId(request.id, 'pageText')}">Page Text</label>
+      <textarea id="${fdRequestInputId(request.id, 'pageText')}" rows="8" style="width:100%;padding:10px;border:1px solid #e9e9e9;border-radius:8px;background:#fafafa;line-height:1.5" placeholder="No page text was submitted.">${fdIndexEscape(payload.pageText || '')}</textarea>
+      <input type="hidden" id="${fdRequestInputId(request.id, 'pageSourceUrl')}" value="${fdIndexEscape(payload.pageSourceUrl || '')}">
+      ${pageSource}
     </div>
     ${photoNotice}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:12px;background:#f8f9fa;border:1px solid #eee;border-radius:10px;padding:10px">
@@ -121,6 +128,8 @@ function collectProfileRequestPayload(request) {
     city: value('city'),
     country: value('country'),
     preferredContact: value('preferredContact') || 'email',
+    pageText: value('pageText'),
+    pageSourceUrl: value('pageSourceUrl'),
     privacy: {
       showPhone: checked('showPhone'),
       showEmail: checked('showEmail'),
@@ -141,7 +150,7 @@ function renderPhotoRequestEditor(request) {
         ${thumbnail ? `<img src="${fdIndexEscape(thumbnail)}" alt="" style="width:82px;height:62px;object-fit:cover;border-radius:8px;background:#eee">` : ''}
         <div>
           <strong style="color:#2c3e50">${fdIndexEscape(payload.photoName || payload.photoId || 'Tagged media')}</strong>
-          <p style="margin:4px 0 0;color:#777;font-size:.82rem">This removes only this member's tag from the photo or video. The media stays published.</p>
+          <p style="margin:4px 0 0;color:#777;font-size:.82rem">This removes only this member's tag from the media. The media stays published.</p>
         </div>
       </div>
     `;
@@ -149,7 +158,7 @@ function renderPhotoRequestEditor(request) {
 
   return `
     <div class="fd-field">
-      <label for="${fdRequestInputId(request.id, 'url')}">Google Drive or YouTube link</label>
+      <label for="${fdRequestInputId(request.id, 'url')}">Google Drive photo link</label>
       <input type="url" id="${fdRequestInputId(request.id, 'url')}" value="${fdIndexEscape(payload.url)}">
     </div>
     <div class="fd-field">
@@ -173,7 +182,7 @@ function collectPhotoAddRequestPayload(request) {
     url,
     title: value('title'),
     notes: value('notes'),
-    mediaType: /youtu/i.test(url) ? 'video' : (original.mediaType || 'photo')
+    mediaType: 'photo'
   };
 }
 

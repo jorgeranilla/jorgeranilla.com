@@ -66,6 +66,18 @@
       object-fit: cover;
       width: 88px;
     }
+    .fd-page-text-field textarea {
+      line-height: 1.55;
+      min-height: 190px;
+      resize: vertical;
+      white-space: pre-wrap;
+    }
+    .fd-page-text-status {
+      color: #999;
+      font-size: .76rem;
+      line-height: 1.45;
+      margin: -8px 0 0;
+    }
     @media (max-width: 620px) {
       .fd-photo-request-card { grid-template-columns: 72px 1fr; }
       .fd-photo-request-card .fd-photo-btn { grid-column: 1 / -1; justify-content: center; }
@@ -207,6 +219,17 @@
           </div>
         </div>
 
+        <!-- Page Text -->
+        <div class="fd-form-section">
+          <h3 class="fd-form-section-title">Page Text</h3>
+          <p class="fd-muted-note" style="margin:0 0 12px">Review what is currently written on your public page. Suggested edits are sent to the admin for approval.</p>
+          <div class="fd-field fd-page-text-field">
+            <label>Current page text / suggested update</label>
+            <textarea id="fd-page-text" rows="10" placeholder="Loading page text..."></textarea>
+            <input type="hidden" id="fd-page-source-url">
+          </div>
+          <p class="fd-page-text-status" id="fd-page-text-status">Looking for the public page text...</p>
+        </div>
         <!-- Privacy -->
         <div class="fd-form-section">
           <h3 class="fd-form-section-title">Privacy Preferences</h3>
@@ -244,10 +267,10 @@
         <div class="fd-form-section">
           <h3 class="fd-form-section-title">Photo Requests</h3>
           <div class="fd-request-callout">
-            <strong>Request a photo or video to be added</strong>
+            <strong>Request a photo to be added</strong>
             <div class="fd-field" style="margin-top:12px">
-              <label>Google Drive or YouTube link</label>
-              <input type="url" id="fd-photo-add-url" placeholder="Paste a Drive or YouTube link">
+              <label>Google Drive photo link</label>
+              <input type="url" id="fd-photo-add-url" placeholder="Paste a Google Drive photo link">
             </div>
             <div class="fd-field">
               <label>Title or short description</label>
@@ -272,7 +295,7 @@
     </div>
   </div>
 
-  <script src="directory.js?v=11"></script>
+  <script src="directory.js?v=12"></script>
   <script>
     (function applyProfileClaimContext() {
       const params = new URLSearchParams(window.location.search);
@@ -298,7 +321,7 @@
     function fdRequestTypeLabel(type) {
       return {
         profile_update: 'Profile update',
-        photo_add: 'Add photo/video',
+        photo_add: 'Add photo',
         photo_remove: 'Remove from photo'
       }[type] || 'Request';
     }
@@ -319,6 +342,97 @@
       return record.youtubeTitle || record.name || record.driveFileId || record.id || 'Family photo';
     }
 
+    function fdProfilePageStatus(message) {
+      const statusEl = document.getElementById('fd-page-text-status');
+      if (statusEl) statusEl.textContent = message;
+    }
+
+    function fdPageSlug(value) {
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function fdProfilePageCandidates(profile = {}) {
+      const params = new URLSearchParams(window.location.search);
+      const candidates = [];
+      const seen = new Set();
+      const add = url => {
+        const clean = String(url || '').trim();
+        if (!clean || seen.has(clean)) return;
+        seen.add(clean);
+        candidates.push(clean);
+      };
+      const addSlug = slug => {
+        const cleanSlug = fdPageSlug(slug);
+        if (cleanSlug) add(`../family/${cleanSlug}.html`);
+      };
+
+      add(profile.pageSourceUrl);
+      addSlug(params.get('claim'));
+      addSlug(profile.pageSlug);
+      addSlug(profile.displayName);
+      addSlug(params.get('name'));
+      return candidates;
+    }
+
+    function fdExtractPublicPageText(html) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const aboutText = doc.querySelector('.about-text');
+      if (!aboutText) return '';
+
+      const clone = aboutText.cloneNode(true);
+      clone.querySelectorAll('.heritage-social-icons, .bio-album-actions, script, style, svg').forEach(el => el.remove());
+
+      return Array.from(clone.querySelectorAll('p'))
+        .filter(p => !p.querySelector('a.heritage-read-more'))
+        .filter(p => !p.querySelector('a[href*="gallery/family"]'))
+        .map(p => p.textContent.replace(/\s+/g, ' ').trim())
+        .filter(Boolean)
+        .join('\n\n');
+    }
+
+    async function loadProfilePageText(profile = {}) {
+      const textEl = document.getElementById('fd-page-text');
+      const sourceEl = document.getElementById('fd-page-source-url');
+      if (!textEl || !sourceEl) return;
+
+      if (!textEl.dataset.bound) {
+        textEl.addEventListener('input', () => { textEl.dataset.userEdited = 'true'; });
+        textEl.dataset.bound = 'true';
+      }
+
+      textEl.value = profile.pageText || '';
+      sourceEl.value = profile.pageSourceUrl || '';
+      textEl.dataset.userEdited = 'false';
+      fdProfilePageStatus(profile.pageText ? 'Loaded from the latest approved page request.' : 'Looking for the live public page text...');
+
+      for (const url of fdProfilePageCandidates(profile)) {
+        try {
+          const response = await fetch(url, { cache: 'no-store' });
+          if (!response.ok) continue;
+
+          const pageText = fdExtractPublicPageText(await response.text());
+          if (!pageText) continue;
+
+          if (textEl.dataset.userEdited !== 'true') textEl.value = pageText;
+          sourceEl.value = url;
+          fdProfilePageStatus(`Loaded from ${url.replace(/^\.\.\//, '')}.`);
+          return;
+        } catch (error) {
+          console.warn('Could not load public page text:', url, error);
+        }
+      }
+
+      fdProfilePageStatus(textEl.value
+        ? 'Using the latest approved page request because the public page text could not be loaded.'
+        : 'No public page text was found yet. You can still write a suggested page update.');
+    }
+
     function renderProfileRequests() {
       const list = document.getElementById('fd-member-request-list');
       if (!list) return;
@@ -336,7 +450,7 @@
           ? 'Your profile changes will be visible after admin approval.'
           : request.type === 'photo_remove'
             ? fdProfileEscape(request.payload?.photoName || 'Photo removal requested')
-            : fdProfileEscape(request.payload?.title || request.payload?.url || 'Photo/video add requested');
+            : fdProfileEscape(request.payload?.title || request.payload?.url || 'Photo add requested');
 
         return `
           <div class="fd-request-item">
@@ -366,7 +480,7 @@
       if (!list) return;
 
       if (fdTaggedMedia.length === 0) {
-        list.innerHTML = '<p class="fd-muted-note">No published photos or videos are tagged to your profile yet.</p>';
+        list.innerHTML = '<p class="fd-muted-note">No published photos are tagged to your profile yet.</p>';
         return;
       }
 
@@ -433,6 +547,7 @@
         saveBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Save Changes';
       }
 
+      loadProfilePageText(p);
       refreshProfileRequests();
       loadTaggedMedia();
     }
@@ -461,7 +576,12 @@
       const url = urlEl.value.trim();
 
       if (!url) {
-        fdToast('Paste a Drive or YouTube link first.');
+        fdToast('Paste a Google Drive photo link first.');
+        return;
+      }
+
+      if (/youtu\.be|youtube\.com/i.test(url)) {
+        fdToast('Video links are not accepted here. Please submit a Google Drive photo link.');
         return;
       }
 
@@ -470,7 +590,7 @@
           url,
           title: titleEl.value.trim(),
           notes: notesEl.value.trim(),
-          mediaType: /youtu/i.test(url) ? 'video' : 'photo'
+          mediaType: 'photo'
         });
         urlEl.value = '';
         titleEl.value = '';
@@ -520,6 +640,8 @@
           birthday: document.getElementById('fd-birthday').value,
           photoURL: document.getElementById('fd-photoURL').value.trim(),
           preferredContact: document.getElementById('fd-preferredContact').value,
+          pageText: document.getElementById('fd-page-text')?.value.trim() || '',
+          pageSourceUrl: document.getElementById('fd-page-source-url')?.value.trim() || '',
           privacy: {
             showPhone: document.getElementById('fd-priv-phone').checked,
             showEmail: document.getElementById('fd-priv-email').checked,

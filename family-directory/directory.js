@@ -562,13 +562,27 @@ const FD_PROFILE_REQUEST_FIELDS = [
   'birthday',
   'photoURL',
   'preferredContact',
-  'privacy'
+  'privacy',
+  'pageText',
+  'pageSourceUrl'
 ];
 
 function fdCleanRequestString(value, maxLength = 600) {
   return String(value || '')
     .replace(/[\u0000-\u001f\u007f]/g, ' ')
     .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength);
+}
+
+function fdCleanPageText(value, maxLength = 20000) {
+  return String(value || '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n[ \t]+/g, '\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
     .trim()
     .slice(0, maxLength);
 }
@@ -591,7 +605,13 @@ function fdSanitizeProfilePayload(data = {}) {
       return;
     }
 
-    payload[field] = fdCleanRequestString(data[field], field === 'photoURL' ? 250000 : 600);
+    if (field === 'pageText') {
+      payload[field] = fdCleanPageText(data[field]);
+      return;
+    }
+
+    const maxLength = field === 'photoURL' ? 250000 : field === 'pageSourceUrl' ? 900 : 600;
+    payload[field] = fdCleanRequestString(data[field], maxLength);
   });
 
   if ('email' in payload) payload.emailLower = normalizeEmail(payload.email);
@@ -692,7 +712,10 @@ async function saveProfile(data) {
 }
 
 async function submitPhotoAddRequest(data) {
-  return submitFamilyMemberRequest('photo_add', data);
+  if (fdParseYoutubeId(data?.url)) {
+    throw new Error('Video links are not accepted here. Please submit a Google Drive photo link.');
+  }
+  return submitFamilyMemberRequest('photo_add', { ...data, mediaType: 'photo' });
 }
 
 async function submitPhotoRemoveRequest(data) {
@@ -747,7 +770,7 @@ function fdBuildMemberTagData(memberId, memberData = {}) {
 function fdBuildPhotoAddTagPayload(request, memberData = {}, payload = {}) {
   const memberId = request.memberId;
   const memberTags = fdBuildMemberTagData(memberId, { ...memberData, memberName: request.memberName });
-  const youtubeId = fdParseYoutubeId(payload.url);
+  const youtubeId = payload.mediaType === 'video' ? fdParseYoutubeId(payload.url) : '';
   const driveFileId = fdParseDriveFileId(payload.url);
   const title = fdCleanRequestString(payload.title || payload.photoName, 180);
   const now = window._fb.serverTimestamp();
