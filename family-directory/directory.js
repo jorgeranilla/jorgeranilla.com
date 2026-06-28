@@ -28,7 +28,10 @@ const GOOGLE_DRIVE_TOKEN_TTL_MS = 50 * 60 * 1000;
 let fdGoogleDriveAccessToken = '';
 let fdGoogleDriveAccessTokenExpiresAt = 0;
 let fdGoogleDriveAccessTokenUid = '';
-const FD_PUBLIC_PROFILE_ROOT = 'https://jorgeranilla.com/family/';
+const FD_PUBLIC_PROFILE_ROOTS = Object.freeze({
+  family: 'https://jorgeranilla.com/family/',
+  people: 'https://jorgeranilla.com/people/'
+});
 const FD_PUBLIC_PROFILE_PAGES = Object.freeze([
   { name: "Adriana Astocondor", slug: "adriana-astocondor", aliases: ["adriana"] },
   { name: "Alcira Astocondor", slug: "alcira-astocondor", aliases: ["alcira-isabel"] },
@@ -77,7 +80,21 @@ const FD_PUBLIC_PROFILE_PAGES = Object.freeze([
   { name: "Shane Ranilla", slug: "shane-ranilla", aliases: ["shane"] },
   { name: "Sylvia Astocondor Salazar Lopez", slug: "sylvia-astocondor-salazar-lopez", aliases: ["sylvia", "sylvia-ines", "sylvia-ines-astocondor"] },
   { name: "Victor Ranilla", slug: "victor-ranilla", aliases: ["victor", "victor-andres", "victor-andres-ranilla"] },
-  { name: "Victoriano Cateriano", slug: "victoriano-cateriano", aliases: [] }
+  { name: "Victoriano Cateriano", slug: "victoriano-cateriano", aliases: [] },
+  { name: "Alexia Mittrany", slug: "alexia-mittrany", folder: "people", aliases: ["alexia"] },
+  { name: "Celia Mena", slug: "celia-mena", folder: "people", aliases: ["celia"] },
+  { name: "Edwin Mejia", slug: "edwin-mejia", folder: "people", aliases: ["edwin"] },
+  { name: "Hatairat Rattanapornchai", slug: "hatairat-rattanapornchai", folder: "people", aliases: ["onnie"] },
+  { name: "Ilda Galindo", slug: "ilda-galindo", folder: "people", aliases: ["ilda"] },
+  { name: "Jennifer Ramirez", slug: "jennifer-ramirez", folder: "people", aliases: ["jennifer"] },
+  { name: "Jeraldin Yupan", slug: "jeraldin-yupan", folder: "people", aliases: ["jeraldin"] },
+  { name: "Lucia Mendez", slug: "lucia-mendez", folder: "people", aliases: ["lucy"] },
+  { name: "Mayumy Garcia", slug: "mayumy-garcia", folder: "people", aliases: ["mayumy"] },
+  { name: "Patricia Malca", slug: "patricia-malca", folder: "people", aliases: ["patty"] },
+  { name: "Ricardo Ildefonso", slug: "ricardo-ildefonso", folder: "people", aliases: ["ricardo"] },
+  { name: "Sarai Miguel", slug: "sarai-miguel", folder: "people", aliases: ["sarai"] },
+  { name: "Yerina Bello", slug: "yerina-bello", folder: "people", aliases: ["yerina"] },
+  { name: "Yujeong Hong", slug: "yujeong-hong", folder: "people", aliases: ["yujeong"] }
 ]);
 const FD_PUBLIC_PROFILE_SLUGS = new Set(FD_PUBLIC_PROFILE_PAGES.map(profile => profile.slug));
 const FD_PUBLIC_PROFILE_BY_KEY = (() => {
@@ -106,19 +123,27 @@ function fdPublicProfileKey(value) {
 function fdExtractPublicProfileSlug(value) {
   const text = String(value || '').trim();
   if (!text) return '';
-  const urlMatch = text.match(/\/family\/([a-z0-9-]+)(?:\.html)?(?:[?#].*)?$/i);
+  const urlMatch = text.match(/\/(?:family|people)\/([a-z0-9-]+)(?:\.html)?(?:[?#].*)?$/i);
   if (urlMatch) return urlMatch[1].toLowerCase();
   return fdPublicProfileKey(text);
 }
 
-function fdPublicProfileUrl(slug) {
-  const cleanSlug = fdExtractPublicProfileSlug(slug);
-  return cleanSlug ? `${FD_PUBLIC_PROFILE_ROOT}${cleanSlug}.html` : '';
+function fdPublicProfileFolder(profile) {
+  return profile?.folder === 'people' ? 'people' : 'family';
 }
 
-function fdPublicProfileHref(slug) {
+function fdPublicProfileUrl(slug, folder = '') {
   const cleanSlug = fdExtractPublicProfileSlug(slug);
-  return cleanSlug ? `../family/${cleanSlug}.html` : '';
+  const profile = fdFindPublicProfileBySlug(cleanSlug);
+  const cleanFolder = folder === 'people' ? 'people' : fdPublicProfileFolder(profile);
+  return cleanSlug ? FD_PUBLIC_PROFILE_ROOTS[cleanFolder] + cleanSlug + '.html' : '';
+}
+
+function fdPublicProfileHref(slug, folder = '') {
+  const cleanSlug = fdExtractPublicProfileSlug(slug);
+  const profile = fdFindPublicProfileBySlug(cleanSlug);
+  const cleanFolder = folder === 'people' ? 'people' : fdPublicProfileFolder(profile);
+  return cleanSlug ? '../' + cleanFolder + '/' + cleanSlug + '.html' : '';
 }
 
 function fdFindPublicProfileBySlug(slug) {
@@ -149,8 +174,9 @@ function fdBuildPublicProfileUpdate(member = {}, existingMember = member) {
 
   const target = {
     pageSlug: profile.slug,
-    pageUrl: fdPublicProfileUrl(profile.slug),
-    publicProfileName: profile.name
+    pageUrl: fdPublicProfileUrl(profile.slug, profile.folder),
+    publicProfileName: profile.name,
+    publicProfileSection: fdPublicProfileFolder(profile)
   };
   const updates = {};
 
@@ -302,6 +328,7 @@ function mergeClaimedProfileData(user, importDoc, existingData = {}) {
     pageSlug: existingData.pageSlug || importData.pageSlug || '',
     pageUrl: existingData.pageUrl || importData.pageUrl || '',
     publicProfileName: existingData.publicProfileName || importData.publicProfileName || '',
+    publicProfileSection: existingData.publicProfileSection || importData.publicProfileSection || '',
     syncSource: existingData.syncSource || importData.syncSource || '',
     createdAt: existingData.createdAt || importData.createdAt,
     updatedAt: window._fb.serverTimestamp()
@@ -341,6 +368,13 @@ async function autoClaimExistingImport(user, profileRef, existingData = {}) {
 async function fdClaimFamilyProfileByEmail(user) {
   if (!user || typeof user.getIdToken !== 'function') return null;
 
+  const params = new URLSearchParams(window.location.search);
+  const source = String(params.get('source') || '').toLowerCase();
+  const claimContext = {
+    claimSlug: fdPublicProfileKey(params.get('claim')),
+    claimName: String(params.get('name') || '').trim(),
+    source: source === 'people' ? 'people' : source === 'family' ? 'family' : ''
+  };
   const token = await user.getIdToken();
   const response = await fetch(FD_CLAIM_PROFILE_ENDPOINT, {
     method: 'POST',
@@ -348,7 +382,7 @@ async function fdClaimFamilyProfileByEmail(user) {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({})
+    body: JSON.stringify(claimContext)
   });
   const data = await response.json().catch(() => ({}));
 

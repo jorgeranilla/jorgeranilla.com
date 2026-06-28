@@ -295,7 +295,7 @@
     </div>
   </div>
 
-  <script src="directory.js?v=12"></script>
+  <script src="directory.js?v=13"></script>
   <script>
     (function applyProfileClaimContext() {
       const params = new URLSearchParams(window.location.search);
@@ -367,7 +367,11 @@
         seen.add(clean);
         candidates.push(clean);
       };
-      const rawSource = String(params.get('source') || '').toLowerCase();
+      const storedSource = String(
+        profile.publicProfileSection ||
+        (/\/people\//i.test(profile.pageUrl || '') ? 'people' : '')
+      ).toLowerCase();
+      const rawSource = String(params.get('source') || storedSource).toLowerCase();
       const primaryFolder = rawSource === 'people' ? 'people' : 'family';
       const fallbackFolder = primaryFolder === 'people' ? 'family' : 'people';
       const addSlug = (slug, folder = primaryFolder) => {

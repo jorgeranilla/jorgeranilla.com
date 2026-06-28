@@ -63,6 +63,39 @@ function makeSlug(value) {
     .replace(/^-+|-+$/g, '');
 }
 
+function normalizeClaimContext(body = {}) {
+  const sourceValue = cleanString(body.source, 20).toLowerCase();
+  const source = sourceValue === 'people' || sourceValue === 'family' ? sourceValue : '';
+
+  return {
+    source,
+    claimSlug: makeSlug(body.claimSlug),
+    claimName: cleanString(body.claimName, 120)
+  };
+}
+
+function profileMatchesClaimContext(docSnap, data = {}, context = {}) {
+  if (!context.source) return false;
+
+  const requestedKeys = new Set([
+    makeSlug(context.claimSlug),
+    makeSlug(context.claimName)
+  ].filter(Boolean));
+  if (requestedKeys.size === 0) return false;
+
+  const profileKeys = [
+    data.pageSlug,
+    data.pageUrl,
+    data.publicProfileName,
+    data.displayName
+  ].map(makeSlug).filter(Boolean);
+
+  if (profileKeys.some(key => requestedKeys.has(key))) return true;
+
+  const documentKey = makeSlug(docSnap.id);
+  return Array.from(requestedKeys).some(key => key.length >= 4 && documentKey.includes(key));
+}
+
 function isImportedRecord(id, data = {}) {
   const uid = String(data.uid || '');
   return String(id || '').startsWith('import_') ||
@@ -71,12 +104,15 @@ function isImportedRecord(id, data = {}) {
     uid.startsWith('manual_');
 }
 
-function isClaimableProfile(docSnap, uid, emailLower) {
+function isClaimableProfile(docSnap, uid, emailLower, context = {}) {
   if (!docSnap.exists) return false;
   if (docSnap.id === uid) return false;
 
   const data = docSnap.data() || {};
-  if (data.isPhotoTagOnly === true) return false;
+  const matchesRequestedProfile = profileMatchesClaimContext(docSnap, data, context);
+  const requestedPeopleProfile = context.source === 'people' && matchesRequestedProfile;
+
+  if (data.isPhotoTagOnly === true && !requestedPeopleProfile) return false;
   if (String(data.status || '') === 'claimed') return false;
   if (data.claimedByUid && data.claimedByUid !== uid) return false;
 
@@ -84,12 +120,18 @@ function isClaimableProfile(docSnap, uid, emailLower) {
   if (!docEmail || docEmail !== emailLower) return false;
 
   // These are the profiles created by admin/import/sync flows and safe to auto-claim by email.
-  return isImportedRecord(docSnap.id, data) || data.claimableByEmail === true;
+  return isImportedRecord(docSnap.id, data) ||
+    data.claimableByEmail === true ||
+    requestedPeopleProfile;
 }
 
-function mergeClaimedProfileData(user, sourceData = {}, existingData = {}) {
+function mergeClaimedProfileData(user, sourceData = {}, existingData = {}, context = {}) {
   const emailLower = normalizeEmail(user.email || sourceData.email || existingData.email);
   const now = FieldValue.serverTimestamp();
+  const contextSlug = context.source ? makeSlug(context.claimSlug || context.claimName) : '';
+  const contextPageUrl = contextSlug && context.source
+    ? 'https://jorgeranilla.com/' + context.source + '/' + contextSlug + '.html'
+    : '';
 
   return {
     uid: user.uid,
@@ -122,9 +164,10 @@ function mergeClaimedProfileData(user, sourceData = {}, existingData = {}) {
     googleContactEtag: sourceData.googleContactEtag || existingData.googleContactEtag || '',
     googleContactLabels: sourceData.googleContactLabels || existingData.googleContactLabels || [],
     googleContactLastSyncedAt: sourceData.googleContactLastSyncedAt || existingData.googleContactLastSyncedAt || null,
-    pageSlug: sourceData.pageSlug || existingData.pageSlug || '',
-    pageUrl: sourceData.pageUrl || existingData.pageUrl || '',
-    publicProfileName: sourceData.publicProfileName || existingData.publicProfileName || '',
+    pageSlug: contextSlug || sourceData.pageSlug || existingData.pageSlug || '',
+    pageUrl: contextPageUrl || sourceData.pageUrl || existingData.pageUrl || '',
+    publicProfileName: context.claimName || sourceData.publicProfileName || existingData.publicProfileName || '',
+    publicProfileSection: context.source || sourceData.publicProfileSection || existingData.publicProfileSection || '',
     syncSource: sourceData.syncSource || existingData.syncSource || ''
   };
 }
@@ -152,7 +195,8 @@ function profileResponse(uid, data = {}) {
     claimedByEmail: data.claimedByEmail || data.email || '',
     pageSlug: data.pageSlug || '',
     pageUrl: data.pageUrl || '',
-    publicProfileName: data.publicProfileName || ''
+    publicProfileName: data.publicProfileName || '',
+    publicProfileSection: data.publicProfileSection || ''
   };
 }
 
@@ -244,7 +288,7 @@ async function migratePhotoTagsForClaim(oldId, newId, displayName) {
   return migrated;
 }
 
-async function findClaimableProfile(uid, emailLower, originalEmail = '') {
+async function findClaimableProfile(uid, emailLower, originalEmail = '', context = {}) {
   const found = new Map();
   const addDocs = snap => snap.docs.forEach(doc => found.set(doc.id, doc));
 
@@ -267,7 +311,7 @@ async function findClaimableProfile(uid, emailLower, originalEmail = '') {
     addDocs(byEmail);
   }
 
-  let candidates = Array.from(found.values()).filter(doc => isClaimableProfile(doc, uid, emailLower));
+  let candidates = Array.from(found.values()).filter(doc => isClaimableProfile(doc, uid, emailLower, context));
 
   if (candidates.length === 0) {
     const documentId = admin.firestore.FieldPath.documentId();
@@ -281,10 +325,14 @@ async function findClaimableProfile(uid, emailLower, originalEmail = '') {
       snap.docs.forEach(doc => found.set(doc.id, doc));
     }
 
-    candidates = Array.from(found.values()).filter(doc => isClaimableProfile(doc, uid, emailLower));
+    candidates = Array.from(found.values()).filter(doc => isClaimableProfile(doc, uid, emailLower, context));
   }
 
   candidates.sort((a, b) => {
+    const aContext = profileMatchesClaimContext(a, a.data() || {}, context) ? 0 : 1;
+    const bContext = profileMatchesClaimContext(b, b.data() || {}, context) ? 0 : 1;
+    if (aContext !== bContext) return aContext - bContext;
+
     const aImport = isImportedRecord(a.id, a.data()) ? 0 : 1;
     const bImport = isImportedRecord(b.id, b.data()) ? 0 : 1;
     if (aImport !== bImport) return aImport - bImport;
@@ -311,11 +359,12 @@ exports.claimFamilyProfileByEmail = onRequest(FUNCTION_OPTS, async (req, res) =>
       return res.status(400).json({ error: 'Your Google account does not have an email that can be matched.' });
     }
 
+    const claimContext = normalizeClaimContext(req.body || {});
     const existingRef = db.collection(FAMILY_DIRECTORY_COLLECTION).doc(decoded.uid);
     const existingSnap = await existingRef.get();
     const existingData = existingSnap.exists ? existingSnap.data() || {} : {};
 
-    const claimDoc = await findClaimableProfile(decoded.uid, emailLower, decoded.email || '');
+    const claimDoc = await findClaimableProfile(decoded.uid, emailLower, decoded.email || '', claimContext);
     if (!claimDoc) {
       if (existingSnap.exists && existingData.status === 'approved' && existingData.uid === decoded.uid) {
         return res.json({ claimed: false, alreadyClaimed: true, profile: profileResponse(decoded.uid, existingData), migratedPhotoTags: 0 });
@@ -325,7 +374,7 @@ exports.claimFamilyProfileByEmail = onRequest(FUNCTION_OPTS, async (req, res) =>
     }
 
     const sourceData = claimDoc.data() || {};
-    const claimedData = mergeClaimedProfileData(decoded, sourceData, existingData);
+    const claimedData = mergeClaimedProfileData(decoded, sourceData, existingData, claimContext);
     claimedData.claimedFrom = claimDoc.id;
 
     await existingRef.set(claimedData, { merge: true });
