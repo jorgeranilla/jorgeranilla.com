@@ -208,7 +208,14 @@
   }
 
   function getGallerySortMs(file) {
-    const curatedNameDate = parseGalleryFilenameDateMs(file.name || file.youtubeTitle || '');
+    const manualDate = file.dateTakenOverride || file.tags?.dateTakenOverride || '';
+    const manualDateMs = parseGalleryMetadataDateMs(manualDate);
+    if (manualDateMs) return manualDateMs;
+
+    const fileName = file.name || file.youtubeTitle || '';
+    const curatedNameDate = /_corrected\.[a-z0-9]+$/i.test(fileName)
+      ? 0
+      : parseGalleryFilenameDateMs(fileName);
     if (curatedNameDate) return curatedNameDate;
 
     return parseGalleryMetadataDateMs(file.takenTime) ||

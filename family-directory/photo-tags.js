@@ -46,7 +46,7 @@ const PHOTO_TAGS_NEAR_DUPLICATE_TIME_MS = 2 * 60 * 1000;
 const PHOTO_TAGS_NEAR_DUPLICATE_SIZE_BYTES = 250 * 1024;
 const PHOTO_TAGS_NEAR_DUPLICATE_SIZE_RATIO = 0.03;
 const PHOTO_TAGS_CONTENT_FIELDS = ['mimeType', 'type', 'md5Checksum', 'size'];
-const PHOTO_TAGS_STANDARD_NAME_RE = /^(\d{4})\.(\d{2})\.(\d{2})_(\d{4})(\.[a-z0-9]+)$/i;
+const PHOTO_TAGS_STANDARD_NAME_RE = /^(\d{4})\.(\d{2})\.(\d{2})_(\d{4})(?:_corrected)?(\.[a-z0-9]+)$/i;
 const PHOTO_TAGS_STATUS_LABELS = {
   approved: 'Approved',
   pending: 'Pending',
@@ -606,6 +606,82 @@ function parsePhotoTagDateKey(value) {
   ].join('.');
 }
 
+function normalizePhotoTagDateInputValue(value) {
+  const match = String(value || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return '';
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return '';
+  }
+
+  return `${match[1]}-${match[2]}-${match[3]}`;
+}
+
+function photoTagDateKeyToInputValue(value) {
+  return normalizePhotoTagDateInputValue(String(value || '').replace(/\./g, '-'));
+}
+
+function getPhotoTagFilenameDateValue(file) {
+  const match = String(file?.name || '').match(/(?:^|[^\d])(\d{4})[.\-_](\d{2})[.\-_](\d{2})(?:[^\d]|$)/);
+  return match ? normalizePhotoTagDateInputValue(`${match[1]}-${match[2]}-${match[3]}`) : '';
+}
+
+function getPhotoTagStoredDateOverride(tag) {
+  return normalizePhotoTagDateInputValue(tag?.dateTakenOverride);
+}
+
+function isPhotoTagCorrectedDateName(value) {
+  return /_corrected\.[a-z0-9]+$/i.test(String(value || ''));
+}
+
+function getPhotoTagGalleryDateState(file, tag = getPhotoTagRecord(file?.id)) {
+  const override = getPhotoTagStoredDateOverride(tag);
+  if (override) return { value: override, source: 'Manual' };
+
+  const filenameDate = isPhotoTagCorrectedDateName(file?.name) ? '' : getPhotoTagFilenameDateValue(file);
+  if (filenameDate) return { value: filenameDate, source: 'Filename' };
+
+  const takenDate = photoTagDateKeyToInputValue(parsePhotoTagDateKey(file?.takenTime));
+  if (takenDate) return { value: takenDate, source: 'Photo date taken' };
+
+  const createdDate = photoTagDateKeyToInputValue(parsePhotoTagDateKey(file?.createdTime || file?.modifiedTime));
+  if (createdDate) return { value: createdDate, source: 'Drive created' };
+
+  return { value: '', source: 'No date' };
+}
+
+function getPhotoTagDateInput(fileId) {
+  return document.querySelector(`.fd-photo-tag-card[data-file-id="${CSS.escape(fileId)}"] .fd-photo-date-input`);
+}
+
+function getPendingPhotoTagDateOverride(fileId) {
+  const input = getPhotoTagDateInput(fileId);
+  if (!input || input.value === input.dataset.initialValue) return undefined;
+  return normalizePhotoTagDateInputValue(input.value) || undefined;
+}
+
+function isPhotoTagDateInputDirty(fileId) {
+  return getPendingPhotoTagDateOverride(fileId) !== undefined;
+}
+
+function handlePhotoTagDateInput(fileId, input) {
+  const card = input?.closest('.fd-photo-tag-card');
+  const saveButton = card?.querySelector('.fd-save-date-btn');
+  const value = normalizePhotoTagDateInputValue(input?.value);
+  const isDirty = Boolean(value && input.value !== input.dataset.initialValue);
+
+  if (saveButton) saveButton.disabled = !isDirty;
+  card?.classList.toggle('fd-date-dirty', isDirty);
+}
 function getPhotoTagFileExtension(file) {
   return '.jpg';
 }
@@ -676,7 +752,12 @@ function shouldTrustSavedPhotoTagName(file, tag) {
   const driveName = String(file.name || '').trim();
 
   if (!savedName || !driveName || savedName === driveName) return false;
-  if (!isPhotoTagStandardNameValue(savedName) || isPhotoTagStandardNameValue(driveName)) return false;
+  const isManualDateRename = Boolean(
+    getPhotoTagStoredDateOverride(tag) &&
+    isPhotoTagCorrectedDateName(savedName)
+  );
+  if (!isPhotoTagStandardNameValue(savedName)) return false;
+  if (isPhotoTagStandardNameValue(driveName) && !isManualDateRename) return false;
   if (!isSavedPhotoTagRenameCurrentEnough(file, tag)) return false;
 
   return hasMatchingSavedPhotoTagFingerprint(file, tag);
@@ -717,8 +798,11 @@ function assignPhotoTagSuggestedNames(files) {
   });
 
   files.forEach(file => {
-    const dateKey = parsePhotoTagDateKey(file.takenTime || file.createdTime || file.modifiedTime);
+    const manualDate = getPhotoTagStoredDateOverride(getPhotoTagRecord(file.id));
+    const manualDateKey = manualDate.replace(/-/g, '.');
+    const dateKey = manualDateKey || parsePhotoTagDateKey(file.takenTime || file.createdTime || file.modifiedTime);
     file.dateTakenKey = dateKey;
+    file.hasManualDateCorrection = Boolean(manualDateKey);
 
     if (!dateKey) {
       file.suggestedName = '';
@@ -726,9 +810,29 @@ function assignPhotoTagSuggestedNames(files) {
     }
 
     const nameMatch = getPhotoTagNameMatch(file);
-    if (nameMatch) {
+    if (nameMatch && !manualDateKey) {
       file.suggestedName = file.name;
       return;
+    }
+
+    if (nameMatch && manualDateKey) {
+      const nameDateKey = `${nameMatch[1]}.${nameMatch[2]}.${nameMatch[3]}`;
+      if (nameDateKey === manualDateKey) {
+        if (isPhotoTagCorrectedDateName(file.name)) {
+          file.suggestedName = file.name;
+          return;
+        }
+
+        const correctedName = `${manualDateKey}_${nameMatch[4]}_corrected${nameMatch[5]}`;
+        const hasNameConflict = files.some(other =>
+          other.id !== file.id &&
+          String(other.name || '').toLowerCase() === correctedName.toLowerCase()
+        );
+        if (!hasNameConflict) {
+          file.suggestedName = correctedName;
+          return;
+        }
+      }
     }
 
     if (!renameGroups.has(dateKey)) {
@@ -747,7 +851,8 @@ function assignPhotoTagSuggestedNames(files) {
       )
       .forEach((file, index) => {
         const sequence = (maxSequenceByDate.get(dateKey) || 0) + index + 1;
-        file.suggestedName = `${dateKey}_${String(sequence).padStart(4, '0')}${getPhotoTagFileExtension(file)}`;
+        const correctionSuffix = file.hasManualDateCorrection ? '_corrected' : '';
+        file.suggestedName = `${dateKey}_${String(sequence).padStart(4, '0')}${correctionSuffix}${getPhotoTagFileExtension(file)}`;
       });
   });
 
@@ -2151,6 +2256,28 @@ function renderPhotoTagCard(file) {
       <button type='button' class='fd-mini-btn replace' onclick='this.previousElementSibling.click()'>Replace Photo</button>`
     : '';
   const isSelected = photoTagSelected.has(file.id);
+  const galleryDateState = getPhotoTagGalleryDateState(file, tag);
+  const manualDateOverride = getPhotoTagStoredDateOverride(tag);
+  const dateEditor = `
+    <div class="fd-photo-date-editor">
+      <div class="fd-photo-date-heading">
+        <label for="date-${escapePhotoTagHtml(file.id)}">Gallery date</label>
+        <span>${escapePhotoTagHtml(galleryDateState.source)}</span>
+      </div>
+      <div class="fd-photo-date-controls">
+        <input type="date"
+          id="date-${escapePhotoTagHtml(file.id)}"
+          class="fd-photo-date-input"
+          value="${escapePhotoTagHtml(galleryDateState.value)}"
+          data-initial-value="${escapePhotoTagHtml(galleryDateState.value)}"
+          onchange="handlePhotoTagDateInput('${escapePhotoTagHtml(file.id)}', this)"
+          oninput="handlePhotoTagDateInput('${escapePhotoTagHtml(file.id)}', this)">
+        <button type="button" class="fd-mini-btn fd-save-date-btn" disabled
+          onclick="savePhotoTagDate('${escapePhotoTagHtml(file.id)}')">Save Date</button>
+        ${manualDateOverride ? `<button type="button" class="fd-mini-btn secondary fd-reset-date-btn"
+          onclick="resetPhotoTagDate('${escapePhotoTagHtml(file.id)}')">Use Automatic</button>` : ''}
+      </div>
+    </div>`;
 
   return `
     <article class="fd-photo-tag-card${isSelected ? ' fd-selected' : ''}" data-file-id="${escapePhotoTagHtml(file.id)}">
@@ -2169,6 +2296,7 @@ function renderPhotoTagCard(file) {
         ${duplicateMessage ? `<p class="fd-tag-duplicate-note">${escapePhotoTagHtml(duplicateMessage)}</p>` : ''}
         ${reviewReason ? `<p class="fd-tag-review-note">${escapePhotoTagHtml(reviewReason)}</p>` : ''}
         ${suggestionPanel}
+        ${dateEditor}
 
         <div class="fd-tagging-area">
           <input type="text"
@@ -2465,8 +2593,7 @@ function buildPhotoTagPayload(file, selectedPeople, options = {}) {
     .map(key => getPhotoTagMemberOrSuggestionPerson(key, options.suggestion))
     .filter(Boolean);
   const otherPeopleLabels = uniquePhotoTagLabels(options.otherPeopleLabels || []);
-
-  return {
+  const payload = {
     driveFileId: file.id,
     driveFolderId: getPhotoTagFolderId(),
     ...buildPhotoTagFileMetadataFields(file),
@@ -2486,6 +2613,13 @@ function buildPhotoTagPayload(file, selectedPeople, options = {}) {
     approvedAt: window._fb.serverTimestamp(),
     updatedAt: window._fb.serverTimestamp()
   };
+
+  if (Object.prototype.hasOwnProperty.call(options, 'dateTakenOverride')) {
+    payload.dateTakenOverride = options.dateTakenOverride || null;
+    payload.dateTakenOverrideUpdatedAt = window._fb.serverTimestamp();
+  }
+
+  return payload;
 }
 
 function updateLocalPhotoTagRecord(fileId, payload) {
@@ -2505,6 +2639,7 @@ function shouldPublishPhotoTag(file, selectedPeople) {
   if (normalizedPeople.length === 0) return false;
 
   const tag = getPhotoTagRecord(file.id);
+  if (isPhotoTagDateInputDirty(file.id)) return true;
   if (getPhotoTagRenameMessage(file)) return true;
   if (!hasSavedTagPeople(tag)) return true;
   if (!haveSamePhotoTagPeople(normalizedPeople, getSavedPhotoTagPeopleKeys(tag))) return true;
@@ -2513,7 +2648,11 @@ function shouldPublishPhotoTag(file, selectedPeople) {
 }
 
 async function writePhotoTagRecord(file, selectedPeople, options = {}) {
-  const payload = buildPhotoTagPayload(file, selectedPeople, options);
+  const pendingDateOverride = getPendingPhotoTagDateOverride(file.id);
+  const writeOptions = pendingDateOverride === undefined
+    ? options
+    : { ...options, dateTakenOverride: pendingDateOverride };
+  const payload = buildPhotoTagPayload(file, selectedPeople, writeOptions);
 
   if (!photoTagRecords.has(file.id)) {
     payload.createdAt = window._fb.serverTimestamp();
@@ -2527,7 +2666,83 @@ async function writePhotoTagRecord(file, selectedPeople, options = {}) {
 
   updateLocalPhotoTagRecord(file.id, payload);
   clearPhotoTagDraft(file.id);
+  if (pendingDateOverride !== undefined) reconcilePhotoTagFilesWithSavedNames();
   return payload;
+}
+
+async function persistPhotoTagDateOverride(fileId, value) {
+  const file = photoTagFiles.find(item => item.id === fileId);
+  if (!file) return;
+
+  const tag = getPhotoTagRecord(fileId);
+  const normalizedValue = value ? normalizePhotoTagDateInputValue(value) : '';
+  if (value && !normalizedValue) {
+    fdToast('Choose a valid date.');
+    return;
+  }
+
+  const currentValue = getPhotoTagStoredDateOverride(tag);
+  if (currentValue === normalizedValue) {
+    fdToast('The gallery date is already current.');
+    return;
+  }
+
+  const payload = {
+    driveFileId: file.id,
+    driveFolderId: getPhotoTagFolderId(),
+    ...buildPhotoTagFileMetadataFields(file),
+    name: file.name,
+    mimeType: file.mimeType,
+    type: file.type,
+    albums: [getPhotoTagAlbumSlug()],
+    drive: buildPhotoTagDriveMetadata(file, tag?.drive),
+    dateTakenOverride: normalizedValue || null,
+    dateTakenOverrideUpdatedAt: window._fb.serverTimestamp(),
+    updatedAt: window._fb.serverTimestamp()
+  };
+
+  if (!tag) {
+    payload.source = 'manual';
+    payload.status = 'untagged';
+    payload.createdAt = window._fb.serverTimestamp();
+  }
+
+  await window._fb.setDoc(
+    window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, file.id),
+    payload,
+    { merge: true }
+  );
+
+  updateLocalPhotoTagRecord(file.id, payload);
+  reconcilePhotoTagFilesWithSavedNames();
+}
+
+async function savePhotoTagDate(fileId) {
+  const value = getPendingPhotoTagDateOverride(fileId);
+  if (!value) {
+    fdToast('Choose a different valid date first.');
+    return;
+  }
+
+  try {
+    await persistPhotoTagDateOverride(fileId, value);
+    fdToast('Gallery date saved. Rename in Drive to apply the corrected filename.');
+    renderPhotoTags();
+  } catch (error) {
+    console.error('Photo date save error:', error);
+    fdToast('Could not save the gallery date.');
+  }
+}
+
+async function resetPhotoTagDate(fileId) {
+  try {
+    await persistPhotoTagDateOverride(fileId, null);
+    fdToast('Automatic photo date restored.');
+    renderPhotoTags();
+  } catch (error) {
+    console.error('Photo date reset error:', error);
+    fdToast('Could not restore the automatic photo date.');
+  }
 }
 
 async function savePhotoTag(fileId) {
@@ -3395,6 +3610,9 @@ window.handleTagAutocompleteKeydown = handleTagAutocompleteKeydown;
 window.parseBatchTagInput = parseBatchTagInput;
 window.addTagChip = addTagChip;
 window.removeTagChip = removeTagChip;
+window.handlePhotoTagDateInput = handlePhotoTagDateInput;
+window.savePhotoTagDate = savePhotoTagDate;
+window.resetPhotoTagDate = resetPhotoTagDate;
 window.savePhotoTag = savePhotoTag;
 window.renamePhotoTagFile = renamePhotoTagFile;
 window.replacePhotoTagFile = replacePhotoTagFile;
