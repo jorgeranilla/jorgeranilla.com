@@ -672,8 +672,18 @@
                             const container = document.getElementById("threads-feed");
 
                             fetch(API_URL)
-                                .then(res => res.json())
+                                .then(async res => {
+                                    const data = await res.json();
+                                    if (!res.ok) {
+                                        throw new Error(data?.error || `Threads request failed (${res.status})`);
+                                    }
+                                    return data;
+                                })
                                 .then(data => {
+                                    if (data && data.error) {
+                                        throw new Error(data.error);
+                                    }
+
                                     if (data && data.data && data.data.length > 0) {
                                         container.innerHTML = "";
                                         data.data.slice(0, 5).forEach(post => {
@@ -700,8 +710,8 @@
                                     }
                                 })
                                 .catch(err => {
-                                    console.error(err);
-                                    container.innerHTML = "<p class='threads-loading'>Could not load Threads.</p>";
+                                    console.error("Threads feed error:", err);
+                                    container.innerHTML = "<p class='threads-loading'>Threads is temporarily unavailable.</p>";
                                 });
                         });
                     </script>
