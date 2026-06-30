@@ -38,6 +38,13 @@ const FAMILY_DIRECTORY_COLLECTION = 'familyDirectory';
 const PHOTO_TAGS_DRIVE_PAGE_SIZE = 200;
 const PHOTO_TAGS_REQUEST_TIMEOUT_MS = 30000;
 const PHOTO_TAGS_CONVERT_ENDPOINT = 'https://us-central1-jorgeranilla-site.cloudfunctions.net/convertFamilyPhotoUpload';
+const PHOTO_TAGS_YOUTUBE_SCOPE = 'https://www.googleapis.com/auth/youtube.readonly';
+const PHOTO_TAGS_YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
+const PHOTO_TAGS_YOUTUBE_CHANNEL_HANDLE = '@jorgeranilla';
+const PHOTO_TAGS_YOUTUBE_PLAYLIST_TITLE = 'Family Gallery';
+const PHOTO_TAGS_YOUTUBE_TOKEN_TTL_MS = 50 * 60 * 1000;
+const PHOTO_TAGS_YOUTUBE_SYNC_REVIEW_REASON = 'Synced from YouTube. Tag the people in this video, then save and publish it.';
+const PHOTO_TAGS_YOUTUBE_HIDDEN_REASON = 'This video is private or cannot be embedded. Change it to public or unlisted on YouTube, then sync again.';
 const PHOTO_TAGS_IMAGE_REPLACE_ACCEPT = 'image/jpeg,image/png,image/webp,image/heic,image/heif,image/dng,image/x-adobe-dng,image/tiff,.jpg,.jpeg,.png,.webp,.heic,.heif,.dng,.tif,.tiff';
 const PHOTO_TAGS_MAX_REPLACE_UPLOAD_BYTES = 31 * 1024 * 1024;
 const PHOTO_TAGS_REPLACE_REVIEW_REASON = 'Photo file was replaced from the tag panel. Review and approve the existing tags.';
@@ -52,6 +59,7 @@ const PHOTO_TAGS_STATUS_LABELS = {
   pending: 'Pending',
   draft: 'Draft',
   'needs-review': 'Needs Retag',
+  hidden: 'Hidden from gallery',
   untagged: 'Untagged'
 };
 const PHOTO_TAGS_FILTER_LABELS = {
@@ -140,6 +148,8 @@ let photoTagDrafts = loadPhotoTagDrafts();
 let photoTagDuplicateCache = null;
 let photoTagBindingsReady = false;
 let photoTagLoadRun = 0;
+let photoTagYoutubeAccessToken = '';
+let photoTagYoutubeAccessTokenExpiresAt = 0;
 
 function updatePhotoTagLoading(message) {
   const loading = document.getElementById('fd-photo-tags-loading');
@@ -1457,6 +1467,8 @@ function getPhotoTagYoutubeVideos() {
 }
 
 function getYoutubeVideoTagStatus(video) {
+  if (video?.youtubeVisibility && !['public', 'unlisted'].includes(video.youtubeVisibility)) return 'hidden';
+  if (video?.youtubeEmbeddable === false) return 'hidden';
   if (!hasSavedTagPeople(video)) return 'untagged';
   if (hasUnresolvedTagPeople(video)) return 'needs-review';
   return video.status || 'approved';
@@ -3298,6 +3310,362 @@ async function fetchYoutubeTitle(videoId) {
   return data.title || null;
 }
 
+function normalizeYoutubeChannelHandle(value) {
+  const handle = String(value || '').trim().toLowerCase();
+  return handle && !handle.startsWith('@') ? '@' + handle : handle;
+}
+
+async function getPhotoTagYoutubeAccessToken() {
+  if (!window.isAdmin || !window.currentUser) {
+    throw new Error('Sign in with the admin account before syncing YouTube.');
+  }
+
+  if (photoTagYoutubeAccessToken && Date.now() < photoTagYoutubeAccessTokenExpiresAt) {
+    return photoTagYoutubeAccessToken;
+  }
+
+  const { auth, GoogleAuthProvider, signInWithPopup } = window._fb || {};
+  if (!auth || !GoogleAuthProvider || !signInWithPopup) {
+    throw new Error('Google sign-in is not ready. Refresh the page and try again.');
+  }
+
+  const provider = new GoogleAuthProvider();
+  provider.addScope(PHOTO_TAGS_YOUTUBE_SCOPE);
+  provider.setCustomParameters({
+    include_granted_scopes: 'true',
+    login_hint: window.currentUser.email || ''
+  });
+
+  const result = await signInWithPopup(auth, provider);
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+  if (!credential?.accessToken) {
+    throw new Error('Google did not return YouTube read access.');
+  }
+
+  photoTagYoutubeAccessToken = credential.accessToken;
+  photoTagYoutubeAccessTokenExpiresAt = Date.now() + PHOTO_TAGS_YOUTUBE_TOKEN_TTL_MS;
+  return photoTagYoutubeAccessToken;
+}
+
+async function photoTagYoutubeApiGet(resource, accessToken, params = {}) {
+  const url = new URL(PHOTO_TAGS_YOUTUBE_API_BASE + '/' + resource);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      url.searchParams.set(key, String(value));
+    }
+  });
+
+  const response = await fetch(url, {
+    headers: { Authorization: 'Bearer ' + accessToken }
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const reason = data?.error?.errors?.[0]?.reason || '';
+    if (reason === 'accessNotConfigured') {
+      throw new Error('Enable YouTube Data API v3 for the Firebase Google Cloud project, then try again.');
+    }
+    throw new Error(data?.error?.message || 'YouTube request failed (' + response.status + ').');
+  }
+
+  return data;
+}
+
+async function loadPhotoTagYoutubeChannelUploads(accessToken) {
+  const channels = await photoTagYoutubeApiGet('channels', accessToken, {
+    part: 'id,snippet,contentDetails',
+    mine: 'true',
+    maxResults: 50
+  });
+  const targetHandle = normalizeYoutubeChannelHandle(PHOTO_TAGS_YOUTUBE_CHANNEL_HANDLE);
+  const ownedChannels = Array.isArray(channels.items) ? channels.items : [];
+  const channel = ownedChannels.find(item =>
+    normalizeYoutubeChannelHandle(item?.snippet?.customUrl) === targetHandle
+  ) || (ownedChannels.length === 1 ? ownedChannels[0] : null);
+
+  if (!channel) {
+    throw new Error('The selected Google account does not expose the ' + PHOTO_TAGS_YOUTUBE_CHANNEL_HANDLE + ' channel. Choose the account that owns it.');
+  }
+
+  const uploadsPlaylistId = channel?.contentDetails?.relatedPlaylists?.uploads;
+  if (!uploadsPlaylistId) {
+    throw new Error('YouTube did not return an uploads playlist for this channel.');
+  }
+
+  const playlistItems = [];
+  let pageToken = '';
+  do {
+    const page = await photoTagYoutubeApiGet('playlistItems', accessToken, {
+      part: 'snippet,status',
+      playlistId: uploadsPlaylistId,
+      maxResults: 50,
+      pageToken
+    });
+    playlistItems.push(...(Array.isArray(page.items) ? page.items : []));
+    pageToken = page.nextPageToken || '';
+  } while (pageToken);
+
+  const videoIds = [...new Set(playlistItems
+    .map(item => item?.snippet?.resourceId?.videoId)
+    .filter(Boolean))];
+  const videoDetails = new Map();
+
+  for (let index = 0; index < videoIds.length; index += 50) {
+    const page = await photoTagYoutubeApiGet('videos', accessToken, {
+      part: 'snippet,status',
+      id: videoIds.slice(index, index + 50).join(','),
+      maxResults: 50
+    });
+    (page.items || []).forEach(item => videoDetails.set(item.id, item));
+  }
+
+  return playlistItems.map(item => {
+    const videoId = item?.snippet?.resourceId?.videoId || '';
+    const video = videoDetails.get(videoId) || {};
+    const snippet = video.snippet || item.snippet || {};
+    const status = video.status || item.status || {};
+    const thumbnails = snippet.thumbnails || {};
+    return {
+      videoId,
+      title: snippet.title || 'Video ID: ' + videoId,
+      thumbnail: thumbnails.maxres?.url || thumbnails.standard?.url || thumbnails.high?.url || 'https://i.ytimg.com/vi/' + videoId + '/hqdefault.jpg',
+      visibility: status.privacyStatus || 'private',
+      embeddable: status.embeddable !== false,
+      publishedAt: snippet.publishedAt || ''
+    };
+  }).filter(video => video.videoId);
+}
+
+// The dedicated playlist is the website allowlist. Public or unlisted videos
+// outside this playlist are intentionally ignored.
+async function loadPhotoTagYoutubeUploads(accessToken) {
+  const ownedPlaylists = [];
+  let playlistsPageToken = '';
+  do {
+    const page = await photoTagYoutubeApiGet('playlists', accessToken, {
+      part: 'id,snippet,status',
+      mine: 'true',
+      maxResults: 50,
+      pageToken: playlistsPageToken
+    });
+    ownedPlaylists.push(...(Array.isArray(page.items) ? page.items : []));
+    playlistsPageToken = page.nextPageToken || '';
+  } while (playlistsPageToken);
+
+  const websitePlaylist = ownedPlaylists.find(item =>
+    String(item?.snippet?.title || '').trim().toLowerCase() === PHOTO_TAGS_YOUTUBE_PLAYLIST_TITLE.toLowerCase()
+  );
+  if (!websitePlaylist?.id) {
+    throw new Error('Create a YouTube playlist named "' + PHOTO_TAGS_YOUTUBE_PLAYLIST_TITLE + '" and add the website videos to it.');
+  }
+
+  const playlistItems = [];
+  let pageToken = '';
+  do {
+    const page = await photoTagYoutubeApiGet('playlistItems', accessToken, {
+      part: 'snippet,status',
+      playlistId: websitePlaylist.id,
+      maxResults: 50,
+      pageToken
+    });
+    playlistItems.push(...(Array.isArray(page.items) ? page.items : []));
+    pageToken = page.nextPageToken || '';
+  } while (pageToken);
+
+  const videoIds = [...new Set(playlistItems
+    .map(item => item?.snippet?.resourceId?.videoId)
+    .filter(Boolean))];
+  const videoDetails = new Map();
+
+  for (let index = 0; index < videoIds.length; index += 50) {
+    const page = await photoTagYoutubeApiGet('videos', accessToken, {
+      part: 'snippet,status',
+      id: videoIds.slice(index, index + 50).join(','),
+      maxResults: 50
+    });
+    (page.items || []).forEach(item => videoDetails.set(item.id, item));
+  }
+
+  return playlistItems.map(item => {
+    const videoId = item?.snippet?.resourceId?.videoId || '';
+    const video = videoDetails.get(videoId) || {};
+    const snippet = video.snippet || item.snippet || {};
+    const status = video.status || item.status || {};
+    const thumbnails = snippet.thumbnails || {};
+    return {
+      videoId,
+      title: snippet.title || 'Video ID: ' + videoId,
+      thumbnail: thumbnails.maxres?.url || thumbnails.standard?.url || thumbnails.high?.url || 'https://i.ytimg.com/vi/' + videoId + '/hqdefault.jpg',
+      visibility: status.privacyStatus || 'private',
+      embeddable: status.embeddable !== false,
+      publishedAt: snippet.publishedAt || ''
+    };
+  }).filter(video => video.videoId);
+}
+
+function findPhotoTagYoutubeRecord(videoId) {
+  return Array.from(photoTagRecords.values()).find(record =>
+    record?.source === 'youtube' && record?.youtubeId === videoId
+  ) || null;
+}
+
+async function writePhotoTagYoutubeSyncRecords(uploads) {
+  const allowed = uploads.filter(video =>
+    ['public', 'unlisted'].includes(video.visibility) && video.embeddable
+  );
+  const unavailable = uploads.filter(video =>
+    !['public', 'unlisted'].includes(video.visibility) || !video.embeddable
+  );
+  const now = window._fb.serverTimestamp;
+  let imported = 0;
+  let updated = 0;
+  let hidden = 0;
+  let unchanged = 0;
+  const writes = [];
+
+  allowed.forEach(video => {
+    const existing = findPhotoTagYoutubeRecord(video.videoId);
+    const docId = existing?.id || 'yt_' + video.videoId;
+    const wasHidden = existing?.status === 'hidden';
+    const metadataChanged = !existing
+      || existing.youtubeTitle !== video.title
+      || existing.youtubeThumbnail !== video.thumbnail
+      || existing.youtubeVisibility !== video.visibility
+      || existing.youtubeEmbeddable !== video.embeddable;
+
+    if (!metadataChanged && !wasHidden) {
+      unchanged += 1;
+      return;
+    }
+
+    const payload = {
+      youtubeId: video.videoId,
+      youtubeThumbnail: video.thumbnail,
+      youtubeTitle: video.title,
+      youtubeVisibility: video.visibility,
+      youtubeEmbeddable: video.embeddable,
+      youtubePublishedAt: video.publishedAt,
+      youtubePlaylistTitle: PHOTO_TAGS_YOUTUBE_PLAYLIST_TITLE,
+      type: 'video',
+      mimeType: 'video/youtube',
+      source: 'youtube',
+      updatedAt: now(),
+      youtubeSyncedAt: now()
+    };
+
+    if (!existing) {
+      Object.assign(payload, {
+        people: [],
+        peopleAliases: [],
+        peopleLabels: [],
+        personIds: [],
+        albums: ['family'],
+        status: 'needs-review',
+        reviewReason: PHOTO_TAGS_YOUTUBE_SYNC_REVIEW_REASON,
+        createdAt: now()
+      });
+      imported += 1;
+    } else {
+      if (wasHidden) {
+        payload.status = 'needs-review';
+        payload.reviewReason = PHOTO_TAGS_YOUTUBE_SYNC_REVIEW_REASON;
+      }
+      updated += 1;
+    }
+
+    writes.push({ docId, existing, payload });
+  });
+
+  unavailable.forEach(video => {
+    const existing = findPhotoTagYoutubeRecord(video.videoId);
+    if (!existing || existing.status === 'hidden') return;
+    const payload = {
+      youtubeVisibility: video.visibility,
+      youtubeEmbeddable: video.embeddable,
+      youtubePlaylistTitle: PHOTO_TAGS_YOUTUBE_PLAYLIST_TITLE,
+      status: 'hidden',
+      reviewReason: PHOTO_TAGS_YOUTUBE_HIDDEN_REASON,
+      updatedAt: now(),
+      youtubeSyncedAt: now()
+    };
+    writes.push({ docId: existing.id, existing, payload });
+    hidden += 1;
+  });
+
+  const playlistVideoIds = new Set(uploads.map(video => video.videoId));
+  Array.from(photoTagRecords.values()).forEach(existing => {
+    if (existing?.source !== 'youtube') return;
+    if (existing.youtubePlaylistTitle !== PHOTO_TAGS_YOUTUBE_PLAYLIST_TITLE) return;
+    if (playlistVideoIds.has(existing.youtubeId) || existing.status === 'hidden') return;
+
+    const payload = {
+      status: 'hidden',
+      reviewReason: 'Removed from the "' + PHOTO_TAGS_YOUTUBE_PLAYLIST_TITLE + '" YouTube playlist. Add it back and sync to restore it.',
+      updatedAt: now(),
+      youtubeSyncedAt: now()
+    };
+    writes.push({
+      docId: existing.id,
+      existing,
+      payload
+    });
+    hidden += 1;
+  });
+
+  for (let index = 0; index < writes.length; index += 20) {
+    await Promise.all(writes.slice(index, index + 20).map(async write => {
+      await window._fb.setDoc(
+        window._fb.doc(window._fb.db, PHOTO_TAGS_COLLECTION, write.docId),
+        write.payload,
+        { merge: true }
+      );
+      photoTagRecords.set(write.docId, normalizePhotoTagRecord(write.docId, {
+        ...(write.existing || {}),
+        ...write.payload
+      }));
+    }));
+  }
+
+  return {
+    imported,
+    updated,
+    hidden,
+    unchanged,
+    privateSkipped: uploads.filter(video => video.visibility === 'private').length,
+    nonEmbeddableSkipped: uploads.filter(video =>
+      ['public', 'unlisted'].includes(video.visibility) && !video.embeddable
+    ).length
+  };
+}
+
+async function syncYoutubeLibrary(button) {
+  const syncButton = button || document.getElementById('fd-youtube-sync-btn');
+  const originalText = syncButton?.textContent || 'Sync YouTube';
+  if (syncButton) {
+    syncButton.disabled = true;
+    syncButton.textContent = 'Connecting...';
+  }
+
+  try {
+    const accessToken = await getPhotoTagYoutubeAccessToken();
+    if (syncButton) syncButton.textContent = 'Checking videos...';
+    const uploads = await loadPhotoTagYoutubeUploads(accessToken);
+    if (syncButton) syncButton.textContent = 'Saving videos...';
+    const result = await writePhotoTagYoutubeSyncRecords(uploads);
+    renderPhotoTags();
+    const hiddenText = result.hidden ? ', ' + result.hidden + ' hidden' : '';
+    fdToast(result.imported + ' imported, ' + result.updated + ' updated, ' + result.privateSkipped + ' private skipped' + hiddenText + '.');
+  } catch (error) {
+    console.error('YouTube sync error:', error);
+    fdToast(error.message || 'Could not sync YouTube.');
+  } finally {
+    if (syncButton) {
+      syncButton.disabled = false;
+      syncButton.textContent = originalText;
+    }
+  }
+}
+
 async function submitYoutubeVideo() {
   const urlInput = document.getElementById('fd-yt-url-input');
   const saveBtn = document.getElementById('fd-yt-save-btn');
@@ -3434,6 +3802,16 @@ async function saveYoutubeVideoTags(recordId) {
 
   if (!youtubeId) {
     fdToast('Enter a valid YouTube URL or video ID.');
+    return;
+  }
+
+  if (video.youtubeVisibility && !['public', 'unlisted'].includes(video.youtubeVisibility)) {
+    fdToast('This video is private. Change it to public or unlisted on YouTube, then sync again.');
+    return;
+  }
+
+  if (video.youtubeEmbeddable === false) {
+    fdToast('This video cannot be embedded. Allow embedding on YouTube, then sync again.');
     return;
   }
 
@@ -3612,6 +3990,7 @@ window.addTagChip = addTagChip;
 window.removeTagChip = removeTagChip;
 window.handlePhotoTagDateInput = handlePhotoTagDateInput;
 window.savePhotoTagDate = savePhotoTagDate;
+window.syncYoutubeLibrary = syncYoutubeLibrary;
 window.resetPhotoTagDate = resetPhotoTagDate;
 window.savePhotoTag = savePhotoTag;
 window.renamePhotoTagFile = renamePhotoTagFile;

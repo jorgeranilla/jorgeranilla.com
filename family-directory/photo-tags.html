@@ -841,6 +841,7 @@
             <button class="fd-filter-pill" data-filter="needs-rename">Needs Rename</button>
             <button class="fd-filter-pill" data-filter="duplicates">Duplicates</button>
             <button class="fd-filter-pill" data-filter="suggestions">Suggestions</button>
+            <button class="fd-filter-pill" type="button" id="fd-youtube-sync-btn" onclick="syncYoutubeLibrary(this)">Sync YouTube</button>
             <button class="fd-filter-pill" type="button" onclick="cleanMissingDriveRecords()">Clean / Sync Records</button>
           </div>
           <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading selected folder photos...</p>
@@ -894,7 +895,7 @@
     }, 45000);
   </script>
   <script src="directory.js?v=13"></script>
-  <script src="photo-tags.js?v=27"></script>
+  <script src="photo-tags.js?v=28"></script>
   <script src="../script.js?v=6"></script>
   <script src="../search-dynamic.js"></script>
 </body>

@@ -7,6 +7,7 @@
   },
   "hosting": {
     "public": ".",
+    "site": "jorgeranilla-site",
     "cleanUrls": true,
     "ignore": [
       "firebase.json",
@@ -16,6 +17,7 @@
       "**/.*",
       "**/node_modules/**",
       "functions/**",
+      "videos/**",
       "umsteadgrove/**"
     ],
     "rewrites": [],
