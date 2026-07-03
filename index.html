@@ -26,6 +26,16 @@
 
 <body data-title="Home">
 
+    <script>
+        // The America250 homepage treatment is active for July 1-31, 2026.
+        (function setAmerica250JulyTheme() {
+            var today = new Date();
+            var isActive = today.getFullYear() === 2026 && today.getMonth() === 6;
+            document.body.classList.toggle('america250-july', isActive);
+            window.AMERICA250_JULY_ACTIVE = isActive;
+        })();
+    </script>
+
     <div id="social-rail-placeholder"></div>
     <div id="header-placeholder"></div>
 
@@ -91,6 +101,29 @@
             }
         ];
 
+        if (window.AMERICA250_JULY_ACTIVE) {
+            CAROUSEL_SLIDES.unshift({
+                cssClass: 'slide-america250',
+                markup:
+                    '<div class="slide-content america250-slide-layout">' +
+                        '<div class="america250-copy">' +
+                            '<span class="america250-eyebrow">July 2026 &nbsp;&middot;&nbsp; 1776&mdash;2026</span>' +
+                            '<h1>America at 250</h1>' +
+                            '<p>Every family carries a piece of the American story. This July, we honor the past, celebrate the people who shaped our nation, and look toward the story still being written.</p>' +
+                            '<a href="https://america250.org/" class="btn america250-btn" target="_blank" rel="noopener noreferrer">Explore America250</a>' +
+                        '</div>' +
+                        '<div class="america250-lockup" aria-label="America250, 1776 to 2026">' +
+                            '<img src="images/america250-official-mark.svg" alt="Official America250 mark">' +
+                            '<span class="america250-wordmark">AMERICA250</span>' +
+                            '<span class="america250-years">1776 &nbsp;&mdash;&nbsp; 2026</span>' +
+                        '</div>' +
+                    '</div>'
+            });
+
+            var julyTicker = document.getElementById('ticker-content');
+            if (julyTicker) julyTicker.textContent = '\u2605 July 2026 \u00b7 Honoring 250 years of the American story\u2014past, present, and still being written.';
+        }
+
         (function buildCarousel() {
             var section = document.getElementById('hero-carousel');
             if (!section) return;
@@ -99,13 +132,13 @@
             CAROUSEL_SLIDES.forEach(function(slide, i) {
                 var div = document.createElement('div');
                 div.className = 'slide ' + slide.cssClass + (i === 0 ? ' active' : '');
-                div.innerHTML =
-                    '<div class="slide-content">' +
+                div.innerHTML = slide.markup ||
+                    ('<div class="slide-content">' +
                         (slide.eyebrow ? '<span class="carousel-eyebrow">' + slide.eyebrow + '</span>' : '') +
                         '<h1>' + slide.title + '</h1>' +
                         '<p>' + slide.text + '</p>' +
                         '<a href="' + slide.link + '" class="btn">' + slide.btnText + '</a>' +
-                    '</div>';
+                    '</div>');
                 section.appendChild(div);
             });
 
@@ -1356,6 +1389,182 @@
         }
         .slide-baptism .btn:hover {
             background: linear-gradient(135deg, #4a3520 0%, #6b4c2e 100%);
+        }
+
+        /* America250 July 2026 homepage treatment */
+        .slide-america250 {
+            align-items: stretch;
+            overflow: hidden;
+            text-align: left;
+            background:
+                linear-gradient(112deg, rgba(10, 49, 97, 0.99) 0%, rgba(10, 49, 97, 0.97) 58%, rgba(5, 28, 58, 0.99) 100%);
+        }
+
+        .slide-america250::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.5px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.4) 0 1px, transparent 1.5px);
+            background-position: 10px 12px, 38px 42px;
+            background-size: 72px 72px, 96px 96px;
+            opacity: 0.28;
+            pointer-events: none;
+        }
+
+        .slide-america250::after {
+            content: '';
+            position: absolute;
+            top: -38%;
+            right: -7%;
+            width: 38%;
+            height: 180%;
+            border: 24px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            transform: rotate(-18deg);
+            pointer-events: none;
+        }
+
+        .slide-america250 .america250-slide-layout {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(190px, 0.7fr);
+            align-items: center;
+            gap: clamp(2rem, 5vw, 4rem);
+            width: min(920px, calc(100% - 220px));
+            height: 100%;
+            margin: 0 auto;
+            padding: 20px 0 48px;
+            box-sizing: border-box;
+        }
+
+        .america250-copy {
+            max-width: 650px;
+        }
+
+        .america250-eyebrow {
+            display: inline-block;
+            margin-bottom: 6px;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .slide-america250 .slide-content h1 {
+            margin: 0 0 8px;
+            color: #ffffff;
+            font-size: clamp(2.25rem, 4vw, 3.2rem);
+            line-height: 1;
+            text-shadow: 0 3px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .slide-america250 .slide-content p {
+            max-width: 650px;
+            margin: 0 0 18px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            line-height: 1.55;
+        }
+
+        .slide-america250 .america250-btn {
+            padding: 10px 22px;
+            color: #ffffff;
+            background: #b31942;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+        }
+
+        .slide-america250 .america250-btn:hover {
+            background: #921532;
+        }
+
+        .america250-lockup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .america250-lockup img {
+            display: block;
+            width: 148px;
+            height: 148px;
+            margin-bottom: -12px;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.24));
+        }
+
+        .america250-wordmark {
+            font-size: 0.92rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+        }
+
+        .america250-years {
+            margin-top: 2px;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.76rem;
+            letter-spacing: 0.11em;
+            opacity: 0.88;
+        }
+
+        .hero-carousel:has(.slide-america250.active) .dot {
+            background: #ffffff;
+            box-shadow: 0 0 0 1px rgba(10, 49, 97, 0.4);
+        }
+
+        .hero-carousel:has(.slide-america250.active) .active.dot,
+        .hero-carousel:has(.slide-america250.active) .dot:hover {
+            background: #b31942;
+        }
+
+        @media (max-width: 760px) {
+            .slide-america250 .america250-slide-layout {
+                display: flex;
+                width: calc(100% - 70px);
+                padding: 30px 0 54px;
+                flex-direction: column;
+                justify-content: center;
+                gap: 8px;
+                text-align: center;
+            }
+
+            .slide-america250 .slide-content h1 {
+                font-size: 2.35rem;
+            }
+
+            .slide-america250 .slide-content p {
+                padding: 0;
+                font-size: 0.94rem;
+                line-height: 1.48;
+            }
+
+            .america250-lockup img {
+                width: 92px;
+                height: 92px;
+                margin-bottom: -7px;
+            }
+
+            .america250-wordmark {
+                font-size: 0.75rem;
+            }
+
+            .america250-years {
+                font-size: 0.68rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            body.america250-july .ticker-content {
+                animation: none;
+                transform: none;
+            }
         }
 
         /* Special styling for quote slide */
