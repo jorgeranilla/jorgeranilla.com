@@ -53,6 +53,11 @@
         "type": 301
       },
       {
+        "source": "/professional/engineering-journal.html",
+        "destination": "/professional/family-archive.html",
+        "type": 301
+      },
+      {
         "source": "/family/adriana",
         "destination": "/family/adriana-astocondor.html",
         "type": 301

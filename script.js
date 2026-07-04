@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const professionalLinks = {
       atAGlance: buildSectionLink('professional', 'at-a-glance.html'),
-      development: buildSectionLink('professional', 'engineering-journal.html'),
+      development: buildSectionLink('professional', 'family-archive.html'),
       resume: buildSectionLink('professional', 'resume.html')
     };
     const blogLinks = {
@@ -634,7 +634,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Professional section
       'at-a-glance.html': ['Professional', 'At a Glance'],
-      'engineering-journal.html': ['Professional', 'Building Our Family Archive'],
+      'family-archive.html': ['Professional', 'Family Archive'],
       'resume.html': ['Professional', 'Resume'],
 
       // Baptism pages (English & Spanish, main + godparent subpages)
