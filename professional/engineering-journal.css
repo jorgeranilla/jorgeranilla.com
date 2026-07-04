@@ -124,6 +124,7 @@
 }
 
 .journal-introduction,
+.journal-projects,
 .journal-architecture,
 .journal-timeline,
 .journal-platform-expansion,
@@ -192,6 +193,7 @@
   margin: 0;
 }
 
+.journal-projects,
 .journal-architecture {
   border-top: 1px solid var(--journal-line);
   padding-bottom: 5rem;
@@ -219,6 +221,27 @@
   background: #fff;
   min-height: 245px;
   padding: 1.5rem;
+}
+
+.project-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.project-grid article {
+  min-height: 300px;
+}
+
+.project-grid p + p {
+  margin-top: 1rem;
+}
+
+.project-grid .project-status {
+  border-top: 1px solid var(--journal-line);
+  color: var(--journal-red);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 1.4rem;
+  padding-top: 1rem;
 }
 
 .architecture-grid span {
@@ -442,6 +465,12 @@
   padding: 1.4rem;
 }
 
+.milestone-future .milestone-content {
+  background: #fbf8f1;
+  border-top: 3px solid var(--journal-gold);
+  padding: 1.4rem;
+}
+
 .journal-platform-expansion,
 .journal-principles {
   border-top: 1px solid var(--journal-line);
@@ -654,6 +683,7 @@
   }
 
   .journal-introduction,
+  .journal-projects,
   .journal-architecture,
   .journal-timeline,
   .journal-platform-expansion,

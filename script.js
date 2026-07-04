@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="dropdown-toggle">Professional ▾</span>
               <ul class="dropdown-menu">
                 <li><a href="${professionalLinks.atAGlance}">At a Glance</a></li>
-                <li><a href="${professionalLinks.development}">Development</a></li>
+                <li><a href="${professionalLinks.development}">Family Archive</a></li>
                 <li><a href="${professionalLinks.resume}">Resume</a></li>
               </ul>
             </li>
@@ -634,7 +634,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Professional section
       'at-a-glance.html': ['Professional', 'At a Glance'],
-      'engineering-journal.html': ['Professional', 'Development Log'],
+      'engineering-journal.html': ['Professional', 'Building Our Family Archive'],
       'resume.html': ['Professional', 'Resume'],
 
       // Baptism pages (English & Spanish, main + godparent subpages)
