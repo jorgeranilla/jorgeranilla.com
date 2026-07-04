@@ -103,12 +103,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Pre-compute all navigation links to ensure they're evaluated correctly
     const familyLinks = {
-      myStory: buildSectionLink('', ''),
+      myStory: buildSectionLink('family', 'jorge-ranilla'),
 
-      heritageRoots: buildSectionLink('', ''),
-      familyTree: buildSectionLink('', ''),
-      ancestry: buildSectionLink('', ''),
-      familyLogin: buildSectionLink('', '')
+      heritageRoots: buildSectionLink('family', 'heritage-roots'),
+      familyTree: buildSectionLink('family', 'family-tree'),
+      ancestry: buildSectionLink('family', 'ancestry'),
+      familyLogin: buildSectionLink('', 'family-login')
     };
 
     // Labels based on language - User requested English labels ALWAYS
@@ -122,19 +122,19 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const galleryLinks = {
-      family: buildSectionLink('', ''),
-      portraits: buildSectionLink('', '')
+      family: buildSectionLink('gallery', 'family'),
+      portraits: buildSectionLink('gallery', 'portraits')
     };
     const professionalLinks = {
-      atAGlance: buildSectionLink('', ''),
-      development: buildSectionLink('', ''),
-      resume: buildSectionLink('', '')
+      atAGlance: buildSectionLink('professional', 'at-a-glance'),
+      development: buildSectionLink('professional', 'family-archive'),
+      resume: buildSectionLink('professional', 'resume')
     };
     const blogLinks = {
-      latestPosts: buildSectionLink('', ''),
-      familyUpdates: buildSectionLink('', '')
+      latestPosts: buildSectionLink('blog', 'latest-posts'),
+      familyUpdates: buildSectionLink('blog', 'life-updates')
     };
-    const shopHref = buildSectionLink('', '');
+    const shopHref = buildSectionLink('', 'shop/');
 
     // Social Rail HTML
     const socialRailHTML = `
