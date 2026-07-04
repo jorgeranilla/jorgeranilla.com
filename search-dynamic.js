@@ -105,10 +105,10 @@ async function loadSearchIndex() {
                 // Determine Category for the correct URL
                 let isFamilyUpdate = false;
                 if (entry.category) {
-                    isFamilyUpdate = entry.category.some(cat => cat.term === 'Family Updates');
+                    isFamilyUpdate = entry.category.some(cat => cat.term === 'Life Updates');
                 }
                 
-                const postUrl = isFamilyUpdate ? `blog/family-updates-individual.html?id=${postId}` : `blog/latest-posts-individual.html?id=${postId}`;
+                const postUrl = isFamilyUpdate ? `blog/life-updates-individual.html?id=${postId}` : `blog/latest-posts-individual.html?id=${postId}`;
                 
                 // If this post isn't already in the static search-index.json, add it on the fly!
                 if (!searchPages.some(p => p.url === postUrl)) {

@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jorge Ranilla | Family Updates</title>
+    <title>Jorge Ranilla | Life Updates</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap"
         rel="stylesheet">
@@ -12,21 +12,21 @@
     <link rel="icon" type="image/png" href="../images/jr-logo.png">
     <!-- Open Graph / Social Sharing -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jorgeranilla.com/blog/family-updates.html">
-    <meta property="og:title" content="Jorge Ranilla | Family Updates">
+    <meta property="og:url" content="https://jorgeranilla.com/blog/life-updates.html">
+    <meta property="og:title" content="Jorge Ranilla | Life Updates">
     <meta property="og:description" content="Celebrating milestones, welcoming new members, and keeping our family connected.">
     <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Jorge Ranilla | Family Updates">
+    <meta name="twitter:title" content="Jorge Ranilla | Life Updates">
     <meta name="twitter:description" content="Celebrating milestones, welcoming new members, and keeping our family connected.">
     <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
-    <link rel="canonical" href="https://jorgeranilla.com/blog/family-updates.html">
-    <meta name="description" content="Family updates and news from the Ranilla family blog.">
+    <link rel="canonical" href="https://jorgeranilla.com/blog/life-updates.html">
+    <meta name="description" content="Life updates, announcements, and special moments shared by Jorge Ranilla.">
 </head>
 
-<body data-title="Family Updates" data-section="Blog">
+<body data-title="Life Updates" data-section="Blog">
     <div id="social-rail-placeholder"></div>
     <div id="header-placeholder"></div>
 
@@ -35,12 +35,12 @@
     </div>
 
     <main class="page-content">
-        <h2 class="page-title page-title--sm">Family Updates & News</h2>
+        <h2 class="page-title page-title--sm">Life Updates & News</h2>
         <p style="max-width: 720px; margin: 0 auto 3rem; line-height: 1.7; color:#666; text-align: center;">
             Celebrating milestones, welcoming new members, and keeping our family connected.
         </p>
 
-        <div id="loading" class="loading-state">Loading family updates...</div>
+        <div id="loading" class="loading-state">Loading updates...</div>
         <div id="updates-feed" class="updates-feed"></div>
     </main>
 
@@ -227,7 +227,7 @@
                     if (loading) loading.style.display = 'none';
 
                     if (posts.length === 0) {
-                        feedContainer.innerHTML = '<p style="text-align:center; color:#888;">No family updates yet.</p>';
+                        feedContainer.innerHTML = '<p style="text-align:center; color:#888;">No updates yet.</p>';
                         return;
                     }
 
@@ -306,7 +306,7 @@
                             if (idMatch) postId = idMatch[1];
                         }
                         const shareUrl = postId
-                            ? 'https://jorgeranilla.com/blog/family-updates-individual.html?id=' + postId
+                            ? 'https://jorgeranilla.com/blog/life-updates-individual.html?id=' + postId
                             : '';
                         const toastId = 'toast-' + (++toastCounter);
 
@@ -354,7 +354,7 @@
             };
 
             const script = document.createElement('script');
-            script.src = `https://memoria-efimera.blogspot.com/feeds/posts/default/-/Family%20Updates?alt=json-in-script&callback=${callbackName}`;
+            script.src = `https://memoria-efimera.blogspot.com/feeds/posts/default/-/Life%20Updates?alt=json-in-script&callback=${callbackName}`;
             script.onerror = () => {
                 document.getElementById('loading').textContent = 'Error loading updates.';
                 delete window[callbackName];

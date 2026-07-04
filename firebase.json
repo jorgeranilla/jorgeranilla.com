@@ -43,6 +43,16 @@
     ],
     "redirects": [
       {
+        "source": "/blog/family-updates.html",
+        "destination": "/blog/life-updates.html",
+        "type": 301
+      },
+      {
+        "source": "/blog/family-updates-individual.html",
+        "destination": "/blog/life-updates-individual.html",
+        "type": 301
+      },
+      {
         "source": "/family/adriana",
         "destination": "/family/adriana-astocondor.html",
         "type": 301

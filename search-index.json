@@ -1,17 +1,5 @@
 [
     {
-        "title":  "Family Updates",
-        "url":  "blog/family-updates.html",
-        "section":  "blog",
-        "content":  "Jorge Ranilla | Family Updates Family Updates \u0026 News Celebrating milestones, welcoming new members, and keeping our family connected. Loading family updates..."
-    },
-    {
-        "title":  "Family Update",
-        "url":  "blog/family-updates-individual.html",
-        "section":  "blog",
-        "content":  "Jorge Ranilla | Family Update Loading post... Sorry, we could not load this post. ← Back to Family Updates"
-    },
-    {
         "title":  "Latest Posts",
         "url":  "blog/latest-posts.html",
         "section":  "blog",
@@ -22,6 +10,18 @@
         "url":  "blog/latest-posts-individual.html",
         "section":  "blog",
         "content":  "Jorge Ranilla | Latest Post Loading post... Sorry, we could not load this post. ← Back to Latest Posts"
+    },
+    {
+        "title":  "Life Updates",
+        "url":  "blog/life-updates.html",
+        "section":  "blog",
+        "content":  "Jorge Ranilla | Life Updates Life Updates \u0026 News Celebrating milestones, welcoming new members, and keeping our family connected. Loading updates..."
+    },
+    {
+        "title":  "Life Update",
+        "url":  "blog/life-updates-individual.html",
+        "section":  "blog",
+        "content":  "Jorge Ranilla | Life Update Loading post... Sorry, we could not load this post. ← Back to Life Updates"
     },
     {
         "title":  "Connect",

@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const blogLinks = {
       latestPosts: buildSectionLink('blog', 'latest-posts.html'),
-      familyUpdates: buildSectionLink('blog', 'family-updates.html')
+      familyUpdates: buildSectionLink('blog', 'life-updates.html')
     };
     const shopHref = buildSectionLink('', 'shop/index.html');
 
@@ -244,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="dropdown-toggle">Blog ▾</span>
               <ul class="dropdown-menu">
                 <li><a href="${blogLinks.latestPosts}">Latest Posts</a></li>
-                <li><a href="${blogLinks.familyUpdates}">Family Updates</a></li>
+                <li><a href="${blogLinks.familyUpdates}">Life Updates</a></li>
               </ul>
             </li>
 
@@ -647,7 +647,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Blog section
       'latest-posts.html': ['Blog', 'Latest Posts'],
-      'family-updates.html': ['Blog', 'Family Updates']
+      'life-updates.html': ['Blog', 'Life Updates']
     };
 
     // Pages that have actual landing pages (these can be clickable)
