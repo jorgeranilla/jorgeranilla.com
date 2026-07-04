@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentSection = !isArchivePage && depth > 0 ? pageDir.split('/').pop() : null;
 
     const prefix = depth > 0 ? "../".repeat(depth) : "";
-    const homeHref = depth > 0 ? prefix + "index.html" : "index.html";
+    const homeHref = "/";
     const imagesPrefix = depth > 0 ? prefix + "images/" : "images/";
 
     // Helper function to build section links
@@ -655,7 +655,7 @@ document.addEventListener("DOMContentLoaded", () => {
       'Heritage & Roots': `${homePrefix}family/heritage-roots.html`,
       'Extended Family': `${homePrefix}family/extended-family.html`,
       'Travel': `${rootPrefix}archive/gallery/travel.html`,
-      'Directory Profile': `${homePrefix}family-directory/index.html`,
+      'Directory Profile': `${homePrefix}family-directory/`,
       'Family': null, // Has submenu items but no dedicated page
       'Gallery': null,
       'Professional': null,
@@ -665,12 +665,12 @@ document.addEventListener("DOMContentLoaded", () => {
       'Japan': null
     };
 
-    const homeHref = depth > 0 ? "../".repeat(depth) + "index.html" : "index.html";
+    const homeHref = "/";
     const homeLink = `<a href="${homeHref}">Home</a>`;
     const sep = `<span class="separator">/</span>`;
 
     // Home page handling
-    if (file === "index.html" || file === "") {
+    if (file === "index" || file === "") {
       el.innerHTML = `<span class="current-page">Home</span>`;
       return;
     }
