@@ -373,7 +373,7 @@
     do {
       const q = encodeURIComponent(
         `'${folderId}' in parents and ` +
-        `mimeType contains 'image/' and ` +
+        `(mimeType contains 'image/' or mimeType contains 'video/') and ` +
         `trashed = false`
       );
 
@@ -1229,6 +1229,14 @@
       img.style.display = 'none';
       video.style.display = 'block';
       video.src = `https://www.youtube.com/embed/${encodeURIComponent(file.youtubeId)}?autoplay=1&rel=0`;
+      renderLightboxSuggestControl(file);
+      return;
+    }
+
+    if (file.type === 'video') {
+      img.style.display = 'none';
+      video.style.display = 'block';
+      video.src = `https://drive.google.com/file/d/${encodeURIComponent(file.id)}/preview`;
       renderLightboxSuggestControl(file);
       return;
     }

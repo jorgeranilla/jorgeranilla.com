@@ -32,6 +32,40 @@
       align-items: center;
     }
 
+    .fd-media-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .fd-sort-control {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: #555;
+      font-family: 'Roboto', sans-serif;
+      font-size: .8rem;
+      font-weight: 500;
+    }
+
+    .fd-sort-control select {
+      min-width: 190px;
+      padding: 9px 34px 9px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: #fff;
+      color: #555;
+      font: inherit;
+    }
+
+    .fd-sort-control select:focus {
+      outline: none;
+      border-color: #CD5C5C;
+      box-shadow: 0 0 0 3px rgba(205, 92, 92, .08);
+    }
+
     .fd-filter-pill {
       border: 1px solid #ececec;
       background: #fff;
@@ -739,6 +773,9 @@
       .fd-photo-tag-grid { grid-template-columns: 1fr; }
       .fd-tag-controls { align-items: stretch; flex-direction: column; }
       .fd-filter-pill { text-align: center; }
+      .fd-media-toolbar { align-items: stretch; flex-direction: column; }
+      .fd-sort-control { align-items: stretch; flex-direction: column; }
+      .fd-sort-control select { min-width: 0; width: 100%; }
     }
   </style>
 </head>
@@ -827,6 +864,23 @@
             <button class="fd-filter-pill active" type="button" data-photo-source="family">Family folder</button>
             <button class="fd-filter-pill" type="button" data-photo-source="people">People folder</button>
           </div>
+          <div class="fd-media-toolbar">
+            <div class="fd-tag-controls" aria-label="Media type">
+              <button class="fd-filter-pill active" type="button" data-media-view="photos">Photos</button>
+              <button class="fd-filter-pill" type="button" data-media-view="videos">Videos</button>
+            </div>
+            <label class="fd-sort-control" for="fd-photo-sort">
+              Sort by
+              <select id="fd-photo-sort">
+                <option value="uploaded-desc">Newest upload first</option>
+                <option value="uploaded-asc">Oldest upload first</option>
+                <option value="name-asc">File name A-Z</option>
+                <option value="name-desc">File name Z-A</option>
+                <option value="date-desc">Gallery date newest</option>
+                <option value="date-asc">Gallery date oldest</option>
+              </select>
+            </label>
+          </div>
           <div class="fd-search-wrap" style="margin-bottom:0">
             <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             <input type="text" class="fd-search" id="fd-photo-search" placeholder="Search photos or people...">
@@ -841,7 +895,7 @@
             <button class="fd-filter-pill" data-filter="needs-rename">Needs Rename</button>
             <button class="fd-filter-pill" data-filter="duplicates">Duplicates</button>
             <button class="fd-filter-pill" data-filter="suggestions">Suggestions</button>
-            <button class="fd-filter-pill" type="button" id="fd-youtube-sync-btn" onclick="syncYoutubeLibrary(this)">Sync YouTube</button>
+            <button class="fd-filter-pill fd-video-only-control" type="button" id="fd-youtube-sync-btn" onclick="syncYoutubeLibrary(this)" style="display:none">Sync YouTube</button>
             <button class="fd-filter-pill" type="button" onclick="cleanMissingDriveRecords()">Clean / Sync Records</button>
           </div>
           <p class="fd-tag-summary" id="fd-photo-tag-summary">Loading selected folder photos...</p>
@@ -895,7 +949,7 @@
     }, 45000);
   </script>
   <script src="directory.js?v=13"></script>
-  <script src="photo-tags.js?v=28"></script>
+  <script src="photo-tags.js?v=30"></script>
   <script src="../script.js?v=6"></script>
   <script src="../search-dynamic.js"></script>
 </body>
