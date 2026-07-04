@@ -1,5 +1,5 @@
 $root = $PSScriptRoot
-$excludeFolders = @("archive", "babyshower", "functions", "people")
+$excludeFolders = @("archive", "babyshower", "functions")
 $excludeFiles = @("mobile-player.html", "people\index.html", "people\patricia-malca-gallery.html")
 $pages = [System.Collections.Generic.List[object]]::new()
 
@@ -28,8 +28,13 @@ foreach ($file in $htmlFiles) {
     $titleMatch = [regex]::Match($content, '<title>(?:Jorge Ranilla \| )?([^<]+)</title>')
     $title = if ($titleMatch.Success) { $titleMatch.Groups[1].Value.Trim() } else { $file.BaseName }
 
-    # Relative URL from root with forward slashes
+    # Relative URL from root with forward slashes, and strip .html for clean URLs
     $relPath = $file.FullName.Substring($root.Length + 1) -replace '\\', '/'
+    if ($relPath -eq "index.html") {
+        $relPath = "/"
+    } else {
+        $relPath = $relPath -replace '\.html$', ''
+    }
     $section = ($relPath -split '/')[0]
     if ($section -eq "index.html") { $section = "Home" }
     $searchableText = ConvertTo-SearchableText $content
