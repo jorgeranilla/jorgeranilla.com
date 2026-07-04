@@ -15,14 +15,14 @@
   <meta property="og:url" content="https://jorgeranilla.com/professional/at-a-glance.html">
   <meta property="og:title" content="Jorge Ranilla | At a Glance">
   <meta property="og:description"
-    content="An overview of Jorge Ranilla professional background, strengths, and approach to operations and process improvement.">
+    content="An overview of Jorge Ranilla's operations background, digital platform administration, residential property management, and approach to continuous improvement.">
   <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jorge Ranilla | At a Glance">
   <meta name="twitter:description"
-    content="An overview of Jorge Ranilla professional background, strengths, and approach to operations and process improvement.">
+    content="An overview of Jorge Ranilla's operations background, digital platform administration, residential property management, and approach to continuous improvement.">
   <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
 </head>
 
@@ -39,7 +39,9 @@
     <p class="page-intro professional-intro">
       I work in banking and operations, with a focus on structure, accountability, and continuous improvement. My
       professional approach is grounded in solving problems carefully, improving processes thoughtfully, and building
-      systems that are reliable, clear, and efficient.
+      systems that are reliable, clear, and efficient. Beyond my primary career, I have also built and administered a
+      cloud-based family archive and managed a residential rental property, strengthening my experience in ownership,
+      coordination, budgeting, and long-term planning.
     </p>
 
     <section class="glance-highlight">
@@ -128,6 +130,40 @@
       </div>
     </section>
 
+    <section class="glance-independent" id="independent-experience" aria-labelledby="independent-experience-title">
+      <div class="glance-section-heading">
+        <span class="section-kicker">Independent Experience</span>
+        <h3 id="independent-experience-title">Ownership beyond the day-to-day role.</h3>
+        <p>
+          These long-running responsibilities demonstrate how I apply operational discipline, sound judgment, and
+          continuous improvement to projects and assets I manage directly.
+        </p>
+      </div>
+
+      <div class="glance-independent-grid">
+        <article class="glance-card">
+          <span class="glance-meta">January 2024 &ndash; Present</span>
+          <h3>Digital Content &amp; Platform Administrator</h3>
+          <p>
+            Designed, built, and continuously manage jorgeranilla.com as a cloud-based family archive with responsive
+            pages, structured family information, secure member access, media workflows, automation, and administrative
+            tools. The work combines platform administration, documentation, data organization, privacy, deployment,
+            troubleshooting, and ongoing feature development.
+          </p>
+          <a class="glance-inline-link" href="engineering-journal.html">View Family Archive project</a>
+        </article>
+
+        <article class="glance-card">
+          <span class="glance-meta">January 2020 &ndash; Present</span>
+          <h3>Residential Property Owner &amp; Manager</h3>
+          <p>
+            Manage the day-to-day operation of a residential rental property, including tenant relations, leasing,
+            maintenance, contractor coordination, budgeting, insurance, property improvements, and long-term asset
+            planning. This work requires balancing service, cost, risk, occupancy, and property value.
+          </p>
+        </article>
+      </div>
+    </section>
     <section class="glance-details">
       <div class="glance-detail-block">
         <h3>Professional Focus</h3>
@@ -244,6 +280,37 @@
       margin: 0;
     }
 
+    .glance-independent {
+      margin-bottom: 1.9rem;
+    }
+
+    .glance-independent-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .glance-meta {
+      color: #8b4b4e;
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.55rem;
+    }
+
+    .glance-inline-link {
+      color: #8b4b4e;
+      display: inline-block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-top: 1rem;
+      text-decoration: none;
+    }
+
+    .glance-inline-link:hover {
+      color: #2c3e50;
+      text-decoration: underline;
+    }
     .glance-work {
       margin-bottom: 1.8rem;
     }
@@ -342,6 +409,10 @@
     }
 
     @media (max-width: 768px) {
+      .glance-independent-grid {
+        grid-template-columns: 1fr;
+      }
+
       .glance-highlight {
         padding: 1.25rem;
       }
