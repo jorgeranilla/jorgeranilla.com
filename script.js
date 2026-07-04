@@ -741,24 +741,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const path = window.location.pathname.split('/').pop() || '';
     const file = (path ? decodeURIComponent(path).toLowerCase() : "index").replace(/\.html$/, "");
     const excludedFiles = new Set([
-      'ancestry.html',
-      'baptism.html',
-      'baptism-es.html',
-      'baptism-godfather.html',
-      'baptism-godfather-es.html',
-      'baptism-godmother.html',
-      'baptism-godmother-es.html',
-      'extended-family.html',
-      'family-tree.html',
-      'heritage-roots.html'
+      'ancestry',
+      'baptism',
+      'baptism-es',
+      'baptism-godfather',
+      'baptism-godfather-es',
+      'baptism-godmother',
+      'baptism-godmother-es',
+      'extended-family',
+      'family-tree',
+      'heritage-roots'
     ]);
 
-    if (!file.endsWith('.html') || excludedFiles.has(file)) return;
+    if (excludedFiles.has(file)) return;
 
     const aboutText = document.querySelector('.about-text');
     if (!aboutText || aboutText.querySelector('a[href*="gallery/family"]')) return;
 
-    const slug = file.replace(/\.html$/i, '').replace(/-es$/i, '');
+    const slug = file.replace(/-es$/i, '');
     const titleEl = document.querySelector('.page-title');
     const displayName = (titleEl?.textContent || document.body.getAttribute('data-title') || titleFromSlug(slug)).trim();
     const backLink = aboutText.querySelector('.heritage-read-more')?.closest('p');
@@ -767,7 +767,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     albumAction.className = 'bio-album-actions';
     albumLink.className = 'bio-album-link';
-    albumLink.href = `../gallery/family/person.html?person=${encodeURIComponent(slug)}&name=${encodeURIComponent(displayName)}`;
+    albumLink.href = `../gallery/family/person?person=${encodeURIComponent(slug)}&name=${encodeURIComponent(displayName)}`;
     albumLink.textContent = 'View Photo Album';
     albumAction.appendChild(albumLink);
 
@@ -797,49 +797,55 @@ document.addEventListener("DOMContentLoaded", () => {
     const file = decodeURIComponent(pathname.split('/').pop() || '').toLowerCase();
 
     const profileConfig = (() => {
-      if (/\/family\/[^/]+\.html$/i.test(pathname) && section === 'Family') {
+      if (/\/family\/[^/]+(?:\.html)?$/i.test(pathname) && section === 'Family') {
         return {
           source: 'family',
           albumFolder: 'family',
           excludedFiles: new Set([
-            'ancestry.html',
-            'baptism.html',
-            'baptism-es.html',
-            'baptism-godfather.html',
-            'baptism-godfather-es.html',
-            'baptism-godmother.html',
-            'baptism-godmother-es.html',
-            'extended-family.html',
-            'family-tree.html',
-            'heritage-roots.html'
+            'ancestry',
+            'baptism',
+            'baptism-es',
+            'baptism-godfather',
+            'baptism-godfather-es',
+            'baptism-godmother',
+            'baptism-godmother-es',
+            'extended-family',
+            'family-tree',
+            'heritage-roots'
           ])
         };
       }
 
-      if (/\/people\/[^/]+\.html$/i.test(pathname) && section === 'People') {
+      if (/\/people\/[^/]+(?:\.html)?$/i.test(pathname) && section === 'People') {
         return {
           source: 'people',
           albumFolder: 'people',
-          excludedFiles: new Set(['index.html', 'patricia-malca-gallery.html'])
+          excludedFiles: new Set(['index', 'patricia-malca-gallery'])
         };
       }
 
       return null;
     })();
 
-    if (!profileConfig || !file.endsWith('.html') || profileConfig.excludedFiles.has(file)) return;
+    if (!profileConfig || profileConfig.excludedFiles.has(file)) return;
 
+    // Check if album link already exists
     const aboutSection = document.querySelector('.about-section');
-    const titleEl = aboutSection?.querySelector('.page-title');
+    const existingAlbumLink = aboutSection?.querySelector('.bio-album-link[href*="gallery/"]');
+    if (existingAlbumLink) return;
+
+    const pageSlug = file.replace(/-es$/i, '');
+    const titleEl = document.querySelector('.page-title');
+    
     if (!aboutSection || !titleEl || document.querySelector('.bio-manage-trigger')) return;
 
-    const pageSlug = file.replace(/\.html$/i, '').replace(/-es$/i, '');
-    const claimSlug = profileConfig.source === 'people' ? pageSlug.replace(/-\d+$/i, '') : pageSlug;
+    const claimSlugRaw = document.body.getAttribute('data-claim-id') || pageSlug;
+    const claimSlug = profileConfig.source === 'people' ? claimSlugRaw.replace(/-\d+$/i, '') : claimSlugRaw;
     const displayName = (titleEl.textContent || document.body.getAttribute('data-title') || titleFromSlug(claimSlug)).trim();
-    const existingAlbumLink = aboutSection.querySelector('.bio-album-link[href*="gallery/"]');
-    const fallbackAlbumHref = `../gallery/${profileConfig.albumFolder}/person.html?person=${encodeURIComponent(claimSlug)}&name=${encodeURIComponent(displayName)}`;
+    
+    const fallbackAlbumHref = `../gallery/${profileConfig.albumFolder}/person?person=${encodeURIComponent(claimSlug)}&name=${encodeURIComponent(displayName)}`;
     const albumHref = existingAlbumLink?.getAttribute('href') || fallbackAlbumHref;
-    const profileHref = `../family-directory/profile.html?claim=${encodeURIComponent(claimSlug)}&name=${encodeURIComponent(displayName)}&source=${encodeURIComponent(profileConfig.source)}`;
+    const profileHref = `../family-directory/profile?claim=${encodeURIComponent(claimSlug)}&name=${encodeURIComponent(displayName)}&source=${encodeURIComponent(profileConfig.source)}`;
 
     const titleRow = document.createElement('div');
     titleRow.className = 'bio-title-row';
