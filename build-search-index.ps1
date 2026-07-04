@@ -1,5 +1,5 @@
 $root = $PSScriptRoot
-$excludeFolders = @("archive", "babyshower", "functions")
+$excludeFolders = @("archive", "babyshower", "functions", "people")
 $excludeFiles = @("mobile-player.html", "people\index.html", "people\patricia-malca-gallery.html")
 $pages = [System.Collections.Generic.List[object]]::new()
 
