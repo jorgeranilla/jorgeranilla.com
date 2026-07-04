@@ -532,7 +532,7 @@
             };
 
             const script = document.createElement('script');
-            script.src = `https://memoria-efimera.blogspot.com/feeds/posts/default/-/Family%20Updates?alt=json-in-script&max-results=1&callback=${callbackName}`;
+            script.src = `https://memoria-efimera.blogspot.com/feeds/posts/default/-/Life%20Updates?alt=json-in-script&max-results=1&callback=${callbackName}`;
             script.onerror = function () {
                 const card = document.getElementById('latest-update-card');
                 if (card) card.innerHTML = '<p class="latest-update-loading">Could not load the latest update.</p>';
