@@ -634,7 +634,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Professional section
       'at-a-glance.html': ['Professional', 'At a Glance'],
-      'engineering-journal.html': ['Professional', 'Engineering & Development Journal'],
+      'engineering-journal.html': ['Professional', 'Development Log'],
       'resume.html': ['Professional', 'Resume'],
 
       // Baptism pages (English & Spanish, main + godparent subpages)
