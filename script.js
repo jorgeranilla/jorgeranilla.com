@@ -127,6 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const professionalLinks = {
       atAGlance: buildSectionLink('professional', 'at-a-glance.html'),
+      development: buildSectionLink('professional', 'engineering-journal.html'),
       resume: buildSectionLink('professional', 'resume.html')
     };
     const blogLinks = {
@@ -253,6 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="dropdown-toggle">Professional ▾</span>
               <ul class="dropdown-menu">
                 <li><a href="${professionalLinks.atAGlance}">At a Glance</a></li>
+                <li><a href="${professionalLinks.development}">Development</a></li>
                 <li><a href="${professionalLinks.resume}">Resume</a></li>
               </ul>
             </li>
@@ -632,6 +634,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Professional section
       'at-a-glance.html': ['Professional', 'At a Glance'],
+      'engineering-journal.html': ['Professional', 'Engineering & Development Journal'],
       'resume.html': ['Professional', 'Resume'],
 
       // Baptism pages (English & Spanish, main + godparent subpages)
