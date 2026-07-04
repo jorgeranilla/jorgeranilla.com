@@ -272,7 +272,7 @@ function productDetailHTML(p) {
 
       <div class="product-info-panel">
         <div class="product-breadcrumb">
-          <a href="shop.html">Shop</a>
+          <a href="shop">Shop</a>
           <span>/</span>
           <span>${p.category}</span>
         </div>
@@ -395,7 +395,7 @@ function renderCartPage(root) {
         <svg viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke-width="1"/><line x1="3" y1="6" x2="21" y2="6" stroke-width="1"/><path d="M16 10a4 4 0 01-8 0" stroke-width="1"/></svg>
         <h2>Your cart is empty</h2>
         <p>Looks like you haven't added anything yet.</p>
-        <a href="shop.html" class="btn-primary" style="margin-top:8px;text-align:center;">Continue Shopping</a>
+        <a href="shop" class="btn-primary" style="margin-top:8px;text-align:center;">Continue Shopping</a>
       </div>`;
     return;
   }
@@ -434,7 +434,7 @@ function renderCartPage(root) {
           <button class="btn-checkout" onclick="handleCheckout()">Proceed to Checkout</button>
           <p class="summary-note">Taxes calculated at checkout.<br>Free shipping on orders over $75.</p>
         </div>
-        <a href="shop.html" class="section-link" style="margin-top:16px;display:flex;">
+        <a href="shop" class="section-link" style="margin-top:16px;display:flex;">
           ← Continue Shopping
         </a>
       </div>

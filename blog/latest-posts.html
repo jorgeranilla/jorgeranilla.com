@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -510,7 +510,7 @@
       if (familyMembers.length > 0) {
         familyHTML = '<div class="family-connections">' +
           familyMembers.map(member =>
-            `<a href="../family/${member.slug}.html" class="family-link" title="Read about ${escapeHtml(member.name)}">
+            `<a href="../family/${member.slug}" class="family-link" title="Read about ${escapeHtml(member.name)}">
               <span class="family-icon"></span>${escapeHtml(member.name)}
             </a>`
           ).join('') +

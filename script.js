@@ -103,12 +103,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Pre-compute all navigation links to ensure they're evaluated correctly
     const familyLinks = {
-      myStory: buildSectionLink('family', 'jorge-ranilla.html'),
+      myStory: buildSectionLink('', ''),
 
-      heritageRoots: buildSectionLink('family', 'heritage-roots.html'),
-      familyTree: buildSectionLink('family', 'family-tree.html'),
-      ancestry: buildSectionLink('family', 'ancestry.html'),
-      familyLogin: buildSectionLink('', 'family-login.html')
+      heritageRoots: buildSectionLink('', ''),
+      familyTree: buildSectionLink('', ''),
+      ancestry: buildSectionLink('', ''),
+      familyLogin: buildSectionLink('', '')
     };
 
     // Labels based on language - User requested English labels ALWAYS
@@ -122,19 +122,19 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const galleryLinks = {
-      family: buildSectionLink('gallery', 'family.html'),
-      portraits: buildSectionLink('gallery', 'portraits.html')
+      family: buildSectionLink('', ''),
+      portraits: buildSectionLink('', '')
     };
     const professionalLinks = {
-      atAGlance: buildSectionLink('professional', 'at-a-glance.html'),
-      development: buildSectionLink('professional', 'family-archive.html'),
-      resume: buildSectionLink('professional', 'resume.html')
+      atAGlance: buildSectionLink('', ''),
+      development: buildSectionLink('', ''),
+      resume: buildSectionLink('', '')
     };
     const blogLinks = {
-      latestPosts: buildSectionLink('blog', 'latest-posts.html'),
-      familyUpdates: buildSectionLink('blog', 'life-updates.html')
+      latestPosts: buildSectionLink('', ''),
+      familyUpdates: buildSectionLink('', '')
     };
-    const shopHref = buildSectionLink('', 'shop/index.html');
+    const shopHref = buildSectionLink('', '');
 
     // Social Rail HTML
     const socialRailHTML = `
@@ -533,18 +533,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const homePrefix = depth > 0 ? "../" : "";
     const rootPrefix = depth > 0 ? "../".repeat(depth) : "";
 
-    const path = window.location.pathname.split("/").pop() || "index.html";
-    const file = decodeURIComponent(path).toLowerCase();
+    const path = window.location.pathname.split("/").pop();
+    const file = (path ? decodeURIComponent(path).toLowerCase() : "index").replace(/\.html$/, "");
     const normalizedPath = window.location.pathname.replace(/\\/g, "/").toLowerCase();
-    const hierarchyKey = normalizedPath.includes("/gallery/people/") && file === "person.html" ? "people-person.html" : file;
+    const hierarchyKey = normalizedPath.includes("/gallery/people/") && file === "person" ? "people-person" : file;
 
     // Page Hierarchy Map - defines full breadcrumb path for each page
     const PAGE_HIERARCHY = {
       // Family section - Heritage & Roots subsection
-      'heritage-roots.html': ['Family', 'Heritage & Roots'],
-      'extended-family.html': ['Family', 'Heritage & Roots', 'Extended Family'],
-      'family-tree.html': ['Family', 'Heritage & Roots', 'Family Tree'],
-      'ancestry.html': ['Family', 'Heritage & Roots', 'Ancestry'],
+      '': ['Family', 'Heritage & Roots'],
+      '': ['Family', 'Heritage & Roots', 'Extended Family'],
+      '': ['Family', 'Heritage & Roots', 'Family Tree'],
+      '': ['Family', 'Heritage & Roots', 'Ancestry'],
 
       // Family section - Individual pages (under Heritage & Roots)
       "alyssa-ranilla.html": ['Family', 'Heritage & Roots', "Alyssa Ranilla"],
@@ -599,55 +599,55 @@ document.addEventListener("DOMContentLoaded", () => {
       "victoriano-cateriano.html": ['Family', 'Heritage & Roots', 'Extended Family', "Victoriano Cateriano"],
 
       // Family section - Other pages
-      'my-story.html': ['Family', 'My Story'],
-      'photo-tags.html': ['Directory Profile', 'Photo Tags'],
+      '': ['Family', 'My Story'],
+      '': ['Directory Profile', 'Photo Tags'],
 
 
       // Spanish versions - mirror English hierarchy
-      'heritage-roots-es.html': ['Family', 'Heritage & Roots'],
-      'extended-family-es.html': ['Family', 'Heritage & Roots', 'Extended Family'],
-      'ancestry-es.html': ['Family', 'Heritage & Roots', 'Ancestry'],
-      'my-story-es.html': ['Family', 'My Story'],
+      '': ['Family', 'Heritage & Roots'],
+      '': ['Family', 'Heritage & Roots', 'Extended Family'],
+      '': ['Family', 'Heritage & Roots', 'Ancestry'],
+      '': ['Family', 'My Story'],
 
-      'jorge-ranilla-es.html': ['Family', 'Heritage & Roots', 'Jorge'],
-      'shane-ranilla-es.html': ['Family', 'Heritage & Roots', 'Shane'],
-      'alyssa-ranilla-es.html': ['Family', 'Heritage & Roots', 'Alyssa'],
-      'victor-andres-ranilla-es.html': ['Family', 'Heritage & Roots', 'Victor Andres'],
-      'maria-eugenia-ranilla-es.html': ['Family', 'Heritage & Roots', 'Maria Eugenia'],
-      'jorge-luis-ranilla-es.html': ['Family', 'Heritage & Roots', 'Jorge Luis'],
-      'sylvia-ines-astocondor-es.html': ['Family', 'Heritage & Roots', 'Sylvia Ines'],
+      '': ['Family', 'Heritage & Roots', 'Jorge'],
+      '': ['Family', 'Heritage & Roots', 'Shane'],
+      '': ['Family', 'Heritage & Roots', 'Alyssa'],
+      '': ['Family', 'Heritage & Roots', 'Victor Andres'],
+      '': ['Family', 'Heritage & Roots', 'Maria Eugenia'],
+      '': ['Family', 'Heritage & Roots', 'Jorge Luis'],
+      '': ['Family', 'Heritage & Roots', 'Sylvia Ines'],
 
       // Gallery section - Travel pages
-      'travel.html': ['Gallery', 'Travel'],
-      'cancun.html': ['Gallery', 'Travel', 'Mexico', 'Cancun'],
-      'cozumel.html': ['Gallery', 'Travel', 'Mexico', 'Cozumel'],
-      'lima.html': ['Gallery', 'Travel', 'Peru', 'Lima'],
-      'cusco.html': ['Gallery', 'Travel', 'Peru', 'Cusco'],
-      'tokyo.html': ['Gallery', 'Travel', 'Japan', 'Tokyo'],
-      'osaka.html': ['Gallery', 'Travel', 'Japan', 'Osaka'],
-      'nagoya.html': ['Gallery', 'Travel', 'Japan', 'Nagoya'],
+      '': ['Gallery', 'Travel'],
+      '': ['Gallery', 'Travel', 'Mexico', 'Cancun'],
+      '': ['Gallery', 'Travel', 'Mexico', 'Cozumel'],
+      '': ['Gallery', 'Travel', 'Peru', 'Lima'],
+      '': ['Gallery', 'Travel', 'Peru', 'Cusco'],
+      '': ['Gallery', 'Travel', 'Japan', 'Tokyo'],
+      '': ['Gallery', 'Travel', 'Japan', 'Osaka'],
+      '': ['Gallery', 'Travel', 'Japan', 'Nagoya'],
 
       // Gallery section - Other pages
-      'family.html': ['Gallery', 'Family'],
-      'person.html': ['Gallery', 'Family', 'Photo Album'],
-      'portraits.html': ['Gallery', 'Portraits'],
+      '': ['Gallery', 'Family'],
+      '': ['Gallery', 'Family', 'Photo Album'],
+      '': ['Gallery', 'Portraits'],
 
       // Professional section
-      'at-a-glance.html': ['Professional', 'At a Glance'],
-      'family-archive.html': ['Professional', 'Family Archive'],
-      'resume.html': ['Professional', 'Resume'],
+      '': ['Professional', 'At a Glance'],
+      '': ['Professional', 'Family Archive'],
+      '': ['Professional', 'Resume'],
 
       // Baptism pages (English & Spanish, main + godparent subpages)
-      'baptism.html': ["Alyssa's Baptism"],
-      'baptism-es.html': ["Alyssa's Baptism"],
-      'baptism-godfather.html': ["Alyssa's Baptism", "Letter to Godfather"],
-      'baptism-godfather-es.html': ["Alyssa's Baptism", "Letter to Godfather"],
-      'baptism-godmother.html': ["Alyssa's Baptism", "Letter to Godmother"],
-      'baptism-godmother-es.html': ["Alyssa's Baptism", "Letter to Godmother"],
+      '': ["Alyssa's Baptism"],
+      '': ["Alyssa's Baptism"],
+      '': ["Alyssa's Baptism", "Letter to Godfather"],
+      '': ["Alyssa's Baptism", "Letter to Godfather"],
+      '': ["Alyssa's Baptism", "Letter to Godmother"],
+      '': ["Alyssa's Baptism", "Letter to Godmother"],
 
       // Blog section
-      'latest-posts.html': ['Blog', 'Latest Posts'],
-      'life-updates.html': ['Blog', 'Life Updates']
+      '': ['Blog', 'Latest Posts'],
+      '': ['Blog', 'Life Updates']
     };
 
     // Pages that have actual landing pages (these can be clickable)
@@ -739,7 +739,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.body.getAttribute('data-section') !== 'Family') return;
 
     const path = window.location.pathname.split('/').pop() || '';
-    const file = decodeURIComponent(path).toLowerCase();
+    const file = (path ? decodeURIComponent(path).toLowerCase() : "index").replace(/\.html$/, "");
     const excludedFiles = new Set([
       'ancestry.html',
       'baptism.html',

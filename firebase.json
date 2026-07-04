@@ -43,6 +43,16 @@
     ],
     "redirects": [
       {
+        "source": "/index.html",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/index",
+        "destination": "/",
+        "type": 301
+      },
+      {
         "source": "/blog/family-updates.html",
         "destination": "/blog/life-updates.html",
         "type": 301
