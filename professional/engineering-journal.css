@@ -19,26 +19,22 @@
 
 .journal-hero {
   align-items: flex-end;
-  background-image: url("../images/og-banner.png");
-  background-position: center;
-  background-size: cover;
+  background: #414b52;
   display: flex;
-  min-height: 430px;
+  min-height: 340px;
   overflow: hidden;
   position: relative;
 }
 
 .journal-hero-overlay {
-  background: rgba(18, 27, 34, 0.78);
-  inset: 0;
-  position: absolute;
+  display: none;
 }
 
 .journal-hero-content {
   color: #fff;
   margin: 0 auto;
   max-width: 1120px;
-  padding: 4.5rem 2rem 3.6rem;
+  padding: 3.25rem 2rem 2.75rem;
   position: relative;
   width: 100%;
   z-index: 1;
@@ -603,7 +599,7 @@
 
 @media (max-width: 900px) {
   .journal-hero {
-    min-height: 390px;
+    min-height: 320px;
   }
 
   .journal-hero h1 {
@@ -659,11 +655,11 @@
   }
 
   .journal-hero {
-    min-height: 360px;
+    min-height: 300px;
   }
 
   .journal-hero-content {
-    padding: 3.5rem 1.25rem 2.5rem;
+    padding: 2.5rem 1.25rem 2rem;
   }
 
   .journal-hero h1 {
