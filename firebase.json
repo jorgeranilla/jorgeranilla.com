@@ -21,7 +21,26 @@
       "umsteadgrove/**"
     ],
     "rewrites": [],
-    "headers": [],
+    "headers": [
+      {
+        "source": "/family-directory/photo-tags.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/family-directory/photo-tags.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
+    ],
     "redirects": [
       {
         "source": "/family/adriana",
