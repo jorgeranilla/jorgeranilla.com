@@ -130,7 +130,7 @@ function mergeClaimedProfileData(user, sourceData = {}, existingData = {}, conte
   const now = FieldValue.serverTimestamp();
   const contextSlug = context.source ? makeSlug(context.claimSlug || context.claimName) : '';
   const contextPageUrl = contextSlug && context.source
-    ? 'https://jorgeranilla.com/' + context.source + '/' + contextSlug + '.html'
+    ? 'https://jorgeranilla.com/' + context.source + '/' + contextSlug
     : '';
 
   return {

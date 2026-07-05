@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" href="../images/jr-logo.png">
   <!-- Open Graph / Social Sharing -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://jorgeranilla.com/blog/latest-posts.html">
+  <meta property="og:url" content="https://jorgeranilla.com/blog/latest-posts">
   <meta property="og:title" content="Jorge Ranilla | Memoria Efimera">
   <meta property="og:description" content="Stories about family, health journeys, travels, and life unexpected moments.">
   <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
@@ -22,7 +22,7 @@
   <meta name="twitter:title" content="Jorge Ranilla | Memoria Efimera">
   <meta name="twitter:description" content="Stories about family, health journeys, travels, and life unexpected moments.">
   <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
-    <link rel="canonical" href="https://jorgeranilla.com/blog/latest-posts.html">
+    <link rel="canonical" href="https://jorgeranilla.com/blog/latest-posts">
     <meta name="description" content="Latest blog posts from jorgeranilla.com - family, heritage, and personal updates.">
 </head>
 
@@ -425,7 +425,7 @@
       }
 
       const query = params.toString();
-      return 'latest-posts.html' + (query ? '?' + query : '');
+      return 'latest-posts' + (query ? '?' + query : '');
     }
 
     function escapeHtml(value) {
@@ -492,7 +492,7 @@
       const themes = detectThemes(title, content);
       const familyMembers = detectFamilyMembers(title, content);
       const postId = getPostId(post);
-      const readMoreUrl = postId ? 'latest-posts-individual.html?id=' + postId : link;
+      const readMoreUrl = postId ? 'latest-posts-individual?id=' + postId : link;
 
       const card = document.createElement('div');
       card.className = 'post-card';

@@ -136,7 +136,7 @@ function productCardHTML(p) {
   return `
     <article class="product-card">
       <div class="card-image-wrap">
-        <a class="product-image-link" href="product.html?id=${p.id}">
+        <a class="product-image-link" href="product?id=${p.id}">
           <img src="${p.image}" alt="${p.name}" loading="lazy" />
           ${p.badge ? `<span class="card-badge ${badgeClass}">${p.badge}</span>` : ''}
         </a>
@@ -144,7 +144,7 @@ function productCardHTML(p) {
           <button class="card-quick-add" data-id="${p.id}" aria-label="Quick add ${p.name}">Quick Add</button>
         </div>
       </div>
-      <a class="product-card-link" href="product.html?id=${p.id}">
+      <a class="product-card-link" href="product?id=${p.id}">
         <div class="card-info">
           <div class="card-category">${p.category}</div>
           <div class="card-name">${p.name}</div>

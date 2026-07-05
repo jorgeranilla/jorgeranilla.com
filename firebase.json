@@ -23,7 +23,7 @@
     "rewrites": [],
     "headers": [
       {
-        "source": "/family-directory/photo-tags.html",
+        "source": "/family-directory/photo-tags",
         "headers": [
           {
             "key": "Cache-Control",
@@ -54,457 +54,457 @@
       },
       {
         "source": "/blog/family-updates.html",
-        "destination": "/blog/life-updates.html",
+        "destination": "/blog/life-updates",
         "type": 301
       },
       {
         "source": "/blog/family-updates-individual.html",
-        "destination": "/blog/life-updates-individual.html",
+        "destination": "/blog/life-updates-individual",
         "type": 301
       },
       {
         "source": "/professional/engineering-journal.html",
-        "destination": "/professional/family-archive.html",
+        "destination": "/professional/family-archive",
         "type": 301
       },
       {
         "source": "/family/adriana",
-        "destination": "/family/adriana-astocondor.html",
+        "destination": "/family/adriana-astocondor",
         "type": 301
       },
       {
         "source": "/family/adriana.html",
-        "destination": "/family/adriana-astocondor.html",
+        "destination": "/family/adriana-astocondor",
         "type": 301
       },
       {
         "source": "/family/alcira-victoria-lopez",
-        "destination": "/family/alcira-lopez-ruiz.html",
+        "destination": "/family/alcira-lopez-ruiz",
         "type": 301
       },
       {
         "source": "/family/alcira-victoria-lopez.html",
-        "destination": "/family/alcira-lopez-ruiz.html",
+        "destination": "/family/alcira-lopez-ruiz",
         "type": 301
       },
       {
         "source": "/family/alessandra",
-        "destination": "/family/alessandra-briceno.html",
+        "destination": "/family/alessandra-briceno",
         "type": 301
       },
       {
         "source": "/family/alessandra.html",
-        "destination": "/family/alessandra-briceno.html",
+        "destination": "/family/alessandra-briceno",
         "type": 301
       },
       {
         "source": "/family/ernesto",
-        "destination": "/family/ernesto-herrera.html",
+        "destination": "/family/ernesto-herrera",
         "type": 301
       },
       {
         "source": "/family/ernesto.html",
-        "destination": "/family/ernesto-herrera.html",
+        "destination": "/family/ernesto-herrera",
         "type": 301
       },
       {
         "source": "/family/eugenio-augusto-astocondor",
-        "destination": "/family/eugenio-astocondor-salazar-lopez.html",
+        "destination": "/family/eugenio-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/eugenio-augusto-astocondor.html",
-        "destination": "/family/eugenio-astocondor-salazar-lopez.html",
+        "destination": "/family/eugenio-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/eugenio-jesus",
-        "destination": "/family/eugenio-astocondor.html",
+        "destination": "/family/eugenio-astocondor",
         "type": 301
       },
       {
         "source": "/family/eugenio-jesus.html",
-        "destination": "/family/eugenio-astocondor.html",
+        "destination": "/family/eugenio-astocondor",
         "type": 301
       },
       {
         "source": "/family/fernando-javier",
-        "destination": "/family/fernando-pallete.html",
+        "destination": "/family/fernando-pallete",
         "type": 301
       },
       {
         "source": "/family/fernando-javier.html",
-        "destination": "/family/fernando-pallete.html",
+        "destination": "/family/fernando-pallete",
         "type": 301
       },
       {
         "source": "/family/jorge-luis-ranilla",
-        "destination": "/family/jorge-ranilla-cateriano.html",
+        "destination": "/family/jorge-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/jorge-luis-ranilla.html",
-        "destination": "/family/jorge-ranilla-cateriano.html",
+        "destination": "/family/jorge-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/jose-dalicio-lopez",
-        "destination": "/family/jose-dalicio-lopez-lopez.html",
+        "destination": "/family/jose-dalicio-lopez-lopez",
         "type": 301
       },
       {
         "source": "/family/jose-dalicio-lopez.html",
-        "destination": "/family/jose-dalicio-lopez-lopez.html",
+        "destination": "/family/jose-dalicio-lopez-lopez",
         "type": 301
       },
       {
         "source": "/family/lorenzo-david",
-        "destination": "/family/lorenzo-lu.html",
+        "destination": "/family/lorenzo-lu",
         "type": 301
       },
       {
         "source": "/family/lorenzo-david.html",
-        "destination": "/family/lorenzo-lu.html",
+        "destination": "/family/lorenzo-lu",
         "type": 301
       },
       {
         "source": "/family/luis-fernando",
-        "destination": "/family/luis-fernando-astocondor.html",
+        "destination": "/family/luis-fernando-astocondor",
         "type": 301
       },
       {
         "source": "/family/luis-fernando.html",
-        "destination": "/family/luis-fernando-astocondor.html",
+        "destination": "/family/luis-fernando-astocondor",
         "type": 301
       },
       {
         "source": "/family/luisa-cristina",
-        "destination": "/family/luisa-astocondor.html",
+        "destination": "/family/luisa-astocondor",
         "type": 301
       },
       {
         "source": "/family/luisa-cristina.html",
-        "destination": "/family/luisa-astocondor.html",
+        "destination": "/family/luisa-astocondor",
         "type": 301
       },
       {
         "source": "/family/maria-alcira-del-carmen-astocondor",
-        "destination": "/family/alcira-astocondor-salazar-lopez.html",
+        "destination": "/family/alcira-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/maria-alcira-del-carmen-astocondor.html",
-        "destination": "/family/alcira-astocondor-salazar-lopez.html",
+        "destination": "/family/alcira-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/maria-carlota-ruiz",
-        "destination": "/family/carlota-ruiz-guevara.html",
+        "destination": "/family/carlota-ruiz-guevara",
         "type": 301
       },
       {
         "source": "/family/maria-carlota-ruiz.html",
-        "destination": "/family/carlota-ruiz-guevara.html",
+        "destination": "/family/carlota-ruiz-guevara",
         "type": 301
       },
       {
         "source": "/family/maria-eugenia-ranilla",
-        "destination": "/family/maria-ranilla.html",
+        "destination": "/family/maria-ranilla",
         "type": 301
       },
       {
         "source": "/family/maria-eugenia-ranilla.html",
-        "destination": "/family/maria-ranilla.html",
+        "destination": "/family/maria-ranilla",
         "type": 301
       },
       {
         "source": "/family/maria-jesus-cateriano",
-        "destination": "/family/maria-jesus-cateriano-dongo.html",
+        "destination": "/family/maria-jesus-cateriano-dongo",
         "type": 301
       },
       {
         "source": "/family/maria-jesus-cateriano.html",
-        "destination": "/family/maria-jesus-cateriano-dongo.html",
+        "destination": "/family/maria-jesus-cateriano-dongo",
         "type": 301
       },
       {
         "source": "/family/milagros",
-        "destination": "/family/milagros-herrera.html",
+        "destination": "/family/milagros-herrera",
         "type": 301
       },
       {
         "source": "/family/milagros.html",
-        "destination": "/family/milagros-herrera.html",
+        "destination": "/family/milagros-herrera",
         "type": 301
       },
       {
         "source": "/family/monica-del-carmen",
-        "destination": "/family/monica-astocondor.html",
+        "destination": "/family/monica-astocondor",
         "type": 301
       },
       {
         "source": "/family/monica-del-carmen.html",
-        "destination": "/family/monica-astocondor.html",
+        "destination": "/family/monica-astocondor",
         "type": 301
       },
       {
         "source": "/family/paola-andrea",
-        "destination": "/family/paola-pallete.html",
+        "destination": "/family/paola-pallete",
         "type": 301
       },
       {
         "source": "/family/paola-andrea.html",
-        "destination": "/family/paola-pallete.html",
+        "destination": "/family/paola-pallete",
         "type": 301
       },
       {
         "source": "/family/paola-josefina",
-        "destination": "/family/paola-ranilla.html",
+        "destination": "/family/paola-ranilla",
         "type": 301
       },
       {
         "source": "/family/paola-josefina.html",
-        "destination": "/family/paola-ranilla.html",
+        "destination": "/family/paola-ranilla",
         "type": 301
       },
       {
         "source": "/family/sergio-raul-ranilla",
-        "destination": "/family/sergio-ranilla-rondon.html",
+        "destination": "/family/sergio-ranilla-rondon",
         "type": 301
       },
       {
         "source": "/family/sergio-raul-ranilla.html",
-        "destination": "/family/sergio-ranilla-rondon.html",
+        "destination": "/family/sergio-ranilla-rondon",
         "type": 301
       },
       {
         "source": "/family/sylvia-ines-astocondor",
-        "destination": "/family/sylvia-astocondor-salazar-lopez.html",
+        "destination": "/family/sylvia-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/sylvia-ines-astocondor.html",
-        "destination": "/family/sylvia-astocondor-salazar-lopez.html",
+        "destination": "/family/sylvia-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/victor-andres-ranilla",
-        "destination": "/family/victor-ranilla.html",
+        "destination": "/family/victor-ranilla",
         "type": 301
       },
       {
         "source": "/family/victor-andres-ranilla.html",
-        "destination": "/family/victor-ranilla.html",
+        "destination": "/family/victor-ranilla",
         "type": 301
       },
       {
         "source": "/family/alcira-isabel",
-        "destination": "/family/alcira-astocondor.html",
+        "destination": "/family/alcira-astocondor",
         "type": 301
       },
       {
         "source": "/family/alcira-isabel.html",
-        "destination": "/family/alcira-astocondor.html",
+        "destination": "/family/alcira-astocondor",
         "type": 301
       },
       {
         "source": "/family/maria-carlota-astocondor",
-        "destination": "/family/carlota-astocondor-salazar-lopez.html",
+        "destination": "/family/carlota-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/maria-carlota-astocondor.html",
-        "destination": "/family/carlota-astocondor-salazar-lopez.html",
+        "destination": "/family/carlota-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/maria-carlota-astocondor-salazar-lopez",
-        "destination": "/family/carlota-astocondor-salazar-lopez.html",
+        "destination": "/family/carlota-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/maria-carlota-astocondor-salazar-lopez.html",
-        "destination": "/family/carlota-astocondor-salazar-lopez.html",
+        "destination": "/family/carlota-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/carolina",
-        "destination": "/family/carolina-ranilla.html",
+        "destination": "/family/carolina-ranilla",
         "type": 301
       },
       {
         "source": "/family/carolina.html",
-        "destination": "/family/carolina-ranilla.html",
+        "destination": "/family/carolina-ranilla",
         "type": 301
       },
       {
         "source": "/family/fatima",
-        "destination": "/family/fatima-astocondor.html",
+        "destination": "/family/fatima-astocondor",
         "type": 301
       },
       {
         "source": "/family/fatima.html",
-        "destination": "/family/fatima-astocondor.html",
+        "destination": "/family/fatima-astocondor",
         "type": 301
       },
       {
         "source": "/family/fatima-celeste",
-        "destination": "/family/fatima-astocondor.html",
+        "destination": "/family/fatima-astocondor",
         "type": 301
       },
       {
         "source": "/family/fatima-celeste.html",
-        "destination": "/family/fatima-astocondor.html",
+        "destination": "/family/fatima-astocondor",
         "type": 301
       },
       {
         "source": "/family/fernando-jose",
-        "destination": "/family/fernando-astocondor.html",
+        "destination": "/family/fernando-astocondor",
         "type": 301
       },
       {
         "source": "/family/fernando-jose.html",
-        "destination": "/family/fernando-astocondor.html",
+        "destination": "/family/fernando-astocondor",
         "type": 301
       },
       {
         "source": "/family/gabriel",
-        "destination": "/family/gabriel-astocondor.html",
+        "destination": "/family/gabriel-astocondor",
         "type": 301
       },
       {
         "source": "/family/gabriel.html",
-        "destination": "/family/gabriel-astocondor.html",
+        "destination": "/family/gabriel-astocondor",
         "type": 301
       },
       {
         "source": "/family/hector",
-        "destination": "/family/hector-briceno.html",
+        "destination": "/family/hector-briceno",
         "type": 301
       },
       {
         "source": "/family/hector.html",
-        "destination": "/family/hector-briceno.html",
+        "destination": "/family/hector-briceno",
         "type": 301
       },
       {
         "source": "/family/janet",
-        "destination": "/family/janet-ranilla-cateriano.html",
+        "destination": "/family/janet-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/janet.html",
-        "destination": "/family/janet-ranilla-cateriano.html",
+        "destination": "/family/janet-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/janet-cecilia",
-        "destination": "/family/janet-ranilla-cateriano.html",
+        "destination": "/family/janet-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/janet-cecilia.html",
-        "destination": "/family/janet-ranilla-cateriano.html",
+        "destination": "/family/janet-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/jorge-gelasio",
-        "destination": "/family/jorge-astocondor.html",
+        "destination": "/family/jorge-astocondor",
         "type": 301
       },
       {
         "source": "/family/jorge-gelasio.html",
-        "destination": "/family/jorge-astocondor.html",
+        "destination": "/family/jorge-astocondor",
         "type": 301
       },
       {
         "source": "/family/jorge-astocondor-fuertes",
-        "destination": "/family/jorge-astocondor.html",
+        "destination": "/family/jorge-astocondor",
         "type": 301
       },
       {
         "source": "/family/jorge-astocondor-fuertes.html",
-        "destination": "/family/jorge-astocondor.html",
+        "destination": "/family/jorge-astocondor",
         "type": 301
       },
       {
         "source": "/family/oscar-alberto",
-        "destination": "/family/oscar-ranilla-cateriano.html",
+        "destination": "/family/oscar-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/oscar-alberto.html",
-        "destination": "/family/oscar-ranilla-cateriano.html",
+        "destination": "/family/oscar-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/raul-sergio-victor",
-        "destination": "/family/raul-ranilla-cateriano.html",
+        "destination": "/family/raul-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/raul-sergio-victor.html",
-        "destination": "/family/raul-ranilla-cateriano.html",
+        "destination": "/family/raul-ranilla-cateriano",
         "type": 301
       },
       {
         "source": "/family/sebastian",
-        "destination": "/family/sebastian-astocondor.html",
+        "destination": "/family/sebastian-astocondor",
         "type": 301
       },
       {
         "source": "/family/sebastian.html",
-        "destination": "/family/sebastian-astocondor.html",
+        "destination": "/family/sebastian-astocondor",
         "type": 301
       },
       {
         "source": "/family/sebastian-martin",
-        "destination": "/family/sebastian-astocondor.html",
+        "destination": "/family/sebastian-astocondor",
         "type": 301
       },
       {
         "source": "/family/sebastian-martin.html",
-        "destination": "/family/sebastian-astocondor.html",
+        "destination": "/family/sebastian-astocondor",
         "type": 301
       },
       {
         "source": "/family/maria-carlota-ruiz-guevara",
-        "destination": "/family/carlota-ruiz-guevara.html",
+        "destination": "/family/carlota-ruiz-guevara",
         "type": 301
       },
       {
         "source": "/family/maria-carlota-ruiz-guevara.html",
-        "destination": "/family/carlota-ruiz-guevara.html",
+        "destination": "/family/carlota-ruiz-guevara",
         "type": 301
       },
       {
         "source": "/family/eugenio-augusto",
-        "destination": "/family/eugenio-astocondor-salazar-lopez.html",
+        "destination": "/family/eugenio-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/eugenio-augusto.html",
-        "destination": "/family/eugenio-astocondor-salazar-lopez.html",
+        "destination": "/family/eugenio-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/maria-alcira-del-carmen",
-        "destination": "/family/alcira-astocondor-salazar-lopez.html",
+        "destination": "/family/alcira-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/maria-alcira-del-carmen.html",
-        "destination": "/family/alcira-astocondor-salazar-lopez.html",
+        "destination": "/family/alcira-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/luis-fernando-astocondor-salazar-lopez",
-        "destination": "/family/fernando-astocondor-salazar-lopez.html",
+        "destination": "/family/fernando-astocondor-salazar-lopez",
         "type": 301
       },
       {
         "source": "/family/luis-fernando-astocondor-salazar-lopez.html",
-        "destination": "/family/fernando-astocondor-salazar-lopez.html",
+        "destination": "/family/fernando-astocondor-salazar-lopez",
         "type": 301
       }
     ]

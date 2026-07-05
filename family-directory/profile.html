@@ -376,7 +376,7 @@
       const fallbackFolder = primaryFolder === 'people' ? 'family' : 'people';
       const addSlug = (slug, folder = primaryFolder) => {
         const cleanSlug = fdPageSlug(slug);
-        if (cleanSlug) add(`../${folder}/${cleanSlug}.html`);
+        if (cleanSlug) add(`../${folder}/${cleanSlug}`);
       };
 
       add(profile.pageSourceUrl);

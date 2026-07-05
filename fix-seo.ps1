@@ -113,7 +113,7 @@ function Get-CanonicalUrl($relPath) {
     $urlPath = $relPath.Replace("\", "/")
     if ($urlPath -eq "index.html")              { return "$baseUrl/" }
     if ($urlPath -match "^(.+/)index\.html$")   { return "$baseUrl/$($Matches[1])" }
-    return "$baseUrl/$urlPath"
+    return "$baseUrl/$($urlPath -replace '\.html$', '')"
 }
 
 $files = Get-ChildItem -Path $root -Recurse -Filter "*.html" |

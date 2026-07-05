@@ -13,7 +13,7 @@ function walkSync(dir, filelist = []) {
         walkSync(filepath, filelist);
       }
     } else {
-      if (file.endsWith('.html') || file.endsWith('.js')) {
+      if (file.endsWith('.html') || file.endsWith('.js') || file.endsWith('.xml')) {
         filelist.push(filepath);
       }
     }
@@ -31,10 +31,11 @@ for (const file of files) {
   if (file.endsWith('.html')) {
     // Replace href="something.html" or href="something.html#hash" for internal links
     // Ignore http:// and https://
-    content = content.replace(/href="(?!(?:http|https):\/\/)([^"#]+)\.html(#.*?)?"/g, 'href="$1$2"');
+    content = content.replace(/href="(?!(?:http|https):\/\/)([^"?#]+)\.html([?#][^"]*)?"/g, 'href="$1$2"');
+    content = content.replace(/(https:\/\/jorgeranilla\.com\/[^"'<>\s]+?)\.html(?=([?#][^"'<>\s]*)?["'<>\s])/g, '$1');
     
     // Replace onclick="window.location.href='photo-tags.html'"
-    content = content.replace(/window\.location\.href='([^']+)\.html'/g, "window.location.href='$1'");
+    content = content.replace(/window\.location\.href='([^'?#]+)\.html([?#][^']*)?'/g, "window.location.href='$1$2'");
   } else if (file.endsWith('.js')) {
     if (file.endsWith('script.js') && !file.includes('shop')) {
       // Main script.js
@@ -42,7 +43,7 @@ for (const file of files) {
       content = content.replace(/buildSectionLink\('([^']*)',\s*'([^']+)\.html'\)/g, "buildSectionLink('$1', '$2')");
       
       // 2. PAGE_HIERARCHY keys: 'file.html': -> 'file':
-      content = content.replace(/'([^']+)\.html':\s*\[/g, "'$1': [");
+      content = content.replace(/(["'])([^"']+)\.html\1(?=:\s*\[)/g, (match, quote, key) => `${quote}${key}${quote}`);
       
       // 3. Breadcrumb logic fix
       content = content.replace(/const path = window\.location\.pathname\.split\("\/"\)\.pop\(\) \|\| "index\.html";/g, 'const path = window.location.pathname.split("/").pop();');
@@ -54,7 +55,7 @@ for (const file of files) {
       content = content.replace(/\|\| "index\.html"/g, '|| "index"');
     } else if (file.endsWith('shop\\script.js') || file.endsWith('shop/script.js')) {
       // shop/script.js template literals
-      content = content.replace(/href="([^"#]+)\.html(#.*?)?"/g, 'href="$1$2"');
+      content = content.replace(/href="([^"?#]+)\.html([?#][^"]*)?"/g, 'href="$1$2"');
     } else if (file.endsWith('search-dynamic.js')) {
       content = content.replace(/\.html\?id=/g, '?id=');
       content = content.replace(/href="([^"#]+)\.html"/g, 'href="$1"');

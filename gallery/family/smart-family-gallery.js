@@ -277,7 +277,7 @@
 
   function getPublicBioHref(candidates) {
     const slug = resolvePublicBioSlug(candidates);
-    return slug ? `${getPublicBioBasePath()}${slug}.html` : '';
+    return slug ? `${getPublicBioBasePath()}${slug}` : '';
   }
 
   function labelFromTagValue(value) {

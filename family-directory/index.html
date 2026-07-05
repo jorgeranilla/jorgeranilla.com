@@ -439,7 +439,7 @@
         <div class="fd-field"><label>City</label><input type="text" id="fd-edit-city" value="${member.city || ''}"></div>
         <div class="fd-field"><label>Country</label><input type="text" id="fd-edit-country" value="${member.country || ''}"></div>
         <div class="fd-field"><label>Public Page Slug</label><input type="text" id="fd-edit-page-slug" value="${member.pageSlug || window.fdResolvePublicProfile?.(member)?.slug || ''}" placeholder="jorge-ranilla"></div>
-        <div class="fd-field"><label>Public Page URL</label><input type="url" id="fd-edit-page-url" value="${member.pageUrl || (window.fdResolvePublicProfile?.(member) ? window.fdPublicProfileUrl(window.fdResolvePublicProfile(member).slug) : '')}" placeholder="https://jorgeranilla.com/family/name.html"></div>
+        <div class="fd-field"><label>Public Page URL</label><input type="url" id="fd-edit-page-url" value="${member.pageUrl || (window.fdResolvePublicProfile?.(member) ? window.fdPublicProfileUrl(window.fdResolvePublicProfile(member).slug) : '')}" placeholder="https://jorgeranilla.com/family/name"></div>
         <div class="fd-field"><label>Role</label>
             <select id="fd-edit-role" style="width:100%;padding:10px;border:1px solid #e9e9e9;border-radius:8px;background:#fafafa">
               <option value="member" ${member.role === 'member' ? 'selected' : ''}>Member</option>

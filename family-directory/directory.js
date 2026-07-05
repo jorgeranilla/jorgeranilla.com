@@ -136,14 +136,14 @@ function fdPublicProfileUrl(slug, folder = '') {
   const cleanSlug = fdExtractPublicProfileSlug(slug);
   const profile = fdFindPublicProfileBySlug(cleanSlug);
   const cleanFolder = folder === 'people' ? 'people' : fdPublicProfileFolder(profile);
-  return cleanSlug ? FD_PUBLIC_PROFILE_ROOTS[cleanFolder] + cleanSlug + '.html' : '';
+  return cleanSlug ? FD_PUBLIC_PROFILE_ROOTS[cleanFolder] + cleanSlug : '';
 }
 
 function fdPublicProfileHref(slug, folder = '') {
   const cleanSlug = fdExtractPublicProfileSlug(slug);
   const profile = fdFindPublicProfileBySlug(cleanSlug);
   const cleanFolder = folder === 'people' ? 'people' : fdPublicProfileFolder(profile);
-  return cleanSlug ? '../' + cleanFolder + '/' + cleanSlug + '.html' : '';
+  return cleanSlug ? '../' + cleanFolder + '/' + cleanSlug : '';
 }
 
 function fdFindPublicProfileBySlug(slug) {

@@ -13,7 +13,7 @@
     <link rel="icon" type="image/png" href="../images/jr-logo.png">
     <!-- Open Graph fallback (static) - specific post data set dynamically below -->
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://jorgeranilla.com/blog/life-updates-individual.html">
+    <meta property="og:url" content="https://jorgeranilla.com/blog/life-updates-individual">
     <meta property="og:title" content="Jorge Ranilla | Life Update">
     <meta property="og:description" content="A life update from Jorge Ranilla.">
     <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
@@ -218,7 +218,8 @@
 
                     const tags = (entry.category || [])
                         .map(c => c.term)
-                        .filter(t => t !== 'Family Updates');
+                        // Hide the feed category itself; only specific sub-tags add context.
+                        .filter(t => t !== 'Family Updates' && t !== 'Life Updates');
 
                     // Extract image
                     let imageUrl = '';
@@ -227,7 +228,7 @@
                     }
 
                     // Shareable URL for this page
-                    const shareUrl = 'https://jorgeranilla.com/blog/life-updates-individual.html?id=' + postId;
+                    const shareUrl = 'https://jorgeranilla.com/blog/life-updates-individual?id=' + postId;
 
                     const tagsHTML = tags.map(t => `<span class="post-tag">${t}</span>`).join('');
                     const imageHTML = imageUrl ? `<img src="${imageUrl}" alt="${title}" class="post-image">` : '';

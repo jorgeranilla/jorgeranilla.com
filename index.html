@@ -69,28 +69,28 @@
                 cssClass: 'slide-baptism',
                 title: 'Alyssa\u2019s Baptism \u2728',
                 text: 'A blessed milestone is coming. Alyssa will be baptized on September 13th at St. Francis of Assisi in Raleigh. Our hearts are full.',
-                link: 'family/baptism.html',
+                link: 'family/baptism',
                 btnText: 'Read the Announcement'
             },
             {
                 cssClass: 'slide-heritage',
                 title: 'Meet the Family',
                 text: 'Discover the stories, heritage, and connections that make us who we are.',
-                link: 'family/heritage-roots.html',
+                link: 'family/heritage-roots',
                 btnText: 'Explore Our Roots'
             },
             {
                 cssClass: 'slide-family-tree',
                 title: 'Family Tree',
                 text: 'Explore generations of the Ranilla family heritage and discover our rich ancestry.',
-                link: 'family/family-tree.html',
+                link: 'family/family-tree',
                 btnText: 'Explore Tree'
             },
             {
                 cssClass: 'slide-blog',
                 title: 'Memoria Efimera',
                 text: 'Stories about family, health journeys, travels, and life\u2019s unexpected moments.',
-                link: 'blog/latest-posts.html',
+                link: 'blog/latest-posts',
                 btnText: 'Read The Blog'
             },
             {
@@ -98,7 +98,7 @@
                 eyebrow: 'Another project in development.',
                 title: 'Bloomsai Co.',
                 text: 'Made for the Journey. A small shop project with a focused first set of everyday pieces.',
-                link: 'shop/index.html',
+                link: 'shop/',
                 btnText: 'Visit the Shop'
             }
         ];
@@ -1854,11 +1854,11 @@
             function renderBlogPost(post) {
                 var title = post.title.$t;
 
-                // Build internal link using numeric post ID → blog/latest-posts-individual.html?id=
+                // Build internal link using numeric post ID → blog/latest-posts-individual?id=
                 var postId = getPostId(post);
                 var link = postId
-                    ? 'blog/latest-posts-individual.html?id=' + postId
-                    : 'blog/latest-posts.html';
+                    ? 'blog/latest-posts-individual?id=' + postId
+                    : 'blog/latest-posts';
 
                 var date = new Date(post.published.$t).toLocaleDateString('en-US', {
                     month: 'short', day: 'numeric', year: 'numeric'

@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" href="../images/jr-logo.png">
     <!-- Open Graph / Social Sharing -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jorgeranilla.com/blog/life-updates.html">
+    <meta property="og:url" content="https://jorgeranilla.com/blog/life-updates">
     <meta property="og:title" content="Jorge Ranilla | Life Updates">
     <meta property="og:description" content="Celebrating milestones, welcoming new members, and keeping our family connected.">
     <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
@@ -22,7 +22,7 @@
     <meta name="twitter:title" content="Jorge Ranilla | Life Updates">
     <meta name="twitter:description" content="Celebrating milestones, welcoming new members, and keeping our family connected.">
     <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
-    <link rel="canonical" href="https://jorgeranilla.com/blog/life-updates.html">
+    <link rel="canonical" href="https://jorgeranilla.com/blog/life-updates">
     <meta name="description" content="Life updates, announcements, and special moments shared by Jorge Ranilla.">
 </head>
 
@@ -290,7 +290,9 @@
                         if (post.category) {
                             post.category.forEach(cat => {
                                 const tag = cat.term;
-                                if (tag !== 'Family Updates') {
+                                // The feed category powers this page, so repeating it on every
+                                // card adds no useful information. Keep only specific sub-tags.
+                                if (tag !== 'Family Updates' && tag !== 'Life Updates') {
                                     tags.push(tag);
                                     if (tag.toLowerCase().includes('wedding')) theme = 'wedding';
                                     else if (tag.toLowerCase().includes('celebration') || tag.toLowerCase().includes('birthday')) theme = 'celebration';
@@ -306,7 +308,7 @@
                             if (idMatch) postId = idMatch[1];
                         }
                         const shareUrl = postId
-                            ? 'https://jorgeranilla.com/blog/life-updates-individual.html?id=' + postId
+                            ? 'https://jorgeranilla.com/blog/life-updates-individual?id=' + postId
                             : '';
                         const toastId = 'toast-' + (++toastCounter);
 
