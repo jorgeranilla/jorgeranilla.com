@@ -313,11 +313,11 @@ async function findClaimableProfile(uid, emailLower, originalEmail = '', context
 
   let candidates = Array.from(found.values()).filter(doc => isClaimableProfile(doc, uid, emailLower, context));
 
-  if (candidates.length === 0) {
+  if (candidates.length === 0 && (context.claimSlug || context.claimName)) {
     const documentId = admin.firestore.FieldPath.documentId();
     const fallbackQueries = [
-      db.collection(FAMILY_DIRECTORY_COLLECTION).where(documentId, '>=', 'import_').where(documentId, '<', 'import`').orderBy(documentId).limit(300),
-      db.collection(FAMILY_DIRECTORY_COLLECTION).where(documentId, '>=', 'manual_').where(documentId, '<', 'manual`').orderBy(documentId).limit(300)
+      db.collection(FAMILY_DIRECTORY_COLLECTION).where(documentId, '>=', 'import_').where(documentId, '<', 'import`').orderBy(documentId).limit(100),
+      db.collection(FAMILY_DIRECTORY_COLLECTION).where(documentId, '>=', 'manual_').where(documentId, '<', 'manual`').orderBy(documentId).limit(100)
     ];
 
     for (const query of fallbackQueries) {

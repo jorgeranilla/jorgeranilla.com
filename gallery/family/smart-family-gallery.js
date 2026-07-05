@@ -415,6 +415,18 @@
   }
 
   async function loadApprovedTags() {
+    const cacheKey = `jrApprovedPhotoTags:${config.tagCollection}:v1`;
+    const cacheTtlMs = 10 * 60 * 1000;
+
+    try {
+      const cached = JSON.parse(window.localStorage?.getItem(cacheKey) || 'null');
+      if (cached?.savedAt && Date.now() - cached.savedAt < cacheTtlMs && Array.isArray(cached.tags)) {
+        return new Map(cached.tags.map(tag => [tag.id, tag]));
+      }
+    } catch (error) {
+      // Storage can be unavailable or full; Firestore remains the fallback.
+    }
+
     try {
       const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
       const { getFirestore, collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
@@ -444,6 +456,15 @@
         });
       });
 
+      try {
+        window.localStorage?.setItem(cacheKey, JSON.stringify({
+          savedAt: Date.now(),
+          tags: Array.from(tags.values())
+        }));
+      } catch (error) {
+        // A cache write failure should never prevent the gallery from loading.
+      }
+
       return tags;
     } catch (error) {
       console.warn('Family photo tags are unavailable; showing no tagged photos for filtered galleries.', error);
@@ -451,50 +472,40 @@
     }
   }
 
-  async function loadYoutubeVideos() {
-    try {
-      const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
-      const { getFirestore, collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
+  function firestoreTimestampIso(value) {
+    if (typeof value?.toDate === 'function') return value.toDate().toISOString();
+    if (typeof value?.seconds === 'number') return new Date(value.seconds * 1000).toISOString();
+    return '';
+  }
 
-      const app = getApps().length ? getApps()[0] : initializeApp(config.firebaseConfig);
-      const db = getFirestore(app);
-      const q = query(
-        collection(db, config.tagCollection),
-        where('source', '==', 'youtube'),
-        where('status', '==', 'approved')
-      );
-      const snapshot = await getDocs(q);
+  function loadYoutubeVideos(tags) {
+    return Array.from(tags.values()).map(data => {
+      if (data.source !== 'youtube' || data.status !== 'approved') return null;
 
-      return snapshot.docs.map(docSnap => {
-        const data = docSnap.data() || {};
-        const videoId = data.youtubeId || '';
-        const approvedIso = data.approvedAt?.toDate?.()?.toISOString?.() || '';
-        const createdIso = data.createdAt?.toDate?.()?.toISOString?.() || '';
-        const updatedIso = data.updatedAt?.toDate?.()?.toISOString?.() || '';
-        return {
-          id: docSnap.id,
-          youtubeId: videoId,
-          youtubeThumbnail: data.youtubeThumbnail || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-          youtubeTitle: data.youtubeTitle || '',
-          name: data.youtubeTitle || videoId || docSnap.id,
-          type: 'video',
-          mimeType: 'video/youtube',
-          source: 'youtube',
-          people: Array.isArray(data.people) ? data.people : [],
-          peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
-          personIds: Array.isArray(data.personIds) ? data.personIds : [],
-          peopleLabels: Array.isArray(data.peopleLabels) ? data.peopleLabels : [],
-          otherPeopleLabels: Array.isArray(data.otherPeopleLabels) ? data.otherPeopleLabels : [],
-          albums: Array.isArray(data.albums) ? data.albums : [],
-          createdTime: approvedIso || createdIso || updatedIso,
-          modifiedTime: updatedIso || approvedIso || createdIso,
-          takenTime: data.takenTime || data.videoDate || ''
-        };
-      }).filter(video => video.youtubeId);
-    } catch (err) {
-      console.warn('Could not load YouTube videos from Firestore:', err);
-      return [];
-    }
+      const videoId = data.youtubeId || '';
+      const approvedIso = firestoreTimestampIso(data.approvedAt);
+      const createdIso = firestoreTimestampIso(data.createdAt);
+      const updatedIso = firestoreTimestampIso(data.updatedAt);
+      return {
+        id: data.id,
+        youtubeId: videoId,
+        youtubeThumbnail: data.youtubeThumbnail || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        youtubeTitle: data.youtubeTitle || '',
+        name: data.youtubeTitle || videoId || data.id,
+        type: 'video',
+        mimeType: 'video/youtube',
+        source: 'youtube',
+        people: Array.isArray(data.people) ? data.people : [],
+        peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
+        personIds: Array.isArray(data.personIds) ? data.personIds : [],
+        peopleLabels: Array.isArray(data.peopleLabels) ? data.peopleLabels : [],
+        otherPeopleLabels: Array.isArray(data.otherPeopleLabels) ? data.otherPeopleLabels : [],
+        albums: Array.isArray(data.albums) ? data.albums : [],
+        createdTime: approvedIso || createdIso || updatedIso,
+        modifiedTime: updatedIso || approvedIso || createdIso,
+        takenTime: data.takenTime || data.videoDate || ''
+      };
+    }).filter(video => video?.youtubeId);
   }
 
   function matchesConfiguredGallery(tag) {
@@ -576,11 +587,11 @@
   }
 
   async function resolveGalleryFiles() {
-    const [masterFiles, youtubeVideos, tags] = await Promise.all([
+    const [masterFiles, tags] = await Promise.all([
       fetchDriveFolder(config.masterFolderId),
-      loadYoutubeVideos(),
       loadApprovedTags()
     ]);
+    const youtubeVideos = loadYoutubeVideos(tags);
 
     const masterFilesWithTags = masterFiles.map(file => {
       const tag = tags.get(file.id);
@@ -672,11 +683,7 @@
     if (publicTagOptionsLoading) return publicTagOptionsLoading;
 
     publicTagOptionsError = '';
-    publicTagOptionsLoading = fetch(config.publicTagOptionsEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({})
-    })
+    publicTagOptionsLoading = fetch(config.publicTagOptionsEndpoint, { method: 'GET' })
       .then(async response => {
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || 'Could not load the family tag list.');

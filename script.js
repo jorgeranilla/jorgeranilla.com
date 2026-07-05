@@ -654,7 +654,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const CLICKABLE_PAGES = {
       'Heritage & Roots': `${homePrefix}family/heritage-roots`,
       'Extended Family': `${homePrefix}family/extended-family`,
-      'Travel': `${rootPrefix}archive/gallery/travel`,
       'Directory Profile': `${homePrefix}family-directory/`,
       'Family': null, // Has submenu items but no dedicated page
       'Gallery': null,

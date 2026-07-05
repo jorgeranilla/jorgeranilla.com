@@ -1,6 +1,6 @@
 {
   "database": {
-    "rules": "locator/firebase-database.rules.json"
+    "rules": "firebase-database.rules.json"
   },
   "firestore": {
     "rules": "family-directory/firestore.rules"
@@ -11,9 +11,18 @@
     "cleanUrls": true,
     "ignore": [
       "firebase.json",
-      "deploy-*.bat",
-      "firepit-log.txt",
+      ".git/**",
+      ".firebase/**",
+      "**/.git/**",
+      "**/.firebase/**",
+      "tools/**",
       "**/*.ps1",
+      "**/*.py",
+      "**/*.docx",
+      "**/*.rules",
+      "**/firebase-database.rules.json",
+      "**/README.md",
+      "FSBO/export_buyer_flyer.js",
       "**/.*",
       "**/node_modules/**",
       "functions/**",

@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /family-directory/
-Disallow: /archive/
 Disallow: /functions/
 Disallow: /umsteadgrove/
 Disallow: /mobile-player.html

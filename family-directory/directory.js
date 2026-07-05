@@ -375,6 +375,14 @@ async function fdClaimFamilyProfileByEmail(user) {
     claimName: String(params.get('name') || '').trim(),
     source: source === 'people' ? 'people' : source === 'family' ? 'family' : ''
   };
+  const hasExplicitClaimContext = Boolean(claimContext.source && (claimContext.claimSlug || claimContext.claimName));
+  const claimSessionKey = `fdClaimAttempted:${user.uid}`;
+  if (!hasExplicitClaimContext) {
+    try {
+      if (window.sessionStorage?.getItem(claimSessionKey) === '1') return null;
+    } catch (error) {}
+  }
+
   const token = await user.getIdToken();
   const response = await fetch(FD_CLAIM_PROFILE_ENDPOINT, {
     method: 'POST',
@@ -385,6 +393,10 @@ async function fdClaimFamilyProfileByEmail(user) {
     body: JSON.stringify(claimContext)
   });
   const data = await response.json().catch(() => ({}));
+
+  if (!hasExplicitClaimContext && response.ok) {
+    try { window.sessionStorage?.setItem(claimSessionKey, '1'); } catch (error) {}
+  }
 
   if (!response.ok) {
     throw new Error(data.error || 'Could not claim matching profile.');
@@ -735,8 +747,8 @@ function updateNavUser() {
 
 /* ── Fetch Approved Members ── */
 async function fetchApprovedMembers() {
-  const { collection, getDocs, query } = window._fb;
-  const q = query(collection(db, COLLECTION));
+  const { collection, getDocs, query, where } = window._fb;
+  const q = query(collection(db, COLLECTION), where('status', '==', 'approved'));
   const snap = await getDocs(q);
   return snap.docs
     .map(d => ({ id: d.id, ...d.data() }))

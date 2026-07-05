@@ -259,7 +259,6 @@
       // Show admin bar
       if (window.isAdmin && adminBar) {
         adminBar.style.display = 'flex';
-        loadPendingCount();
         if (typeof loadMemberRequestCount === 'function') loadMemberRequestCount();
       }
 
@@ -269,6 +268,7 @@
           members = await syncDirectoryPublicProfileLinks(members);
         }
         allMembers = members;
+        loadPendingCount();
         renderGrid();
       } catch (err) {
         console.error(err);
@@ -321,13 +321,10 @@
       }
     }
 
-    async function loadPendingCount() {
-      try {
-        const all = await fetchAllMembers();
-        const pending = all.filter(m => m.status === 'pending');
-        const el = document.getElementById('fd-pending-count');
-        if (el) el.textContent = pending.length;
-      } catch(e) { /* silent */ }
+    function loadPendingCount() {
+      const pending = allMembers.filter(member => member.status === 'pending');
+      const el = document.getElementById('fd-pending-count');
+      if (el) el.textContent = pending.length;
     }
 
     function openPendingModal() {

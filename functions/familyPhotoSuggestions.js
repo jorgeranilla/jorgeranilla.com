@@ -269,7 +269,7 @@ exports.familyPhotoTagOptions = onRequest(FUNCTION_OPTS, async (req, res) => {
 
   try {
     const options = await getTagOptions();
-    res.set('Cache-Control', 'public, max-age=600, s-maxage=600');
+    res.set('Cache-Control', 'public, max-age=600, s-maxage=600, stale-while-revalidate=600');
     res.json({ options, limitPerBrowserPerDay: DAILY_BROWSER_LIMIT });
   } catch (error) {
     console.error('familyPhotoTagOptions error:', error);
