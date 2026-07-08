@@ -831,7 +831,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Check if album link already exists
     const aboutSection = document.querySelector('.about-section');
     const existingAlbumLink = aboutSection?.querySelector('.bio-album-link[href*="gallery/"]');
-    if (existingAlbumLink) return;
 
     const pageSlug = file.replace(/-es$/i, '');
     const titleEl = document.querySelector('.page-title');
