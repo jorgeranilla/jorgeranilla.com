@@ -793,7 +793,8 @@ document.addEventListener("DOMContentLoaded", () => {
   (function injectPublicProfileClaimPrompt() {
     const pathname = window.location.pathname;
     const section = document.body.getAttribute('data-section') || '';
-    const file = decodeURIComponent(pathname.split('/').pop() || '').toLowerCase();
+    const rawFile = decodeURIComponent(pathname.split('/').pop() || '').toLowerCase();
+    const file = rawFile.replace(/\.html$/i, '');
 
     const profileConfig = (() => {
       if (/\/family\/[^/]+(?:\.html)?$/i.test(pathname) && section === 'Family') {

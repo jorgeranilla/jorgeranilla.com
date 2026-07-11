@@ -1,0 +1,18 @@
+# GitHub Pages / Jekyll publishing exclusions
+# Keep infrastructure, server-side code, rules, and agent instructions out of the public static site.
+exclude:
+  - AGENTS.md
+  - CLAUDE.md
+  - GEMINI.md
+  - firebase.json
+  - firebase-database.rules.json
+  - family-directory/firestore.rules
+  - functions/
+  - tools/
+  - .agents/
+  - .codex/
+  - .firebase/
+  - .github/
+  - .firebaserc
+  - .gitattributes
+  - .gitignore
