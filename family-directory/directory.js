@@ -22,7 +22,6 @@ const FD_PHOTO_TAGS_COLLECTION = 'familyPhotoTags';
 const FD_MEMBER_REQUESTS_COLLECTION = 'familyMemberRequests';
 const FD_CLAIM_PROFILE_ENDPOINT = 'https://us-central1-jorgeranilla-site.cloudfunctions.net/claimFamilyProfileByEmail';
 const FD_AUTH_TIMEOUT_MS = 25000;
-const GOOGLE_CONTACTS_SCOPE = 'https://www.googleapis.com/auth/contacts.readonly';
 const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive';
 const GOOGLE_DRIVE_TOKEN_TTL_MS = 50 * 60 * 1000;
 let fdGoogleDriveAccessToken = '';
@@ -670,26 +669,6 @@ function fdSignIn() {
   });
 }
 
-/* ── Sign Out ── */
-async function fdGetGoogleContactsAccessToken() {
-  if (!isAdmin) {
-    throw new Error('Only admins can sync Google Contacts.');
-  }
-
-  const { auth, GoogleAuthProvider, signInWithPopup } = window._fb;
-  const provider = new GoogleAuthProvider();
-  provider.addScope(GOOGLE_CONTACTS_SCOPE);
-  provider.setCustomParameters({ prompt: 'consent' });
-
-  const result = await signInWithPopup(auth, provider);
-  const credential = GoogleAuthProvider.credentialFromResult(result);
-
-  if (!credential?.accessToken) {
-    throw new Error('Google did not return a Contacts access token.');
-  }
-
-  return credential.accessToken;
-}
 
 function fdClearGoogleDriveAccessToken() {
   fdGoogleDriveAccessToken = '';
@@ -1508,7 +1487,6 @@ window.adminDelete = adminDelete;
 window.adminUpdateProfile = adminUpdateProfile;
 window.approveMemberRequest = approveMemberRequest;
 window.rejectMemberRequest = rejectMemberRequest;
-window.fdGetGoogleContactsAccessToken = fdGetGoogleContactsAccessToken;
 window.fdGetGoogleDriveAccessToken = fdGetGoogleDriveAccessToken;
 window.fdClearGoogleDriveAccessToken = fdClearGoogleDriveAccessToken;
 window.fdPublicProfileUrl = fdPublicProfileUrl;
