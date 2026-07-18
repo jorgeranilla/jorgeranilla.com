@@ -1,6 +1,6 @@
 $root = Split-Path -Parent $PSScriptRoot
 $excludeFolders = @("archive", "babyshower", "functions")
-$excludeFiles = @("mobile-player.html", "people\index.html", "people\patricia-malca-gallery.html")
+$excludeFiles = @("mobile-player.html", "people\patricia-malca-gallery.html")
 $pages = [System.Collections.Generic.List[object]]::new()
 
 function ConvertTo-SearchableText {
