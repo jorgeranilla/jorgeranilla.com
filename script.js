@@ -631,11 +631,11 @@ document.addEventListener("DOMContentLoaded", () => {
       'nagoya': ['Gallery', 'Travel', 'Japan', 'Nagoya'],
 
       // Gallery section - Other pages
-      'family': ['Gallery', 'Photos & Videos', 'Family Photos'],
-      'family-photos': ['Gallery', 'Photos & Videos', 'Family Photos'],
-      'person': ['Gallery', 'Photos & Videos', 'Family Photos', 'Photo Album'],
-      'videos': ['Gallery', 'Photos & Videos', 'Family Videos'],
-      'family-videos': ['Gallery', 'Photos & Videos', 'Family Videos'],
+      'family': ['Gallery', 'Family Photos'],
+      'family-photos': ['Gallery', 'Family Photos'],
+      'person': ['Gallery', 'Family Photos', 'Photo Album'],
+      'videos': ['Gallery', 'Family Videos'],
+      'family-videos': ['Gallery', 'Family Videos'],
       'portraits': ['Gallery', 'Portraits'],
 
       // Professional section

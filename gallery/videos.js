@@ -299,16 +299,11 @@
   }
 
   function renderVideoCard(video, index) {
-    const date = formatDate(video.displayDate || video.publishedAt);
     return `
-      <button type="button" class="gallery-item gallery-item--video video-card" data-video-index="${index}">
-        <img src="${escapeHtml(video.thumbnailUrl)}" alt="${escapeHtml(video.title)}" loading="lazy">
+      <button type="button" class="gallery-item gallery-item--video video-card" data-video-index="${index}" aria-label="Play ${escapeHtml(video.title)}">
+        <img src="${escapeHtml(video.thumbnailUrl)}" alt="" loading="lazy">
         <span class="video-play-btn" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path fill="white" d="M8 5v14l11-7z"/></svg>
-        </span>
-        <span class="video-card-caption">
-          <span>${escapeHtml(video.title)}</span>
-          ${date ? `<small>${escapeHtml(date)}</small>` : ''}
         </span>
       </button>
     `;
@@ -350,14 +345,12 @@
   function showCurrentVideo() {
     const video = videos[currentIndex];
     const frame = document.getElementById('video-lightbox-frame');
-    const title = document.getElementById('video-lightbox-title');
     const description = document.getElementById('video-lightbox-description');
     const link = document.getElementById('video-lightbox-link');
     const counter = document.getElementById('video-lightbox-counter');
-    if (!video || !frame || !title || !link || !counter) return;
+    if (!video || !frame || !link || !counter) return;
 
     frame.src = video.embedUrl;
-    title.textContent = video.title;
     link.href = video.watchUrl || `https://www.youtube.com/watch?v=${encodeURIComponent(video.youtubeId)}`;
     counter.textContent = `${currentIndex + 1} / ${videos.length}`;
   }
