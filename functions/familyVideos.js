@@ -36,6 +36,16 @@ function cleanText(value, maxLength = 5000) {
     .slice(0, maxLength);
 }
 
+function cleanDescription(value, maxLength = 5000) {
+  return String(value || '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, ' ')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+    .slice(0, maxLength);
+}
+
 function makeSlug(value) {
   return cleanText(value, 180)
     .toLowerCase()
@@ -202,6 +212,104 @@ function makeEmbedUrl(videoId) {
   return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0`;
 }
 
+function toValidIsoDate(year, month, day) {
+  const y = Number(year);
+  const m = Number(month);
+  const d = Number(day);
+  if (!Number.isInteger(y) || !Number.isInteger(m) || !Number.isInteger(d)) return '';
+  if (y < 1900 || y > 2100 || m < 1 || m > 12 || d < 1 || d > 31) return '';
+
+  const date = new Date(Date.UTC(y, m - 1, d));
+  if (date.getUTCFullYear() !== y || date.getUTCMonth() !== m - 1 || date.getUTCDate() !== d) return '';
+  return date.toISOString().slice(0, 10);
+}
+
+function isoDateToSortTimestamp(isoDate) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate || '')) return 0;
+  const parsed = Date.parse(`${isoDate}T00:00:00Z`);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function parseTitleDate(title) {
+  const text = cleanText(title, 300);
+  if (!text) return '';
+
+  const yearFirst = text.match(/(?:^|[^\d])((?:19|20)\d{2})[.\-/_ ](0?[1-9]|1[0-2])[.\-/_ ](0?[1-9]|[12]\d|3[01])(?:[^\d]|$)/);
+  if (yearFirst) return toValidIsoDate(yearFirst[1], yearFirst[2], yearFirst[3]);
+
+  const monthFirst = text.match(/(?:^|[^\d])(0?[1-9]|1[0-2])[.\-/_ ](0?[1-9]|[12]\d|3[01])[.\-/_ ]((?:19|20)\d{2})(?:[^\d]|$)/);
+  if (monthFirst) return toValidIsoDate(monthFirst[3], monthFirst[1], monthFirst[2]);
+
+  const monthNames = {
+    jan: 1,
+    january: 1,
+    feb: 2,
+    february: 2,
+    mar: 3,
+    march: 3,
+    apr: 4,
+    april: 4,
+    may: 5,
+    jun: 6,
+    june: 6,
+    jul: 7,
+    july: 7,
+    aug: 8,
+    august: 8,
+    sep: 9,
+    sept: 9,
+    september: 9,
+    oct: 10,
+    october: 10,
+    nov: 11,
+    november: 11,
+    dec: 12,
+    december: 12
+  };
+  const monthPattern = Object.keys(monthNames).join('|');
+  const monthNameFirst = text.match(new RegExp(`(?:^|[^a-z])(${monthPattern})\\.?\\s+(0?[1-9]|[12]\\d|3[01])(?:st|nd|rd|th)?[,]?\\s+((?:19|20)\\d{2})(?:[^\\d]|$)`, 'i'));
+  if (monthNameFirst) {
+    return toValidIsoDate(monthNameFirst[3], monthNames[monthNameFirst[1].toLowerCase()], monthNameFirst[2]);
+  }
+
+  const dayFirst = text.match(new RegExp(`(?:^|[^\\d])(0?[1-9]|[12]\\d|3[01])(?:st|nd|rd|th)?\\s+(${monthPattern})\\.?[,]?\\s+((?:19|20)\\d{2})(?:[^\\d]|$)`, 'i'));
+  if (dayFirst) {
+    return toValidIsoDate(dayFirst[3], monthNames[dayFirst[2].toLowerCase()], dayFirst[1]);
+  }
+
+  return '';
+}
+
+function resolveVideoDate(title, publishedAt) {
+  const titleDate = parseTitleDate(title);
+  if (titleDate) {
+    return {
+      videoDate: titleDate,
+      sortDate: titleDate,
+      sortDateSource: 'title',
+      sortTimestamp: isoDateToSortTimestamp(titleDate)
+    };
+  }
+
+  const publishedMs = Date.parse(publishedAt || '');
+  if (Number.isFinite(publishedMs)) {
+    const publishedDate = new Date(publishedMs).toISOString().slice(0, 10);
+    return {
+      videoDate: '',
+      sortDate: publishedDate,
+      sortDateSource: 'youtube-published-at',
+      sortTimestamp: publishedMs
+    };
+  }
+
+  return {
+    videoDate: '',
+    sortDate: '',
+    sortDateSource: '',
+    sortTimestamp: 0
+  };
+}
+
 function getWebsiteStatus(youtubeStatus = {}) {
   const privacyStatus = cleanConfig(youtubeStatus.privacyStatus);
   const uploadStatus = cleanConfig(youtubeStatus.uploadStatus);
@@ -227,6 +335,9 @@ function normalizeVideoRecord(detail, playlistItem, playlist) {
   const videoId = cleanConfig(detail.id || playlistItem.videoId);
   if (!videoId) return null;
 
+  const title = cleanText(snippet.title, 300);
+  const publishedAt = cleanConfig(snippet.publishedAt || playlistItem.videoPublishedAt || playlistItem.playlistItemPublishedAt);
+  const videoDate = resolveVideoDate(title, publishedAt);
   const websiteStatus = getWebsiteStatus(status);
   const metadata = {
     source: 'youtube',
@@ -236,11 +347,15 @@ function normalizeVideoRecord(detail, playlistItem, playlist) {
     primaryPlaylistTitle: playlist.title,
     primaryCategorySlug: playlist.categorySlug,
     youtubeId: videoId,
-    title: cleanText(snippet.title, 300),
-    description: cleanText(snippet.description, 5000),
+    title,
+    description: cleanDescription(snippet.description, 5000),
     channelId: cleanConfig(snippet.channelId || playlist.channelId),
     channelTitle: cleanText(snippet.channelTitle || playlist.channelTitle, 200),
-    publishedAt: cleanConfig(snippet.publishedAt || playlistItem.videoPublishedAt || playlistItem.playlistItemPublishedAt),
+    publishedAt,
+    videoDate: videoDate.videoDate,
+    sortDate: videoDate.sortDate,
+    sortDateSource: videoDate.sortDateSource,
+    sortTimestamp: videoDate.sortTimestamp,
     thumbnailUrl: pickThumbnail(snippet.thumbnails),
     duration: cleanConfig(contentDetails.duration),
     definition: cleanConfig(contentDetails.definition),

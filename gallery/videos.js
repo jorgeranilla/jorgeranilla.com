@@ -7,7 +7,7 @@
     messagingSenderId: '125483521813',
     appId: '1:125483521813:web:f48b02d491cb4c698ffb1c'
   };
-  const CACHE_KEY = 'jrFamilyVideos:v1';
+  const CACHE_KEY = 'jrFamilyVideos:v2';
   const CACHE_TTL_MS = 10 * 60 * 1000;
   const MAX_VIDEOS = 200;
 
@@ -71,6 +71,12 @@
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
+  function dateOnlyToMillis(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return 0;
+    const parsed = Date.parse(`${value}T00:00:00Z`);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
   function normalizePlaylist(docSnap) {
     const data = docSnap.data() || {};
     return {
@@ -86,6 +92,12 @@
 
   function normalizeVideo(docSnap) {
     const data = docSnap.data() || {};
+    const sortTimestamp = Number(data.sortTimestamp || 0);
+    const displayDate = data.sortDate || data.videoDate || data.publishedAt || '';
+    const sortMs = Number.isFinite(sortTimestamp) && sortTimestamp > 0
+      ? sortTimestamp
+      : dateOnlyToMillis(data.sortDate || data.videoDate) || timestampToMillis(data.publishedAt);
+
     return {
       id: docSnap.id,
       youtubeId: data.youtubeId || '',
@@ -95,9 +107,13 @@
       embedUrl: data.embedUrl || (data.youtubeId ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(data.youtubeId)}?rel=0` : ''),
       watchUrl: data.watchUrl || (data.youtubeId ? `https://www.youtube.com/watch?v=${encodeURIComponent(data.youtubeId)}` : ''),
       publishedAt: data.publishedAt || '',
+      videoDate: data.videoDate || '',
+      displayDate,
+      sortDateSource: data.sortDateSource || '',
       playlistPosition: Number.isFinite(Number(data.playlistPosition)) ? Number(data.playlistPosition) : 999999,
       updatedMs: timestampToMillis(data.updatedAt || data.syncedAt),
-      publishedMs: timestampToMillis(data.publishedAt)
+      publishedMs: timestampToMillis(data.publishedAt),
+      sortMs
     };
   }
 
@@ -134,9 +150,13 @@
     const videosSnapshot = await getDocs(videosQuery);
     const loadedVideos = videosSnapshot.docs.map(normalizeVideo)
       .filter(video => video.youtubeId && video.embedUrl)
-      .sort((a, b) => a.playlistPosition - b.playlistPosition || b.publishedMs - a.publishedMs || a.title.localeCompare(b.title));
+      .sort((a, b) => b.sortMs - a.sortMs || b.publishedMs - a.publishedMs || a.title.localeCompare(b.title));
 
-    const data = { playlist, videos: loadedVideos };
+    const data = {
+      playlist,
+      videos: loadedVideos,
+      totalVideos: playlist.videoIds.length || loadedVideos.length
+    };
     writeCache(data);
     return data;
   }
@@ -149,7 +169,14 @@
   }
 
   function formatDate(value) {
-    const date = new Date(value || '');
+    let date;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value || '')) {
+      const [year, month, day] = value.split('-').map(Number);
+      date = new Date(year, month - 1, day);
+    } else {
+      date = new Date(value || '');
+    }
+
     if (Number.isNaN(date.getTime())) return '';
     return date.toLocaleDateString(undefined, {
       year: 'numeric',
@@ -158,14 +185,10 @@
     });
   }
 
-  function renderCategoryNav(playlist) {
+  function renderCategoryNav() {
     const nav = document.getElementById('video-category-nav');
     if (!nav) return;
-    nav.innerHTML = `
-      <a class="video-category-chip active" href="#family-gallery-videos">
-        ${escapeHtml(playlist.title || 'Family Gallery')}
-      </a>
-    `;
+    nav.innerHTML = '';
   }
 
   function renderVideos(data) {
@@ -173,21 +196,19 @@
     if (!sections) return;
 
     videos = data.videos || [];
-    updateCount(videos.length);
-    renderCategoryNav(data.playlist || {});
+    updateCount(Number(data.totalVideos || 0) || videos.length);
+    renderCategoryNav();
 
     if (videos.length === 0) {
-      sections.innerHTML = '<div class="gallery-error"><p>No videos have been synced from the Family Gallery playlist yet.</p></div>';
+      sections.innerHTML = '<div class="gallery-error"><p>No videos have been synced from YouTube yet.</p></div>';
       return;
     }
 
-    const playlist = data.playlist || {};
     sections.innerHTML = `
       <section class="video-section" id="family-gallery-videos">
         <div class="video-section-heading">
           <div>
-            <h3>${escapeHtml(playlist.title || 'Family Gallery')}</h3>
-            <p>${escapeHtml(playlist.description || 'Videos from the Family Gallery playlist on YouTube.')}</p>
+            <h3>Family Videos</h3>
           </div>
         </div>
         <div class="gallery-grid video-grid">
@@ -202,7 +223,7 @@
   }
 
   function renderVideoCard(video, index) {
-    const date = formatDate(video.publishedAt);
+    const date = formatDate(video.displayDate || video.publishedAt);
     return `
       <button type="button" class="gallery-item gallery-item--video video-card" data-video-index="${index}">
         <img src="${escapeHtml(video.thumbnailUrl)}" alt="${escapeHtml(video.title)}" loading="lazy">
@@ -254,11 +275,12 @@
     const video = videos[currentIndex];
     const frame = document.getElementById('video-lightbox-frame');
     const title = document.getElementById('video-lightbox-title');
+    const description = document.getElementById('video-lightbox-description');
     const link = document.getElementById('video-lightbox-link');
     const counter = document.getElementById('video-lightbox-counter');
     if (!video || !frame || !title || !link || !counter) return;
 
-    frame.src = `${video.embedUrl}${video.embedUrl.includes('?') ? '&' : '?'}autoplay=1`;
+    frame.src = video.embedUrl;
     title.textContent = video.title;
     link.href = video.watchUrl || `https://www.youtube.com/watch?v=${encodeURIComponent(video.youtubeId)}`;
     counter.textContent = `${currentIndex + 1} / ${videos.length}`;

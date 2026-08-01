@@ -19,7 +19,7 @@
   <meta name="twitter:title" content="Jorge Ranilla | Family Gallery">
   <meta name="twitter:description" content="Capturing the joy of being together � family moments, milestones, and memories.">
   <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
-  <link rel="stylesheet" href="family/family-gallery.css?v=5">
+  <link rel="stylesheet" href="family/family-gallery.css?v=7">
 
   <style>
 /* spinner color override for family gallery */
@@ -49,7 +49,12 @@
           Capturing the joy of being together. These moments with the people I love most
           remind me what truly matters in life. Click any photo to view it full size.
         </p>
-        <div class="photo-count" id="photo-count" style="display:none;"></div>
+        <div class="gallery-summary" aria-label="Family gallery totals">
+          <span class="photo-count" id="photo-count" style="display:none;"></span>
+          <a class="gallery-summary-link" id="video-gallery-link" href="videos">
+            <span id="gallery-video-count">Videos</span>
+          </a>
+        </div>
       </div>
 
       <!-- Loading State -->
@@ -88,9 +93,9 @@
     </div>
   </div>
 
-  <script src="../script.js?v=7"></script>
+  <script src="../script.js?v=9"></script>
   <script src="../search-dynamic.js"></script>
-  <script src="family/smart-family-gallery.js?v=17"></script>
+  <script src="family/smart-family-gallery.js?v=18"></script>
   <script>
     JRFamilyGallery.start({
       mode: 'all',

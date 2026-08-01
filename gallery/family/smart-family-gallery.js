@@ -33,6 +33,8 @@
   const LIGHTBOX_THUMB_SIZE = 2400;
   const MAX_DIRECT_PAGE_BUTTONS = 10;
   const PAGE_BUTTON_WINDOW = 2;
+  const VIDEO_COUNT_CACHE_KEY = 'jrFamilyVideosCount:v1';
+  const VIDEO_COUNT_CACHE_TTL_MS = 10 * 60 * 1000;
   const PUBLIC_BIO_PAGE_SLUGS = new Set([
     "adriana-astocondor",
     "alcira-astocondor",
@@ -472,6 +474,45 @@
     }
   }
 
+  async function loadPublishedVideoCount() {
+    try {
+      const cached = JSON.parse(window.localStorage?.getItem(VIDEO_COUNT_CACHE_KEY) || 'null');
+      if (cached?.savedAt && Date.now() - cached.savedAt < VIDEO_COUNT_CACHE_TTL_MS && Number.isFinite(Number(cached.count))) {
+        return Number(cached.count);
+      }
+    } catch (error) {
+      // Storage can be unavailable; the count can be refreshed from Firestore.
+    }
+
+    try {
+      const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js');
+      const { getFirestore, collection, getCountFromServer, query, where } = await import('https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js');
+
+      const app = getApps().length ? getApps()[0] : initializeApp(config.firebaseConfig);
+      const db = getFirestore(app);
+      const publishedVideosQuery = query(
+        collection(db, 'familyVideos'),
+        where('status', '==', 'published')
+      );
+      const snapshot = await getCountFromServer(publishedVideosQuery);
+      const count = Number(snapshot.data().count || 0);
+
+      try {
+        window.localStorage?.setItem(VIDEO_COUNT_CACHE_KEY, JSON.stringify({
+          savedAt: Date.now(),
+          count
+        }));
+      } catch (error) {
+        // A cache write failure should never prevent the gallery from loading.
+      }
+
+      return count;
+    } catch (error) {
+      console.warn('Family video count is unavailable.', error);
+      return null;
+    }
+  }
+
   function firestoreTimestampIso(value) {
     if (typeof value?.toDate === 'function') return value.toDate().toISOString();
     if (typeof value?.seconds === 'number') return new Date(value.seconds * 1000).toISOString();
@@ -567,11 +608,13 @@
       return isApprovedTagCurrentForFile(file, tag) ? { ...file, tags: tag } : file;
     });
 
+    const photoFiles = masterFilesWithTags.filter(file => file.type === 'image');
+
     if (config.mode === 'all') {
-      return masterFilesWithTags.sort(compareFilesByGalleryDate);
+      return photoFiles.sort(compareFilesByGalleryDate);
     }
 
-    return masterFilesWithTags
+    return photoFiles
       .filter(file => file.tags && matchesConfiguredGallery(file.tags))
       .sort(compareFilesByGalleryDate);
   }
@@ -995,6 +1038,19 @@
     badge.style.display = 'inline-block';
   }
 
+  function updateVideoCountLink(videoCount) {
+    const link = document.getElementById('video-gallery-link');
+    const count = document.getElementById('gallery-video-count');
+    if (!link || !count) return;
+
+    if (Number.isFinite(Number(videoCount))) {
+      const total = Number(videoCount);
+      count.textContent = `${total} video${total === 1 ? '' : 's'}`;
+    }
+
+    link.style.display = 'inline-flex';
+  }
+
   function getPaginationItems(currentPageIndex, totalPages) {
     if (totalPages <= MAX_DIRECT_PAGE_BUTTONS) {
       return Array.from({ length: totalPages }, (_, index) => index);
@@ -1246,6 +1302,7 @@
     try {
       allFiles = await resolveGalleryFiles();
       setLoading(false);
+      loadPublishedVideoCount().then(updateVideoCountLink);
 
       if (allFiles.length === 0) {
         showError(config.emptyText);

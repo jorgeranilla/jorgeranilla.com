@@ -123,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const galleryLinks = {
       family: buildSectionLink('gallery', 'family'),
-      videos: buildSectionLink('gallery', 'videos'),
       portraits: buildSectionLink('gallery', 'portraits')
     };
     const professionalLinks = {
@@ -237,7 +236,6 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="dropdown-toggle">Gallery ▾</span>
               <ul class="dropdown-menu">
                 <li><a href="${galleryLinks.family}">Family</a></li>
-                <li><a href="${galleryLinks.videos}">Videos</a></li>
                 <li><a href="${galleryLinks.portraits}">Portraits</a></li>
               </ul>
             </li>
