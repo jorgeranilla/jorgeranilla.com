@@ -373,7 +373,7 @@
     do {
       const q = encodeURIComponent(
         `'${folderId}' in parents and ` +
-        `(mimeType contains 'image/' or mimeType contains 'video/') and ` +
+        `(mimeType contains 'image/') and ` +
         `trashed = false`
       );
 
@@ -478,36 +478,6 @@
     return '';
   }
 
-  function loadYoutubeVideos(tags) {
-    return Array.from(tags.values()).map(data => {
-      if (data.source !== 'youtube' || data.status !== 'approved') return null;
-
-      const videoId = data.youtubeId || '';
-      const approvedIso = firestoreTimestampIso(data.approvedAt);
-      const createdIso = firestoreTimestampIso(data.createdAt);
-      const updatedIso = firestoreTimestampIso(data.updatedAt);
-      return {
-        id: data.id,
-        youtubeId: videoId,
-        youtubeThumbnail: data.youtubeThumbnail || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-        youtubeTitle: data.youtubeTitle || '',
-        name: data.youtubeTitle || videoId || data.id,
-        type: 'video',
-        mimeType: 'video/youtube',
-        source: 'youtube',
-        people: Array.isArray(data.people) ? data.people : [],
-        peopleAliases: Array.isArray(data.peopleAliases) ? data.peopleAliases : [],
-        personIds: Array.isArray(data.personIds) ? data.personIds : [],
-        peopleLabels: Array.isArray(data.peopleLabels) ? data.peopleLabels : [],
-        otherPeopleLabels: Array.isArray(data.otherPeopleLabels) ? data.otherPeopleLabels : [],
-        albums: Array.isArray(data.albums) ? data.albums : [],
-        createdTime: approvedIso || createdIso || updatedIso,
-        modifiedTime: updatedIso || approvedIso || createdIso,
-        takenTime: data.takenTime || data.videoDate || ''
-      };
-    }).filter(video => video?.youtubeId);
-  }
-
   function matchesConfiguredGallery(tag) {
     if (!tag) return false;
 
@@ -591,7 +561,6 @@
       fetchDriveFolder(config.masterFolderId),
       loadApprovedTags()
     ]);
-    const youtubeVideos = loadYoutubeVideos(tags);
 
     const masterFilesWithTags = masterFiles.map(file => {
       const tag = tags.get(file.id);
@@ -599,15 +568,12 @@
     });
 
     if (config.mode === 'all') {
-      return [...masterFilesWithTags, ...youtubeVideos].sort(compareFilesByGalleryDate);
+      return masterFilesWithTags.sort(compareFilesByGalleryDate);
     }
 
-    const taggedDriveFiles = masterFilesWithTags
-      .filter(file => file.tags && matchesConfiguredGallery(file.tags));
-
-    const filteredYoutubeVideos = youtubeVideos.filter(video => matchesConfiguredGallery(video));
-
-    return [...taggedDriveFiles, ...filteredYoutubeVideos].sort(compareFilesByGalleryDate);
+    return masterFilesWithTags
+      .filter(file => file.tags && matchesConfiguredGallery(file.tags))
+      .sort(compareFilesByGalleryDate);
   }
 
   function getSuggestionDayKey() {
@@ -1025,14 +991,7 @@
     if (!badge) return;
 
     const imgs = allFiles.filter(file => file.type === 'image').length;
-    const vids = allFiles.filter(file => file.type === 'video').length;
-    let label = `${imgs} photo${imgs !== 1 ? 's' : ''}`;
-
-    if (vids > 0) {
-      label += ` · ${vids} video${vids !== 1 ? 's' : ''}`;
-    }
-
-    badge.textContent = label;
+    badge.textContent = `${imgs} photo${imgs !== 1 ? 's' : ''}`;
     badge.style.display = 'inline-block';
   }
 

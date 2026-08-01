@@ -97,6 +97,25 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    match /familyVideos/{videoId} {
+      allow read: if resource.data.status == 'published'
+                  || isApprovedMember()
+                  || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /familyVideoPlaylists/{playlistId} {
+      allow read: if resource.data.status in ['active', 'empty']
+                  || isApprovedMember()
+                  || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /familyVideoSyncLogs/{logId} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
     match /familyPhotoTagSuggestions/{suggestionId} {
       allow read, update, delete: if isAdmin();
       allow create: if false;

@@ -201,3 +201,6 @@ exports.submitFamilyPhotoTagSuggestion = familyPhotoSuggestions.submitFamilyPhot
 
 const familyProfileClaims = require('./familyProfileClaims');
 exports.claimFamilyProfileByEmail = familyProfileClaims.claimFamilyProfileByEmail;
+
+const familyVideos = require('./familyVideos');
+exports.syncFamilyVideosFromYouTube = familyVideos.syncFamilyVideosFromYouTube;

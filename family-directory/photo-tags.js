@@ -429,7 +429,7 @@ function updatePhotoTagSourceControls() {
 
   const subtitle = document.getElementById('fd-photo-tags-subtitle');
   if (subtitle) {
-    subtitle.textContent = `Assign ${getPhotoTagFolderLabel()} photos and videos to the people who appear in them`;
+    subtitle.textContent = `Assign ${getPhotoTagFolderLabel()} photos to the people who appear in them`;
   }
 }
 
@@ -444,9 +444,7 @@ function updatePhotoTagMediaControls() {
 
   const input = document.getElementById('fd-photo-search');
   if (input) {
-    input.placeholder = photoTagMediaView === 'videos'
-      ? 'Search videos or people...'
-      : 'Search photos or people...';
+    input.placeholder = 'Search photos or people...';
   }
 }
 
@@ -609,7 +607,7 @@ async function loadPhotoTagFiles() {
     page += 1;
     const q = encodeURIComponent(
       `'${getPhotoTagFolderId()}' in parents and ` +
-      `(mimeType contains 'image/' or mimeType contains 'video/') and ` +
+      `(mimeType contains 'image/') and ` +
       `trashed = false`
     );
     const params = [

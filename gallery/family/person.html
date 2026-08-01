@@ -76,7 +76,7 @@
         <h2 class="page-title page-title--sm" id="album-title">Photo Album</h2>
         <p id="album-description">
           Photos gathered from family memories. As pictures are tagged, they will appear here automatically.
-          Click any photo or video to view it full size.
+          Click any photo to view it full size.
         </p>
         <div class="photo-count" id="photo-count" style="display:none;"></div>
       </div>
@@ -131,7 +131,7 @@
 
     document.getElementById('album-title').textContent = `${displayName} Photo Album`;
     document.getElementById('album-description').textContent =
-      `Photos of ${displayName} gathered from the Family gallery as they are tagged and published. Click any photo or video to view it full size.`;
+      `Photos of ${displayName} gathered from the Family gallery as they are tagged and published. Click any photo to view it full size.`;
     document.getElementById('album-loading').textContent = `Loading ${displayName}'s photos...`;
 
     const backLink = document.getElementById('album-back-link');
@@ -146,7 +146,7 @@
       emptyText: `No tagged photos for ${displayName} yet.`,
       errorText: "Couldn't load photos right now. Please try refreshing the page.",
       photoAlt: `${displayName} photo`,
-      videoAlt: `${displayName} video`
+      videoAlt: `${displayName} photo`
     });
 
     function titleFromSlug(slug) {
