@@ -35,6 +35,7 @@
   const PAGE_BUTTON_WINDOW = 2;
   const VIDEO_COUNT_CACHE_KEY = 'jrFamilyVideosCount:v1';
   const VIDEO_COUNT_CACHE_TTL_MS = 10 * 60 * 1000;
+  const PHOTO_COUNT_CACHE_KEY = 'jrFamilyPhotosCount:v1';
   const PUBLIC_BIO_PAGE_SLUGS = new Set([
     "adriana-astocondor",
     "alcira-astocondor",
@@ -1036,6 +1037,15 @@
     const imgs = allFiles.filter(file => file.type === 'image').length;
     badge.textContent = `${imgs} photo${imgs !== 1 ? 's' : ''}`;
     badge.style.display = 'inline-block';
+
+    try {
+      window.localStorage?.setItem(PHOTO_COUNT_CACHE_KEY, JSON.stringify({
+        count: imgs,
+        savedAt: Date.now()
+      }));
+    } catch (error) {
+      // The Videos page can still fetch the photo count if this cache write fails.
+    }
   }
 
   function updateVideoCountLink(videoCount) {

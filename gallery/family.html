@@ -1,112 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jorge Ranilla | Family Gallery</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="icon" type="image/png" href="../images/jr-logo.png">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://jorgeranilla.com/gallery/family">
-  <meta property="og:title" content="Jorge Ranilla | Family Gallery">
-  <meta property="og:description" content="Capturing the joy of being together - family moments, milestones, and memories.">
-  <meta property="og:image" content="https://jorgeranilla.com/images/og-banner.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Jorge Ranilla | Family Gallery">
-  <meta name="twitter:description" content="Capturing the joy of being together - family moments, milestones, and memories.">
-  <meta name="twitter:image" content="https://jorgeranilla.com/images/og-banner.png">
-  <link rel="stylesheet" href="family/family-gallery.css?v=7">
-
-  <style>
-/* spinner color override for family gallery */
-    .spinner {
-      border-color: #e0e0e0;
-      border-top-color: #2c3e50;
-    }
-  </style>
-    <link rel="canonical" href="https://jorgeranilla.com/gallery/family">
-    <meta name="description" content="Family photo gallery - cherished moments and memories from the Ranilla family.">
+  <meta name="robots" content="noindex">
+  <meta http-equiv="refresh" content="0; url=family-photos">
+  <link rel="canonical" href="https://jorgeranilla.com/gallery/family-photos">
+  <title>Redirecting | Family Photos</title>
 </head>
-
-<body data-title="Family" data-section="Gallery">
-  <div id="social-rail-placeholder"></div>
-  <div id="header-placeholder"></div>
-
-  <div class="breadcrumb-bar">
-    <nav id="breadcrumbs" class="breadcrumb-container" aria-label="Breadcrumb"></nav>
-  </div>
-
-  <main class="page-content">
-    <div class="gallery-container">
-
-      <div class="gallery-intro">
-        <h2 class="page-title page-title--sm">Family Gallery</h2>
-        <p>
-          Capturing the joy of being together. These moments with the people I love most
-          remind me what truly matters in life. Click any photo to view it full size.
-        </p>
-        <div class="gallery-summary" aria-label="Family gallery totals">
-          <span class="photo-count" id="photo-count" style="display:none;"></span>
-          <a class="gallery-summary-link" id="video-gallery-link" href="videos">
-            <span id="gallery-video-count">Videos</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Loading State -->
-      <div class="gallery-loading" id="gallery-loading">
-        <div class="spinner"></div>
-        <p>Loading family memories...</p>
-      </div>
-
-      <!-- Error State -->
-      <div class="gallery-error" id="gallery-error" style="display:none;">
-        <p>Couldn't load photos right now. Please try refreshing the page.</p>
-      </div>
-
-      <!-- Gallery Grid -->
-      <div class="gallery-grid" id="gallery"></div>
-
-      <!-- Pagination -->
-      <div class="gallery-pagination" id="gallery-pagination">
-        <button class="page-btn" id="page-prev" onclick="changePage(-1)" aria-label="Previous page" title="Previous page">&lsaquo;</button>
-        <span class="page-indicator" id="page-indicator">1 / 1</span>
-        <button class="page-btn" id="page-next" onclick="changePage(1)" aria-label="Next page" title="Next page">&rsaquo;</button>
-      </div>
-
-    </div>
-  </main>
-
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
-    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#10094;</button>
-    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#10095;</button>
-    <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
-    <div class="lightbox-content">
-      <img src="" alt="Family photo" id="lightboxImg">
-      <iframe id="lightboxVideo" allowfullscreen allow="autoplay"></iframe>
-    </div>
-  </div>
-
-  <script src="../script.js?v=9"></script>
-  <script src="../search-dynamic.js"></script>
-  <script src="family/smart-family-gallery.js?v=18"></script>
+<body>
+  <p>Redirecting to <a href="family-photos">Family Photos</a>.</p>
   <script>
-    JRFamilyGallery.start({
-      mode: 'all',
-      masterFolderId: '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ',
-      pageSize: 25,
-      emptyText: 'No photos yet - check back soon!',
-      errorText: 'Couldn\'t load photos right now. Please try refreshing the page.',
-      photoAlt: 'Family photo',
-      videoAlt: 'Family video'
-    });
+    window.location.replace('family-photos' + window.location.search + window.location.hash);
   </script>
 </body>
-
 </html>

@@ -122,7 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const galleryLinks = {
-      family: buildSectionLink('gallery', 'family'),
+      familyPhotos: buildSectionLink('gallery', 'family-photos'),
+      familyVideos: buildSectionLink('gallery', 'family-videos'),
       portraits: buildSectionLink('gallery', 'portraits')
     };
     const professionalLinks = {
@@ -235,7 +236,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <li class="dropdown-item">
               <span class="dropdown-toggle">Gallery ▾</span>
               <ul class="dropdown-menu">
-                <li><a href="${galleryLinks.family}">Family</a></li>
+                <li class="dropdown-menu-label"><span>Photos &amp; Videos</span></li>
+                <li><a href="${galleryLinks.familyPhotos}">Photos</a></li>
+                <li><a href="${galleryLinks.familyVideos}">Videos</a></li>
                 <li><a href="${galleryLinks.portraits}">Portraits</a></li>
               </ul>
             </li>
@@ -628,9 +631,11 @@ document.addEventListener("DOMContentLoaded", () => {
       'nagoya': ['Gallery', 'Travel', 'Japan', 'Nagoya'],
 
       // Gallery section - Other pages
-      'family': ['Gallery', 'Family'],
-      'person': ['Gallery', 'Family', 'Photo Album'],
-      'videos': ['Gallery', 'Videos'],
+      'family': ['Gallery', 'Photos & Videos', 'Family Photos'],
+      'family-photos': ['Gallery', 'Photos & Videos', 'Family Photos'],
+      'person': ['Gallery', 'Photos & Videos', 'Family Photos', 'Photo Album'],
+      'videos': ['Gallery', 'Photos & Videos', 'Family Videos'],
+      'family-videos': ['Gallery', 'Photos & Videos', 'Family Videos'],
       'portraits': ['Gallery', 'Portraits'],
 
       // Professional section
@@ -658,6 +663,7 @@ document.addEventListener("DOMContentLoaded", () => {
       'Directory Profile': `${homePrefix}family-directory/`,
       'Family': null, // Has submenu items but no dedicated page
       'Gallery': null,
+      'Photos & Videos': null,
       'Professional': null,
       'Blog': null,
       'Mexico': null,

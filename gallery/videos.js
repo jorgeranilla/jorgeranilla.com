@@ -9,6 +9,10 @@
   };
   const CACHE_KEY = 'jrFamilyVideos:v2';
   const CACHE_TTL_MS = 10 * 60 * 1000;
+  const PHOTO_COUNT_CACHE_KEY = 'jrFamilyPhotosCount:v1';
+  const DRIVE_API_KEY = 'AIzaSyCadJTGnwhASQ-kj7p4AnGFAwXIIFChoSs';
+  const FAMILY_PHOTOS_FOLDER_ID = '10ee3xB70t7S0cxqgEFoRQ9eMy4BIVjpJ';
+  const DRIVE_PAGE_SIZE = 200;
   const MAX_VIDEOS = 200;
 
   let videos = [];
@@ -62,6 +66,83 @@
     } catch (error) {
       // A failed cache write should not affect the page.
     }
+  }
+
+  function readPhotoCountCache() {
+    try {
+      const cached = JSON.parse(window.localStorage?.getItem(PHOTO_COUNT_CACHE_KEY) || 'null');
+      const count = Number(cached?.count);
+      if (cached?.savedAt && Date.now() - cached.savedAt < CACHE_TTL_MS && Number.isFinite(count) && count > 0) {
+        return count;
+      }
+    } catch (error) {
+      // The photo count link can still work without a cached count.
+    }
+    return null;
+  }
+
+  function writePhotoCountCache(count) {
+    const total = Number(count);
+    if (!Number.isFinite(total) || total <= 0) return;
+
+    try {
+      window.localStorage?.setItem(PHOTO_COUNT_CACHE_KEY, JSON.stringify({
+        count: total,
+        savedAt: Date.now()
+      }));
+    } catch (error) {
+      // Count caching is optional.
+    }
+  }
+
+  function updatePhotoCountLink(photoCount) {
+    const link = document.getElementById('photo-gallery-link');
+    const count = document.getElementById('gallery-photo-count');
+    if (!link || !count) return;
+
+    if (Number.isFinite(Number(photoCount)) && Number(photoCount) > 0) {
+      const total = Number(photoCount);
+      count.textContent = `${total} photo${total === 1 ? '' : 's'}`;
+    }
+
+    link.style.display = 'inline-flex';
+  }
+
+  async function loadPhotoCount() {
+    const cached = readPhotoCountCache();
+    if (cached !== null) return cached;
+
+    let pageToken = '';
+    let total = 0;
+
+    do {
+      const params = new URLSearchParams({
+        key: DRIVE_API_KEY,
+        q: `'${FAMILY_PHOTOS_FOLDER_ID}' in parents and trashed = false`,
+        fields: 'nextPageToken,files(id,mimeType)',
+        pageSize: String(DRIVE_PAGE_SIZE)
+      });
+      if (pageToken) params.set('pageToken', pageToken);
+
+      const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error?.message || 'Drive photo count unavailable.');
+
+      total += (data.files || []).filter(file => String(file.mimeType || '').startsWith('image/')).length;
+      pageToken = data.nextPageToken || '';
+    } while (pageToken);
+
+    writePhotoCountCache(total);
+    return total;
+  }
+
+  function refreshPhotoCountLink() {
+    updatePhotoCountLink(readPhotoCountCache());
+    loadPhotoCount()
+      .then(updatePhotoCountLink)
+      .catch(error => {
+        console.warn('Family photo count is unavailable.', error);
+      });
   }
 
   function timestampToMillis(value) {
@@ -206,11 +287,6 @@
 
     sections.innerHTML = `
       <section class="video-section" id="family-gallery-videos">
-        <div class="video-section-heading">
-          <div>
-            <h3>Family Videos</h3>
-          </div>
-        </div>
         <div class="gallery-grid video-grid">
           ${videos.map((video, index) => renderVideoCard(video, index)).join('')}
         </div>
@@ -308,6 +384,7 @@
     setLoading(true);
     hideError();
     initLightbox();
+    refreshPhotoCountLink();
 
     try {
       const cached = readCache();
