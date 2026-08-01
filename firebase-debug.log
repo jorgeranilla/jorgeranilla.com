@@ -1,0 +1,56 @@
+[debug] [2026-08-01T01:54:13.150Z] ----------------------------------------------------------------------
+[debug] [2026-08-01T01:54:13.160Z] Command:       C:\tmp\firebase-tools\firebase-tools-win.exe C:\Users\jorge_w2dmd47\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\bin\firebase functions:list --project jorgeranilla-site --debug
+[debug] [2026-08-01T01:54:13.160Z] CLI Version:   15.15.0
+[debug] [2026-08-01T01:54:13.161Z] Platform:      win32
+[debug] [2026-08-01T01:54:13.161Z] Node Version:  v20.18.2
+[debug] [2026-08-01T01:54:13.161Z] Time:          Fri Jul 31 2026 21:54:13 GMT-0400 (Eastern Daylight Time)
+[debug] [2026-08-01T01:54:13.161Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-01T01:54:13.841Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-01T01:54:13.845Z] > authorizing via signed-in user (jorgeranilla@gmail.com)
+[debug] [2026-08-01T01:54:13.846Z] [iam] checking project jorgeranilla-site for permissions ["cloudfunctions.functions.list","firebase.projects.get","run.services.list"]
+[debug] [2026-08-01T01:54:13.857Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:54:13.858Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:54:13.861Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions [none]
+[debug] [2026-08-01T01:54:13.863Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions  x-goog-user-project=jorgeranilla-site
+[debug] [2026-08-01T01:54:13.864Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions {"permissions":["cloudfunctions.functions.list","firebase.projects.get","run.services.list"]}
+[debug] [2026-08-01T01:54:14.092Z] *** [apiv2] error from fetch(https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions, {"headers":{},"method":"POST","body":"{\"permissions\":[\"cloudfunctions.functions.list\",\"firebase.projects.get\",\"run.services.list\"]}"}): FetchError: request to https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions failed, reason: unable to verify the first certificate
+[debug] [2026-08-01T01:54:14.093Z] [iam] error while checking permissions, command may fail: Failed to make request to https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions
+[debug] [2026-08-01T01:54:14.095Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:54:14.095Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:54:14.095Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/jorgeranilla-site/locations/-/functions [none]
+[debug] [2026-08-01T01:54:14.169Z] *** [apiv2] error from fetch(https://cloudfunctions.googleapis.com/v1/projects/jorgeranilla-site/locations/-/functions, {"headers":{},"method":"GET"}): FetchError: request to https://cloudfunctions.googleapis.com/v1/projects/jorgeranilla-site/locations/-/functions failed, reason: unable to verify the first certificate
+[debug] [2026-08-01T01:54:14.169Z] [functions] failed to list functions for jorgeranilla-site
+[debug] [2026-08-01T01:54:14.169Z] [functions] Failed to make request to https://cloudfunctions.googleapis.com/v1/projects/jorgeranilla-site/locations/-/functions
+[debug] [2026-08-01T01:54:14.171Z] FirebaseError: Failed to make request to https://cloudfunctions.googleapis.com/v1/projects/jorgeranilla-site/locations/-/functions
+    at RetryOperation._fn (C:\Users\jorge_w2dmd47\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\apiv2.js:282:31)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: Failed to list functions for jorgeranilla-site
+[debug] [2026-08-01T01:54:59.293Z] ----------------------------------------------------------------------
+[debug] [2026-08-01T01:54:59.295Z] Command:       C:\tmp\firebase-tools\firebase-tools-win.exe C:\Users\jorge_w2dmd47\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\bin\firebase functions:list --project jorgeranilla-site --debug
+[debug] [2026-08-01T01:54:59.296Z] CLI Version:   15.15.0
+[debug] [2026-08-01T01:54:59.296Z] Platform:      win32
+[debug] [2026-08-01T01:54:59.296Z] Node Version:  v20.18.2
+[debug] [2026-08-01T01:54:59.296Z] Time:          Fri Jul 31 2026 21:54:59 GMT-0400 (Eastern Daylight Time)
+[debug] [2026-08-01T01:54:59.296Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-01T01:54:59.582Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-01T01:54:59.583Z] > authorizing via signed-in user (jorgeranilla@gmail.com)
+[debug] [2026-08-01T01:54:59.584Z] [iam] checking project jorgeranilla-site for permissions ["cloudfunctions.functions.list","firebase.projects.get","run.services.list"]
+[debug] [2026-08-01T01:54:59.586Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:54:59.586Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:54:59.588Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions [none]
+[debug] [2026-08-01T01:54:59.588Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions  x-goog-user-project=jorgeranilla-site
+[debug] [2026-08-01T01:54:59.589Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions {"permissions":["cloudfunctions.functions.list","firebase.projects.get","run.services.list"]}
+[debug] [2026-08-01T01:54:59.991Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions 200
+[debug] [2026-08-01T01:54:59.992Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/jorgeranilla-site:testIamPermissions {"permissions":["cloudfunctions.functions.list","firebase.projects.get","run.services.list"]}
+[debug] [2026-08-01T01:54:59.996Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:54:59.996Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:54:59.997Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/jorgeranilla-site/locations/-/functions [none]
+[debug] [2026-08-01T01:55:00.712Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/jorgeranilla-site/locations/-/functions 200
+[debug] [2026-08-01T01:55:00.712Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/jorgeranilla-site/locations/-/functions {}
+[debug] [2026-08-01T01:55:00.713Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:55:00.713Z] Checked if tokens are valid: true, expires at: 1785552260940
+[debug] [2026-08-01T01:55:00.714Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/jorgeranilla-site/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2026-08-01T01:55:01.249Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/jorgeranilla-site/locations/-/functions 200
