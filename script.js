@@ -236,9 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <li class="dropdown-item">
               <span class="dropdown-toggle">Gallery ▾</span>
               <ul class="dropdown-menu">
-                <li class="dropdown-menu-label"><span>Photos &amp; Videos</span></li>
-                <li><a href="${galleryLinks.familyPhotos}">Photos</a></li>
-                <li><a href="${galleryLinks.familyVideos}">Videos</a></li>
+                <li><a href="${galleryLinks.familyPhotos}">Photos &amp; Videos</a></li>
                 <li><a href="${galleryLinks.portraits}">Portraits</a></li>
               </ul>
             </li>
