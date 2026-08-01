@@ -345,13 +345,12 @@
   function showCurrentVideo() {
     const video = videos[currentIndex];
     const frame = document.getElementById('video-lightbox-frame');
-    const description = document.getElementById('video-lightbox-description');
-    const link = document.getElementById('video-lightbox-link');
+    const title = document.getElementById('video-lightbox-title');
     const counter = document.getElementById('video-lightbox-counter');
-    if (!video || !frame || !link || !counter) return;
+    if (!video || !frame || !title || !counter) return;
 
     frame.src = video.embedUrl;
-    link.href = video.watchUrl || `https://www.youtube.com/watch?v=${encodeURIComponent(video.youtubeId)}`;
+    title.textContent = video.title;
     counter.textContent = `${currentIndex + 1} / ${videos.length}`;
   }
 
