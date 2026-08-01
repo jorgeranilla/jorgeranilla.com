@@ -339,7 +339,14 @@
     }
 
     function fdMediaName(record) {
-      return record.youtubeTitle || record.name || record.driveFileId || record.id || 'Family photo';
+      return record.name || record.driveFileId || record.id || 'Family photo';
+    }
+
+    function fdIsTaggedPhoto(record) {
+      if (!record || record.youtubeId || record.source === 'youtube') return false;
+      const mimeType = String(record.mimeType || '').toLowerCase();
+      const type = String(record.type || '').toLowerCase();
+      return type !== 'video' && !mimeType.startsWith('video/');
     }
 
     function fdProfilePageStatus(message) {
@@ -518,6 +525,7 @@
         fdTaggedMedia = snap.docs
           .map(docSnap => ({ id: docSnap.id, ...docSnap.data() }))
           .filter(record => (record.status || 'approved') === 'approved')
+          .filter(fdIsTaggedPhoto)
           .sort((a, b) => String(b.updatedAt?.seconds || b.approvedAt?.seconds || 0).localeCompare(String(a.updatedAt?.seconds || a.approvedAt?.seconds || 0)));
         renderTaggedMedia();
       } catch (error) {
@@ -620,7 +628,7 @@
           photoId: record.id,
           photoName: fdMediaName(record),
           thumbnailUrl: fdMediaThumbnail(record),
-          mediaSource: record.youtubeId ? 'youtube' : 'drive',
+          mediaSource: 'drive',
           reason: 'Member requested removal from their profile.'
         });
         fdToast('Removal request submitted for admin approval.');
