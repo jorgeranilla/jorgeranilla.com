@@ -3,174 +3,334 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Umstead Grove — Home For Sale | Durham, NC</title>
-  <meta name="description" content="Beautiful home for sale by owner in Durham, NC. Redirecting to the property website...">
-  <!-- Instant redirect for bots/crawlers -->
-  <meta http-equiv="refresh" content="1;url=https://www.umsteadgrove.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --green: #1a3a2e;
-      --green-light: #2a5040;
-      --gold: #c9a84c;
-      --cream: #f5f0e8;
-    }
-
-    body {
-      min-height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--green);
-      font-family: 'Inter', sans-serif;
-      overflow: hidden;
-    }
-
-    /* Subtle animated background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at 30% 50%, rgba(201,168,76,0.08) 0%, transparent 60%),
-                  radial-gradient(ellipse at 70% 20%, rgba(42,80,64,0.5) 0%, transparent 50%);
-      pointer-events: none;
-    }
-
-    .card {
-      text-align: center;
-      padding: 56px 48px;
-      max-width: 420px;
-      width: 90%;
-      animation: fadeUp 0.6s ease both;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .trees {
-      font-size: 2.4rem;
-      margin-bottom: 8px;
-      animation: sway 4s ease-in-out infinite;
-      display: inline-block;
-    }
-
-    @keyframes sway {
-      0%, 100% { transform: rotate(-2deg); }
-      50%       { transform: rotate(2deg); }
-    }
-
-    .brand {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      color: var(--cream);
-      margin-bottom: 4px;
-      letter-spacing: 0.02em;
-    }
-
-    .brand span {
-      color: var(--gold);
-    }
-
-    .tagline {
-      font-size: 0.8rem;
-      color: rgba(245,240,232,0.5);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      margin-bottom: 40px;
-    }
-
-    /* Progress bar */
-    .progress-wrap {
-      background: rgba(255,255,255,0.1);
-      border-radius: 99px;
-      height: 4px;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, var(--gold), #e8c96a);
-      border-radius: 99px;
-      width: 0%;
-      animation: fillBar 1s ease forwards;
-    }
-
-    @keyframes fillBar {
-      from { width: 0%; }
-      to   { width: 100%; }
-    }
-
-    .redirect-msg {
-      font-size: 0.85rem;
-      color: rgba(245,240,232,0.6);
-      margin-bottom: 32px;
-    }
-
-    .redirect-msg strong {
-      color: var(--gold);
-    }
-
-    .address-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(201,168,76,0.12);
-      border: 1px solid rgba(201,168,76,0.3);
-      border-radius: 99px;
-      padding: 10px 20px;
-      font-size: 0.85rem;
-      color: var(--gold);
-      font-weight: 500;
-    }
-
-    .manual-link {
-      display: block;
-      margin-top: 28px;
-      font-size: 0.78rem;
-      color: rgba(245,240,232,0.4);
-    }
-
-    .manual-link a {
-      color: rgba(245,240,232,0.5);
-      text-decoration: underline;
-    }
-  </style>
+  <title>Umstead Grove | Durham, NC | For Sale By Owner</title>
+  <meta name="description" id="meta-desc" content="Beautiful home for sale by owner in Durham, NC. Call or text the seller to request a showing.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" id="og-title" content="Umstead Grove | FSBO Durham NC">
+  <meta property="og:image" id="og-image" content="house.png">
+  <meta property="og:url" id="og-url" content="">
+  <meta name="theme-color" content="#1a3a2e">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
 </head>
 <body>
 
-  <div class="card">
-    <div class="trees">🌲🌲🌲</div>
-    <h1 class="brand"><span>Umstead</span> Grove</h1>
-    <p class="tagline">Durham, NC &nbsp;·&nbsp; For Sale By Owner</p>
-
-    <div class="progress-wrap">
-      <div class="progress-bar"></div>
+<!-- NAV -->
+<nav id="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-logo"><span>Umstead</span> Grove</div>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#highlights">Features</a></li>
+        <li><a href="#neighborhood">Location</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact" class="nav-cta" id="nav-cta-btn">Call / Text</a></li>
+      </ul>
+      <div class="nav-hamburger" id="hamburger" aria-label="Menu" aria-controls="nav-mobile" aria-expanded="false" role="button" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
     </div>
-
-    <p class="redirect-msg">Taking you to <strong>umsteadgrove.com</strong>…</p>
-
-    <div class="address-pill">
-      🏡 1008 Umstead Grove Way, Durham, NC 27712
+    <div class="nav-mobile" id="nav-mobile">
+      <a href="#gallery">Gallery</a>
+      <a href="#highlights">Features</a>
+      <a href="#neighborhood">Location</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Call / Text</a>
     </div>
-
-    <p class="manual-link">
-      Not redirecting? <a href="https://www.umsteadgrove.com">Click here</a>
-    </p>
   </div>
+</nav>
 
-  <script>
-    // Redirect after 1 second
-    setTimeout(function() {
-      window.location.replace('https://www.umsteadgrove.com');
-    }, 1000);
-  </script>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <div class="hero-two-col">
+      <div>
+        <div class="hero-badge"><span>🏡 For Sale By Owner · Durham, NC</span></div>
+        <p class="hero-address" id="hero-address">Loading address…</p>
+        <h1 class="hero-title serif">Your Dream Home<br>Awaits in Durham</h1>
+        <div class="hero-price" id="hero-price">—</div>
+        <div id="hero-concession-badge" style="display:none;margin-bottom:20px">
+          <span style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.15);border:1.5px solid var(--gold);border-radius:50px;padding:8px 18px;font-size:0.88rem;color:var(--gold);font-weight:600">
+            🎁 <span id="hero-concession-text">Seller offering $10,000 toward buyer's closing costs</span>
+          </span>
+        </div>
+        <div class="hero-stats" id="hero-stats">
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-beds">—</span><span class="hero-stat-lbl">Bedrooms</span></div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-baths">—</span><span class="hero-stat-lbl">Bathrooms</span></div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-sqft">—</span><span class="hero-stat-lbl">Sq Ft</span></div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-lot">—</span><span class="hero-stat-lbl">Lot</span></div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat"><span class="hero-stat-val" id="stat-year">—</span><span class="hero-stat-lbl">Built</span></div>
+        </div>
+        <div class="hero-actions">
+          <a href="tel:8646256743" class="btn btn-primary" id="cta-showing">📞 Call / Text Jorge</a>
+          <a href="#contact" class="btn btn-outline" id="cta-info">View Contact Info</a>
+        </div>
+      </div>
+      <div class="hero-photo-card reveal">
+        <img src="images/exterior-front.jpg" alt="Property exterior" id="hero-main-photo">
+        <div class="hero-photo-badge">For Sale By Owner</div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="container">
+    <div class="text-center">
+      <p class="section-label">Photo Tour</p>
+      <h2 class="section-title">A Home That Feels Ready</h2>
+    </div>
+
+    <!-- Privacy disclaimer -->
+    <div class="gallery-disclaimer">
+      <span class="gallery-disclaimer-icon">🔒</span>
+      <div>
+        <strong>A note on privacy</strong> — To protect our family's privacy and security, interior photos of our home are not posted online. The images below reflect the <em>floor plan</em> as staged by the builder, giving you an accurate sense of the layout, finishes, and natural light. The exterior photo is the actual home.
+        <span class="gallery-disclaimer-cta">Call or text to see the home in person.</span>
+      </div>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid"></div>
+    <div class="gallery-more">
+      <a href="tel:8646256743" class="btn btn-outline-green" id="cta-tour">Call or Text for a Tour →</a>
+    </div>
+  </div>
+</section>
+<!-- PLAN / LOT -->
+<section id="plan-lot">
+  <div class="container">
+    <div class="plan-lot-header">
+      <div>
+        <p class="section-label">Layout & Homesite</p>
+        <h2 class="section-title">Understand the Plan and Lot at a Glance</h2>
+      </div>
+      <p class="section-sub">Review the builder floor plan and lot location before scheduling your in-person showing.</p>
+    </div>
+    <div class="plan-lot-grid">
+      <button class="plan-lot-item reveal" type="button" data-lightbox-src="images/floor-plan.jpg" data-lightbox-alt="Floor plan" data-lightbox-caption="Floor plan">
+        <img src="images/floor-plan.jpg" alt="Floor plan" loading="lazy">
+        <span>Floor Plan</span>
+      </button>
+      <button class="plan-lot-item reveal" type="button" data-lightbox-src="images/lot-location.jpg" data-lightbox-alt="Lot location" data-lightbox-caption="Lot location in Umstead Grove">
+        <img src="images/lot-location.jpg" alt="Lot location in Umstead Grove" loading="lazy">
+        <span>Lot Location</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS -->
+<section id="highlights">
+  <div class="container">
+    <div class="text-center">
+      <p class="section-label">Why It Stands Out</p>
+      <h2 class="section-title">Warm, Practical, Move-In Ready</h2>
+      <p class="section-sub">The layout, upgrades, and included appliances make this home feel easy to live in from day one.</p>
+    </div>
+    <div class="highlights-grid" id="highlights-grid"></div>
+    <div class="upgrade-summary" id="upgrade-summary"></div>
+  </div>
+</section>
+
+<!-- NEIGHBORHOOD -->
+<section id="neighborhood">
+  <div class="container">
+    <p class="section-label">Location & Community</p>
+    <h2 class="section-title">Perfectly Situated in Durham</h2>
+    <div class="neighborhood-grid">
+      <div>
+        <p id="neighborhood-desc" style="color:var(--text-mid);margin-bottom:24px;"></p>
+        <ul class="proximity-list" id="proximity-list"></ul>
+        <div class="community-facts" id="community-facts"></div>
+      </div>
+      <div>
+        <div class="map-placeholder" id="map-container">
+          <span style="font-size:2rem">🗺️</span>
+          <p>Interactive map coming soon</p>
+          <p style="font-size:0.8rem">Add Google Maps embed URL to config.js</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET CONTEXT -->
+<section id="market-context">
+  <div class="container">
+    <div class="market-header">
+      <div>
+        <p class="section-label">Price Context</p>
+        <h2 class="section-title">Competitive Inside the Neighborhood</h2>
+      </div>
+      <p class="market-updated" id="market-updated"></p>
+    </div>
+    <p class="section-sub" id="market-intro"></p>
+    <div class="market-grid" id="market-grid"></div>
+    <div hidden>
+      <div class="disclosure-card reveal">
+        <h3>📋 Available Disclosure Documents</h3>
+        <ul id="disclosure-list"></ul>
+        <p style="font-size:0.85rem;color:var(--text-light);margin-top:16px;" id="disclosure-notes"></p>
+      </div>
+      <div class="disclosure-card reveal">
+        <h3>🏘️ HOA Information</h3>
+        <ul id="hoa-list"></ul>
+      </div>
+    </div>
+    <div class="market-takeaways">
+      <h3>Value at a glance</h3>
+      <ul id="market-takeaways"></ul>
+      <p id="market-disclaimer"></p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <p class="section-label">Connect With Seller</p>
+    <h2 class="section-title">Call or Text Jorge Directly</h2>
+    <p class="section-sub">For showings, questions, buyer-agent coordination, or the buyer packet, reach out by phone or text.</p>
+    <div class="contact-grid">
+
+      <div class="contact-info-box reveal">
+
+        <div class="seller-card">
+          <div class="seller-avatar">JR</div>
+          <div class="seller-info">
+            <p class="seller-name" id="seller-name-display">Jorge Ranilla</p>
+            <p class="seller-role">Property Owner · For Sale By Owner</p>
+          </div>
+        </div>
+
+        <div class="contact-methods">
+          <a id="seller-phone-link" href="#" class="contact-method-row">
+            <span class="cm-icon">📞</span>
+            <span class="cm-body">
+              <span class="cm-label">Phone / Text</span>
+              <span class="cm-value" id="seller-phone-display">—</span>
+            </span>
+            <span class="cm-arrow">→</span>
+          </a>
+        </div>
+
+        <div class="expect-card">
+          <p class="expect-title">What to expect</p>
+          <ul class="expect-list">
+            <li>📅 Response within <strong>24 hours</strong></li>
+            <li>📞 Direct owner communication</li>
+            <li>🏡 No obligation to buy or offer</li>
+            <li>🤝 Buyer's agents welcome</li>
+          </ul>
+        </div>
+
+        <div class="fh-badge-full">
+          <span class="fh-icon">🏛️</span>
+          <span>Equal Housing Opportunity. This property is offered without regard to race, color, religion, national origin, sex, familial status, or disability.</span>
+        </div>
+
+      </div>
+
+      <div class="contact-card-panel contact-card reveal">
+        <h3 class="serif">Direct Seller Contact</h3>
+        <p class="contact-card-copy">Call or text Jorge for the fastest response about showings, buyer-agent coordination, offer questions, disclosures, or HOA details.</p>
+        <div class="direct-contact-actions">
+          <a href="tel:8646256743" class="btn btn-green btn-full">Call 864-625-6743</a>
+          <a href="sms:8646256743" class="btn btn-outline-green btn-full">Text 864-625-6743</a>
+        </div>
+        <div class="contact-note">
+          <h4>Helpful when you reach out</h4>
+          <ul>
+            <li>Your preferred day and time for a tour</li>
+            <li>Whether you are working with a buyer's agent</li>
+            <li>Any questions about financing, HOA documents, or the buyer packet</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="text-center">
+      <p class="section-label">Common Questions</p>
+      <h2 class="section-title">Everything You Need to Know</h2>
+      <p class="section-sub">Straight answers about the home, the sale process, and what to expect as a buyer.</p>
+    </div>
+    <div class="faq-list" id="faq-list"></div>
+    <div class="faq-cta">
+      <p>Still have questions?</p>
+      <a href="tel:8646256743" class="btn btn-outline-green">Call or Text the Seller &rarr;</a>
+    </div>
+  </div>
+</section>
+
+
+<section id="legal" hidden>
+  <div class="container">
+    <p class="section-label">Legal &amp; Compliance</p>
+    <div class="legal-cards">
+      <div class="legal-card">
+        <h4>🏛️ Fair Housing</h4>
+        <p>This property is offered in compliance with the Fair Housing Act. We do not discriminate based on race, color, religion, national origin, sex, familial status, or disability.</p>
+      </div>
+      <div class="legal-card">
+        <h4>🔒 Privacy Notice</h4>
+        <p>Any information you choose to share by phone or text will only be used for communications related to this property sale.</p>
+      </div>
+      <div class="legal-card">
+        <h4>⚠️ Seller Disclaimer</h4>
+        <p>Seller is not a licensed real estate agent. Buyer is encouraged to consult their own real estate agent, attorney, lender, inspector, and other professionals.</p>
+      </div>
+      <div class="legal-card">
+        <h4>📄 Contact Disclaimer</h4>
+        <p>Contacting the seller does not create a contract, offer, acceptance, agency relationship, or guarantee of a showing. All information is believed accurate but not guaranteed.</p>
+      </div>
+      <div class="legal-card">
+        <h4>🛡️ Document Security</h4>
+        <p>Please do not send Social Security numbers, bank account details, tax returns, or other sensitive financial documents through this website. Pre-approval documentation can be shared later through a secure channel when appropriate.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo"><span>Umstead</span> Grove · Durham, NC</div>
+      <div class="footer-links">
+        <a href="#hero">Home</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+    <p class="footer-copy" id="footer-copy">© 2026 For Sale By Owner — Umstead Grove, Durham, NC. Equal Housing Opportunity 🏛️</p>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous">‹</button>
+  <img class="lb-img" id="lb-img" src="" alt="">
+  <button class="lb-nav lb-next" id="lb-next" aria-label="Next">›</button>
+  <div class="lb-close" id="lb-close" role="button" tabindex="0" aria-label="Close">✕</div>
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" role="alert" aria-live="polite"></div>
+
+<script src="main.js"></script>
 </body>
 </html>

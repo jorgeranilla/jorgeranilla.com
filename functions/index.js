@@ -184,14 +184,6 @@ exports.stopAlyssaLiveStream = makeHandler(async (req) => {
   });
 });
 
-// ─── UMSTEAD GROVE FSBO ──────────────────────────────────────────────────────
-const ug = require('./umsteadgrove');
-exports.umsteadgroveSubmit     = ug.umsteadgroveSubmit;
-exports.umsteadgroveLeads      = ug.umsteadgroveLeads;
-exports.umsteadgroveUpdateLead = ug.umsteadgroveUpdateLead;
-exports.umsteadgroveDownload   = ug.umsteadgroveDownload;
-exports.umsteadgroveSendUpdate = ug.umsteadgroveSendUpdate;
-
 const familyPhotoTools = require('./familyPhotoTools');
 exports.convertFamilyPhotoUpload = familyPhotoTools.convertFamilyPhotoUpload;
 
